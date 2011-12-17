@@ -1,0 +1,21 @@
+
+#ignore thumbnails created by windows
+Thumbs.db
+.*.*
+#Don't sync private key
+*ppk
+Test Save Folder/testsave.xml
+*.dll
+*.zip
+.metadata*
+Source/App/.classpath
+Source/App/.project
+Source/App/.settings/org.eclipse.jdt.core.prefs
+Source/App/bin/classes.dex
+*bin/*
+Source/App/bin/*
+Source/App/gen/dimappers/android/pub/R.java
+Source/App/proguard.cfg
+Source/Server/.classpath
+Source/Server/.project
+*.class
