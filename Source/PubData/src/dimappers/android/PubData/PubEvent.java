@@ -1,5 +1,7 @@
 package dimappers.android.PubData;
 
+import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -11,7 +13,7 @@ import java.util.LinkedList;
  * 
  * Author: TK
  */
-public class PubEvent
+public class PubEvent implements Serializable
 {
 	//Properties
 	private LinkedList<Guest> 			guests;
@@ -96,5 +98,10 @@ public class PubEvent
 		{
 			System.out.println("Warning - tried to remove guest that wasn't there");
 		}
+	}
+	
+	public void WriteToStream(PrintWriter writer)
+	{
+		
 	}
 }

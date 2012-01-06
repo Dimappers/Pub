@@ -18,3 +18,4 @@ Source/App/proguard.cfg
 Source/App/.settings/org.eclipse.mylyn.tasks.ui.prefs
 Source/PubData/.settings/org.eclipse.jdt.core.prefs
 Tools/Git Extensions.lnk
+Source/ServerTest/.settings/org.eclipse.jdt.core.prefs

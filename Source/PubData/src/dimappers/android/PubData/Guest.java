@@ -1,5 +1,7 @@
 package dimappers.android.PubData;
 
+import java.io.Serializable;
+
 /* This class holds information about a guest
  * It does nothing with this data, it is purely a data store
  * 
@@ -9,7 +11,7 @@ package dimappers.android.PubData;
  * 
  * Author: TK
  */
-public abstract class Guest
+public abstract class Guest implements Serializable
 {
 	//Properties
 	private String 			facebookUserName;
