@@ -13,12 +13,6 @@ public class AppGuest extends Guest
 	{
 		super(facebookUserName);
 	}
-
-	public AppGuest(String facebookUserName, PubTripState isGoingToThePub)
-	{
-		super(facebookUserName, isGoingToThePub);
-		// TODO Auto-generated constructor stub
-	}
 	
 	//Public methods
 	
