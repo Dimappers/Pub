@@ -10,5 +10,7 @@
  	<string name="location">Your current location is:</string> 
   	<string name="location_button">Manually set location</string> 
   	<string name="all_guests">View all chosen guests</string> 
+  	
+  	<string name="invites">View invites</string>
     
 </resources>

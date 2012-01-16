@@ -18,5 +18,13 @@
     android:layout_alignParentLeft="true"
     android:layout_alignParentTop="true"
     android:text="@string/organise" />
+    
+<Button
+    android:id="@+id/invites_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentTop="true"
+    android:text="@string/invites" />
             
 </LinearLayout>
