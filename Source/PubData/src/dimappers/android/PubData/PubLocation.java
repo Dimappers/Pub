@@ -1,6 +1,5 @@
 package dimappers.android.PubData;
 
-import java.io.PrintWriter;
 import java.io.Serializable;
 
 /* This class holds information about a pub location
@@ -10,10 +9,6 @@ import java.io.Serializable;
  */
 public class PubLocation implements Serializable
 {
-	/**
-	 * 
-	 */
-	private static final long	serialVersionUID	= 1L;
 	//Properties
 	public double 			latitudeCoordinate;
 	public double 			longitudeCoordinate;

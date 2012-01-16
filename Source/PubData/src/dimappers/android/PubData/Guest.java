@@ -1,6 +1,7 @@
 package dimappers.android.PubData;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 /* This class holds information about a guest
  * It does nothing with this data, it is purely a data store
@@ -11,23 +12,17 @@ import java.io.Serializable;
  * 
  * Author: TK
  */
-public abstract class Guest implements Serializable
+public class Guest implements Serializable
 {
 	//Properties
 	private String 			facebookUserName;
-	private PubTripState	isGoingToThePub;
+	protected HashMap<PubEvent, PubTripState> events;
 	
 	//Constructors
 	public Guest(String facebookUserName)
 	{
 		this.facebookUserName = facebookUserName;
-		isGoingToThePub = PubTripState.MightGo;
-	}
-	
-	public Guest(String facebookUserName, boolean hasAppInstalled, PubTripState isGoingToThePub)
-	{
-		this.facebookUserName = facebookUserName;
-		this.isGoingToThePub = isGoingToThePub;
+		events = new HashMap<PubEvent, PubTripState>();
 	}
 	
 	//Getter/Setter methods
@@ -36,19 +31,29 @@ public abstract class Guest implements Serializable
 		return facebookUserName;
 	}
 	
-	public PubTripState GetIsGoingToThePub()
+	
+	public HashMap<PubEvent, PubTripState> GetPubEvents()
 	{
-		return isGoingToThePub;
+		return events;
 	}
-	public void SetIsGoingToThePub(PubTripState isGoingToThePub)
+	
+	//Public method
+	public void AddEvent(PubEvent event)
 	{
-		this.isGoingToThePub = isGoingToThePub;
+		events.put(event, PubTripState.MightGo);
 	}
-}
-
-enum PubTripState
-{
-	Going,
-	MightGo,
-	CantGo
+	
+	public void DecideOnEvent(PubEvent event, PubTripState decision)
+	{
+		if(events.containsKey(event))
+		{
+			PubTripState state = events.get(event);
+			state = decision;
+			events.put(event, decision);
+		}
+		else
+		{
+			//shouldn't happen
+		}
+	}
 }
