@@ -3,7 +3,10 @@ package dimappers.android.PubData;
 import java.io.Serializable;
 import java.util.HashMap;
 
-/* This class holds information about a guest
+/* NOTE: THIS CLASS IS NOW DEFUNCT, USE THE 'USER' CLASS INSTEAD
+ * (I reccomend this class get's deleted)
+ * 
+ * This class holds information about a guest
  * It does nothing with this data, it is purely a data store
  * 
  * This class should be overridden in both the App and the Server
