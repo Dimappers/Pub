@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.*;
 import java.util.HashMap;
-import java.util.Set;
 import java.io.*;
 
 import dimappers.android.PubData.Guest;
@@ -56,10 +55,12 @@ public class Server {
 			
 			//Desiralise data in to classes - in reality we will have to send some messages before explaining what is coming 
 			ObjectInputStream deserialiser = null;
+			ObjectOutputStream serialiser = null;
 			MessageType message = null;
 			try
 			{
 				deserialiser = new ObjectInputStream(clientSocket.getInputStream());
+				serialiser = new ObjectOutputStream(clientSocket.getOutputStream());
 				message = (MessageType)deserialiser.readObject();
 				
 			} 
@@ -74,115 +75,29 @@ public class Server {
 			
 			switch(message)
 			{
-			case newPubEvent:
-			{
-				PubEvent outEvent = null;
-				try {
-					outEvent = (PubEvent)deserialiser.readObject();
-				} catch (IOException e3) {
-					// TODO Auto-generated catch block
-					e3.printStackTrace();
-				} catch (ClassNotFoundException e3) {
-					// TODO Auto-generated catch block
-					e3.printStackTrace();
-				}
-				//Check data is correct
-				System.out.println(outEvent.GetStartTime().toString());
-				System.out.println(outEvent.GetPubLocation().toString());
-				
-				for(Guest g : outEvent.GetGuests())
+				case newPubEventMessage:
 				{
-					if(guests.containsKey(g.GetFacebookUserName()))
-					{
-						guests.get(g.GetFacebookUserName()).AddEvent(outEvent);
-					}
-					else
-					{
-						ServerGuest guest = new ServerGuest(g.GetFacebookUserName());
-						guest.AddEvent(outEvent);
-						guests.put(guest.GetFacebookUserName(), guest);
-					}
+					NewEventMessageReceived(deserialiser, serialiser);
+					break;
 				}
-				break;
-			}
 				
-			case getPubEvent:
-			{
-				Guest guest = null;
-				try {
-					guest = (Guest)deserialiser.readObject();
-				} catch (IOException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				} catch (ClassNotFoundException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				}
-				String guestUserName = guest.GetFacebookUserName();
-				if(guests.containsKey(guestUserName))
+				case refreshMessage:
 				{
-					//Send some event data back to them
-					ObjectOutputStream sendStream = null;
-					try {
-						sendStream = new ObjectOutputStream(clientSocket.getOutputStream());
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						break;
-					}
-					
-					Set<PubEvent> events =  guests.get(guestUserName).GetPubEvents().keySet();
-					try {
-						sendStream.writeInt(events.size());
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					for(PubEvent event : events)
-					{
-						try {
-							sendStream.writeObject(event);
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					
-					try {
-						sendStream.flush();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				else
-				{	
-					//Send back no events
-				}
-				break;
-			}
-				
-			case respondMessage:
-			{
-				Guest guest = null;
-				try {
-					guest = (Guest)deserialiser.readObject();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					RefreshMessageReceived(deserialiser, serialiser);
+					break;
 				}
 				
-				if(guests.containsKey(guest.GetFacebookUserName()))
+				case respondMessage:
 				{
-					ServerGuest serverGuest = guests.get(guest.GetFacebookUserName());
-					serverGuest.UpdateEventStatuses(guest.GetPubEvents());
+					RespondMessageReceived(deserialiser, serialiser);
+					break;
 				}
 				
-				break;
-			}
+				case updateMessage:
+				{
+					UpdateMessageReceived(deserialiser, serialiser);
+					break;
+				}
 				
 				default:
 					System.out.println("Message type not recognised :(");
@@ -196,6 +111,27 @@ public class Server {
 	public static void TerminateServer()
 	{
 		serverRunning = false;
+	}
+	
+	//Message handling functions
+	private static void NewEventMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream conncetionStreamOut)
+	{
+		//TODO: 
+	}
+	
+	private static void RefreshMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream conncetionStreamOut)
+	{
+		//TODO: 
+	}
+	
+	private static void RespondMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream conncetionStreamOut)
+	{
+		//TODO: 
+	}
+	
+	private static void UpdateMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream conncetionStreamOut)
+	{
+		//TODO: 
 	}
 
 }

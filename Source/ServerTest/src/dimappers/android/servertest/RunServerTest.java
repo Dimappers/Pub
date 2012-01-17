@@ -22,6 +22,7 @@ public class RunServerTest
 	private static Guest localGuest;
 	public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException
 	{
+		//These tests are invalid and for the old server, left for posterity
 		// TODO Auto-generated method stub
 		SendTestData();
 		SendTestData();
@@ -81,7 +82,7 @@ public class RunServerTest
 		
 		try
 		{
-			MessageType t = MessageType.newPubEvent;
+			MessageType t = MessageType.newPubEventMessage;
 			serialiser.writeObject(t);
 			serialiser.writeObject(event);
 			serialiser.flush();
@@ -128,7 +129,7 @@ public class RunServerTest
 		
 		try
 		{
-			MessageType t = MessageType.getPubEvent;
+			MessageType t = MessageType.refreshMessage;
 			serialiser.writeObject(t);
 			serialiser.writeObject(localGuest);
 			serialiser.flush();
