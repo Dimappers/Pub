@@ -27,6 +27,7 @@ public class RunServerTest
 		SendTestData();
 		ReceiveTestData();
 		RespondTest();
+		ReceiveTestData();
 	}
 	
 	private static void SendTestData() throws ClassNotFoundException
@@ -53,7 +54,7 @@ public class RunServerTest
 		//Create the socket to send through (using port 2084, see in the server file)
 		try
 		{
-			sendSocket = new Socket(InetAddress.getByName("localhost"), 2084);
+			sendSocket = new Socket(InetAddress.getByName("localhost"), 2085);
 		}
 		catch(UnknownHostException e)
 		{
@@ -101,7 +102,7 @@ public class RunServerTest
 		//Create the socket to send through (using port 2084, see in the server file)
 		try
 		{
-			sendSocket = new Socket(InetAddress.getByName("localhost"), 2084);
+			sendSocket = new Socket(InetAddress.getByName("localhost"), 2085);
 		}
 		catch(UnknownHostException e)
 		{
@@ -168,7 +169,7 @@ public class RunServerTest
 		//Create the socket to send through (using port 2084, see in the server file)
 		try
 		{
-			sendSocket = new Socket(InetAddress.getByName("localhost"), 2084);
+			sendSocket = new Socket(InetAddress.getByName("localhost"), 2085);
 		}
 		catch(UnknownHostException e)
 		{

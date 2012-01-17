@@ -14,13 +14,6 @@
 
     </TextView>
 
-
-    <RelativeLayout
-        android:id="@+id/guests_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-
         <Button
             android:id="@+id/chosen_guests_button"
             android:layout_width="wrap_content"
@@ -29,24 +22,18 @@
             android:layout_alignParentTop="true"
             android:text="@string/all_guests" />
 
-
-        <Button
-            android:id="@+id/change_guests_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:text="@string/guests" />
-
-    </RelativeLayout>
-
-
-
     <TextView
         android:id="@+id/location_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/location"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+    
+    <TextView
+        android:id="@+id/current_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <ViewFlipper

@@ -5,12 +5,13 @@
     <string name="back">back</string>
     
   	<string name="organise">Organise</string>
-  	<string name="guests">Change guests</string> 
  	<string name="guest_note">We have chosen guests based on previous visits.</string> 
  	<string name="location">Your current location is:</string> 
   	<string name="location_button">Manually set location</string> 
-  	<string name="all_guests">View all chosen guests</string> 
+  	<string name="all_guests">View and change all chosen guests</string> 
   	
   	<string name="invites">View invites</string>
+  	
+  	<string name="save">Save</string>
     
 </resources>
