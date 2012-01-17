@@ -21,7 +21,7 @@ public class PubEvent implements Serializable
 	private PubLocation					pubLocation;
 	
 	//Constructors
-	public PubEvent(Date startTime)
+	public PubEvent(Date startTime, Guest host)
 	{
 		guests = new LinkedList<Guest>();
 		this.startTime = startTime;
@@ -100,8 +100,13 @@ public class PubEvent implements Serializable
 		}
 	}
 	
-	public void WriteToStream(PrintWriter writer)
+	public Guest GetHost() throws Exception
 	{
+		if(guests.size() < 1)
+		{
+			throw new Exception("No host for this event...");
+		}
 		
+		return guests.getFirst();
 	}
 }

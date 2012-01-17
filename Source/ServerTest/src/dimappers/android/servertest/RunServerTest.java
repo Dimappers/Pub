@@ -38,7 +38,7 @@ public class RunServerTest
 		localGuest = new Guest("thomas.kiley");
 		
 		//Create some test pub event...
-		PubEvent event = new PubEvent(new Date(1000000000));
+		PubEvent event = new PubEvent(new Date(1000000000), localGuest);
 		PubLocation loc = new PubLocation();
 		loc.latitudeCoordinate = 42.4;
 		loc.longitudeCoordinate = 31.5;
@@ -146,7 +146,7 @@ public class RunServerTest
 				newPubEvent = deserialiser.readObject();
 				PubEvent event = (PubEvent)newPubEvent;
 				System.out.println(event.GetPubLocation().pubName);
-				localGuest.AddEvent(event);
+				//localGuest.AddEvent(event);
 			}
 		}
 		catch (IOException e)
@@ -196,7 +196,7 @@ public class RunServerTest
 		
 		try
 		{
-			localGuest.DecideOnEvent((PubEvent)localGuest.GetPubEvents().keySet().toArray()[0], PubTripState.Going);
+			//localGuest.DecideOnEvent((PubEvent)localGuest.GetPubEvents().keySet().toArray()[0], PubTripState.Going);
 			
 			MessageType t = MessageType.respondMessage;
 			serialiser.writeObject(t);

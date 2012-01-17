@@ -24,9 +24,4 @@ public class ServerGuest extends dimappers.android.PubData.Guest
 	{
 		this.hasApp = hasApp;
 	}
-	
-	public void UpdateEventStatuses(HashMap<PubEvent, PubTripState> newEventData)
-	{
-		events = newEventData;
-	}
 }
