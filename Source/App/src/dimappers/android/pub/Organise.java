@@ -31,5 +31,5 @@ public class Organise extends Activity implements OnClickListener{
 			}
 		 }
 	 }
-
+	 //TODO: insert onResult here
 }
