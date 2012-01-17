@@ -17,7 +17,7 @@ public class Server {
 	 */
 	
 	private static boolean serverRunning = true;
-	private static final int PORT = 2084;
+	private static final int PORT = 2085;
 	
 	private static HashMap<String, ServerGuest> guests; 
 	

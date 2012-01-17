@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+       	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+       	    android:id="@+id/linearLayout1"
+       	    android:layout_width="wrap_content"
+       	    android:layout_height="wrap_content"
+       	    android:orientation="vertical" >
+    		<RelativeLayout 
+       		 android:id="@+id/guests"
+        	 android:layout_width="match_parent"
+        	 android:layout_height="wrap_content">
+
+       		<Button
+       		    android:id="@+id/save"
+       		    android:layout_width="wrap_content"
+       		    android:layout_height="wrap_content"
+       		    android:layout_alignParentRight="true"
+       		    android:layout_alignParentTop="true"
+       		    android:text="@string/save" />
+
+       		<Button
+       		    android:id="@+id/Button01"
+       		    android:layout_width="wrap_content"
+       		    android:layout_height="wrap_content"
+       		    android:layout_alignParentLeft="true"
+       		    android:layout_alignParentTop="true"
+       		    android:text="@string/add_guest" />
+
+        	</RelativeLayout>
+
+
+        	
+        	<ScrollView
+       		android:id="@+id/scrollView1"
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content" >
+
+        	<TableLayout
+        	android:layout_width="match_parent"
+    		android:layout_height="match_parent" >
+
+            	<!--Need to add a row & checkbox for each guest that has been invited-->
+    			<TableRow
+        		android:id="@+id/tableRow1"
+        		android:layout_width="match_parent"
+        		android:layout_height="wrap_content" >
+
+    				<CheckBox
+    				    android:id="@+id/checkBox1"
+    				    android:layout_width="match_parent"
+    				    android:layout_height="wrap_content"
+    				    android:text="Test Guest" />
+
+    			</TableRow>			</TableLayout>
+			</ScrollView>
+        	</LinearLayout>
+
+

@@ -3,14 +3,25 @@
     <string name="start">\"Pub?\"</string>
     <string name="app_name">Pub</string>
     <string name="back">back</string>
+    <string name="send_invites">Send Invites</string>
+    <string name="save">Save</string>
     
   	<string name="organise">Organise</string>
-  	<string name="guests">Change guests</string> 
- 	<string name="guest_note">We have chosen guests based on previous visits.</string> 
  	<string name="location">Your current location is:</string> 
-  	<string name="location_button">Manually set location</string> 
-  	<string name="all_guests">View all chosen guests</string> 
+  	<string name="location_button">Change pub</string> 
+  	<string name="all_guests">View chosen guests</string> 
+  	<string name="use_pub">Use pub</string>
+  	<string name="pub_location">The closest pub is:</string>
+  	<string name="time_but">Set initial starting time</string>
+  	<string name="use_guest">Use selected friend</string>
+  	<string name="choose_date">Choose date:</string>
+  	<string name="choose_time">Choose time:</string>
   	
   	<string name="invites">View invites</string>
+  	<string name="location_error">Error: You must supply a location</string>
+  	
+  	<string name="test">Test</string>
+  	
+  	<string name="add_guest">Add guest</string>
     
 </resources>
