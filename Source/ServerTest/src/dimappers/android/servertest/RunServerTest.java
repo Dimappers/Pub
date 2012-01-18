@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.*;
 import java.util.Date;
 
-import dimappers.android.PubData.Guest;
+import dimappers.android.PubData.User;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
@@ -19,7 +19,7 @@ public class RunServerTest
 	 * @param args
 	 */
 	
-	private static Guest localGuest;
+	private static User localGuest;
 	public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException
 	{
 		//These tests are invalid and for the old server, left for posterity
@@ -36,7 +36,7 @@ public class RunServerTest
 		System.out.println("Running send data tests");
 		Socket sendSocket = null;
 		
-		localGuest = new Guest("thomas.kiley");
+		localGuest = new User("thomas.kiley");
 		
 		//Create some test pub event...
 		PubEvent event = new PubEvent(new Date(1000000000), localGuest);

@@ -6,7 +6,7 @@ import java.net.*;
 import java.util.HashMap;
 import java.io.*;
 
-import dimappers.android.PubData.Guest;
+import dimappers.android.PubData.User;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 
@@ -22,7 +22,7 @@ public class Server {
 	private static HashMap<String, ServerGuest> guests; 
 	
 	public static void main(String[] args) {
-		
+		EventManager.InitFromScratch(); 
 		guests = new HashMap<String, ServerGuest>();
 		System.out.println("Server running on port " + PORT);
 		ServerSocket serverSocket = null;
