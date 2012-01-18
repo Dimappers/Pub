@@ -16,20 +16,20 @@ import java.util.LinkedList;
 public class PubEvent implements Serializable
 {
 	//Properties
-	private LinkedList<Guest> 			guests;
+	private LinkedList<User> 			guests;
 	private Date 						startTime;
 	private PubLocation					pubLocation;
 	
 	//Constructors
-	public PubEvent(Date startTime, Guest host)
+	public PubEvent(Date startTime, User host)
 	{
-		guests = new LinkedList<Guest>();
+		guests = new LinkedList<User>();
 		this.startTime = startTime;
 	}
 	
-	public PubEvent(Date startTime, PubLocation pubLocation, Guest host)
+	public PubEvent(Date startTime, PubLocation pubLocation, User host)
 	{
-		guests = new LinkedList<Guest>();
+		guests = new LinkedList<User>();
 		guests.add(host);
 		
 		this.pubLocation = pubLocation;
@@ -37,7 +37,7 @@ public class PubEvent implements Serializable
 	}
 	
 	//Getter/setter methods
-	public LinkedList<Guest> GetGuests()
+	public LinkedList<User> GetGuests()
 	{
 		return guests;
 	}
@@ -63,13 +63,13 @@ public class PubEvent implements Serializable
 	//Public methods
 	
 	//Add a guest to the guest list
-	public void AddGuest(Guest guest)
+	public void AddGuest(User guest)
 	{
 		guests.add(guest);
 	}
 	
 	//Remove a guest from the guest list
-	public void RemoveGuest(Guest guest)
+	public void RemoveGuest(User guest)
 	{
 		if(!guests.remove(guest))
 		{
@@ -80,10 +80,10 @@ public class PubEvent implements Serializable
 	//Remove a guest from the guest list by facebook user name
 	public void RemoveGuest(String facebookUserName)
 	{
-		Guest guestToRemove = null;
-		for(Guest guest : guests)
+		User guestToRemove = null;
+		for(User guest : guests)
 		{
-			if(guest.GetFacebookUserName() == facebookUserName)
+			if(guest.getName() == facebookUserName)
 			{
 				guestToRemove = guest;
 				break;
@@ -100,7 +100,7 @@ public class PubEvent implements Serializable
 		}
 	}
 	
-	public Guest GetHost() throws Exception
+	public User GetHost() throws Exception
 	{
 		if(guests.size() < 1)
 		{

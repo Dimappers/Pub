@@ -1,10 +1,10 @@
 package dimappers.android.pub;
 
 import android.provider.MediaStore.Images;
-import dimappers.android.PubData.Guest;
+import dimappers.android.PubData.User;
 import dimappers.android.PubData.PubTripState;
 
-public class AppGuest extends Guest
+public class AppGuest extends User
 {
 	//Properties
 	
@@ -25,7 +25,7 @@ public class AppGuest extends Guest
 	//Get full facebook name, ie Thomas Kiley instead of thomas.kiley
 	String GetRealFacebookName()
 	{
-		return super.GetFacebookUserName();
+		return super.getName();
 	}
 
 }
