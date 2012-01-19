@@ -1,6 +1,7 @@
 package dimappers.android.pub;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,19 +16,31 @@ public class Guests extends Activity implements OnClickListener{
     	setContentView(R.layout.guests);
     	
     	//TODO: When not just "Test Guest", need to have different checkboxes & cases in the switch for each
+    	//Could extend onClickListener for each guest in this class & extend classes within constructors for add_guest/save buttons
     	Button button_organise = (Button)findViewById(R.id.checkBox1);
+    	
+    	button_organise.setOnClickListener(this);
+    	Button button_add_guest = (Button)findViewById(R.id.add_guest);
+    	button_add_guest.setOnClickListener(this);
+    	Button save = (Button)findViewById(R.id.save);
     	button_organise.setOnClickListener(this);
  }
 	public void onClick(View v){
+		Intent i;
 		switch(v.getId())
 		{
 		case R.id.save : {
 			//TODO: save details
-			//TODO: go back to previous screen on click
+			finish();
 			break;
 		}	
 		case R.id.checkBox1 : {
 			Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_LONG).show();
+			break;
+		}
+		case R.id.add_guest : {
+			i = new Intent(this, ChooseGuest.class);
+			startActivity(i);
 			break;
 		}
 		}

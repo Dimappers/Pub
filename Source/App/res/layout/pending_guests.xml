@@ -12,13 +12,13 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_gravity="center" />
-
+
     <TextView
         android:id="@+id/location_error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:layout_centerHorizontal="true"
         android:text="@string/location_error"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
