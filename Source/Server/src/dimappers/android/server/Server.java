@@ -42,7 +42,7 @@ public class Server {
 		
 		while(serverRunning)
 		{
-			//Create the socket to recieve data from upon connection
+			//Create the socket to receive data from upon connection
 			Socket clientSocket = null;
 			try
 			{
