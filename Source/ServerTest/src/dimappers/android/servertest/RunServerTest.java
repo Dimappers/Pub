@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.*;
 import java.util.Date;
 
+import dimappers.android.PubData.AcknoledgementData;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
@@ -25,10 +26,10 @@ public class RunServerTest
 		//These tests are invalid and for the old server, left for posterity
 		// TODO Auto-generated method stub
 		SendTestData();
-		SendTestData();
-		ReceiveTestData();
-		RespondTest();
-		ReceiveTestData();
+		//SendTestData();
+		//ReceiveTestData();
+		//RespondTest();
+		//ReceiveTestData();
 	}
 	
 	private static void SendTestData() throws ClassNotFoundException
@@ -46,7 +47,6 @@ public class RunServerTest
 		loc.pubName = "Spoons";
 		event.SetPubLocation(loc);
 		
-		event.AddGuest(localGuest);
 		
 		//Data before sent
 		System.out.println(event.GetStartTime().toString());
@@ -70,10 +70,11 @@ public class RunServerTest
 		
 		//Serialise the object for transmission
 		ObjectOutputStream serialiser = null;
+		ObjectInputStream deserialiser = null;
 		try
 		{
 			serialiser = new ObjectOutputStream(sendSocket.getOutputStream());
-			
+			deserialiser = new ObjectInputStream(sendSocket.getInputStream());
 		}
 		catch (IOException e)
 		{
@@ -87,6 +88,10 @@ public class RunServerTest
 			serialiser.writeObject(t);
 			serialiser.writeObject(event);
 			serialiser.flush();
+			
+			AcknoledgementData globalEventId = (AcknoledgementData)deserialiser.readObject();
+			
+			System.out.println("Event: " + globalEventId.globalEventId);
 		}
 		catch (IOException e)
 		{

@@ -23,5 +23,15 @@
   	<string name="test">Test</string>
   	
   	<string name="add_guest">Add guest</string>
+  	
+  	<string name="show_sent_invites">Show Sent Invites</string>
+  	
+  	<string name="current_events">Current Events</string>
+  	
+  	<string name="hosting">Hosting</string>
+  	
+  	<string name="waiting_for_response">Waiting For Response</string>
+  	
+  	<string name="going">Going</string>
     
 </resources>
