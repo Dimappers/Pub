@@ -23,7 +23,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	button_organise.setOnClickListener(this);
     	
     	Button button_invites = (Button)findViewById(R.id.invites_button);
-    	button_organise.setOnClickListener(this);
+    	button_invites.setOnClickListener(this);
     	
     }
     public void onClick(View v)
@@ -39,7 +39,9 @@ public class LaunchApplication extends Activity implements OnClickListener{
 			break;
 			
 		case R.id.invites_button :
-			finish();
+			
+			i = new Intent(this, Events.class);
+			startActivity(i);
 			break;
 		}
     }
