@@ -21,11 +21,8 @@ public class Server {
 	private static boolean serverRunning = true;
 	private static final int PORT = 2085;
 	
-	private static HashMap<String, ServerUser> guests; 
-	
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		EventManager.InitFromScratch(); 
-		guests = new HashMap<String, ServerUser>();
 		System.out.println("Server running on port " + PORT);
 		ServerSocket serverSocket = null;
 		
@@ -42,7 +39,7 @@ public class Server {
 		
 		while(serverRunning)
 		{
-			//Create the socket to recieve data from upon connection
+			//Create the socket to receive data from upon connection
 			Socket clientSocket = null;
 			try
 			{
@@ -55,7 +52,7 @@ public class Server {
 			
 			System.out.println("Data recieved");
 			
-			//Desiralise data in to classes - in reality we will have to send some messages before explaining what is coming 
+			//Deserialise data in to classes - in reality we will have to send some messages before explaining what is coming 
 			ObjectInputStream deserialiser = null;
 			ObjectOutputStream serialiser = null;
 			MessageType message = null;
@@ -129,7 +126,7 @@ public class Server {
 		for(User user : event.GetGuests())
 		{
 			ServerUser sUser = null; //AddOrGetUser(user.name);
-			sUser.AddEvent(pubEventId);
+			//sUser.AddEvent(pubEventId);
 		}
 		
 		connectionStreamOut.writeObject(new AcknoledgementData(pubEventId));
