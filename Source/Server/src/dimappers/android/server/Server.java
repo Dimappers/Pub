@@ -6,9 +6,11 @@ import java.net.*;
 import java.util.HashMap;
 import java.io.*;
 
+import dimappers.android.PubData.AcknoledgementData;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.ResponseData;
 
 public class Server {
 
@@ -19,11 +21,11 @@ public class Server {
 	private static boolean serverRunning = true;
 	private static final int PORT = 2085;
 	
-	private static HashMap<String, ServerGuest> guests; 
+	private static HashMap<String, ServerUser> guests; 
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		EventManager.InitFromScratch(); 
-		guests = new HashMap<String, ServerGuest>();
+		guests = new HashMap<String, ServerUser>();
 		System.out.println("Server running on port " + PORT);
 		ServerSocket serverSocket = null;
 		
@@ -114,22 +116,49 @@ public class Server {
 	}
 	
 	//Message handling functions
-	private static void NewEventMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream conncetionStreamOut)
+	private static void NewEventMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut) throws IOException, ClassNotFoundException 
 	{
-		//TODO: 
+		PubEvent event = (PubEvent)connectionStreamIn.readObject();
+		int pubEventId = EventManager.AddNewEvent(event);
+		
+		//Go through users and add event to them
+		for(User user : event.GetGuests())
+		{
+			ServerUser sUser = null; //AddOrGetUser(user.name);
+			sUser.AddEvent(pubEventId);
+		}
+		
+		connectionStreamOut.writeObject(new AcknoledgementData(pubEventId));
 	}
 	
-	private static void RefreshMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream conncetionStreamOut)
+	private static void RefreshMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut)
 	{
 		//TODO: 
+		//Look for user in manager
+		//If not there, no updates, send empty Update
+		//If there, see if it has updates (I guess in the UserManager)
 	}
 	
-	private static void RespondMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream conncetionStreamOut)
+	private static void RespondMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut) throws IOException, ClassNotFoundException
 	{
-		//TODO: 
+		ResponseData response = (ResponseData)connectionStreamIn.readObject();
+		
+		//Update the event file
+		PubEvent event = EventManager.GetPubEvent(response.GetEventId());
+		event.UpdateGuestStatus(response.GetGuest(), response.GetIsGoing());
+		
+		for(User user : event.GetGuests())
+		{
+			if(!user.equals(response.GetGuest()))
+			{
+				//Tell that user they need an update
+				ServerUser sUser = null; //GetFromUserManager
+				sUser.NotifyEventUpdated(response.GetEventId());
+			}
+		}
 	}
 	
-	private static void UpdateMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream conncetionStreamOut)
+	private static void UpdateMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut)
 	{
 		//TODO: 
 	}

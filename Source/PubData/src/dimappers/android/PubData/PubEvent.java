@@ -1,9 +1,10 @@
 package dimappers.android.PubData;
 
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Set;
 
 
 /*This class holds information about a pub trip
@@ -16,30 +17,33 @@ import java.util.LinkedList;
 public class PubEvent implements Serializable
 {
 	//Properties
-	private LinkedList<User> 			guests;
+	private HashMap<User, GoingStatus>	guests;
+	private User 						host;
 	private Date 						startTime;
 	private PubLocation					pubLocation;
 	
 	//Constructors
 	public PubEvent(Date startTime, User host)
 	{
-		guests = new LinkedList<User>();
+		guests = new HashMap<User, GoingStatus>();
+		guests.put(host, GoingStatus.going);
+		this.host = host;
 		this.startTime = startTime;
 	}
 	
 	public PubEvent(Date startTime, PubLocation pubLocation, User host)
 	{
-		guests = new LinkedList<User>();
-		guests.add(host);
-		
+		guests = new HashMap<User, GoingStatus>();
+		guests.put(host, GoingStatus.going);
+		this.host = host;
 		this.pubLocation = pubLocation;
 		this.startTime = startTime;
 	}
 	
 	//Getter/setter methods
-	public LinkedList<User> GetGuests()
+	public Set<User> GetGuests()
 	{
-		return guests;
+		return guests.keySet();
 	}
 	
 	public Date GetStartTime()
@@ -65,15 +69,23 @@ public class PubEvent implements Serializable
 	//Add a guest to the guest list
 	public void AddGuest(User guest)
 	{
-		guests.add(guest);
+		guests.put(guest, GoingStatus.maybeGoing);
+	}
+	public void AddGuest(User guest, GoingStatus status)
+	{
+		guests.put(guest, status);
 	}
 	
 	//Remove a guest from the guest list
 	public void RemoveGuest(User guest)
 	{
-		if(!guests.remove(guest))
+		if(guests.containsKey(guest))
 		{
-			System.out.println("Warning - tried to remove guest that wasn't there");
+			guests.remove(guest);
+		}
+		else
+		{
+			System.out.println("Warning - guest not there...");
 		}
 	}
 	
@@ -81,7 +93,7 @@ public class PubEvent implements Serializable
 	public void RemoveGuest(String facebookUserName)
 	{
 		User guestToRemove = null;
-		for(User guest : guests)
+		for(User guest : guests.keySet())
 		{
 			if(guest.getName() == facebookUserName)
 			{
@@ -100,13 +112,26 @@ public class PubEvent implements Serializable
 		}
 	}
 	
-	public User GetHost() throws Exception
+	public User GetHost()
+	{		
+		return host;
+	}
+	
+	public void UpdateGuestStatus(User user, boolean isGoing)
 	{
-		if(guests.size() < 1)
+		if(guests.containsKey(user))
 		{
-			throw new Exception("No host for this event...");
+			guests.remove(user);
+			GoingStatus status;
+			if(isGoing)
+			{
+				status = GoingStatus.going;
+			}
+			else
+			{
+				status = GoingStatus.notGoing;
+			}
+			guests.put(user, status);
 		}
-		
-		return guests.getFirst();
 	}
 }
