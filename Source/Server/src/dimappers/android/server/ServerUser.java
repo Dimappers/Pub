@@ -46,6 +46,21 @@ public class ServerUser extends dimappers.android.PubData.User
 		}
 	}
 	
+	public LinkedList<Integer> getAllEvents() {
+		/* Returns a linked list of all events */
+		LinkedList<Integer> allEvents = new LinkedList<Integer>();
+		Set<Integer> keys = events.keySet();
+		Iterator<Integer> iter = keys.iterator();
+		while (true) {
+			try {
+				int key = iter.next();
+				allEvents.add(key);
+			} catch (NoSuchElementException e) {
+				return allEvents;
+			}
+		}
+	}
+	
 	public void setUpdate(int eventId, boolean update) {
 		if (events.containsKey(eventId)) {
 			events.put(eventId, update);

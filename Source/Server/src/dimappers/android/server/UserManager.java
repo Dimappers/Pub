@@ -27,7 +27,7 @@ public class UserManager {
 		}
 	}
 	
-	public static void addEvent(int userId, int eventId) {
+	public static void addEvent(String userId, int eventId) {
 		/* Adds the eventId to the given user, if no event exists, does nothing
 		 * if no user exists, does nothing 
 		 * */
@@ -54,6 +54,14 @@ public class UserManager {
 		ServerUser user = users.get(userId);
 		if (user != null) {
 			return user.getOutOfDateEvents();
+		}
+		else { return null; }
+	}
+	
+	public static LinkedList<Integer> getFullUpdate(String userId) {
+		ServerUser user = users.get(userId);
+		if (user != null) {
+			return user.getAllEvents();
 		}
 		else { return null; }
 	}
