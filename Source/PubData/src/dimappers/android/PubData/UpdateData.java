@@ -9,8 +9,9 @@ public class UpdateData implements Serializable{
 	private Date 						startTime;
 	private PubLocation 				pubLocation;
 	private LinkedList<User> 			guests;
+	private int 						eventId;
 	
-	UpdateData(Date startTime, PubLocation pubLocation) {
+	UpdateData(int eventId, Date startTime, PubLocation pubLocation) {
 		this.startTime = 	startTime;
 		this.pubLocation = 	pubLocation;
 		this.guests = 	new LinkedList<User>();
@@ -19,6 +20,7 @@ public class UpdateData implements Serializable{
 	public void addGuest(User guest) {
 		guests.add(guest);
 	}
+	public int getEventId() 			{ return this.eventId; }
 	public Date getStartTime() 			{ return this.startTime; }
 	public PubLocation getPubLocation() { return this.pubLocation; }
 	public LinkedList<User> getGuests() { return this.guests; }

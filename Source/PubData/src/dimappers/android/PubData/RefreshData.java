@@ -7,8 +7,8 @@ public class RefreshData {
 	
 	//Constructor
 	public RefreshData(String userId, boolean fullUpdate) {
-		this.userId 	= userId;
-		this.fullUpdate = fullUpdate;
+		this.userId 	= userId;		// The users unique id (facebook name)
+		this.fullUpdate = fullUpdate;	// If True, needs a full update
 	}
 	
 	//Encapsulation

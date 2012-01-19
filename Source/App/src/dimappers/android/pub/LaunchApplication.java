@@ -46,6 +46,9 @@ public class LaunchApplication extends Activity implements OnClickListener{
 			break;
 		}
 		case R.id.invites_button :
+			
+			i = new Intent(this, Events.class);
+			startActivity(i);
 			break;
 		}
     }
