@@ -13,7 +13,11 @@ import dimappers.android.PubData.PubTripState;
 public class ServerUser extends dimappers.android.PubData.User 
 {
 	private boolean hasApp;
+<<<<<<< HEAD
+	private HashMap<Integer, Boolean> eventStatus; //EventId, needsUpdate (ie true, need an update)
+=======
 	private HashMap<Integer, Boolean> events;
+>>>>>>> 8a1d05840b9e5f467c02214baf3223b415785203
 	
 	public ServerUser(String facebookUserName) {
 		super(facebookUserName);
@@ -51,6 +55,12 @@ public class ServerUser extends dimappers.android.PubData.User
 			events.put(eventId, update);
 		}
 	}
+<<<<<<< HEAD
+	
+	public void AddEvent(int eventId)
+	{
+		eventStatus.put(eventId, true);
+	}
 	
 	public void NotifyEventUpdated(int eventId)
 	{
@@ -67,6 +77,27 @@ public class ServerUser extends dimappers.android.PubData.User
 			eventStatus.put(eventId, false);
 		}
 	}
+	
+	public Integer[] GetEventsThatNeedUpdating()
+	{
+		LinkedList<Integer> eventsThatNeedUpdating = new LinkedList<Integer>();
+		
+		//nb, an alternative - more memory, faster, is to keep track of events that have been updated
+		for(int eventId : eventStatus.keySet())
+		{
+			if(eventStatus.get(eventId))
+			{
+				eventsThatNeedUpdating.add(eventId);
+			}
+		}
+		
+		Integer[] arrayEvents = new Integer[eventsThatNeedUpdating.size()];
+		eventsThatNeedUpdating.toArray(arrayEvents);
+		
+		return arrayEvents;
+	}
+=======
 	public boolean GetHasApp() {	return hasApp;	}
 	public void SetHasApp(boolean hasApp) {	this.hasApp = hasApp;	}
+>>>>>>> 8a1d05840b9e5f467c02214baf3223b415785203
 }

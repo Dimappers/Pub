@@ -21,5 +21,10 @@ public class User implements Serializable {
 	
 	//Encapsulation
 	public String getName() { return this.facebookUserName; }	
+	
+	public boolean isEqual(User otherUser)
+	{
+		return facebookUserName == otherUser.getName();
+	}
 
 }

@@ -2,6 +2,13 @@ package dimappers.android.server;
 
 import java.util.HashMap;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import dimappers.android.PubData.PubEvent;
 
 public class EventManager
@@ -24,6 +31,20 @@ public class EventManager
 	public static void InitFromFile(String loadFile)
 	{
 		throw new UnsupportedOperationException("Loading from file not implemented");
+	}
+	
+	public static String SaveToFile() throws ParserConfigurationException
+	{
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+		Document doc = docBuilder.newDocument();
+		Element rootElement = doc.createElement("PubEvents");
+		doc.appendChild(rootElement);
+
+		
+		
+		return "Test.xml";
 	}
 	
 	public static int AddNewEvent(PubEvent event)
