@@ -77,24 +77,28 @@ public class Server {
 			{
 				case newPubEventMessage:
 				{
+					// TOMS JOB
 					NewEventMessageReceived(deserialiser, serialiser);
 					break;
 				}
 				
 				case refreshMessage:
 				{
+					// MARKS JOB : Sent: RefreshData Returns Array of events
 					RefreshMessageReceived(deserialiser, serialiser);
 					break;
 				}
 				
 				case respondMessage:
 				{
+					// TOMS JOB
 					RespondMessageReceived(deserialiser, serialiser);
 					break;
 				}
 				
 				case updateMessage:
 				{
+					// MARKS JOB : Gets UpdateRequest Returns nothin'
 					UpdateMessageReceived(deserialiser, serialiser);
 					break;
 				}
