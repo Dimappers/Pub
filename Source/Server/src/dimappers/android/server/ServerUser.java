@@ -54,17 +54,17 @@ public class ServerUser extends dimappers.android.PubData.User
 	
 	public void NotifyEventUpdated(int eventId)
 	{
-		eventStatus.remove(eventId);
-		eventStatus.put(eventId, true);
+		events.remove(eventId);
+		events.put(eventId, true);
 	}
 	
 	public void NotifyUpdateSent()
 	{
 		//Need to set all events to false has have retrived them all
-		for(int eventId : eventStatus.keySet())
+		for(int eventId : events.keySet())
 		{
-			eventStatus.remove(eventId);
-			eventStatus.put(eventId, false);
+			events.remove(eventId);
+			events.put(eventId, false);
 		}
 	}
 	public boolean GetHasApp() {	return hasApp;	}
