@@ -131,8 +131,8 @@ public class Server {
 		//Go through users and add event to them
 		for(User user : event.GetGuests())
 		{
-			ServerUser sUser = null; //AddOrGetUser(user.name);
-			//sUser.AddEvent(pubEventId);
+			UserManager.addUser(user.getName());
+			UserManager.addEvent(user.getName(), pubEventId);
 		}
 		
 		connectionStreamOut.writeObject(new AcknoledgementData(pubEventId));
@@ -182,8 +182,7 @@ public class Server {
 			if(!user.equals(response.GetGuest()))
 			{
 				//Tell that user they need an update
-				ServerUser sUser = null; //GetFromUserManager
-				sUser.NotifyEventUpdated(response.GetEventId());
+				UserManager.markForUpdate(user.getName(), response.GetEventId());
 			}
 		}
 	}
