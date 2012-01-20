@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import dimappers.android.PubData.AcknoledgementData;
+import dimappers.android.PubData.RefreshData;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
@@ -27,7 +28,8 @@ public class RunServerTest
 	{
 		//These tests are invalid and for the old server, left for posterity
 		// TODO Auto-generated method stub
-		SendTestData(CreatePubEvent());
+		int eventId = createPubEventTest(CreatePubEvent());
+		PubEvent[] events = RunRefreshMessageTest(false);
 		//SendTestData();
 		//ReceiveTestData();
 		//RespondTest();
@@ -44,7 +46,12 @@ public class RunServerTest
 		return new PubEvent(new Date(100000), new PubLocation(42, 36, "Spoons Leam"), CreateHost());
 	}
 	
-	private static int SendTestData(PubEvent event) throws ClassNotFoundException
+	private static Socket GetSendSocket() throws UnknownHostException, IOException
+	{
+		return new Socket(InetAddress.getByName("localhost"), 2085);
+	}
+	
+	private static int createPubEventTest(PubEvent event) throws ClassNotFoundException
 	{
 		System.out.println("Running newEventMessage test");
 		Socket sendSocket = null;
@@ -57,7 +64,7 @@ public class RunServerTest
 		//Create the socket to send through (using port 2084, see in the server file)
 		try
 		{
-			sendSocket = new Socket(InetAddress.getByName("localhost"), 2085);
+			sendSocket = GetSendSocket();
 		}
 		catch(UnknownHostException e)
 		{
@@ -101,6 +108,68 @@ public class RunServerTest
 		{
 			System.out.println("Error in serialising the object: " + e.getMessage());
 			return -4;
+		}
+	}
+	
+	private static PubEvent[] RunRefreshMessageTest(boolean runFullRefresh) throws ClassNotFoundException
+	{
+		RefreshData rData = new RefreshData(CreateHost(), runFullRefresh);
+		
+		System.out.println("Running refreshMessage test");
+		Socket sendSocket = null;
+		
+		//Create the socket to send through (using port 2084, see in the server file)
+		try
+		{
+			sendSocket = GetSendSocket();
+		}
+		catch(UnknownHostException e)
+		{
+			System.out.println("Unknown host: " + e.getMessage());
+			return null;
+		}
+		catch(IOException e)
+		{
+			System.out.println("IOException: " + e.getMessage());
+			return null;
+		}
+		
+		//Serialise the object for transmission
+		ObjectOutputStream serialiser = null;
+		ObjectInputStream deserialiser = null;
+		try
+		{
+			serialiser = new ObjectOutputStream(sendSocket.getOutputStream());
+			deserialiser = new ObjectInputStream(sendSocket.getInputStream());
+		}
+		catch (IOException e)
+		{
+			System.out.println("Error in creating serialser: " + e.getMessage());
+			return null;
+		}
+		
+		try
+		{
+			MessageType t = MessageType.refreshMessage;
+			serialiser.writeObject(t);
+			serialiser.writeObject(rData);
+			serialiser.flush();
+			System.out.println("Data sent");
+			PubEvent[] outOfDateEvents = (PubEvent[])deserialiser.readObject();
+			
+			System.out.println("Retrieved or updated " + outOfDateEvents.length + " events");
+			
+			for(int i = 0; i < outOfDateEvents.length; ++i)
+			{
+				System.out.println("Event " + i + ": Is at location: " + outOfDateEvents[i].GetPubLocation().toString());
+			}
+			
+			return outOfDateEvents;
+		}
+		catch (IOException e)
+		{
+			System.out.println("Error in serialising the object: " + e.getMessage());
+			return null;
 		}
 	}
 	

@@ -142,11 +142,16 @@ public class Server {
 		
 		int pubEventId = EventManager.AddNewEvent(event);
 		
+		if(IsDebug)
+		{
+			System.out.println("Event added with id: " + pubEventId);
+		}
+		
 		//Go through users and add event to them
 		for(User user : event.GetGuests())
 		{
-			UserManager.addUser(user.getName());
-			UserManager.addEvent(user.getName(), pubEventId);
+			UserManager.addUser(user);
+			UserManager.addEvent(user, pubEventId);
 		}
 		
 		connectionStreamOut.writeObject(new AcknoledgementData(pubEventId));
@@ -158,10 +163,10 @@ public class Server {
 		LinkedList<Integer> refreshEventIds;
 		if (refresh.isFullUpdate()) {
 			// If true, returns all the events, otherwise just the events that need refreshing
-			refreshEventIds = UserManager.getFullUpdate(refresh.getUserId());
+			refreshEventIds = UserManager.getFullUpdate(refresh.getUser());
 		}
 		else {
-			refreshEventIds = UserManager.getUpdate(refresh.getUserId());
+			refreshEventIds = UserManager.getUpdate(refresh.getUser());
 		}
 		// Create an array to fit all needed events in
 		PubEvent[] refreshEvents = new PubEvent[refreshEventIds.size()];
@@ -196,7 +201,7 @@ public class Server {
 			if(!user.equals(response.GetGuest()))
 			{
 				//Tell that user they need an update
-				UserManager.markForUpdate(user.getName(), response.GetEventId());
+				UserManager.markForUpdate(user, response.GetEventId());
 			}
 		}
 	}
@@ -227,9 +232,9 @@ public class Server {
 			Iterator<User> iter = guests.iterator();
 			while (true) {
 				try {
-					User guest = iter.next();
-					event.AddGuest(guest);
-					UserManager.addEvent(guest.getName(), update.getEventId());
+					User user = iter.next();
+					event.AddGuest(user);
+					UserManager.addEvent(user, update.getEventId());
 				} catch (NoSuchElementException e) {
 					break;
 				}
