@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.io.*;
 
 import dimappers.android.PubData.AcknoledgementData;
@@ -225,19 +226,12 @@ public class Server {
 		/* Checks if there are any guests that need adding, if so, adds the guest to the event and puts the event
 		 * in the Users event list
 		 */
-		
 		if (!update.getGuests().isEmpty()) {
-			LinkedList<User> guests = update.getGuests();
-			// Add the guests to the event and the event to the guests arrays
-			Iterator<User> iter = guests.iterator();
-			while (true) {
-				try {
-					User user = iter.next();
-					event.AddGuest(user);
-					UserManager.addEvent(user, update.getEventId());
-				} catch (NoSuchElementException e) {
-					break;
-				}
+			Set<User> users = update.getGuests().keySet();
+			for(User user : users)
+			{
+				event.AddGuest(user);
+				UserManager.addEvent(user, update.getEventId());
 			}
 		}
 	}
