@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.*;
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import dimappers.android.PubData.AcknoledgementData;
@@ -25,30 +27,30 @@ public class RunServerTest
 	{
 		//These tests are invalid and for the old server, left for posterity
 		// TODO Auto-generated method stub
-		SendTestData();
+		SendTestData(CreatePubEvent());
 		//SendTestData();
 		//ReceiveTestData();
 		//RespondTest();
 		//ReceiveTestData();
 	}
 	
-	private static void SendTestData() throws ClassNotFoundException
+	private static User CreateHost()
 	{
-		System.out.println("Running send data tests");
+		return new User("thomas.kiley");
+	}
+	
+	private static PubEvent CreatePubEvent()
+	{
+		return new PubEvent(new Date(100000), new PubLocation(42, 36, "Spoons Leam"), CreateHost());
+	}
+	
+	private static int SendTestData(PubEvent event) throws ClassNotFoundException
+	{
+		System.out.println("Running newEventMessage test");
 		Socket sendSocket = null;
 		
-		localGuest = new User("thomas.kiley");
-		
-		//Create some test pub event...
-		PubEvent event = new PubEvent(new Date(1000000000), localGuest);
-		PubLocation loc = new PubLocation();
-		loc.latitudeCoordinate = 42.4;
-		loc.longitudeCoordinate = 31.5;
-		loc.pubName = "Spoons";
-		event.SetPubLocation(loc);
-		
-		
 		//Data before sent
+		System.out.println("Sending the following data:");
 		System.out.println(event.GetStartTime().toString());
 		System.out.println(event.GetPubLocation().toString());
 		
@@ -60,12 +62,12 @@ public class RunServerTest
 		catch(UnknownHostException e)
 		{
 			System.out.println("Unknown host: " + e.getMessage());
-			return;
+			return -1;
 		}
 		catch(IOException e)
 		{
 			System.out.println("IOException: " + e.getMessage());
-			return;
+			return -2;
 		}
 		
 		//Serialise the object for transmission
@@ -79,7 +81,7 @@ public class RunServerTest
 		catch (IOException e)
 		{
 			System.out.println("Error in creating serialser: " + e.getMessage());
-			return;
+			return -3;
 		}
 		
 		try
@@ -88,14 +90,17 @@ public class RunServerTest
 			serialiser.writeObject(t);
 			serialiser.writeObject(event);
 			serialiser.flush();
-			
+			System.out.println("Data sent");
 			AcknoledgementData globalEventId = (AcknoledgementData)deserialiser.readObject();
 			
-			System.out.println("Event: " + globalEventId.globalEventId);
+			System.out.println("Event ID: " + globalEventId.globalEventId);
+			
+			return globalEventId.globalEventId;
 		}
 		catch (IOException e)
 		{
 			System.out.println("Error in serialising the object: " + e.getMessage());
+			return -4;
 		}
 	}
 	

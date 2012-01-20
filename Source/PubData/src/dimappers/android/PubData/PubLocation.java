@@ -14,6 +14,19 @@ public class PubLocation implements Serializable
 	public double 			longitudeCoordinate;
 	public String			pubName;
 
+	public PubLocation()
+	{
+		latitudeCoordinate = 0.0;
+		longitudeCoordinate = 0.0;
+		pubName = "";
+	}
+	
+	public PubLocation(double latitudeCoordinate, double longitudeCoordinate, String pubName)
+	{
+		this.latitudeCoordinate = latitudeCoordinate;
+		this.longitudeCoordinate = longitudeCoordinate;
+		this.pubName = pubName;
+	}
 	
 	@Override
 	public String toString()

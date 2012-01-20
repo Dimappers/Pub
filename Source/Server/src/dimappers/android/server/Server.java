@@ -18,6 +18,8 @@ public class Server {
 	 * @param args
 	 */
 	
+	public static final boolean IsDebug = true; //Prints out more messages
+	
 	private static boolean serverRunning = true;
 	private static final int PORT = 2085;
 	
@@ -49,8 +51,10 @@ public class Server {
 			{
 				System.out.println("Error accepting connection: " + e.getMessage());
 			}
-			
-			System.out.println("Data recieved");
+			if(IsDebug)
+			{
+				System.out.println("Data recieved");
+			}
 			
 			//Deserialise data in to classes - in reality we will have to send some messages before explaining what is coming 
 			ObjectInputStream deserialiser = null;
@@ -119,7 +123,17 @@ public class Server {
 	//Message handling functions
 	private static void NewEventMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut) throws IOException, ClassNotFoundException 
 	{
+		if(IsDebug)
+		{
+			System.out.println("Received new PubEvent message");
+		}
 		PubEvent event = (PubEvent)connectionStreamIn.readObject();
+		
+		if(IsDebug)
+		{
+			System.out.println("PubEvent at location: " + event.GetPubLocation().toString());
+		}
+		
 		int pubEventId = EventManager.AddNewEvent(event);
 		
 		//Go through users and add event to them
