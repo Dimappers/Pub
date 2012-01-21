@@ -19,7 +19,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	super.onCreate(savedInstanceState);
     	//need to log into Facebook if not logged in before
     	setContentView(R.layout.main);
-    	Toast.makeText(getApplicationContext(), "test", Toast.LENGTH_LONG).show();
     	
     	Button button_organise = (Button)findViewById(R.id.organise_button);
     	button_organise.setOnClickListener(this);
@@ -32,7 +31,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     {
     	Intent i;
 		
-		switch (v.getId()){
+		switch (v.getId()) {
 		case R.id.organise_button : 
 		{
 			i = new Intent(this, Organise.class);
@@ -45,11 +44,12 @@ public class LaunchApplication extends Activity implements OnClickListener{
 			startActivity(i);
 			break;
 		}
-		case R.id.invites_button :
+		case R.id.invites_button : {
 			
 			i = new Intent(this, Events.class);
 			startActivity(i);
 			break;
+		}
 		}
     }
 }

@@ -47,18 +47,25 @@ public class Organise extends Activity implements OnClickListener{
 				break;
 			}
 			case R.id.save_event : {
-				//TODO: save event details, then go to "view events" screen
+				//TODO: save event details
+				i = new Intent(this, Events.class);
+				startActivity(i);
 				break;
 			}
 			case R.id.send_invites_event : {
-				//TODO: save event details, then send invites to server, then go to "view events" screen
+				//TODO: save event details, then send invites to server
+				i = new Intent(this, Events.class);
+				startActivity(i);
 				break;
 			}
 		 }
 	 }
 	 public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		 super.onActivityResult(requestCode, resultCode, data);
-		 Intent i = new Intent(this, Guests.class);	
-		 startActivity(i);
+		 if(requestCode==0)
+		 {
+			 super.onActivityResult(requestCode, resultCode, data);
+			 Intent i = new Intent(this, Guests.class);	
+			 startActivity(i);
+		 }
 	 }
 }

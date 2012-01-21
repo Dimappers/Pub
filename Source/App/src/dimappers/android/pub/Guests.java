@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 public class Guests extends Activity implements OnClickListener{
@@ -17,9 +18,9 @@ public class Guests extends Activity implements OnClickListener{
     	
     	//TODO: When not just "Test Guest", need to have different checkboxes & cases in the switch for each
     	//Could extend onClickListener for each guest in this class & extend classes within constructors for add_guest/save buttons
-    	Button button_organise = (Button)findViewById(R.id.checkBox1);
-    	
+    	CheckBox button_organise = (CheckBox)findViewById(R.id.checkBox1);
     	button_organise.setOnClickListener(this);
+    	
     	Button button_add_guest = (Button)findViewById(R.id.add_guest);
     	button_add_guest.setOnClickListener(this);
     	Button save = (Button)findViewById(R.id.save);
