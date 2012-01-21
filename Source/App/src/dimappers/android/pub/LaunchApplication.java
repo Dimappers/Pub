@@ -41,7 +41,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 			//this may need to be put into Organise.java - then could use same location to discover people..
 			//android.intent.action.EDIT ??
 			//i = new Intent(, test://organise_screen/current_location");
-			startActivity(i);
+			startActivityForResult(i,0);
 			break;
 		}
 		case R.id.invites_button : {
@@ -52,4 +52,12 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		}
 		}
     }
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		 if(requestCode==0&&resultCode==RESULT_OK)
+		 {
+			 super.onActivityResult(requestCode, resultCode, data);
+			 Intent i = new Intent(this, Events.class);	
+			 startActivity(i);
+		 }
+	 }
 }

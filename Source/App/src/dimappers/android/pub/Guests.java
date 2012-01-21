@@ -24,7 +24,7 @@ public class Guests extends Activity implements OnClickListener{
     	Button button_add_guest = (Button)findViewById(R.id.add_guest);
     	button_add_guest.setOnClickListener(this);
     	Button save = (Button)findViewById(R.id.save);
-    	button_organise.setOnClickListener(this);
+    	save.setOnClickListener(this);
  }
 	public void onClick(View v){
 		Intent i;
@@ -32,6 +32,7 @@ public class Guests extends Activity implements OnClickListener{
 		{
 		case R.id.save : {
 			//TODO: save details
+			Toast.makeText(getApplicationContext(), "save test", Toast.LENGTH_SHORT);
 			finish();
 			break;
 		}	

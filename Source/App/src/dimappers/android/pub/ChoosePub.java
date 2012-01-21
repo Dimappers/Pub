@@ -13,14 +13,14 @@ public class ChoosePub extends Activity	implements OnClickListener {
 		    	super.onCreate(savedInstanceState);
 		    	setContentView(R.layout.pub_choose);
 		    	
-		    	((Button)findViewById(R.id.use_pub_button)).setOnClickListener(this);
+		    	Button use_pub = (Button)findViewById(R.id.use_pub_button);
+		    	use_pub.setOnClickListener(this);
 		 }
 		 
 		 public void onClick(View v) {
 			 switch(v.getId()) {
-			 case R.id.use_guests_button :{
+			 case R.id.use_pub_button :{
 				 //TODO: save pub choice
-				 //FIXME: save button not working
 				 finish();
 			 }
 			 }

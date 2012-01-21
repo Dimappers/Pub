@@ -48,14 +48,18 @@ public class Organise extends Activity implements OnClickListener{
 			}
 			case R.id.save_event : {
 				//TODO: save event details
-				i = new Intent(this, Events.class);
-				startActivity(i);
+				//May want this to end this activity & then go to Events.class,
+				//so can't go back to it by clicking back button
+				this.setResult(RESULT_OK, getIntent());
+				finish();
 				break;
 			}
 			case R.id.send_invites_event : {
 				//TODO: save event details, then send invites to server
-				i = new Intent(this, Events.class);
-				startActivity(i);
+				//May want this to end this activity & then go to Events.class,
+				//so can't go back to it by clicking back button
+				this.setResult(RESULT_OK, getIntent());
+				finish();
 				break;
 			}
 		 }

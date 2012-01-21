@@ -21,8 +21,8 @@ public class ChooseGuest extends Activity implements OnClickListener {
     	case R.id.use_guests_button :
     	{
     		//save guest
-    		//FIXME: save button not working
     		finish();
+    		break;
     	}
     	}
     }
