@@ -9,32 +9,21 @@ public class UpdateData implements Serializable{
 
 	private Date 						startTime;
 	private PubLocation 				pubLocation;
-	private HashMap<User, GoingStatus>	guests;
+	private LinkedList<User>			guests;
 	private int 						eventId;
 	
 	UpdateData(int eventId, Date startTime, PubLocation pubLocation) {
 		this.startTime = 	startTime;
 		this.pubLocation = 	pubLocation;
-		this.guests = 		new HashMap<User, GoingStatus>();
+		this.guests = 		new LinkedList<User>();
 	}
 	
 	public void addGuest(User guest) {
-		guests.put(guest, GoingStatus.maybeGoing);
-	}
-	
-	public void addGuest(User guest, GoingStatus goingStatus)
-	{
-		guests.put(guest, goingStatus);
-	}
-	
-	public void SetGuestStatus(User guest, GoingStatus goingStatus)
-	{
-		guests.remove(guest);
-		guests.put(guest, goingStatus);
+		guests.add(guest);
 	}
 	
 	public int getEventId() 						{ return this.eventId; }
 	public Date getStartTime() 						{ return this.startTime; }
 	public PubLocation getPubLocation() 			{ return this.pubLocation; }
-	public HashMap<User, GoingStatus> getGuests() 	{ return this.guests; }
+	public LinkedList<User> getGuests() 			{ return this.guests; }
 }

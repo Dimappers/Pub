@@ -227,7 +227,7 @@ public class Server {
 		 * in the Users event list
 		 */
 		if (!update.getGuests().isEmpty()) {
-			Set<User> users = update.getGuests().keySet();
+			LinkedList<User> users = update.getGuests();
 			for(User user : users)
 			{
 				event.AddGuest(user);
