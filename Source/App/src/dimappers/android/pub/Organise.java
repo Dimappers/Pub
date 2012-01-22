@@ -1,19 +1,37 @@
 package dimappers.android.pub;
 
+import java.io.IOException;
+import java.util.List;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class Organise extends Activity implements OnClickListener{
+	
+	TextView cur_loc;
 	
 	 @Override
 	    public void onCreate(Bundle savedInstanceState) {
 	    	super.onCreate(savedInstanceState);
 	    	setContentView(R.layout.organise);
+	    	
+	    	cur_loc = (TextView)findViewById(R.id.current_location);
+	    	cur_loc.setText("");
+	    	findLocation();
+	    	TextView cur_pub = (TextView)findViewById(R.id.current_pub);
+	    	cur_pub.setText("Spoons");
 	    	
 	    	Button button_organise = (Button)findViewById(R.id.location_button);
 	    	button_organise.setOnClickListener(this);
@@ -72,4 +90,41 @@ public class Organise extends Activity implements OnClickListener{
 			 startActivity(i);
 		 }
 	 }
+
+	 //This method should find the current location
+	 private void findLocation() {
+		 // Acquire a reference to the system Location Manager
+		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+		
+		//Define a listener that responds to location updates
+		LocationListener locationListener = new LocationListener() {
+			public void onLocationChanged(Location location) {
+				// Called when a new location is found by the network location provider.
+				makeUseOfNewLocation(location);
+			}
+			public void onStatusChanged(String provider, int status, Bundle extras) {}
+			public void onProviderEnabled(String provider) {}
+			public void onProviderDisabled(String provider) {}
+		};
+		
+		/*TODO: Using most recent location before searching to allow for faster loading (need to not call from onCreate() for this to work - maybe use AsyncTask again?)*/
+		makeUseOfNewLocation(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
+		
+		//Register the listener with the Location Manager to receive location updates
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+	 }
+	 
+	 //This method should find the current town from the lat/long of the location
+	 private void makeUseOfNewLocation(Location location) {
+		 //check geocoder isPresent()
+		 Geocoder gc = new Geocoder(getApplicationContext());
+		 try {
+			 List<Address> list = gc.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+			 if (list.size() > 0) {
+				    cur_loc.setText(list.get(0).getLocality());
+			 }
+		} catch (IOException e) { //FIXME: this exception is always thrown, find out why
+			cur_loc.setText("Location is unavaliable, please manually set pub.");
+		}
+	}
 }
