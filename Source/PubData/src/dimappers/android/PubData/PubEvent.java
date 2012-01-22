@@ -17,33 +17,34 @@ import java.util.Set;
 public class PubEvent implements Serializable
 {
 	//Properties
-	private HashMap<User, GoingStatus>	guests;
+	private HashMap<User, GoingStatus>	users;
 	private User 						host;
 	private Date 						startTime;
 	private PubLocation					pubLocation;
+	private int 						globalEventId;
 	
 	//Constructors
 	public PubEvent(Date startTime, User host)
 	{
-		guests = new HashMap<User, GoingStatus>();
-		guests.put(host, GoingStatus.going);
+		users = new HashMap<User, GoingStatus>();
+		users.put(host, GoingStatus.going);
 		this.host = host;
 		this.startTime = startTime;
 	}
 	
 	public PubEvent(Date startTime, PubLocation pubLocation, User host)
 	{
-		guests = new HashMap<User, GoingStatus>();
-		guests.put(host, GoingStatus.going);
+		users = new HashMap<User, GoingStatus>();
+		users.put(host, GoingStatus.going);
 		this.host = host;
 		this.pubLocation = pubLocation;
 		this.startTime = startTime;
 	}
 	
 	//Getter/setter methods
-	public Set<User> GetGuests()
+	public Set<User> GetUsers()
 	{
-		return guests.keySet();
+		return users.keySet();
 	}
 	
 	public Date GetStartTime()
@@ -64,24 +65,33 @@ public class PubEvent implements Serializable
 		this.pubLocation = pubLocation;
 	}
 	
+	public int GetEventId()
+	{
+		return globalEventId;
+	}
+	public void SetEventId(int id)
+	{
+		globalEventId = id;		
+	}
+	
 	//Public methods
 	
 	//Add a guest to the guest list
-	public void AddGuest(User guest)
+	public void AddUser(User user)
 	{
-		guests.put(guest, GoingStatus.maybeGoing);
+		users.put(user, GoingStatus.maybeGoing);
 	}
-	public void AddGuest(User guest, GoingStatus status)
+	public void AddUser(User user, GoingStatus status)
 	{
-		guests.put(guest, status);
+		users.put(user, status);
 	}
 	
 	//Remove a guest from the guest list
-	public void RemoveGuest(User guest)
+	public void RemoveUser(User user)
 	{
-		if(guests.containsKey(guest))
+		if(users.containsKey(user))
 		{
-			guests.remove(guest);
+			users.remove(user);
 		}
 		else
 		{
@@ -90,10 +100,10 @@ public class PubEvent implements Serializable
 	}
 	
 	//Remove a guest from the guest list by facebook user name
-	public void RemoveGuest(String facebookUserName)
+	public void RemoveUser(String facebookUserName)
 	{
 		User guestToRemove = null;
-		for(User guest : guests.keySet())
+		for(User guest : users.keySet())
 		{
 			if(guest.getName() == facebookUserName)
 			{
@@ -104,7 +114,7 @@ public class PubEvent implements Serializable
 		
 		if(guestToRemove != null)
 		{
-			guests.remove(guestToRemove);
+			users.remove(guestToRemove);
 		}
 		else
 		{
@@ -117,11 +127,11 @@ public class PubEvent implements Serializable
 		return host;
 	}
 	
-	public void UpdateGuestStatus(User user, boolean isGoing)
+	public void UpdateUserStatus(User user, boolean isGoing)
 	{
-		if(guests.containsKey(user))
+		if(users.containsKey(user))
 		{
-			guests.remove(user);
+			users.remove(user);
 			GoingStatus status;
 			if(isGoing)
 			{
@@ -131,7 +141,7 @@ public class PubEvent implements Serializable
 			{
 				status = GoingStatus.notGoing;
 			}
-			guests.put(user, status);
+			users.put(user, status);
 		}
 	}
 }

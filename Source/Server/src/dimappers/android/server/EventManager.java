@@ -56,6 +56,7 @@ public class EventManager
 		}
 		
 		events.put(eventsCounter, event);
+		event.SetEventId(eventsCounter);
 		
 		return eventsCounter++; //return the old value and increment
 	}

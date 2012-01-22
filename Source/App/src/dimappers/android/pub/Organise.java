@@ -29,7 +29,7 @@ public class Organise extends Activity implements OnClickListener{
 	    	TextView cur_loc = (TextView)findViewById(R.id.current_location);
 	    	TextView cur_pub = (TextView)findViewById(R.id.current_pub);
 	    	
-	    	new FindLocation().execute(this);
+	    	//new FindLocation().execute(this); this bit makes stuff crash
 	    	
 	    	Button button_organise = (Button)findViewById(R.id.location_button);
 	    	button_organise.setOnClickListener(this);
@@ -89,28 +89,26 @@ public class Organise extends Activity implements OnClickListener{
 	 }
 }
 
+//FIXME:the location is found (on some phones) but when a town is attempted to be found from this, the app crashes
+
 class FindLocation extends AsyncTask<Organise,Integer,Integer> {
 	private TextView cur_loc;
 	private Organise organise;
-	int i = 0;
 	@Override
 	protected Integer doInBackground(Organise... params) 
 	{
 		organise = params[0];
 		cur_loc = (TextView)organise.findViewById(R.id.current_location);
-		//FIXME: Make this bit work - currently throwing an exception when run
 		
 		//Finding current location
 		//Acquire a reference to the system Location Manager
 		LocationManager locationManager = (LocationManager)organise.getSystemService(Context.LOCATION_SERVICE);
-		
 		//Define a listener that responds to location updates
 		MyLocationListener locationListener = new MyLocationListener(organise);
-		
 		//Using most recent location before searching to allow for faster loading
 		Location location = (locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
-		locationListener.makeUseOfNewLocation(location);
-		
+		cur_loc.setText(location.getLatitude() + " lat & long " + location.getLongitude());
+		//locationListener.makeUseOfNewLocation(location); <<if this is included then the app always crashes
 		//Register the listener with the Location Manager to receive location updates
 		//locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 		
@@ -132,7 +130,8 @@ class MyLocationListener implements LocationListener {
 	public void onStatusChanged(String provider, int status, Bundle extras) {}
 	public void onProviderEnabled(String provider) {}
 	public void onProviderDisabled(String provider) {}
-	//This method should find the current town from the lat/long of the location
+	
+	//This method should find the current town from the latitude/longitude of the location
 	public void makeUseOfNewLocation(Location location) {
 		if(location!=null)
 		{
@@ -142,8 +141,8 @@ class MyLocationListener implements LocationListener {
 				if (list.size() > 0) {
 					cur_loc.setText("the list exists now");//list.get(0).getLocality());
 				}
-			} catch (Exception e) { //FIXME: this exception is always thrown, find out why
-				cur_loc.setText(location.getLatitude() + "lat and long" + location.getLongitude());//"Location is unavaliable, please manually set pub.");
+			} catch (IOException e) {
+				cur_loc.setText(location.getLatitude() + "lat and long" + location.getLongitude());//"Location is unavailable, please manually set pub.");
 			}
 		}
 	}

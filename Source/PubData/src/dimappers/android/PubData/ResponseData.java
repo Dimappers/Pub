@@ -4,20 +4,20 @@ import java.io.Serializable;
 
 public class ResponseData implements Serializable
 {
-	private User guest; //Who is responding
+	private User user; //Who is responding
 	private int eventId;
 	private boolean isGoing;
 	
-	public ResponseData(User guest, int eventId, boolean isGoing)
+	public ResponseData(User user, int eventId, boolean isGoing)
 	{
-		this.guest = guest;
+		this.user = user;
 		this.eventId = eventId;
 		this.isGoing = isGoing;
 	}
 	
-	public User GetGuest()
+	public User GetUser()
 	{
-		return guest;
+		return user;
 	}
 	
 	public int GetEventId()

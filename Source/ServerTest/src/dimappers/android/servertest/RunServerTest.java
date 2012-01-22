@@ -25,18 +25,61 @@ public class RunServerTest
 	 * @param args
 	 */
 	
-	private static User localGuest;
+	private static final TestType testType =  TestType.CreateWithGuestRespond;
+	
 	public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException
 	{
 		//These tests are invalid and for the old server, left for posterity
 		// TODO Auto-generated method stub
-		int eventId = createPubEventTest(CreatePubEvent());
-		PubEvent[] events = RunRefreshMessageTest(false);
-		RunRespondMessage(eventId, true);
-		//SendTestData();
-		//ReceiveTestData();
-		//RespondTest();
-		//ReceiveTestData();
+		
+		switch(testType)
+		{
+		case CreateGet:
+			{
+				int eventId = createPubEventTest(CreatePubEvent());
+				PubEvent[] events = RunRefreshMessageTest(CreateHost(), false);
+				
+				break;
+			}
+			
+		case CreateUpdate:
+			{
+				int eventId = createPubEventTest(CreatePubEvent());
+				UpdateData myTestUpdate = new UpdateData(eventId, null, new PubLocation(0,0, "Satchwells"));
+				RunUpdateMessage(myTestUpdate);
+				
+				break;
+			}
+			
+		case CreateWithGuestGuestCheck:
+			{
+				int eventId = createPubEventTest(CreatePubEventWithGuest());
+				
+				PubEvent[] guestEvents = RunRefreshMessageTest(CreateGuest(), false);
+				PubEvent[] hostEvents = RunRefreshMessageTest(CreateHost(), false);
+				
+				for(PubEvent event : guestEvents)
+				{
+					System.out.println("Retrived event for guest: " + event.GetPubLocation().toString());
+				}
+				
+				break;
+			}
+			
+		case CreateWithGuestRespond:
+			{
+				int eventId = createPubEventTest(CreatePubEventWithGuest());
+				
+				PubEvent[] guestEvents = RunRefreshMessageTest(CreateGuest(), false);
+				int yesNo = 0;
+				for(PubEvent event : guestEvents)
+				{
+					RunRespondMessage(event.GetEventId(), yesNo % 2 == 0);
+				}
+				
+				break;
+			}
+		}
 	}
 	
 	private static User CreateHost()
@@ -44,9 +87,22 @@ public class RunServerTest
 		return new User("thomas.kiley");
 	}
 	
+	private static User CreateGuest()
+	{
+		return new User("Krithel");
+	}
+	
 	private static PubEvent CreatePubEvent()
 	{
 		return new PubEvent(new Date(100000), new PubLocation(42, 36, "Spoons Leam"), CreateHost());
+	}
+	
+	private static PubEvent CreatePubEventWithGuest()
+	{
+		PubEvent event = new PubEvent(new Date(50000), new PubLocation(21,21, "Robins WelL"), CreateHost());
+		event.AddUser(CreateGuest());
+		
+		return event; 
 	}
 	
 	private static Socket GetSendSocket() throws UnknownHostException, IOException
@@ -114,9 +170,9 @@ public class RunServerTest
 		}
 	}
 	
-	private static PubEvent[] RunRefreshMessageTest(boolean runFullRefresh) throws ClassNotFoundException
+	private static PubEvent[] RunRefreshMessageTest(User user, boolean runFullRefresh) throws ClassNotFoundException
 	{
-		RefreshData rData = new RefreshData(CreateHost(), runFullRefresh);
+		RefreshData rData = new RefreshData(user, runFullRefresh);
 		
 		System.out.println("Running refreshMessage test");
 		Socket sendSocket = null;
@@ -230,19 +286,13 @@ public class RunServerTest
 	
 	private static void RunUpdateMessage(UpdateData newData)
 	{
-		
-	}
-	
-	private static void ReceiveTestData()
-	{
-		System.out.println("Running recieve data tests");
-		
+		System.out.println("Running UpdateMessage test");
 		Socket sendSocket = null;
 		
 		//Create the socket to send through (using port 2084, see in the server file)
 		try
 		{
-			sendSocket = new Socket(InetAddress.getByName("localhost"), 2085);
+			sendSocket = GetSendSocket();
 		}
 		catch(UnknownHostException e)
 		{
@@ -255,11 +305,13 @@ public class RunServerTest
 			return;
 		}
 		
+		//Serialise the object for transmission
 		ObjectOutputStream serialiser = null;
+		ObjectInputStream deserialiser = null;
 		try
 		{
 			serialiser = new ObjectOutputStream(sendSocket.getOutputStream());
-			
+			deserialiser = new ObjectInputStream(sendSocket.getInputStream());
 		}
 		catch (IOException e)
 		{
@@ -269,103 +321,24 @@ public class RunServerTest
 		
 		try
 		{
-			MessageType t = MessageType.refreshMessage;
+			MessageType t = MessageType.updateMessage;
 			serialiser.writeObject(t);
-			serialiser.writeObject(localGuest);
+			serialiser.writeObject(newData);
 			serialiser.flush();
-			
-			ObjectInputStream deserialiser = null;
-			
-			deserialiser = new ObjectInputStream(sendSocket.getInputStream());
-			
-			int count = deserialiser.readInt();
-			
-			Object newPubEvent;
-			for(int i = 0; i < count; ++i)
-			{
-				newPubEvent = deserialiser.readObject();
-				PubEvent event = (PubEvent)newPubEvent;
-				System.out.println(event.GetPubLocation().pubName);
-				//localGuest.AddEvent(event);
-			}
+			System.out.println("Data sent");
 		}
 		catch (IOException e)
 		{
 			System.out.println("Error in serialising the object: " + e.getMessage());
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return;
 		}
-		
-		
 	}
+}
 
-	private static void RespondTest()
-	{
-		System.out.println("Running respond tests");
-		
-		Socket sendSocket = null;
-		
-		//Create the socket to send through (using port 2084, see in the server file)
-		try
-		{
-			sendSocket = new Socket(InetAddress.getByName("localhost"), 2085);
-		}
-		catch(UnknownHostException e)
-		{
-			System.out.println("Unknown host: " + e.getMessage());
-			return;
-		}
-		catch(IOException e)
-		{
-			System.out.println("IOException: " + e.getMessage());
-			return;
-		}
-		
-		ObjectOutputStream serialiser = null;
-		try
-		{
-			serialiser = new ObjectOutputStream(sendSocket.getOutputStream());
-			
-		}
-		catch (IOException e)
-		{
-			System.out.println("Error in creating serialser: " + e.getMessage());
-			return;
-		}
-		
-		try
-		{
-			//localGuest.DecideOnEvent((PubEvent)localGuest.GetPubEvents().keySet().toArray()[0], PubTripState.Going);
-			
-			MessageType t = MessageType.respondMessage;
-			serialiser.writeObject(t);
-			serialiser.writeObject(localGuest);
-			serialiser.flush();
-			
-			/*ObjectInputStream deserialiser = null;
-			
-			deserialiser = new ObjectInputStream(sendSocket.getInputStream());
-			
-			Object newPubEvent;
-			boolean readingEvents = true;
-			while(readingEvents)
-			{
-				newPubEvent = deserialiser.readObject();
-				if(newPubEvent != null)
-				{
-					PubEvent event = (PubEvent)newPubEvent;
-					System.out.println(event.GetPubLocation().pubName);
-				}
-				else
-				{
-					readingEvents = false;
-				}
-			}*/
-		}
-		catch (IOException e)
-		{
-			System.out.println("Error in serialising the object: " + e.getMessage());
-		} 	
-	}
+enum TestType
+{
+	CreateGet,
+	CreateUpdate,
+	CreateWithGuestGuestCheck,
+	CreateWithGuestRespond
 }
