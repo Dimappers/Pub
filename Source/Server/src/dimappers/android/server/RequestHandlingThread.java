@@ -105,7 +105,7 @@ public class RequestHandlingThread extends Thread{
 		}
 
 		//Go through users and add event to them
-		for(User user : event.GetGuests())
+		for(User user : event.GetUsers())
 		{
 			UserManager.addUser(user);
 			UserManager.addEvent(user, pubEventId);
@@ -130,15 +130,9 @@ public class RequestHandlingThread extends Thread{
 		int eventCounter = 0;
 
 		// Create an Iterator and iterate through each eventId, adding the appropriate event to the array
-		Iterator<Integer> iter = refreshEventIds.iterator();
-		int event;
-		while (true) {
-			try {
-				event = iter.next().intValue();
-				refreshEvents[eventCounter++] = EventManager.GetPubEvent(event);
-			} catch (NoSuchElementException e) {
-				break;
-			}
+		for(int event : refreshEventIds)
+		{
+			refreshEvents[eventCounter++] = EventManager.GetPubEvent(event);
 		}
 
 		// Return the array of events that need updating
@@ -151,11 +145,11 @@ public class RequestHandlingThread extends Thread{
 
 		//Update the event file
 		PubEvent event = EventManager.GetPubEvent(response.GetEventId());
-		event.UpdateGuestStatus(response.GetGuest(), response.GetIsGoing());
+		event.UpdateUserStatus(response.GetUser(), response.GetIsGoing());
 
-		for(User user : event.GetGuests())
+		for(User user : event.GetUsers())
 		{
-			if(!user.equals(response.GetGuest()))
+			if(!user.equals(response.GetUser()))
 			{
 				//Tell that user they need an update
 				UserManager.markForUpdate(user, response.GetEventId());
@@ -183,18 +177,13 @@ public class RequestHandlingThread extends Thread{
 		 * in the Users event list
 		 */
 
-		if (!update.getGuests().isEmpty()) {
-			LinkedList<User> guests = update.getGuests();
+		if (!update.getUsers().isEmpty()) {
+			LinkedList<User> users = update.getUsers();
 			// Add the guests to the event and the event to the guests arrays
-			Iterator<User> iter = guests.iterator();
-			while (true) {
-				try {
-					User user = iter.next();
-					event.AddGuest(user);
-					UserManager.addEvent(user, update.getEventId());
-				} catch (NoSuchElementException e) {
-					break;
-				}
+			for(User user : users)
+			{
+				event.AddUser(user);
+				UserManager.addEvent(user, update.getEventId());
 			}
 		}
 	}

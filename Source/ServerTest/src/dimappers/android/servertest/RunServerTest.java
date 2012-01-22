@@ -100,7 +100,7 @@ public class RunServerTest
 	private static PubEvent CreatePubEventWithGuest()
 	{
 		PubEvent event = new PubEvent(new Date(50000), new PubLocation(21,21, "Robins WelL"), CreateHost());
-		event.AddGuest(CreateGuest());
+		event.AddUser(CreateGuest());
 		
 		return event; 
 	}

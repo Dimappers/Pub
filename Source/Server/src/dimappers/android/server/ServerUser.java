@@ -78,6 +78,6 @@ public class ServerUser extends dimappers.android.PubData.User
 			events.put(eventId, false);
 		}
 	}
-	public boolean GetHasApp() {	return hasApp;	}
-	public void SetHasApp(boolean hasApp) {	this.hasApp = hasApp;	}
+	public boolean GetHasApp() 				{	return hasApp;	}
+	public void SetHasApp(boolean hasApp)	{	this.hasApp = hasApp;	}
 }
