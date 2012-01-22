@@ -242,7 +242,7 @@ public class RunServerTest
 		//Create the socket to send through (using port 2084, see in the server file)
 		try
 		{
-			sendSocket = new Socket(InetAddress.getByName("localhost"), 2085);
+			sendSocket = new Socket("81.111.109.139", 2085);
 		}
 		catch(UnknownHostException e)
 		{
