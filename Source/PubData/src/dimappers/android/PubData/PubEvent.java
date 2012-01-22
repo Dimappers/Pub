@@ -21,6 +21,7 @@ public class PubEvent implements Serializable
 	private User 						host;
 	private Date 						startTime;
 	private PubLocation					pubLocation;
+	private int 						globalEventId;
 	
 	//Constructors
 	public PubEvent(Date startTime, User host)
@@ -62,6 +63,15 @@ public class PubEvent implements Serializable
 	public void SetPubLocation(PubLocation pubLocation)
 	{
 		this.pubLocation = pubLocation;
+	}
+	
+	public int GetEventId()
+	{
+		return globalEventId;
+	}
+	public void SetEventId(int id)
+	{
+		globalEventId = id;		
 	}
 	
 	//Public methods

@@ -12,7 +12,7 @@ public class UpdateData implements Serializable{
 	private LinkedList<User>			guests;
 	private int 						eventId;
 	
-	UpdateData(int eventId, Date startTime, PubLocation pubLocation) {
+	public UpdateData(int eventId, Date startTime, PubLocation pubLocation) {
 		this.startTime = 	startTime;
 		this.pubLocation = 	pubLocation;
 		this.guests = 		new LinkedList<User>();
