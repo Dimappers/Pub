@@ -1,6 +1,8 @@
 package dimappers.android.PubData;
 
-public class ResponseData
+import java.io.Serializable;
+
+public class ResponseData implements Serializable
 {
 	private User guest; //Who is responding
 	private int eventId;

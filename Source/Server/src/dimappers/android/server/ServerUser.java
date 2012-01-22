@@ -30,35 +30,31 @@ public class ServerUser extends dimappers.android.PubData.User
 	
 	public LinkedList<Integer> getOutOfDateEvents() {
 		// Iterates through each event, checking if it needs refreshing
-		// (Not sure if the is the best way of doing it)
 		LinkedList<Integer> outOfDateEvents = new LinkedList<Integer>();
 		Set<Integer> keys = events.keySet();
-		Iterator<Integer> iter = keys.iterator();
-		while (true) {
-			try {
-				int key = iter.next();
-				if (!events.get(key)) {
-					outOfDateEvents.add(key);
-				}
-			} catch(NoSuchElementException e) {
-				return outOfDateEvents;
+		
+		for(Integer key : keys)
+		{
+			if (!events.get(key)) 
+			{
+				outOfDateEvents.add(key);
 			}
 		}
+		
+		return outOfDateEvents;
 	}
 	
 	public LinkedList<Integer> getAllEvents() {
 		/* Returns a linked list of all events */
 		LinkedList<Integer> allEvents = new LinkedList<Integer>();
 		Set<Integer> keys = events.keySet();
-		Iterator<Integer> iter = keys.iterator();
-		while (true) {
-			try {
-				int key = iter.next();
-				allEvents.add(key);
-			} catch (NoSuchElementException e) {
-				return allEvents;
-			}
+		
+		for(Integer key : keys)
+		{
+			allEvents.add(key);
 		}
+		
+		return allEvents;
 	}
 	
 	public void setUpdate(int eventId, boolean update) {

@@ -10,6 +10,8 @@ import java.util.Date;
 
 import dimappers.android.PubData.AcknoledgementData;
 import dimappers.android.PubData.RefreshData;
+import dimappers.android.PubData.ResponseData;
+import dimappers.android.PubData.UpdateData;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
@@ -30,6 +32,7 @@ public class RunServerTest
 		// TODO Auto-generated method stub
 		int eventId = createPubEventTest(CreatePubEvent());
 		PubEvent[] events = RunRefreshMessageTest(false);
+		RunRespondMessage(eventId, true);
 		//SendTestData();
 		//ReceiveTestData();
 		//RespondTest();
@@ -171,6 +174,63 @@ public class RunServerTest
 			System.out.println("Error in serialising the object: " + e.getMessage());
 			return null;
 		}
+	}
+
+	private static void RunRespondMessage(int eventId, boolean response)
+	{
+		ResponseData rData = new ResponseData(CreateHost(), eventId, response);
+		
+		System.out.println("Running respondMessage test");
+		Socket sendSocket = null;
+		
+		//Create the socket to send through (using port 2084, see in the server file)
+		try
+		{
+			sendSocket = GetSendSocket();
+		}
+		catch(UnknownHostException e)
+		{
+			System.out.println("Unknown host: " + e.getMessage());
+			return;
+		}
+		catch(IOException e)
+		{
+			System.out.println("IOException: " + e.getMessage());
+			return;
+		}
+		
+		//Serialise the object for transmission
+		ObjectOutputStream serialiser = null;
+		ObjectInputStream deserialiser = null;
+		try
+		{
+			serialiser = new ObjectOutputStream(sendSocket.getOutputStream());
+			deserialiser = new ObjectInputStream(sendSocket.getInputStream());
+		}
+		catch (IOException e)
+		{
+			System.out.println("Error in creating serialser: " + e.getMessage());
+			return;
+		}
+		
+		try
+		{
+			MessageType t = MessageType.respondMessage;
+			serialiser.writeObject(t);
+			serialiser.writeObject(rData);
+			serialiser.flush();
+			System.out.println("Data sent");
+		}
+		catch (IOException e)
+		{
+			System.out.println("Error in serialising the object: " + e.getMessage());
+			return;
+		}
+	}
+	
+	private static void RunUpdateMessage(UpdateData newData)
+	{
+		
 	}
 	
 	private static void ReceiveTestData()
