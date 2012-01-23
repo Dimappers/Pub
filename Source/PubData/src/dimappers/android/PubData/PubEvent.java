@@ -98,30 +98,7 @@ public class PubEvent implements Serializable
 			System.out.println("Warning - guest not there...");
 		}
 	}
-	
-	//Remove a guest from the guest list by facebook user name
-	public void RemoveUser(String facebookUserName)
-	{
-		User guestToRemove = null;
-		for(User guest : users.keySet())
-		{
-			if(guest.getName() == facebookUserName)
-			{
-				guestToRemove = guest;
-				break;
-			}
-		}
-		
-		if(guestToRemove != null)
-		{
-			users.remove(guestToRemove);
-		}
-		else
-		{
-			System.out.println("Warning - tried to remove guest that wasn't there");
-		}
-	}
-	
+
 	public User GetHost()
 	{		
 		return host;

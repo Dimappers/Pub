@@ -12,19 +12,19 @@ import java.io.Serializable;
 public class User implements Serializable {
 	
 	//Properties
-	private String facebookUserName;
+	private Integer facebookUserId;
 	
 	//Constructor
-	public User(String facebookUserName) {
-		this.facebookUserName = facebookUserName;
+	public User(Integer facebookUserId) {
+		this.facebookUserId = facebookUserId;
 	}
 	
 	//Encapsulation
-	public String getName() { return this.facebookUserName; }	
+	public Integer getUserId() 	{ return facebookUserId; }	
 	
 	public boolean isEqual(User otherUser)
 	{
-		return facebookUserName == otherUser.getName();
+		return facebookUserId == otherUser.getUserId();
 	}
 
 }

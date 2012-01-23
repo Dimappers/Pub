@@ -84,12 +84,12 @@ public class RunServerTest
 	
 	private static User CreateHost()
 	{
-		return new User("thomas.kiley");
+		return new User(0);
 	}
 	
 	private static User CreateGuest()
 	{
-		return new User("Krithel");
+		return new User(1);
 	}
 	
 	private static PubEvent CreatePubEvent()

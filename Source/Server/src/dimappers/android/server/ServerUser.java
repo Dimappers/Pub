@@ -15,8 +15,8 @@ public class ServerUser extends dimappers.android.PubData.User
 	private boolean hasApp;
 	private HashMap<Integer, Boolean> events;
 	
-	public ServerUser(String facebookUserName) {
-		super(facebookUserName);
+	public ServerUser(Integer facebookUserId) {
+		super(facebookUserId);
 		hasApp = false;
 		events = new HashMap<Integer, Boolean>();
 	}
