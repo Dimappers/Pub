@@ -58,7 +58,7 @@ public class RunServerTest
 			System.out.println("Test set: " + args[0] + "passed " + testsPassed + "/" + result.size());
 			
 			totalTests += result.size();
-			totalTestsPassed += testsPassed;			
+			totalTestsPassed += testsPassed;	
 		}
 		
 		System.out.println("Final result: " + totalTestsPassed + "/" + totalTests);
@@ -102,7 +102,7 @@ public class RunServerTest
 							}
 						}
 					}
-					tests.put("NewEventEventReturnedToHost", false);
+					tests.put("NewEventEventReturnedToHost", testPassed);
 				}
 				
 				{ // Test: NewEventEventReturnedToGuest
@@ -159,7 +159,7 @@ public class RunServerTest
 							}
 						}
 					}
-					tests.put("NewEventEventReturnedToHost", false);
+					tests.put("NewEventEventReturnedToHost", testPassed);
 				}
 				
 				{ //Test: EventEventReturnedToGuest
@@ -188,7 +188,7 @@ public class RunServerTest
 						}
 					}
 					
-					tests.put("UpdateReturnedToHost", false);
+					tests.put("UpdateReturnedToHost", testPassed);
 				}
 				
 				{ // Test: UpdateReturnedToGuest & UpdateWasApplied

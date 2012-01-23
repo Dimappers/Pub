@@ -113,7 +113,6 @@ public class PubEvent implements Serializable
 	{
 		if(users.containsKey(user))
 		{
-			users.remove(user);
 			GoingStatus status;
 			if(isGoing)
 			{

@@ -3,6 +3,7 @@ package dimappers.android.server;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -13,7 +14,7 @@ import dimappers.android.PubData.PubTripState;
 public class ServerUser extends dimappers.android.PubData.User 
 {
 	private boolean hasApp;
-	private HashMap<Integer, Boolean> events;
+	private HashMap<Integer, Boolean> events; //False means needs updating
 	
 	public ServerUser(Integer facebookUserId) {
 		super(facebookUserId);
@@ -33,11 +34,11 @@ public class ServerUser extends dimappers.android.PubData.User
 		LinkedList<Integer> outOfDateEvents = new LinkedList<Integer>();
 		Set<Integer> keys = events.keySet();
 		
-		for(Integer key : keys)
+		for(Entry<Integer, Boolean> eventEntry : events.entrySet())
 		{
-			if (!events.get(key)) 
+			if(!eventEntry.getValue())
 			{
-				outOfDateEvents.add(key);
+				outOfDateEvents.add(eventEntry.getKey());
 			}
 		}
 		
@@ -63,19 +64,18 @@ public class ServerUser extends dimappers.android.PubData.User
 		}
 	}
 	
+	/*Event has been updated - this user needs to retrieve it when it next asks*/
 	public void NotifyEventUpdated(int eventId)
 	{
-		events.remove(eventId);
-		events.put(eventId, true);
+		events.put(eventId, false);
 	}
 	
 	public void NotifyUpdateSent()
 	{
-		//Need to set all events to false has have retrived them all
-		for(int eventId : events.keySet())
+		//Need to set all events to true has have retrieved them all
+		for(Entry<Integer, Boolean> event : events.entrySet())
 		{
-			events.remove(eventId);
-			events.put(eventId, false);
+			event.setValue(true);
 		}
 	}
 	public boolean GetHasApp() 				{	return hasApp;	}

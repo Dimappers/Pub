@@ -45,7 +45,27 @@ public class UserManager {
 		 */
 		ServerUser sUser = users.get(user.getUserId());
 		if (sUser != null) {
-			sUser.setUpdate(eventId, false);
+			sUser.NotifyEventUpdated(eventId);
+		}
+	}
+	
+	public static void markAsUpToDate(User user, int eventId)
+	{
+		ServerUser sUser = users.get(user.getUserId());
+		
+		if(sUser != null)
+		{
+			sUser.setUpdate(eventId, true);
+		}
+	}
+	
+	public static void markAllAsUpToDate(User user)
+	{
+		ServerUser sUser = users.get(user.getUserId());
+		
+		if(sUser != null)
+		{
+			sUser.NotifyUpdateSent();
 		}
 	}
 	

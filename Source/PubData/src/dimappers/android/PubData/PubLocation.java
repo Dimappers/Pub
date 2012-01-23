@@ -33,4 +33,9 @@ public class PubLocation implements Serializable
 	{
 		return pubName + ": (" + latitudeCoordinate + ", " + longitudeCoordinate +")";
 	}
+	
+	public boolean equals(PubLocation other)
+	{
+		return other.latitudeCoordinate == latitudeCoordinate && other.longitudeCoordinate == longitudeCoordinate;
+	}
 }
