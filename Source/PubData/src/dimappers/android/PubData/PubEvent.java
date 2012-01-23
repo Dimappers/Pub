@@ -47,6 +47,11 @@ public class PubEvent implements Serializable
 		return users.keySet();
 	}
 	
+	public HashMap<User, GoingStatus> GetGoingStatus()
+	{
+		return users;
+	}
+	
 	public Date GetStartTime()
 	{
 		return startTime;
@@ -120,5 +125,10 @@ public class PubEvent implements Serializable
 			}
 			users.put(user, status);
 		}
+	}
+	
+	public boolean isEqual(PubEvent event)
+	{
+		return event.GetEventId() == globalEventId;
 	}
 }
