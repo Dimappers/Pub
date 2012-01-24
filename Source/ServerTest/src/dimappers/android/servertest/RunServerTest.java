@@ -82,7 +82,7 @@ public class RunServerTest
 						tests.put("NewEventCorrectId", false);
 					}
 					else
-					{
+					{NewEventUpdate
 						tests.put("NewEventCorrectId", true);
 					}
 				}

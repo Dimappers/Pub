@@ -21,6 +21,7 @@ enum ExceptionType
 {
 	ReadingObjectNewEvent,
 	CastingObjectNewEvent,
+	StreamCorruptedNewEvent,
 	SendingErrorBack,
 	UnknownError
 }
