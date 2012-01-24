@@ -21,15 +21,15 @@ import android.widget.Toast;
 
 public class Organise extends Activity implements OnClickListener{
 	
+	private TextView cur_loc;
+	private TextView cur_pub;
 	 @Override
 	    public void onCreate(Bundle savedInstanceState) {
 	    	super.onCreate(savedInstanceState);
 	    	setContentView(R.layout.organise);
 	    	
-	    	TextView cur_loc = (TextView)findViewById(R.id.current_location);
-	    	TextView cur_pub = (TextView)findViewById(R.id.current_pub);
-	    	
-	    	//new FindLocation().execute(this); this bit makes stuff crash
+	    	cur_loc = (TextView)findViewById(R.id.current_location);
+	    	cur_pub = (TextView)findViewById(R.id.current_pub);
 	    	
 	    	Button button_organise = (Button)findViewById(R.id.location_button);
 	    	button_organise.setOnClickListener(this);
@@ -42,6 +42,8 @@ public class Organise extends Activity implements OnClickListener{
 	    	Button button_send_invites = (Button)findViewById(R.id.send_invites_event);
 	    	button_send_invites.setOnClickListener(this);
 	 }
+	 @Override
+	 public void onStart() {super.onStart(); findLocation();}
 	 public void onClick(View v)
 	 {
 		 Intent i;
@@ -87,62 +89,54 @@ public class Organise extends Activity implements OnClickListener{
 			 startActivity(i);
 		 }
 	 }
-}
-
-//FIXME:the location is found (on some phones) but when a town is attempted to be found from this, the app crashes
-
-class FindLocation extends AsyncTask<Organise,Integer,Integer> {
-	private TextView cur_loc;
-	private Organise organise;
-	@Override
-	protected Integer doInBackground(Organise... params) 
-	{
-		organise = params[0];
-		cur_loc = (TextView)organise.findViewById(R.id.current_location);
-		
-		//Finding current location
+	//Finding current location
+	private void findLocation()
+	{		
 		//Acquire a reference to the system Location Manager
-		LocationManager locationManager = (LocationManager)organise.getSystemService(Context.LOCATION_SERVICE);
+		LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 		//Define a listener that responds to location updates
-		MyLocationListener locationListener = new MyLocationListener(organise);
+		MyLocationListener locationListener = new MyLocationListener(this);
 		//Using most recent location before searching to allow for faster loading
 		Location location = (locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
-		cur_loc.setText(location.getLatitude() + " lat & long " + location.getLongitude());
-		//locationListener.makeUseOfNewLocation(location); <<if this is included then the app always crashes
+		locationListener.makeUseOfNewLocation(location);
 		//Register the listener with the Location Manager to receive location updates
-		//locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-		
-		return null;
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 	 }
 }
 
-class MyLocationListener implements LocationListener {
+class MyLocationListener implements LocationListener{
 	Organise organise;
 	TextView cur_loc;
 	MyLocationListener(Organise organise) {
 		this.organise = organise; 
 		cur_loc = (TextView)organise.findViewById(R.id.current_location);
 	}
-	public void onLocationChanged(Location location) {
-		//Called when a new location is found by the network location provider.
-		makeUseOfNewLocation(location);
-	}
+	public void onLocationChanged(Location location) {makeUseOfNewLocation(location);}
 	public void onStatusChanged(String provider, int status, Bundle extras) {}
 	public void onProviderEnabled(String provider) {}
 	public void onProviderDisabled(String provider) {}
 	
 	//This method should find the current town from the latitude/longitude of the location
 	public void makeUseOfNewLocation(Location location) {
+		String place = null;
 		if(location!=null)
 		{
 			Geocoder gc = new Geocoder(organise.getApplicationContext());
 			try {
-				List<Address> list = gc.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-				if (list.size() > 0) {
-					cur_loc.setText("the list exists now");//list.get(0).getLocality());
+				List<Address> list = gc.getFromLocation(location.getLatitude(), location.getLongitude(), 5);
+				int i = 0;
+				while (i<list.size()) 
+				{
+					String temp = list.get(i).getLocality();
+					if(temp!=null) {place = temp;}
+					i++;
 				}
-			} catch (IOException e) {
-				cur_loc.setText(location.getLatitude() + "lat and long" + location.getLongitude());//"Location is unavailable, please manually set pub.");
+				if(place!=null) {cur_loc.setText(place);}
+				else {cur_loc.setText("(" + location.getLatitude() + "," + location.getLongitude() + ")");}
+			}
+			//This is thrown if the phone has no Internet connection.
+			catch (IOException e) {
+				cur_loc.setText("(" + location.getLatitude() + "," + location.getLongitude() + ")");
 			}
 		}
 	}
