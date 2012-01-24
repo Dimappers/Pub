@@ -35,12 +35,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		case R.id.organise_button : 
 		{
 			i = new Intent(this, Organise.class);
-			//TODO KB
-			//Below: trying to work out how to add the currentlocation to the next screen
-			//maybe need to create a new intent that does this.. somehow - google it!
-			//this may need to be put into Organise.java - then could use same location to discover people..
-			//android.intent.action.EDIT ??
-			//i = new Intent(, test://organise_screen/current_location");
 			startActivityForResult(i,0);
 			break;
 		}
