@@ -8,6 +8,7 @@
     
   	<string name="organise">Organise</string>
  	<string name="location">Your current location is:</string> 
+ 	<string name="default_location">Unknown</string>
   	<string name="location_button">Change pub</string> 
   	<string name="all_guests">View chosen guests</string> 
   	<string name="use_pub">Use pub</string>

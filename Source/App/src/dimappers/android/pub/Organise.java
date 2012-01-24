@@ -11,7 +11,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -99,6 +98,10 @@ public class Organise extends Activity implements OnClickListener{
 		//Using most recent location before searching to allow for faster loading
 		Location location = (locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
 		locationListener.makeUseOfNewLocation(location);
+		
+		/*TODO: Not sure if we even need this bottom bit - could just use the last known location. 
+		 * In that case MyLocationListener could be incorporated into this class*/
+		
 		//Register the listener with the Location Manager to receive location updates
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 	 }
