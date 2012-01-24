@@ -18,7 +18,7 @@ public class PubLocation implements Serializable
 	{
 		latitudeCoordinate = 0.0;
 		longitudeCoordinate = 0.0;
-		pubName = "";
+		pubName = "Undefined location";
 	}
 	
 	public PubLocation(double latitudeCoordinate, double longitudeCoordinate, String pubName)
@@ -32,5 +32,10 @@ public class PubLocation implements Serializable
 	public String toString()
 	{
 		return pubName + ": (" + latitudeCoordinate + ", " + longitudeCoordinate +")";
+	}
+	
+	public boolean equals(PubLocation other)
+	{
+		return other.latitudeCoordinate == latitudeCoordinate && other.longitudeCoordinate == longitudeCoordinate;
 	}
 }

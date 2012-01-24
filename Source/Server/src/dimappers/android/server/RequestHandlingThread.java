@@ -110,6 +110,8 @@ public class RequestHandlingThread extends Thread{
 			UserManager.addUser(user);
 			UserManager.addEvent(user, pubEventId);
 		}
+		
+		UserManager.markAsUpToDate(event.GetHost(), pubEventId);
 
 		connectionStreamOut.writeObject(new AcknoledgementData(pubEventId));
 	}
@@ -125,6 +127,9 @@ public class RequestHandlingThread extends Thread{
 		else {
 			refreshEventIds = UserManager.getUpdate(refresh.getUser());
 		}
+		
+		UserManager.markAllAsUpToDate(refresh.getUser());
+		
 		// Create an array to fit all needed events in
 		PubEvent[] refreshEvents = new PubEvent[refreshEventIds.size()];
 		int eventCounter = 0;
@@ -184,6 +189,15 @@ public class RequestHandlingThread extends Thread{
 			{
 				event.AddUser(user);
 				UserManager.addEvent(user, update.getEventId());
+			}
+		}
+		
+		//Tell all the users invited to this event that they need updating
+		for(User user : event.GetUsers())
+		{
+			if(!user.isEqual(event.GetHost()))
+			{
+				UserManager.markForUpdate(user, event.GetEventId());
 			}
 		}
 	}

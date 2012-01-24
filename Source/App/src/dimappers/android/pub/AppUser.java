@@ -4,14 +4,14 @@ import android.provider.MediaStore.Images;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.PubTripState;
 
-public class AppGuest extends User
+public class AppUser extends User
 {
 	//Properties
 	
 	//Constructors
-	public AppGuest(String facebookUserName)
+	public AppUser(Integer facebookUserId)
 	{
-		super(facebookUserName);
+		super(facebookUserId);
 	}
 	
 	//Public methods
@@ -25,7 +25,7 @@ public class AppGuest extends User
 	//Get full facebook name, ie Thomas Kiley instead of thomas.kiley
 	String GetRealFacebookName()
 	{
-		return super.getName();
+		return "";
 	}
 
 }

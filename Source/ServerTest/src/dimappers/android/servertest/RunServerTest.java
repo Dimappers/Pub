@@ -7,8 +7,11 @@ import java.net.*;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import dimappers.android.PubData.AcknoledgementData;
+import dimappers.android.PubData.GoingStatus;
 import dimappers.android.PubData.RefreshData;
 import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.UpdateData;
@@ -25,42 +28,187 @@ public class RunServerTest
 	 * @param args
 	 */
 	
-	private static final TestType testType =  TestType.CreateWithGuestRespond;
-	
 	public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException
 	{
-		//These tests are invalid and for the old server, left for posterity
-		// TODO Auto-generated method stub
+		if(args.length < 1)
+		{
+			System.out.println("Error: no test specified, running default");
+		}
 		
+		int totalTests = 0;
+		int totalTestsPassed = 0;
+		
+		for(int i = 0; i < args.length; ++i)
+		{
+			HashMap<String, Boolean> result = RunTest(Enum.valueOf(TestType.class, args[0]));
+			int testsPassed = 0;
+			for(Entry<String, Boolean> test : result.entrySet())
+			{
+				if(test.getValue())
+				{
+					System.out.println("Test: " + test.getKey() + "passed");
+					++testsPassed;
+				}
+				else
+				{
+					System.out.println("!!Test: " + test.getKey() + "failed");
+				}
+			}
+			
+			System.out.println("Test set: " + args[0] + "passed " + testsPassed + "/" + result.size());
+			
+			totalTests += result.size();
+			totalTestsPassed += testsPassed;	
+		}
+		
+		System.out.println("Final result: " + totalTestsPassed + "/" + totalTests);
+	}
+	
+	private static HashMap<String, Boolean> RunTest(TestType testType) throws ClassNotFoundException
+	{
+		HashMap<String, Boolean> tests = new HashMap<String, Boolean>();
 		switch(testType)
 		{
 		case CreateGet:
 			{
-				int eventId = createPubEventTest(CreatePubEvent());
+				int eventId = createPubEventTest(CreatePubEventWithGuest());
 				PubEvent[] events = RunRefreshMessageTest(CreateHost(), false);
+				PubEvent[] guestEvents = RunRefreshMessageTest(CreateGuest(), false);
+				
+				//Checks:
+				
+				{ // Test: NewEventCorrectId
+					if(eventId < 0)
+					{
+						tests.put("NewEventCorrectId", false);
+					}
+					else
+					{
+						tests.put("NewEventCorrectId", true);
+					}
+				}
+				
+				{ // Test: NewEventEventReturnedToHost
+					boolean testPassed = true;
+					if(events.length != 0)
+					{
+						for(int i = 0; i < events.length; ++i)
+						{
+							if(events[i].GetEventId() == eventId)
+							{
+								 //Shouldn't return the event to the host
+								testPassed = false;
+								break;
+							}
+						}
+					}
+					tests.put("NewEventEventReturnedToHost", testPassed);
+				}
+				
+				{ // Test: NewEventEventReturnedToGuest
+					boolean eventFound = false;
+					for(int i = 0; i < guestEvents.length; ++i)
+					{
+						if(guestEvents[i].GetEventId() == eventId)
+						{
+							eventFound = true;
+						}
+					}
+					
+					tests.put("NewEventEventReturnedToGuest", eventFound);
+				}
 				
 				break;
 			}
 			
 		case CreateUpdate:
 			{
-				int eventId = createPubEventTest(CreatePubEvent());
-				UpdateData myTestUpdate = new UpdateData(eventId, null, new PubLocation(0,0, "Satchwells"));
+				int eventId = createPubEventTest(CreatePubEventWithGuest());
+				PubEvent[] events = RunRefreshMessageTest(CreateHost(), false);
+				PubEvent[] guestEvents = RunRefreshMessageTest(CreateGuest(), false);
+				
+				PubLocation updateLocation = new PubLocation(0,0, "Satchwells");
+				UpdateData myTestUpdate = new UpdateData(eventId, null, updateLocation);
 				RunUpdateMessage(myTestUpdate);
 				
-				break;
-			}
-			
-		case CreateWithGuestGuestCheck:
-			{
-				int eventId = createPubEventTest(CreatePubEventWithGuest());
+				PubEvent[] eventsAfterUpdate = RunRefreshMessageTest(CreateHost(), false);
+				PubEvent[] guestEventsAfterUpdate = RunRefreshMessageTest(CreateGuest(), false);
 				
-				PubEvent[] guestEvents = RunRefreshMessageTest(CreateGuest(), false);
-				PubEvent[] hostEvents = RunRefreshMessageTest(CreateHost(), false);
+				{ // Test: NewEventCorrectId
+					if(eventId < 0)
+					{
+						tests.put("NewEventCorrectId", false);
+					}
+					else
+					{
+						tests.put("NewEventCorrectId", true);
+					}
+				}
 				
-				for(PubEvent event : guestEvents)
-				{
-					System.out.println("Retrived event for guest: " + event.GetPubLocation().toString());
+				{ // Test: NewEventEventReturnedToHost
+					boolean testPassed = true;
+					if(events.length != 0)
+					{
+						for(int i = 0; i < events.length; ++i)
+						{
+							if(events[i].GetEventId() == eventId)
+							{
+								 //Shouldn't return the event to the host
+								testPassed = false;
+								break;
+							}
+						}
+					}
+					tests.put("NewEventEventReturnedToHost", testPassed);
+				}
+				
+				{ //Test: EventEventReturnedToGuest
+					boolean eventFound = false;
+					for(int i = 0; i < guestEvents.length; ++i)
+					{
+						if(guestEvents[i].GetEventId() == eventId)
+						{
+							eventFound = true;
+							break;
+						}
+					}
+					
+					tests.put("EventEventReturnedToGuest", eventFound);
+				}
+				
+				{ // Test: UpdateReturnedToHost
+					boolean testPassed = true;
+					for(int i = 0; i < eventsAfterUpdate.length; ++i)
+					{
+						if(eventsAfterUpdate[i].GetEventId() == eventId)
+						{
+							 //Shouldn't return the event to the host
+							testPassed = false;
+							break;
+						}
+					}
+					
+					tests.put("UpdateReturnedToHost", testPassed);
+				}
+				
+				{ // Test: UpdateReturnedToGuest & UpdateWasApplied
+					boolean eventFound = false;
+					boolean wasUpdated = false;
+					for(int i = 0; i < guestEventsAfterUpdate.length; ++i)
+					{
+						if(guestEventsAfterUpdate[i].GetEventId() == eventId)
+						{
+							eventFound = true;
+							if(guestEventsAfterUpdate[i].GetPubLocation().equals(updateLocation))
+							{
+								wasUpdated = true;
+							}
+							break;
+						}
+					}
+					
+					tests.put("UpdateReturnedToGuest", eventFound);
+					tests.put("UpdateWasApplied", wasUpdated);
 				}
 				
 				break;
@@ -71,35 +219,100 @@ public class RunServerTest
 				int eventId = createPubEventTest(CreatePubEventWithGuest());
 				
 				PubEvent[] guestEvents = RunRefreshMessageTest(CreateGuest(), false);
-				int yesNo = 0;
+				
 				for(PubEvent event : guestEvents)
 				{
-					RunRespondMessage(event.GetEventId(), yesNo % 2 == 0);
+					RunRespondMessage(event.GetEventId(), true);
+				}
+				
+				PubEvent[] hostEventsAfterRespond = RunRefreshMessageTest(CreateHost(), false);
+				PubEvent[] guestEventsAfterRespond = RunRefreshMessageTest(CreateGuest(), false);
+				
+				
+				{ // Test: NewEventCorrectId
+					if(eventId < 0)
+					{
+						tests.put("NewEventCorrectId", false);
+					}
+					else
+					{
+						tests.put("NewEventCorrectId", true);
+					}
+				}
+				
+				{ //Test: EventReturnedToGuest
+					boolean eventFound = false;
+					for(int i = 0; i < guestEvents.length; ++i)
+					{
+						if(guestEvents[i].GetEventId() == eventId)
+						{
+							eventFound = true;
+							break;
+						}
+					}
+					
+					tests.put("EventReturnedToGuest", eventFound);
+				}
+				
+				{ //Test: EventReturnedToGuestAfterRespond
+					boolean testPassed = true;
+					for(int i = 0; i < guestEventsAfterRespond.length; ++i)
+					{
+						if(guestEventsAfterRespond[i].GetEventId() == eventId)
+						{
+							testPassed = false;
+							break;
+						}
+					}
+					
+					tests.put("EventReturnedToGuestAfterRespond", testPassed);
+				}
+				
+				{ //Test: EventReturnedToHostAfterRespond  & EventResponseGivenToHost
+					boolean eventFound = false;
+					boolean userUpdated = false;
+					for(int i = 0; i < hostEventsAfterRespond.length; ++i)
+					{
+						if(hostEventsAfterRespond[i].GetEventId() == eventId)
+						{
+							eventFound = true;
+							
+							userUpdated = hostEventsAfterRespond[i].GetGoingStatus().get(CreateGuest()) == GoingStatus.going;
+							
+							break;
+						}
+					}
+					
+					tests.put("EventReturnedToHostAfterRespond", eventFound);
+					tests.put("EventResponseGivenToHost", userUpdated);
 				}
 				
 				break;
 			}
 		}
+		
+		return tests;
 	}
 	
 	private static User CreateHost()
 	{
-		return new User("thomas.kiley");
+		return new User(0);
 	}
 	
 	private static User CreateGuest()
 	{
-		return new User("Krithel");
+		return new User(1);
 	}
 	
 	private static PubEvent CreatePubEvent()
 	{
+		System.out.println((double)42.0);
 		return new PubEvent(new Date(100000), new PubLocation(42, 36, "Spoons Leam"), CreateHost());
 	}
 	
 	private static PubEvent CreatePubEventWithGuest()
 	{
-		PubEvent event = new PubEvent(new Date(50000), new PubLocation(21,21, "Robins WelL"), CreateHost());
+		PubEvent event = new PubEvent(new Date(50000), new PubLocation(52.29009, -1.53585, "Robins Well"), CreateHost());
 		event.AddUser(CreateGuest());
 		
 		return event; 
@@ -339,6 +552,5 @@ enum TestType
 {
 	CreateGet,
 	CreateUpdate,
-	CreateWithGuestGuestCheck,
 	CreateWithGuestRespond
 }

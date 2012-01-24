@@ -47,6 +47,11 @@ public class PubEvent implements Serializable
 		return users.keySet();
 	}
 	
+	public HashMap<User, GoingStatus> GetGoingStatus()
+	{
+		return users;
+	}
+	
 	public Date GetStartTime()
 	{
 		return startTime;
@@ -98,30 +103,7 @@ public class PubEvent implements Serializable
 			System.out.println("Warning - guest not there...");
 		}
 	}
-	
-	//Remove a guest from the guest list by facebook user name
-	public void RemoveUser(String facebookUserName)
-	{
-		User guestToRemove = null;
-		for(User guest : users.keySet())
-		{
-			if(guest.getName() == facebookUserName)
-			{
-				guestToRemove = guest;
-				break;
-			}
-		}
-		
-		if(guestToRemove != null)
-		{
-			users.remove(guestToRemove);
-		}
-		else
-		{
-			System.out.println("Warning - tried to remove guest that wasn't there");
-		}
-	}
-	
+
 	public User GetHost()
 	{		
 		return host;
@@ -131,7 +113,6 @@ public class PubEvent implements Serializable
 	{
 		if(users.containsKey(user))
 		{
-			users.remove(user);
 			GoingStatus status;
 			if(isGoing)
 			{
@@ -143,5 +124,10 @@ public class PubEvent implements Serializable
 			}
 			users.put(user, status);
 		}
+	}
+	
+	public boolean isEqual(PubEvent event)
+	{
+		return event.GetEventId() == globalEventId;
 	}
 }
