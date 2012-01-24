@@ -80,4 +80,17 @@ public class ServerUser extends dimappers.android.PubData.User
 	}
 	public boolean GetHasApp() 				{	return hasApp;	}
 	public void SetHasApp(boolean hasApp)	{	this.hasApp = hasApp;	}
+	
+	public String toString() {
+		/* A toString method to aid debugging */
+		String str = "Id: " + super.getUserId() + " hasApp: " + hasApp + "\n";
+		str += "Events: \n";
+		Iterator<Integer> it = this.getAllEvents().iterator();
+		while (it.hasNext()) {
+			str += it.next() + " ";
+		}
+		str += "\n";
+		
+		return str;
+	}
 }
