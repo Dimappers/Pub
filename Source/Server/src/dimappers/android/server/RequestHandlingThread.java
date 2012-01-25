@@ -3,10 +3,9 @@ package dimappers.android.server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
 import java.net.Socket;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
 
 import dimappers.android.PubData.AcknoledgementData;
 import dimappers.android.PubData.MessageType;
@@ -20,13 +19,13 @@ public class RequestHandlingThread extends Thread{
 
 	public static final boolean IsDebug = true;
 
-	RequestHandlingThread(Socket clientSocket) throws IOException, ClassNotFoundException {
+	RequestHandlingThread(Socket clientSocket) {
 		super();
 		System.out.println("Thread ID: " + this.getId());
 		handleRequest(clientSocket);
 	}
 
-	public void handleRequest(Socket clientSocket) throws IOException, ClassNotFoundException {
+	public void handleRequest(Socket clientSocket) {
 		//Deserialise data in to classes - in reality we will have to send some messages before explaining what is coming 
 		ObjectInputStream deserialiser = null;
 		ObjectOutputStream serialiser = null;
@@ -46,13 +45,20 @@ public class RequestHandlingThread extends Thread{
 		{
 			System.out.println("Error deserialising class: "+ e.getMessage());
 		}
-
+		
 		switch(message)
 		{
 		case newPubEventMessage:
 		{
 			// TOMS JOB
-			NewEventMessageReceived(deserialiser, serialiser);
+			try
+			{
+				NewEventMessageReceived(deserialiser, serialiser);
+			}
+			catch(ServerException e)
+			{
+				System.out.println("ERROR: " + e.GetExceptionType().toString());
+			}
 			break;
 		}
 
@@ -84,13 +90,36 @@ public class RequestHandlingThread extends Thread{
 	}
 
 	//Message handling functions
-	private static void NewEventMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut) throws IOException, ClassNotFoundException 
+	private static void NewEventMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut) throws ServerException
 	{
 		if(IsDebug)
 		{
 			System.out.println("Received new PubEvent message");
 		}
-		PubEvent event = (PubEvent)connectionStreamIn.readObject();
+		
+		PubEvent event;
+		try {
+			event = (PubEvent)connectionStreamIn.readObject();
+		} 
+		catch (Exception e) {
+			try {
+				connectionStreamOut.writeObject(new AcknoledgementData(-1));
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				throw new ServerException(ExceptionType.SendingErrorBack);
+			}
+			
+			if(e instanceof IOException) {
+				//Error reading object
+				throw new ServerException(ExceptionType.ReadingObjectNewEvent);
+			} else if(e instanceof ClassNotFoundException) {
+				//Data in the wrong format
+				throw new ServerException(ExceptionType.CastingObjectNewEvent);
+			} else if(e instanceof StreamCorruptedException) {
+				
+			}
+			throw new ServerException(ExceptionType.UnknownError);
+		}
 
 		if(IsDebug)
 		{
