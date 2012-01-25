@@ -1,10 +1,14 @@
 package dimappers.android.server;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.StreamCorruptedException;
 import java.net.Socket;
+import java.util.Calendar;
 import java.util.LinkedList;
 
 import dimappers.android.PubData.AcknoledgementData;
@@ -37,14 +41,22 @@ public class RequestHandlingThread extends Thread{
 			message = (MessageType)deserialiser.readObject();
 
 		} 
-		catch (IOException e)
+		catch (Exception e)
 		{
-			System.out.println("Error decoding class: " + e.getMessage());
+			ServerException sException = new ServerException(ExceptionType.MessageReceivedUnknownError, e);
+			if(e instanceof IOException) {
+				//Error reading object
+				sException = new ServerException(ExceptionType.MessageReceivedReadingObject, e);
+			} else if(e instanceof ClassNotFoundException) {
+				//Data in the wrong format
+				sException = new ServerException(ExceptionType.MessageReceivedCastingObject, e);
+			} else if(e instanceof StreamCorruptedException) {
+				sException = new ServerException(ExceptionType.MessageReceivedStreamCorrupted, e);
+			}
+			
+			HandleException(sException);
 		}
-		catch (ClassNotFoundException e)
-		{
-			System.out.println("Error deserialising class: "+ e.getMessage());
-		}
+		
 		
 		switch(message)
 		{
@@ -57,7 +69,7 @@ public class RequestHandlingThread extends Thread{
 			}
 			catch(ServerException e)
 			{
-				System.out.println("ERROR: " + e.GetExceptionType().toString());
+				HandleException(e);
 			}
 			break;
 		}
@@ -65,21 +77,40 @@ public class RequestHandlingThread extends Thread{
 		case refreshMessage:
 		{
 			// MARKS JOB : Sent: RefreshData Returns Array of events
-			RefreshMessageReceived(deserialiser, serialiser);
+			try
+			{
+				RefreshMessageReceived(deserialiser, serialiser);
+			}
+			catch(ServerException e)
+			{
+				HandleException(e);
+			}
 			break;
 		}
 
 		case respondMessage:
 		{
 			// TOMS JOB
-			RespondMessageReceived(deserialiser, serialiser);
+			try
+			{
+				RespondMessageReceived(deserialiser, serialiser);
+			} catch (ServerException e)
+			{
+				HandleException(e);
+			}
 			break;
 		}
 
 		case updateMessage:
 		{
 			// MARKS JOB : Gets UpdateRequest Returns nothin'
-			UpdateMessageReceived(deserialiser, serialiser);
+			try
+			{
+				UpdateMessageReceived(deserialiser, serialiser);
+			} catch (ServerException e)
+			{
+				HandleException(e);
+			}
 			break;
 		}
 
@@ -105,20 +136,19 @@ public class RequestHandlingThread extends Thread{
 			try {
 				connectionStreamOut.writeObject(new AcknoledgementData(-1));
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				throw new ServerException(ExceptionType.SendingErrorBack);
+				throw new ServerException(ExceptionType.NewEventSendingErrorBack, e1);
 			}
 			
 			if(e instanceof IOException) {
 				//Error reading object
-				throw new ServerException(ExceptionType.ReadingObjectNewEvent);
+				throw new ServerException(ExceptionType.NewEventReadingObject, e);
 			} else if(e instanceof ClassNotFoundException) {
 				//Data in the wrong format
-				throw new ServerException(ExceptionType.CastingObjectNewEvent);
+				throw new ServerException(ExceptionType.NewEventCastingObject, e);
 			} else if(e instanceof StreamCorruptedException) {
-				
+				throw new ServerException(ExceptionType.NewEventStreamCorrupted, e);
 			}
-			throw new ServerException(ExceptionType.UnknownError);
+			throw new ServerException(ExceptionType.NewEventUnknownError, e);
 		}
 
 		if(IsDebug)
@@ -141,13 +171,48 @@ public class RequestHandlingThread extends Thread{
 		}
 		
 		UserManager.markAsUpToDate(event.GetHost(), pubEventId);
-
-		connectionStreamOut.writeObject(new AcknoledgementData(pubEventId));
+		
+		try
+		{
+			connectionStreamOut.writeObject(new AcknoledgementData(pubEventId));
+		}
+		catch(Exception e)
+		{
+			try {
+				connectionStreamOut.writeObject(new AcknoledgementData(-1));
+			} catch (Exception e1) {
+				throw new ServerException(ExceptionType.NewEventSendingErrorBack, e1);
+			}
+			
+			if(e instanceof IOException) {
+				//Error reading object
+				throw new ServerException(ExceptionType.NewEventSendingAcknoledgementBack, e);
+			} else if(e instanceof StreamCorruptedException) {
+				throw new ServerException(ExceptionType.NewEventStreamCorrupted, e);
+			}
+			throw new ServerException(ExceptionType.NewEventUnknownError, e);
+		}
 	}
 
-	private static void RefreshMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut) throws IOException, ClassNotFoundException
+	private static void RefreshMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut) throws ServerException
 	{
-		RefreshData refresh = (RefreshData)connectionStreamIn.readObject();
+		RefreshData refresh;
+		try
+		{
+			refresh = (RefreshData)connectionStreamIn.readObject();
+		} catch (Exception e)
+		{
+			if(e instanceof IOException) {
+				//Error reading object
+				throw new ServerException(ExceptionType.RefreshReadingObject, e);
+			} else if(e instanceof ClassNotFoundException) {
+				//Data in the wrong format
+				throw new ServerException(ExceptionType.RefreshCastingObject, e);
+			} else if(e instanceof StreamCorruptedException) {
+				throw new ServerException(ExceptionType.RefreshStreamCorrupted, e);
+			}
+			throw new ServerException(ExceptionType.RefreshUnknownError, e);
+		} 
 		LinkedList<Integer> refreshEventIds;
 		if (refresh.isFullUpdate()) {
 			// If true, returns all the events, otherwise just the events that need refreshing
@@ -170,12 +235,40 @@ public class RequestHandlingThread extends Thread{
 		}
 
 		// Return the array of events that need updating
-		connectionStreamOut.writeObject(refreshEvents);
+		try
+		{
+			connectionStreamOut.writeObject(refreshEvents);
+		} catch (Exception e)
+		{
+			if(e instanceof IOException) {
+				//Error reading object
+				throw new ServerException(ExceptionType.RefreshReadingObject, e);
+			} else if(e instanceof StreamCorruptedException) {
+				throw new ServerException(ExceptionType.RefreshStreamCorrupted, e);
+			}
+			throw new ServerException(ExceptionType.RefreshUnknownError, e);
+		}
 	}
 
-	private static void RespondMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut) throws IOException, ClassNotFoundException
+	private static void RespondMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut) throws ServerException
 	{
-		ResponseData response = (ResponseData)connectionStreamIn.readObject();
+		ResponseData response;
+		try
+		{
+			response = (ResponseData)connectionStreamIn.readObject();
+		} catch (Exception e)
+		{
+			if(e instanceof IOException) {
+				//Error reading object
+				throw new ServerException(ExceptionType.RespondReadingObject, e);
+			} else if(e instanceof ClassNotFoundException) {
+				//Data in the wrong format
+				throw new ServerException(ExceptionType.RespondCastingObject, e);
+			} else if(e instanceof StreamCorruptedException) {
+				throw new ServerException(ExceptionType.RespondStreamCorrupted, e);
+			}
+			throw new ServerException(ExceptionType.RespondUnknownError, e);
+		} 
 
 		//Update the event file
 		PubEvent event = EventManager.GetPubEvent(response.GetEventId());
@@ -191,10 +284,26 @@ public class RequestHandlingThread extends Thread{
 		}
 	}
 
-	private static void UpdateMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut) throws IOException, ClassNotFoundException
+	private static void UpdateMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut) throws ServerException
 	{
 		// Gets the event given the update data
-		UpdateData update = (UpdateData)connectionStreamIn.readObject();
+		UpdateData update;
+		try
+		{
+			update = (UpdateData)connectionStreamIn.readObject();
+		} catch (Exception e)
+		{
+			if(e instanceof IOException) {
+				//Error reading object
+				throw new ServerException(ExceptionType.RespondReadingObject, e);
+			} else if(e instanceof ClassNotFoundException) {
+				//Data in the wrong format
+				throw new ServerException(ExceptionType.RespondCastingObject, e);
+			} else if(e instanceof StreamCorruptedException) {
+				throw new ServerException(ExceptionType.RespondStreamCorrupted, e);
+			}
+			throw new ServerException(ExceptionType.RespondUnknownError, e);
+		} 
 		PubEvent event = EventManager.GetPubEvent(update.getEventId());
 
 		// Checks if the start time needs amending
@@ -228,6 +337,82 @@ public class RequestHandlingThread extends Thread{
 			{
 				UserManager.markForUpdate(user, event.GetEventId());
 			}
+		}
+	}
+	
+	private static void HandleException(ServerException e)
+	{
+		try
+		{
+			PrintWriter errorWriter = new PrintWriter(new File("ServerErrorLog.txt"));
+			errorWriter.write("Error: " + e.GetExceptionType().toString() + " occured at time: " + Calendar.getInstance().getTime());
+			if(e.GetOriginalException() != null)
+			{
+				errorWriter.write("Stack trace: ");
+			
+				for(StackTraceElement stackTraceRow : e.GetOriginalException().getStackTrace())
+				{
+					errorWriter.write(stackTraceRow.toString());
+				}
+			}
+			
+			errorWriter.flush();
+			errorWriter.close();
+		} catch (FileNotFoundException e1)
+		{
+			System.out.println("Well... this is very much bad");
+		}
+		
+		//TODO: Handle specific error messages?
+		switch(e.GetExceptionType())
+		{
+		case EventManagerErrorCreatingDatabase:
+			break;
+		case EventManagerErrorOpeningDatabase:
+			break;
+		case EventManagerErrorReadingDatabase:
+			break;
+		case EventManagerNoSpace:
+			break;
+		case EventManagerNoSuchEvent:
+			break;
+		case NewEventCastingObject:
+			break;
+		case NewEventReadingObject:
+			break;
+		case NewEventSendingAcknoledgementBack:
+			break;
+		case NewEventSendingErrorBack:
+			break;
+		case NewEventStreamCorrupted:
+			break;
+		case NewEventUnknownError:
+			break;
+		case RefreshCastingObject:
+			break;
+		case RefreshReadingObject:
+			break;
+		case RefreshStreamCorrupted:
+			break;
+		case RefreshUnknownError:
+			break;
+		case RespondCastingObject:
+			break;
+		case RespondReadingObject:
+			break;
+		case RespondStreamCorrupted:
+			break;
+		case RespondUnknownError:
+			break;
+		case UpdateCastingObject:
+			break;
+		case UpdateReadingObject:
+			break;
+		case UpdateStreamCorrupted:
+			break;
+		case UpdateUnknownError:
+			break;
+		
 		}
 	}
 }

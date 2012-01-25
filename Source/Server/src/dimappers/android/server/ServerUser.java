@@ -32,7 +32,6 @@ public class ServerUser extends dimappers.android.PubData.User
 	public LinkedList<Integer> getOutOfDateEvents() {
 		// Iterates through each event, checking if it needs refreshing
 		LinkedList<Integer> outOfDateEvents = new LinkedList<Integer>();
-		Set<Integer> keys = events.keySet();
 		
 		for(Entry<Integer, Boolean> eventEntry : events.entrySet())
 		{
@@ -48,9 +47,8 @@ public class ServerUser extends dimappers.android.PubData.User
 	public LinkedList<Integer> getAllEvents() {
 		/* Returns a linked list of all events */
 		LinkedList<Integer> allEvents = new LinkedList<Integer>();
-		Set<Integer> keys = events.keySet();
 		
-		for(Integer key : keys)
+		for(Integer key :  events.keySet())
 		{
 			allEvents.add(key);
 		}
@@ -58,16 +56,27 @@ public class ServerUser extends dimappers.android.PubData.User
 		return allEvents;
 	}
 	
-	public void setUpdate(int eventId, boolean update) {
+	public void setUpdate(int eventId, boolean update) throws ServerException {
 		if (events.containsKey(eventId)) {
 			events.put(eventId, update);
 		}
+		else
+		{
+			throw new ServerException(ExceptionType.ServerUserNoSuchEvent);
+		}
+		
 	}
 	
 	/*Event has been updated - this user needs to retrieve it when it next asks*/
-	public void NotifyEventUpdated(int eventId)
+	public void NotifyEventUpdated(int eventId) throws ServerException
 	{
-		events.put(eventId, false);
+		if (events.containsKey(eventId)) {
+			events.put(eventId, false);
+		}
+		else
+		{
+			throw new ServerException(ExceptionType.ServerUserNoSuchEvent);
+		}
 	}
 	
 	public void NotifyUpdateSent()
