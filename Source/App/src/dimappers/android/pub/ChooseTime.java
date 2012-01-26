@@ -2,6 +2,8 @@ package dimappers.android.pub;
 
 import java.util.Calendar;
 
+import dimappers.android.PubData.PubEvent;
+
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -14,17 +16,19 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 public class ChooseTime extends Activity implements OnClickListener{
+	private PubEvent event;
 	static final int DATE_DIALOG_ID = 0;
 	private Button date_button;
     private int year;
     private int month;
     private int day;
-    private DatePickerDialog.OnDateSetListener mDateSetListener =
+    private DatePickerDialog.OnDateSetListener listenerDateFromDialog =
             new DatePickerDialog.OnDateSetListener() {
         		public void onDateSet(DatePicker view, int year1, int monthOfYear, int dayOfMonth) {
-        			year = year1;
+    				year = year1;
         			month = monthOfYear;
         			day = dayOfMonth;
         			updateDisplay(DATE_DIALOG_ID);
@@ -34,7 +38,7 @@ public class ChooseTime extends Activity implements OnClickListener{
     private Button time_button;
     private int hour;
     private int minute;
-    private TimePickerDialog.OnTimeSetListener mTimeSetListener =
+    private TimePickerDialog.OnTimeSetListener listenerTimeFromDialog =
     	    new TimePickerDialog.OnTimeSetListener() {
     	        public void onTimeSet(TimePicker view, int hourOfDay, int minute1) {
     	            hour = hourOfDay;
@@ -51,6 +55,9 @@ public class ChooseTime extends Activity implements OnClickListener{
     	
     	Button button_save_date_time = (Button)findViewById(R.id.save_date_and_time);
     	button_save_date_time.setOnClickListener(this);
+    	
+    	Bundle b = getIntent().getExtras();
+    	event = (PubEvent)b.getSerializable("event");
     	
         //TODO: Getting date should be done by passing event's current start date
         final Calendar c = Calendar.getInstance(); //current date
@@ -73,13 +80,13 @@ public class ChooseTime extends Activity implements OnClickListener{
 	@Override
 	protected Dialog onCreateDialog(int id) {
 	    switch (id) {
-	    	case DATE_DIALOG_ID: {return new DatePickerDialog(this, mDateSetListener, year, month, day);}
-	    	case TIME_DIALOG_ID: {return new TimePickerDialog(this, mTimeSetListener, hour, minute, false);}
+	    	case DATE_DIALOG_ID: {return new DatePickerDialog(this, listenerDateFromDialog, year, month, day);}
+	    	case TIME_DIALOG_ID: {return new TimePickerDialog(this, listenerTimeFromDialog, hour, minute, false);}
 	    }
 	    return null;
 	}
 	private void updateDisplay(int dateortime) {
-		//TODO: Should probably do some error checking that date is in future (& maybe not too far in the future)
+		//TODO: Should probably do some error checking that date is in future (& maybe not too far in the future) - use isInPast(...) below
         switch(dateortime) {
         case DATE_DIALOG_ID : {
         	date_button.setText(new StringBuilder().append(day).append("/").append(month + 1).append("/").append(year).append(" "));
@@ -98,6 +105,9 @@ public class ChooseTime extends Activity implements OnClickListener{
     private static String pad(int c) {
         if (c >= 10) {return String.valueOf(c);}
         else {return "0" + String.valueOf(c);}
+    }
+    private boolean isInPast(int year, int month, int day) {
+    	return true;
     }
     public void onClick(View v) {
     	switch(v.getId())

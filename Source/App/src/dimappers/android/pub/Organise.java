@@ -39,8 +39,9 @@ public class Organise extends Activity implements OnClickListener{
 	    	Toast.makeText(getApplicationContext(), new Integer(facebookId).toString(), Toast.LENGTH_LONG).show();
 	    	Date date = new Date();
 	    	Integer fb = new Integer(facebookId);
-	    	AppUser host = new AppUser(fb);
-	    	event = new PubEvent(date, (User)host);
+	    	//AppUser host = new AppUser(fb);
+	    	//event = new PubEvent(date, (User)host);
+	    	event = null;
 	    	
 	    	cur_loc = (TextView)findViewById(R.id.current_location);
 	    	cur_pub = (TextView)findViewById(R.id.current_pub);
@@ -74,6 +75,9 @@ public class Organise extends Activity implements OnClickListener{
 			}
 			case R.id.time_button : {
 				i = new Intent(this, ChooseTime.class);
+				Bundle b = new Bundle();
+				b.putSerializable("event", event);
+				i.putExtras(b);
 				startActivity(i);
 				break;
 			}
