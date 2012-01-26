@@ -19,7 +19,6 @@ import dimappers.android.PubData.User;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
-import dimappers.android.PubData.PubTripState;
 
 public class RunServerTest
 {

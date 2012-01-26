@@ -33,26 +33,22 @@ public class EventManager
 		throw new UnsupportedOperationException("Loading from file not implemented");
 	}
 	
-	public static String SaveToFile() throws ParserConfigurationException
+	public static void SaveToFile() 
 	{
-		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-		Document doc = docBuilder.newDocument();
-		Element rootElement = doc.createElement("PubEvents");
-		doc.appendChild(rootElement);
-
-		
-		
-		return "Test.xml";
+		throw new UnsupportedOperationException("Saving to file not implemented");
 	}
 	
-	public static int AddNewEvent(PubEvent event)
+	public static int AddNewEvent(PubEvent event) throws ServerException
 	{
 		//Find an empty event slot 
+		int startingCount = eventsCounter;
 		while(events.containsKey(eventsCounter))
 		{
 			eventsCounter = (eventsCounter + 1) % maxEvents;
+			if(eventsCounter == startingCount)
+			{
+				throw new ServerException(ExceptionType.EventManagerNoSpace);
+			}
 		}
 		
 		events.put(eventsCounter, event);
@@ -61,14 +57,23 @@ public class EventManager
 		return eventsCounter++; //return the old value and increment
 	}
 	
-	public static PubEvent GetPubEvent(int pubEventId)
+	public static PubEvent GetPubEvent(int pubEventId) throws ServerException
 	{
+		if(!events.containsKey(pubEventId))
+		{
+			throw new ServerException(ExceptionType.EventManagerNoSuchEvent);
+		}
+		
 		return events.get(pubEventId);
 	}
 	
-	public void UpdateEvent(int pubEventId, PubEvent event)
+	public void UpdateEvent(int pubEventId, PubEvent event) throws ServerException
 	{
-		events.remove(pubEventId);
+		if(!events.containsKey(pubEventId))
+		{
+			throw new ServerException(ExceptionType.EventManagerNoSuchEvent);
+		}
+		
 		events.put(pubEventId, event);
 	}
 }
