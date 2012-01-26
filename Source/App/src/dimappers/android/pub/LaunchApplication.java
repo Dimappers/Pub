@@ -14,10 +14,14 @@ import android.widget.Toast;
 
 public class LaunchApplication extends Activity implements OnClickListener{
     /** Called when the activity is first created. */
+	int facebookId;
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
+    	
     	//need to log into Facebook if not logged in before
+    	facebookId = 0;
+    	
     	setContentView(R.layout.main);
     	
     	Button button_organise = (Button)findViewById(R.id.organise_button);
@@ -34,7 +38,10 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		switch (v.getId()) {
 		case R.id.organise_button : 
 		{
+			Bundle b = new Bundle();
+			b.putInt("facebookId", facebookId);
 			i = new Intent(this, Organise.class);
+			i.putExtras(b);
 			startActivityForResult(i,0);
 			break;
 		}

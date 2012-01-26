@@ -2,6 +2,11 @@ package dimappers.android.pub;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Date;
+
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.PubLocation;
+import dimappers.android.PubData.User;
 
 import android.app.Activity;
 import android.content.Context;
@@ -22,10 +27,20 @@ public class Organise extends Activity implements OnClickListener{
 	
 	private TextView cur_loc;
 	private TextView cur_pub;
+	private PubEvent event;
+	private int facebookId;
 	 @Override
 	    public void onCreate(Bundle savedInstanceState) {
 	    	super.onCreate(savedInstanceState);
 	    	setContentView(R.layout.organise);
+	    	
+	    	Bundle b = getIntent().getExtras();
+	    	facebookId = b.getInt("facebookId");
+	    	Toast.makeText(getApplicationContext(), new Integer(facebookId).toString(), Toast.LENGTH_LONG).show();
+	    	Date date = new Date();
+	    	Integer fb = new Integer(facebookId);
+	    	AppUser host = new AppUser(fb);
+	    	event = new PubEvent(date, (User)host);
 	    	
 	    	cur_loc = (TextView)findViewById(R.id.current_location);
 	    	cur_pub = (TextView)findViewById(R.id.current_pub);

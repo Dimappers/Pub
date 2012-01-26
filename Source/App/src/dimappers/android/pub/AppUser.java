@@ -7,7 +7,7 @@ import dimappers.android.PubData.PubTripState;
 public class AppUser extends User
 {
 	//Properties
-	
+
 	//Constructors
 	public AppUser(Integer facebookUserId)
 	{

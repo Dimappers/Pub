@@ -21,6 +21,5 @@
         <activity android:name="ChoosePub" android:label="@string/app_name"></activity>
         <activity android:label="@string/app_name" android:name="Pending"></activity>
         <activity android:label="@string/app_name" android:name="ChooseGuest"></activity>
-
     </application>
 </manifest>

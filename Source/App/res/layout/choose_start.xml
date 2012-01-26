@@ -12,15 +12,15 @@
         android:text="@string/choose_date"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <EditText
+    <Button
         android:id="@+id/date_selector"
+        style="@android:style/Widget.EditText"
+        android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:inputType="date" >
-
-        <requestFocus />
-    </EditText>
+    </Button>
 
     <TextView
         android:id="@+id/choose_time"
@@ -30,8 +30,10 @@
         android:text="@string/choose_time"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <EditText
+    <Button
         android:id="@+id/time_selector"
+        style="@android:style/Widget.EditText"
+        android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
