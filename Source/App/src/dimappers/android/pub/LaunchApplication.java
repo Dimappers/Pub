@@ -26,6 +26,9 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	Button button_invites = (Button)findViewById(R.id.invites_button);
     	button_invites.setOnClickListener(this);
     	
+    	AppUser user = new AppUser(1238);  
+    	
+    	Toast.makeText(getApplicationContext(), "User id: " + user.getUserId().toString(), 200).show();
     }
     public void onClick(View v)
     {

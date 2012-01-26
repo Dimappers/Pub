@@ -1,20 +1,24 @@
 package dimappers.android.pub;
 
-import java.util.List;
-import java.util.Map;
-import android.app.Activity;
 import android.app.ExpandableListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.Toast;
+import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
-
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class Events extends ExpandableListActivity {
 	
@@ -25,17 +29,55 @@ public class Events extends ExpandableListActivity {
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.events);
-		Toast.makeText(getApplicationContext(), "hello jason", Toast.LENGTH_LONG).show();
 		
-		mAdapter = new EventListAdapter();
+		mAdapter = new EventListAdapter(this);
         setListAdapter(mAdapter);
-        registerForContextMenu(getExpandableListView());	
+    	
+         ExpandableListView expview = (ExpandableListView) findViewById(android.R.id.list);
+		 expview.setOnChildClickListener(this);
+        
+        //getExpandableListView().setOnChildClickListener(this);
+        
 	}
 
-	
-
+	 public boolean onChildClick(ExpandableListView parent,View v, int groupPosition, int childPosition, long id) 
+	 {
+		 Intent i;
+		 groupPosition = (int) mAdapter.getGroupId(groupPosition);
+		 childPosition = (int) mAdapter.getChildId(groupPosition, childPosition);
+		 
+		 switch(groupPosition)
+		 {
+			 case 0: 
+			 {
+					i = new Intent(this, HostingEvents.class);
+					startActivity(i);
+					return true;
+			 }
+			 case 1 :
+			 {		
+			 		
+				 	i = new Intent(this, SendInvites.class);
+					startActivity(i);
+					return true;
+			 }
+			 case 2 : 
+			 {
+					i = new Intent(this, ToSend.class);
+					startActivity(i);
+					return true;   
+		     } 
+			 case 3 :
+			 {
+			 		i = new Intent(this, Going.class);
+					startActivity(i);
+					return true;
+			 }
+			 }
+			 return false; 
+	 }
+	 
 }
-
 
 class EventListAdapter extends BaseExpandableListAdapter {
 	
@@ -44,7 +86,7 @@ class EventListAdapter extends BaseExpandableListAdapter {
 
 private String[] getHostedEvents()
 {
-	return new String[] {"Hosting"};
+	return new String[] {"Hosting1","Hosting2"};
 }
 
 private String[] getSendInvites()
@@ -61,82 +103,79 @@ private String[] getGoing()
 {
 	return new String[] {"Going"};
 }
-/* Commented out @Overrides below to make it compile */
-//@Override
-public Object getChild(int arg0, int arg1) {
-	// TODO Auto-generated method stub
-	return null;
+
+private Context context;
+
+public EventListAdapter(Context context) {
+    this.context = context;
 }
 
-//@Override
-public long getChildId(int arg0, int arg1) {
-	// TODO Auto-generated method stub
-	return 0;
+@Override
+public Object getChild(int groupPosition, int childPosition) {
+	return children[groupPosition][childPosition];
 }
 
-//@Override
-public View getChildView(int arg0, int arg1, boolean arg2, View arg3,
-		ViewGroup arg4) {
-	// TODO Auto-generated method stub
-	return null;
+@Override
+public long getChildId(int groupPosition, int childPosition) {
+	return childPosition;
 }
 
-//@Override
-public int getChildrenCount(int arg0) {
-	// TODO Auto-generated method stub
-	return 0;
+public View getChildView(int groupPosition, int childPosition, boolean isLastChild,View convertView, ViewGroup parent) {
+    TextView textView = getGenericView();
+    textView.setText(getChild(groupPosition, childPosition).toString());
+    return textView;
 }
 
-//@Override
-public Object getGroup(int arg0) {
-	// TODO Auto-generated method stub
-	return null;
+public TextView getGenericView() {
+    // Layout parameters for the ExpandableListView
+    AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 64);
+    TextView textView = new TextView(context);
+    textView.setLayoutParams(lp);
+    // Center the text vertically
+    textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
+    // Set the text starting position
+    textView.setPadding(36, 0, 0, 0);
+    return textView;
 }
 
-//@Override
+@Override
+public int getChildrenCount(int groupPosition) {
+	return children[groupPosition].length;
+}
+
+@Override
+public Object getGroup(int groupPosition) {
+	return groups[groupPosition];
+}
+
+@Override
 public int getGroupCount() {
-	// TODO Auto-generated method stub
-	return 0;
+	return groups.length;
 }
 
-//@Override
-public long getGroupId(int arg0) {
-	// TODO Auto-generated method stub
-	return 0;
+@Override
+public long getGroupId(int groupPosition) {
+	return groupPosition;
 }
 
-//@Override
-public View getGroupView(int arg0, boolean arg1, View arg2, ViewGroup arg3) {
-	// TODO Auto-generated method stub
-	return null;
+public View getGroupView(int groupPosition, boolean isExpanded, View convertView,ViewGroup parent) 
+{
+    TextView textView = getGenericView();
+    textView.setText(getGroup(groupPosition).toString());
+    return textView;
 }
 
-//@Override
+
+@Override
 public boolean hasStableIds() {
-	// TODO Auto-generated method stub
-	return false;
+	return true;
 }
 
-//@Override
-public boolean isChildSelectable(int arg0, int arg1) {
-	// TODO Auto-generated method stub
-	return false;
+@Override
+public boolean isChildSelectable(int groupPosition, int childPosition) {
+	return true;
 }
+
 }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+        

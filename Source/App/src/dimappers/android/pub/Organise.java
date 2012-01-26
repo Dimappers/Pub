@@ -40,6 +40,10 @@ public class Organise extends Activity implements OnClickListener{
 	    	button_save_event.setOnClickListener(this);
 	    	Button button_send_invites = (Button)findViewById(R.id.send_invites_event);
 	    	button_send_invites.setOnClickListener(this);
+	    	
+	    	AppUser user = new AppUser(12);
+	    	
+	    	Toast.makeText(getApplicationContext(), "User id:" + user.getUserId(), 5000).show();
 	 }
 	 @Override
 	 public void onStart() {super.onStart(); findLocation();}

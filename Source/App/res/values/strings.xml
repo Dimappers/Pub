@@ -5,7 +5,6 @@
     <string name="back">back</string>
     <string name="send_invites">Send Invites</string>
     <string name="save">Save</string>
-    
   	<string name="organise">Organise</string>
  	<string name="location">Your current location is:</string> 
  	<string name="default_location">Unknown</string>
@@ -17,14 +16,10 @@
   	<string name="use_guest">Use selected friend</string>
   	<string name="choose_date">Choose date:</string>
   	<string name="choose_time">Choose time:</string>
-  	
   	<string name="invites">View invites</string>
-  	<string name="location_error">Error: You must supply a location</string>
-  	
+  	<string name="location_error">Error: You must supply a location</string>  	
   	<string name="test">Test</string>
-  	
-  	<string name="add_guest">Add guest</string>
-  	
+  	<string name="add_guest">Add guest</string>  	
   	<string name="show_sent_invites">Show Sent Invites</string>
   	
   	<string name="current_events">Current Events</string>
@@ -34,5 +29,26 @@
   	<string name="waiting_for_response">Waiting For Response</string>
   	
   	<string name="going">Going</string>
+  	
+  	<string name="pub">Pub:</string>
+  	
+  	<string name="current_start_time">Current Start Time:</string>
+  	
+  	<string name="guests">Guests:</string>
+  	
+  	<string name="confirm">Confirm</string>
+  	
+  	<string name="make_a_comment">Make a comment?</string>
+  	
+  	<string name="delete_event">DELETE EVENT!!!</string>
+  	
+  	<string name="decline">Decline</string>
+  	
+  	<string name="send">Send</string>
+  	
+  	<string name="available_from">Available from:</string>
+  	
+  	<string name="pub_name">Pub Name:</string>
+
     
 </resources>
