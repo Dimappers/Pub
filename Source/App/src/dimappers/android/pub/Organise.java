@@ -39,9 +39,8 @@ public class Organise extends Activity implements OnClickListener{
 	    	Toast.makeText(getApplicationContext(), new Integer(facebookId).toString(), Toast.LENGTH_LONG).show();
 	    	Date date = new Date();
 	    	Integer fb = new Integer(facebookId);
-	    	//AppUser host = new AppUser(fb);
-	    	//event = new PubEvent(date, (User)host);
-	    	event = null;
+	    	AppUser host = new AppUser(fb);
+	    	event = new PubEvent(date, (User)host);
 	    	
 	    	cur_loc = (TextView)findViewById(R.id.current_location);
 	    	cur_pub = (TextView)findViewById(R.id.current_pub);
@@ -78,21 +77,17 @@ public class Organise extends Activity implements OnClickListener{
 				Bundle b = new Bundle();
 				b.putSerializable("event", event);
 				i.putExtras(b);
-				startActivity(i);
+				startActivityForResult(i,3);
 				break;
 			}
 			case R.id.save_event : {
 				//TODO: save event details
-				//May want this to end this activity & then go to Events.class,
-				//so can't go back to it by clicking back button
 				this.setResult(RESULT_OK, getIntent());
 				finish();
 				break;
 			}
 			case R.id.send_invites_event : {
 				//TODO: save event details, then send invites to server
-				//May want this to end this activity & then go to Events.class,
-				//so can't go back to it by clicking back button
 				this.setResult(RESULT_OK, getIntent());
 				finish();
 				break;
@@ -100,11 +95,16 @@ public class Organise extends Activity implements OnClickListener{
 		 }
 	 }
 	 public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		 super.onActivityResult(requestCode, resultCode, data);
 		 if(requestCode==0)
 		 {
-			 super.onActivityResult(requestCode, resultCode, data);
 			 Intent i = new Intent(this, Guests.class);	
 			 startActivity(i);
+		 }
+		 if(requestCode==3)
+		 {
+			 event = (PubEvent)data.getExtras().getSerializable("event");
+			 Toast.makeText(getApplicationContext(), event.GetStartTime().toString(), Toast.LENGTH_LONG).show();
 		 }
 	 }
 	//Finding current location

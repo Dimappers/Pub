@@ -1,6 +1,7 @@
 package dimappers.android.pub;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import dimappers.android.PubData.PubEvent;
 
@@ -18,35 +19,33 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+//FIXME: CRASHES IF YOU PRESS BACK BUTTON ON THIS SCREEN
 public class ChooseTime extends Activity implements OnClickListener{
 	private PubEvent event;
-	static final int DATE_DIALOG_ID = 0;
-	private Button date_button;
+	private DatePicker date_picker;
+	private DatePicker.OnDateChangedListener onDateChangedListener = new DatePicker.OnDateChangedListener() {
+		public void onDateChanged(DatePicker view, int newYear, int newMonth, int newDay) {
+			if(isInPast(newYear,newMonth,newDay)) {/*TODO: notify!*/}
+			year = newYear;
+			month = newMonth;
+			day = newDay;
+		}
+	};
     private int year;
     private int month;
     private int day;
-    private DatePickerDialog.OnDateSetListener listenerDateFromDialog =
-            new DatePickerDialog.OnDateSetListener() {
-        		public void onDateSet(DatePicker view, int year1, int monthOfYear, int dayOfMonth) {
-    				year = year1;
-        			month = monthOfYear;
-        			day = dayOfMonth;
-        			updateDisplay(DATE_DIALOG_ID);
-        		}
-    		};
-    static final int TIME_DIALOG_ID = 1;
-    private Button time_button;
+
+    private Calendar currentDate;
+    private TimePicker time_picker;
+    private TimePicker.OnTimeChangedListener onTimeChangedListener = new TimePicker.OnTimeChangedListener() {
+    	public void onTimeChanged(TimePicker view, int newHour, int newMinute) {
+    		if(isStrangeTime(newHour)) {/*TODO: notify!*/}
+    		hour = newHour;
+    		minute = newMinute;
+    	}
+    };
     private int hour;
     private int minute;
-    private TimePickerDialog.OnTimeSetListener listenerTimeFromDialog =
-    	    new TimePickerDialog.OnTimeSetListener() {
-    	        public void onTimeSet(TimePicker view, int hourOfDay, int minute1) {
-    	            hour = hourOfDay;
-    	            minute = minute1;
-    	            updateDisplay(TIME_DIALOG_ID);
-    	        }
-    	    };
-    static final int BOTH_DIALOG_ID = 2;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,72 +57,50 @@ public class ChooseTime extends Activity implements OnClickListener{
     	
     	Bundle b = getIntent().getExtras();
     	event = (PubEvent)b.getSerializable("event");
-    	
-        //TODO: Getting date should be done by passing event's current start date
-        final Calendar c = Calendar.getInstance(); //current date
+    	Date startTime = event.GetStartTime();
+
+        currentDate = Calendar.getInstance();
         
     	// Date
-        date_button = (Button)findViewById(R.id.date_selector);
-        date_button.setOnClickListener(this);
-        year = c.get(Calendar.YEAR);
-        month = c.get(Calendar.MONTH);
-        day = c.get(Calendar.DAY_OF_MONTH);
+        date_picker = (DatePicker)findViewById(R.id.datePicker);
+        date_picker.setOnClickListener(this);
+        year = startTime.getYear() + 1900;
+        month = startTime.getMonth();
+        day = startTime.getDate();
+    	date_picker.init(year, month, day, onDateChangedListener);
         
         // Time
-        time_button = (Button)findViewById(R.id.time_selector);
-        time_button.setOnClickListener(this);
-        hour = c.get(Calendar.HOUR_OF_DAY);
-        minute = c.get(Calendar.MINUTE);
+        time_picker = (TimePicker)findViewById(R.id.timePicker);
+        time_picker.setOnClickListener(this);
+        hour = startTime.getHours();
+        minute = startTime.getMinutes();
+        time_picker.setCurrentHour(new Integer(hour));
+        time_picker.setCurrentMinute(new Integer(minute));
+        time_picker.setOnTimeChangedListener(onTimeChangedListener);
         
-        updateDisplay(BOTH_DIALOG_ID);
+        Toast.makeText(getApplicationContext(), event.GetStartTime().toString(), Toast.LENGTH_LONG).show();
+        
+        updateEvent();
 	}
-	@Override
-	protected Dialog onCreateDialog(int id) {
-	    switch (id) {
-	    	case DATE_DIALOG_ID: {return new DatePickerDialog(this, listenerDateFromDialog, year, month, day);}
-	    	case TIME_DIALOG_ID: {return new TimePickerDialog(this, listenerTimeFromDialog, hour, minute, false);}
-	    }
-	    return null;
-	}
-	private void updateDisplay(int dateortime) {
-		//TODO: Should probably do some error checking that date is in future (& maybe not too far in the future) - use isInPast(...) below
-        switch(dateortime) {
-        case DATE_DIALOG_ID : {
-        	date_button.setText(new StringBuilder().append(day).append("/").append(month + 1).append("/").append(year).append(" "));
-        	break;
-        	}
-        case TIME_DIALOG_ID : {
-        	time_button.setText(new StringBuilder().append(pad(hour)).append(":").append(pad(minute))); 
-        	break;
-        }
-        case BOTH_DIALOG_ID : {
-        	date_button.setText(new StringBuilder().append(day).append("-").append(month + 1).append("-").append(year).append(" "));
-        	time_button.setText(new StringBuilder().append(pad(hour)).append(":").append(pad(minute))); 
-        }
-        }
-	}
-    private static String pad(int c) {
-        if (c >= 10) {return String.valueOf(c);}
-        else {return "0" + String.valueOf(c);}
-    }
+
+	private void updateEvent() {}
+	
     private boolean isInPast(int year, int month, int day) {
-    	return true;
+    	if(currentDate.after(new Date(year-1900,month,day))) {return true;}
+    	return false;
+    }
+    private boolean isStrangeTime(int hour) {
+    	if(hour<16) {return true;} 
+    	return false;
     }
     public void onClick(View v) {
     	switch(v.getId())
     	{
     		case R.id.save_date_and_time : {
-    			//TODO: get date & time
-    			//TODO: save
+    			event.SetStartTime(new Date(year-1900,month,day,hour,minute));
+    			getIntent().getExtras().putSerializable("event",event);
+				this.setResult(RESULT_OK,getIntent());
     			finish();
-    			break;
-    		}
-    		case R.id.date_selector : {
-    			showDialog(DATE_DIALOG_ID);
-    			break;
-    		}
-    		case R.id.time_selector : {
-    			showDialog(TIME_DIALOG_ID);
     			break;
     		}
     	}
