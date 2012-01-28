@@ -35,9 +35,7 @@ public class Events extends ExpandableListActivity {
     	
          ExpandableListView expview = (ExpandableListView) findViewById(android.R.id.list);
 		 expview.setOnChildClickListener(this);
-        
-        //getExpandableListView().setOnChildClickListener(this);
-        
+                
 	}
 
 	 public boolean onChildClick(ExpandableListView parent,View v, int groupPosition, int childPosition, long id) 

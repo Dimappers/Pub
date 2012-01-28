@@ -94,19 +94,21 @@
         android:gravity="center" >
 
     <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:text="@string/send_invites" />
-
-    <Button
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/button1"
         android:text="@string/make_a_comment" />
+
+    <Button
+        android:id="@+id/send_Invites"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="24dp"
+        android:layout_toLeftOf="@+id/button2"
+        android:text="@string/send_invites" />
 
     </RelativeLayout>
         
@@ -118,7 +120,7 @@
         android:gravity="center" >
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/delete_Event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/delete_event" />
