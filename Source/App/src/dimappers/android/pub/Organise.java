@@ -2,6 +2,11 @@ package dimappers.android.pub;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Date;
+
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.PubLocation;
+import dimappers.android.PubData.User;
 
 import android.app.Activity;
 import android.content.Context;
@@ -22,11 +27,29 @@ public class Organise extends Activity implements OnClickListener{
 	
 	private TextView cur_loc;
 	private TextView cur_pub;
+	private PubEvent event;
+	private int facebookId;
 	 @Override
-	    public void onCreate(Bundle savedInstanceState) {
+	 public void onCreate(Bundle savedInstanceState)
+	 {
 	    	super.onCreate(savedInstanceState);
 	    	setContentView(R.layout.organise);
 	    	
+	    	Bundle b = getIntent().getExtras();
+	    	if(b.getSerializable("event")!=null)
+	    	{
+	    		event=(PubEvent)b.getSerializable("event");
+	    		Toast.makeText(getApplicationContext(), "Received event: " + event.GetHost().getUserId().toString(), Toast.LENGTH_LONG).show();
+	    	}
+	    	else{
+		    	facebookId = b.getInt("facebookId");
+		    	Toast.makeText(getApplicationContext(), "Received id: " + new Integer(facebookId).toString(), Toast.LENGTH_LONG).show();
+		    	Date date = new Date();
+		    	Integer fb = new Integer(facebookId);
+		    	AppUser host = new AppUser(fb);
+		    	event = new PubEvent(date, (User)host);
+	    	}
+
 	    	cur_loc = (TextView)findViewById(R.id.current_location);
 	    	cur_pub = (TextView)findViewById(R.id.current_pub);
 	    	
@@ -40,18 +63,12 @@ public class Organise extends Activity implements OnClickListener{
 	    	button_save_event.setOnClickListener(this);
 	    	Button button_send_invites = (Button)findViewById(R.id.send_invites_event);
 	    	button_send_invites.setOnClickListener(this);
-	    	
-	    	AppUser user = new AppUser(12);
-	    	
-	    	Bundle b = getIntent().getExtras();
-	    	
-	    	int date = b.getInt("test");
-	    	
-	    	Toast.makeText(getApplicationContext(), date + " : test", 5000).show();
-	    	//Toast.makeText(getApplicationContext(), "User id:" + user.getUserId(), 5000).show();
 	 }
 	 @Override
-	 public void onStart() {super.onStart(); findLocation();}
+	 public void onStart(){
+		 super.onStart(); 
+		 findLocation();
+	}
 	 public void onClick(View v)
 	 {
 		 Intent i;
@@ -63,38 +80,46 @@ public class Organise extends Activity implements OnClickListener{
 			}
 			case R.id.chosen_guests_button : {
 				i = new Intent(this, Pending.class);
-				startActivityForResult(i, 0);
+				startActivityForResult(i, 1);
 				break;
 			}
 			case R.id.time_button : {
 				i = new Intent(this, ChooseTime.class);
-				startActivity(i);
+				Bundle b = new Bundle();
+				b.putSerializable("event", event);
+				i.putExtras(b);
+				startActivityForResult(i,3);
 				break;
 			}
 			case R.id.save_event : {
 				//TODO: save event details
-				//May want this to end this activity & then go to Events.class,
-				//so can't go back to it by clicking back button
 				this.setResult(RESULT_OK, getIntent());
 				finish();
 				break;
 			}
 			case R.id.send_invites_event : {
 				//TODO: save event details, then send invites to server
-				//May want this to end this activity & then go to Events.class,
-				//so can't go back to it by clicking back button
 				this.setResult(RESULT_OK, getIntent());
 				finish();
 				break;
 			}
 		 }
 	 }
+	 @Override
 	 public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		 if(requestCode==0)
+		 super.onActivityResult(requestCode, resultCode, data);
+		 if(resultCode==RESULT_OK) //This line is so when the back button is pressed the data changed by an Activity isn't stored.
 		 {
-			 super.onActivityResult(requestCode, resultCode, data);
-			 Intent i = new Intent(this, Guests.class);	
-			 startActivity(i);
+			 if(requestCode==1)
+			 {
+				 Intent i = new Intent(this, Guests.class);	
+				 startActivity(i);
+			 }
+			 if(requestCode==3)
+			 {
+				 Date startTime = (Date)data.getExtras().getSerializable("time");
+				 Toast.makeText(getApplicationContext(), "received info from ChooseTime: " + startTime.toString(), Toast.LENGTH_LONG).show();
+			 } 
 		 }
 	 }
 	//Finding current location

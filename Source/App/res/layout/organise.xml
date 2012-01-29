@@ -54,7 +54,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="22dp"
             android:layout_toRightOf="@+id/pub_title"
-            android:text="test"
+            android:text="@string/default_location"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </RelativeLayout>
 
