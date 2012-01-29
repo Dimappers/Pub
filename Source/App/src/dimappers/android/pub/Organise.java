@@ -43,7 +43,12 @@ public class Organise extends Activity implements OnClickListener{
 	    	
 	    	AppUser user = new AppUser(12);
 	    	
-	    	Toast.makeText(getApplicationContext(), "User id:" + user.getUserId(), 5000).show();
+	    	Bundle b = getIntent().getExtras();
+	    	
+	    	int date = b.getInt("test");
+	    	
+	    	Toast.makeText(getApplicationContext(), date + " : test", 5000).show();
+	    	//Toast.makeText(getApplicationContext(), "User id:" + user.getUserId(), 5000).show();
 	 }
 	 @Override
 	 public void onStart() {super.onStart(); findLocation();}

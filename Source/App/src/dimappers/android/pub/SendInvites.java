@@ -62,6 +62,7 @@ public class SendInvites extends Activity implements OnClickListener{
 			
 			Bundle bundle = new Bundle();
 			bundle.putSerializable("event", event);
+			bundle.putInt("test", 1992);
 			i = new Intent(this, Organise.class);
 			i.putExtras(bundle);
 			startActivity(i);

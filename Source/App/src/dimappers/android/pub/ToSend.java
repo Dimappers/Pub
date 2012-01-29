@@ -18,10 +18,10 @@ public class ToSend extends Activity implements OnClickListener{
 		
 		setContentView(R.layout.to_send);
 		
-    	findViewById(R.id.textView7).setVisibility(View.INVISIBLE);
-    	findViewById(R.id.editText1).setVisibility(View.INVISIBLE);
-    	findViewById(R.id.make_a_comment).setVisibility(View.INVISIBLE);
-    	findViewById(R.id.send).setVisibility(View.INVISIBLE);
+    	findViewById(R.id.textView7).setVisibility(View.GONE);
+    	findViewById(R.id.editText1).setVisibility(View.GONE);
+    	findViewById(R.id.make_a_comment).setVisibility(View.GONE);
+    	findViewById(R.id.send).setVisibility(View.GONE);
     	
     	Button button_going = (Button)findViewById(R.id.going);
     	button_going.setOnClickListener(this);
@@ -51,8 +51,8 @@ public class ToSend extends Activity implements OnClickListener{
 		{
 	    	findViewById(R.id.make_a_comment).setVisibility(View.VISIBLE);
 	    	findViewById(R.id.send).setVisibility(View.VISIBLE);
-	    	findViewById(R.id.textView7).setVisibility(View.INVISIBLE);
-	    	findViewById(R.id.editText1).setVisibility(View.INVISIBLE);
+	    	findViewById(R.id.textView7).setVisibility(View.GONE);
+	    	findViewById(R.id.editText1).setVisibility(View.GONE);
 			break;
 		}
 		case R.id.make_a_comment :
