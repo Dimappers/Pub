@@ -6,9 +6,12 @@ import java.util.Date;
 import dimappers.android.PubData.PubEvent;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,21 +22,22 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-//FIXME: CRASHES IF YOU PRESS BACK BUTTON ON THIS SCREEN
 public class ChooseTime extends Activity implements OnClickListener{
 	private PubEvent event;
 	private DatePicker date_picker;
 	private DatePicker.OnDateChangedListener onDateChangedListener = new DatePicker.OnDateChangedListener() {
 		public void onDateChanged(DatePicker view, int newYear, int newMonth, int newDay) {
-			if(isInPast(newYear,newMonth,newDay)) {/*TODO: notify!*/}
-			year = newYear;
-			month = newMonth;
-			day = newDay;
+			yeartemp = newYear;
+			monthtemp = newMonth;
+			daytemp = newDay;
 		}
 	};
-    private int year;
+	private int year;
     private int month;
     private int day;
+	private int yeartemp;
+    private int monthtemp;
+    private int daytemp;
 
     private Calendar currentDate;
     private TimePicker time_picker;
@@ -79,8 +83,6 @@ public class ChooseTime extends Activity implements OnClickListener{
         time_picker.setOnTimeChangedListener(onTimeChangedListener);
         
         Toast.makeText(getApplicationContext(), event.GetStartTime().toString(), Toast.LENGTH_LONG).show();
-        
-        updateEvent();
 	}
 
 	private void updateEvent() {}
@@ -97,12 +99,23 @@ public class ChooseTime extends Activity implements OnClickListener{
     	switch(v.getId())
     	{
     		case R.id.save_date_and_time : {
-    			event.SetStartTime(new Date(year-1900,month,day,hour,minute));
-    			getIntent().getExtras().putSerializable("event",event);
-				this.setResult(RESULT_OK,getIntent());
-    			finish();
+    			if(isInPast(yeartemp,monthtemp,daytemp)) {alert();}
+    			else { event.SetStartTime(new Date(year-1900,month,day,hour,minute));
+    			Toast.makeText(getApplicationContext(), "stored time: "+event.GetStartTime().toString(), Toast.LENGTH_LONG).show();
+    			Intent i = getIntent();
+    			Bundle b = i.getExtras();
+    			b.putSerializable("event",event);
+				this.setResult(RESULT_OK,i);
+    			finish();}
     			break;
     		}
     	}
+    }
+    private void alert() {
+    	new AlertDialog.Builder(this).setMessage("This time is in the past. Please choose a different one.")  
+        .setTitle("Alert")  
+        .setCancelable(false)  
+        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int id) {dialog.cancel();}}).show(); 
     }
 }

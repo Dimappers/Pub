@@ -35,13 +35,16 @@ public class Organise extends Activity implements OnClickListener{
 	    	setContentView(R.layout.organise);
 	    	
 	    	Bundle b = getIntent().getExtras();
-	    	facebookId = b.getInt("facebookId");
-	    	Toast.makeText(getApplicationContext(), new Integer(facebookId).toString(), Toast.LENGTH_LONG).show();
-	    	Date date = new Date();
-	    	Integer fb = new Integer(facebookId);
-	    	AppUser host = new AppUser(fb);
-	    	event = new PubEvent(date, (User)host);
-	    	
+	    	if(b.getSerializable("event")!=null) {event=(PubEvent)b.getSerializable("event");}
+	    	else{
+		    	facebookId = b.getInt("facebookId");
+		    	Toast.makeText(getApplicationContext(), "Received id: " + new Integer(facebookId).toString(), Toast.LENGTH_LONG).show();
+		    	Date date = new Date();
+		    	Integer fb = new Integer(facebookId);
+		    	AppUser host = new AppUser(fb);
+		    	event = new PubEvent(date, (User)host);
+	    	}
+
 	    	cur_loc = (TextView)findViewById(R.id.current_location);
 	    	cur_pub = (TextView)findViewById(R.id.current_pub);
 	    	
@@ -55,13 +58,12 @@ public class Organise extends Activity implements OnClickListener{
 	    	button_save_event.setOnClickListener(this);
 	    	Button button_send_invites = (Button)findViewById(R.id.send_invites_event);
 	    	button_send_invites.setOnClickListener(this);
-	    	
-	    	AppUser user = new AppUser(12);
-	    	
-	    	Toast.makeText(getApplicationContext(), "User id:" + user.getUserId(), 5000).show();
 	 }
 	 @Override
-	 public void onStart() {super.onStart(); findLocation();}
+	 public void onStart(){
+		 super.onStart(); 
+		 findLocation();
+	}
 	 public void onClick(View v)
 	 {
 		 Intent i;
@@ -73,7 +75,7 @@ public class Organise extends Activity implements OnClickListener{
 			}
 			case R.id.chosen_guests_button : {
 				i = new Intent(this, Pending.class);
-				startActivityForResult(i, 0);
+				startActivityForResult(i, 1);
 				break;
 			}
 			case R.id.time_button : {
@@ -98,17 +100,21 @@ public class Organise extends Activity implements OnClickListener{
 			}
 		 }
 	 }
+	 @Override
 	 public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		 super.onActivityResult(requestCode, resultCode, data);
-		 if(requestCode==0)
+		 if(resultCode==RESULT_OK) //This line is so when the back button is pressed the data changed by an Activity isn't stored.
 		 {
-			 Intent i = new Intent(this, Guests.class);	
-			 startActivity(i);
-		 }
-		 if(requestCode==3)
-		 {
-			 event = (PubEvent)data.getExtras().getSerializable("event");
-			 Toast.makeText(getApplicationContext(), event.GetStartTime().toString(), Toast.LENGTH_LONG).show();
+			 if(requestCode==1)
+			 {
+				 Intent i = new Intent(this, Guests.class);	
+				 startActivity(i);
+			 }
+			 if(requestCode==3)
+			 {
+				 Date startTime = (Date)data.getExtras().getSerializable("time");
+				 Toast.makeText(getApplicationContext(), "received info from ChooseTime: " + startTime.toString(), Toast.LENGTH_LONG).show();
+			 } 
 		 }
 	 }
 	//Finding current location

@@ -20,7 +20,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	super.onCreate(savedInstanceState);
     	
     	//need to log into Facebook if not logged in before
-    	facebookId = 0;
+    	facebookId = 1238;
     	
     	setContentView(R.layout.main);
     	
@@ -30,7 +30,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	Button button_invites = (Button)findViewById(R.id.invites_button);
     	button_invites.setOnClickListener(this);
     	
-    	AppUser user = new AppUser(1238);  
+    	AppUser user = new AppUser(facebookId);
     	
     	Toast.makeText(getApplicationContext(), "User id: " + user.getUserId().toString(), 200).show();
     }

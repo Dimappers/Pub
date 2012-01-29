@@ -108,12 +108,12 @@ public EventListAdapter(Context context) {
     this.context = context;
 }
 
-@Override
+
 public Object getChild(int groupPosition, int childPosition) {
 	return children[groupPosition][childPosition];
 }
 
-@Override
+
 public long getChildId(int groupPosition, int childPosition) {
 	return childPosition;
 }
@@ -136,22 +136,22 @@ public TextView getGenericView() {
     return textView;
 }
 
-@Override
+
 public int getChildrenCount(int groupPosition) {
 	return children[groupPosition].length;
 }
 
-@Override
+
 public Object getGroup(int groupPosition) {
 	return groups[groupPosition];
 }
 
-@Override
+
 public int getGroupCount() {
 	return groups.length;
 }
 
-@Override
+
 public long getGroupId(int groupPosition) {
 	return groupPosition;
 }
@@ -163,13 +163,10 @@ public View getGroupView(int groupPosition, boolean isExpanded, View convertView
     return textView;
 }
 
-
-@Override
 public boolean hasStableIds() {
 	return true;
 }
 
-@Override
 public boolean isChildSelectable(int groupPosition, int childPosition) {
 	return true;
 }
