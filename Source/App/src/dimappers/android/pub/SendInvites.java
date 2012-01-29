@@ -1,5 +1,9 @@
 package dimappers.android.pub;
 
+import java.util.Date;
+
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.User;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -29,6 +33,9 @@ public class SendInvites extends Activity implements OnClickListener{
     	Button button_make_comment = (Button) findViewById(R.id.make_a_comment);
     	button_make_comment.setOnClickListener(this);
     	
+    	Button button_edit = (Button) findViewById(R.id.edit_button);
+    	button_edit.setOnClickListener(this);
+    	
     	Button button_delete_event = (Button) findViewById(R.id.delete_Event);
     	button_delete_event.setOnClickListener(this);
 	}
@@ -47,6 +54,17 @@ public class SendInvites extends Activity implements OnClickListener{
 		case R.id.delete_Event :
 		{
 			displayAlert();
+			break;
+		}
+		case R.id.edit_button :
+		{
+			PubEvent event = new PubEvent(new Date(), new User(new Integer(1)));
+			
+			Bundle bundle = new Bundle();
+			bundle.putSerializable("event", event);
+			i = new Intent(this, Organise.class);
+			i.putExtras(bundle);
+			startActivity(i);
 			break;
 		}
 		case R.id.make_a_comment :

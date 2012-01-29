@@ -53,6 +53,8 @@
   	<string name="attach">Attach</string>
   	
   	<string name="cancel">Cancel</string>
+  	
+  	<string name="edit">Edit</string>
 
     
 </resources>
