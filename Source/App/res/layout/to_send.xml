@@ -92,7 +92,7 @@
         android:gravity="center" >
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/decline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -101,7 +101,7 @@
             android:text="@string/decline" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/going"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -144,19 +144,23 @@
         android:gravity="center" >
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/make_a_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="35dp"
             android:text="@string/make_a_comment" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/button4"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="23dp"
+            android:layout_toRightOf="@+id/make_a_comment"
             android:text="@string/send" />
+
     </RelativeLayout>
 
 </LinearLayout>

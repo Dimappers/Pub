@@ -94,7 +94,7 @@
         android:gravity="center" >
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/make_a_comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -123,7 +123,18 @@
         android:id="@+id/delete_Event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
         android:text="@string/delete_event" />
+
+    <Button
+        android:id="@+id/edit_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="44dp"
+        android:layout_toLeftOf="@+id/delete_Event"
+        android:text="@string/edit" />
 
     </RelativeLayout>
     

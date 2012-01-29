@@ -49,6 +49,12 @@
   	<string name="available_from">Available from:</string>
   	
   	<string name="pub_name">Pub Name:</string>
+  	
+  	<string name="attach">Attach</string>
+  	
+  	<string name="cancel">Cancel</string>
+  	
+  	<string name="edit">Edit</string>
 
     
 </resources>
