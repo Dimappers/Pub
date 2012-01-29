@@ -30,12 +30,17 @@ public class Organise extends Activity implements OnClickListener{
 	private PubEvent event;
 	private int facebookId;
 	 @Override
-	    public void onCreate(Bundle savedInstanceState) {
+	 public void onCreate(Bundle savedInstanceState)
+	 {
 	    	super.onCreate(savedInstanceState);
 	    	setContentView(R.layout.organise);
 	    	
 	    	Bundle b = getIntent().getExtras();
-	    	if(b.getSerializable("event")!=null) {event=(PubEvent)b.getSerializable("event");}
+	    	if(b.getSerializable("event")!=null)
+	    	{
+	    		event=(PubEvent)b.getSerializable("event");
+	    		Toast.makeText(getApplicationContext(), "Received event: " + event.GetHost().getUserId().toString(), Toast.LENGTH_LONG).show();
+	    	}
 	    	else{
 		    	facebookId = b.getInt("facebookId");
 		    	Toast.makeText(getApplicationContext(), "Received id: " + new Integer(facebookId).toString(), Toast.LENGTH_LONG).show();
