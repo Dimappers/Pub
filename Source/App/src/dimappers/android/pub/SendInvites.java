@@ -1,5 +1,6 @@
 package dimappers.android.pub;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import dimappers.android.PubData.PubEvent;
@@ -58,7 +59,7 @@ public class SendInvites extends Activity implements OnClickListener{
 		}
 		case R.id.edit_button :
 		{
-			PubEvent event = new PubEvent(new Date(), new User(new Integer(1)));
+			PubEvent event = new PubEvent(Calendar.getInstance(), new User(new Integer(1)));
 			
 			Bundle bundle = new Bundle();
 			bundle.putSerializable("event", event);

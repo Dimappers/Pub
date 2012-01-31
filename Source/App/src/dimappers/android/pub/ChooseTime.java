@@ -25,31 +25,7 @@ import android.widget.Toast;
 public class ChooseTime extends Activity implements OnClickListener{
 	private PubEvent event;
 	private DatePicker date_picker;
-	private DatePicker.OnDateChangedListener onDateChangedListener = new DatePicker.OnDateChangedListener() {
-		public void onDateChanged(DatePicker view, int newYear, int newMonth, int newDay) {
-			yeartemp = newYear;
-			monthtemp = newMonth;
-			daytemp = newDay;
-		}
-	};
-	private int year;
-    private int month;
-    private int day;
-	private int yeartemp;
-    private int monthtemp;
-    private int daytemp;
-
-    private Calendar currentDate;
-    private TimePicker time_picker;
-    private TimePicker.OnTimeChangedListener onTimeChangedListener = new TimePicker.OnTimeChangedListener() {
-    	public void onTimeChanged(TimePicker view, int newHour, int newMinute) {
-    		if(isStrangeTime(newHour)) {/*TODO: notify!*/}
-    		hour = newHour;
-    		minute = newMinute;
-    	}
-    };
-    private int hour;
-    private int minute;
+	private TimePicker time_picker;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,35 +37,28 @@ public class ChooseTime extends Activity implements OnClickListener{
     	
     	Bundle b = getIntent().getExtras();
     	event = (PubEvent)b.getSerializable("event");
-    	Date startTime = event.GetStartTime();
-
-        currentDate = Calendar.getInstance();
+    	Calendar startTime = event.GetStartTime();
         
     	// Date
         date_picker = (DatePicker)findViewById(R.id.datePicker);
         date_picker.setOnClickListener(this);
-        year = startTime.getYear() + 1900;
-        month = startTime.getMonth();
-        day = startTime.getDate();
-    	date_picker.init(year, month, day, onDateChangedListener);
+        
+    	date_picker.init(startTime.get(Calendar.YEAR), startTime.get(Calendar.MONTH), startTime.get(Calendar.DAY_OF_MONTH), onDateChangedListener);
         
         // Time
         time_picker = (TimePicker)findViewById(R.id.timePicker);
         time_picker.setOnClickListener(this);
-        hour = startTime.getHours();
-        minute = startTime.getMinutes();
-        time_picker.setCurrentHour(new Integer(hour));
-        time_picker.setCurrentMinute(new Integer(minute));
+        
+        time_picker.setCurrentHour(startTime.get(Calendar.HOUR_OF_DAY));
+        time_picker.setCurrentMinute(startTime.get(Calendar.MINUTE));
         time_picker.setOnTimeChangedListener(onTimeChangedListener);
         
-        Toast.makeText(getApplicationContext(), event.GetStartTime().toString(), Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), event.GetStartTime().getTime().toString(), Toast.LENGTH_LONG).show();
 	}
-
-	private void updateEvent() {}
 	
-    private boolean isInPast(int year, int month, int day) {
-    	if(currentDate.after(new Date(year-1900,month,day))) {return true;}
-    	return false;
+    private boolean isInPast() {
+    	Calendar currentDate = event.GetStartTime();
+    	return currentDate.compareTo(Calendar.getInstance()) <= -1;
     }
     private boolean isStrangeTime(int hour) {
     	if(hour<16) {return true;} 
@@ -99,14 +68,16 @@ public class ChooseTime extends Activity implements OnClickListener{
     	switch(v.getId())
     	{
     		case R.id.save_date_and_time : {
-    			if(isInPast(yeartemp,monthtemp,daytemp)) {alert();}
-    			else { 
-    				event.SetStartTime(new Date(year-1900,month,day,hour,minute));
-	    			Toast.makeText(getApplicationContext(), "stored time: "+event.GetStartTime().toString(), Toast.LENGTH_LONG).show();
-	    			/*Intent i = getIntent();
-	    			Bundle b = i.getExtras();
-	    			b.putSerializable("event",event);
-					this.setResult(RESULT_OK,i);*/
+    			if(isInPast()) {alert();}
+    			else {
+	    			Toast.makeText(getApplicationContext(), "stored time: "+event.GetStartTime().getTime().toString(), Toast.LENGTH_LONG).show();
+	    			Intent i = getIntent();
+	    			Bundle b = new Bundle();//i.getExtras();
+	    			b.putSerializable("eventts",event);
+	    			Intent returnIntent = new Intent();
+	    			returnIntent.putExtras(b);
+	    			String s = event.GetStartTime().getTime().toString();
+					this.setResult(RESULT_OK,returnIntent);
 	    			finish();
     			}
     			break;
@@ -120,4 +91,24 @@ public class ChooseTime extends Activity implements OnClickListener{
         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int id) {dialog.cancel();}}).show(); 
     }
+    
+    private DatePicker.OnDateChangedListener onDateChangedListener = new DatePicker.OnDateChangedListener() {
+		public void onDateChanged(DatePicker view, int newYear, int newMonth, int newDay) {
+			Calendar currentDate = event.GetStartTime();
+			currentDate.set(Calendar.YEAR, newYear);
+			currentDate.set(Calendar.MONTH, newMonth);
+			currentDate.set(Calendar.DAY_OF_MONTH, newDay);
+		}
+	};
+	
+	private TimePicker.OnTimeChangedListener onTimeChangedListener = new TimePicker.OnTimeChangedListener() {
+    	public void onTimeChanged(TimePicker view, int newHour, int newMinute) {
+    		
+    		if(isStrangeTime(newHour)) {/*TODO: notify!*/}
+    		
+    		Calendar currentDate = event.GetStartTime();
+    		currentDate.set(Calendar.HOUR_OF_DAY, newHour);
+    		currentDate.set(Calendar.MINUTE, newMinute);
+    	}
+    };
 }

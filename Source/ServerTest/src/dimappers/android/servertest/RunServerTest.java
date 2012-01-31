@@ -306,12 +306,12 @@ public class RunServerTest
 	private static PubEvent CreatePubEvent()
 	{
 		System.out.println((double)42.0);
-		return new PubEvent(new Date(100000), new PubLocation(42, 36, "Spoons Leam"), CreateHost());
+		return new PubEvent(Calendar.getInstance(), new PubLocation(42, 36, "Spoons Leam"), CreateHost());
 	}
 	
 	private static PubEvent CreatePubEventWithGuest()
 	{
-		PubEvent event = new PubEvent(new Date(50000), new PubLocation(52.29009, -1.53585, "Robins Well"), CreateHost());
+		PubEvent event = new PubEvent(Calendar.getInstance(), new PubLocation(52.29009, -1.53585, "Robins Well"), CreateHost());
 		event.AddUser(CreateGuest());
 		
 		return event; 

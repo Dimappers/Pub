@@ -52,41 +52,41 @@ public class Organise extends ListActivity implements OnClickListener{
 	    	{
 	    		event=(PubEvent)b.getSerializable("event");
 	    		Toast.makeText(getApplicationContext(), "Received event: " + event.GetHost().getUserId().toString(), Toast.LENGTH_LONG).show();
+	    		
+	    		if(b.getBoolean("NewEvent"))
+	    		{
+	    			Toast.makeText(getApplicationContext(), "New event...", 100).show();	    			
+	    		}
+	    		else
+	    		{
+	    			Toast.makeText(getApplicationContext(), "Old event...", 100).show();
+	    		}
 	    	}
 	    	else{
 	    		//TODO: this needs changing when pending passes in an event
-		    	facebookId = b.getInt("facebookId");
-		    	Toast.makeText(getApplicationContext(), "Received id: " + new Integer(facebookId).toString(), Toast.LENGTH_LONG).show();
-		    	Date date = new Date();
-		    	Integer fb = new Integer(facebookId);
-		    	AppUser host = new AppUser(fb);
-		    	event = new PubEvent(date, (User)host);
-		    	event.SetPubLocation(new PubLocation());
-		    	event.AddUser(new AppUser(143));
+		    	int i =  1/0;
 	    	}
 
 	    	cur_pub = (Button)findViewById(R.id.pub_button);
-	    	cur_pub.setText(event.GetPubLocation().pubName);
 	    	cur_time = (Button)findViewById(R.id.time_button);
-	    	cur_time.setText(event.GetStartTime().toString());
 	    	
-	    	//TODO: add guests from event
-	    	listItems.add("kim");
-	    	listItems.add("jason");
-	    	for(User s : event.GetUsers()) {
-	    		listItems.add(((AppUser) s).GetRealFacebookName());
-	    	}
 	    	guest_list = (ListView)findViewById(android.R.id.list);
-			adapter = new ArrayAdapter<String>(this, android.R.layout.test_list_item, listItems);
-			setListAdapter(adapter);
+	    	adapter = new ArrayAdapter<String>(this, android.R.layout.test_list_item, listItems);
+	    	
+	    	setListAdapter(adapter);
+	    	
+	    	UpdateFromEvent();
 	    	
 	    	cur_pub.setOnClickListener(this);
+	    	
 	    	guest_list.setOnItemClickListener(new OnItemClickListener() {
 	    	    public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 	    	    	Intent i = new Intent(getBaseContext(), Guests.class);
 					startActivity(i);
 	    	        }
 	    	      });
+	    	
+	    	
 	    	cur_time.setOnClickListener(this);
 	    	
 	    	Button button_save_event = (Button)findViewById(R.id.save_event);
@@ -142,13 +142,15 @@ public class Organise extends ListActivity implements OnClickListener{
 	 }
 	 @Override
 	 public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		 super.onActivityResult(requestCode, resultCode, data);
+		 //super.onActivityResult(requestCode, resultCode, data);
 		 if(resultCode==RESULT_OK) //This line is so when the back button is pressed the data changed by an Activity isn't stored.
 		 {
 			 if(requestCode==3)
 			 {
-				 Date startTime = (Date)data.getExtras().getSerializable("time");
-				 Toast.makeText(getApplicationContext(), "received info from ChooseTime: " + startTime.toString(), Toast.LENGTH_LONG).show();
+				 event = (PubEvent)data.getExtras().getSerializable("eventts");
+				 String s = event.GetStartTime().getTime().toString();
+				 UpdateFromEvent();
+				 //Toast.makeText(getApplicationContext(), "received info from ChooseTime: " + startTime.toString(), Toast.LENGTH_LONG).show();
 			 } 
 		 }
 	 }
@@ -169,6 +171,18 @@ public class Organise extends ListActivity implements OnClickListener{
 		//Register the listener with the Location Manager to receive location updates
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 	 }
+	
+	private void UpdateFromEvent()
+	{
+		cur_pub.setText(event.GetPubLocation().pubName);
+		cur_time.setText(event.GetStartTime().getTime().toString());
+		
+		
+		listItems.clear();
+    	for(User s : event.GetUsers()) {
+    		listItems.add(((AppUser) s).GetRealFacebookName());
+    	}
+	}
 }
 
 class MyLocationListener implements LocationListener{
