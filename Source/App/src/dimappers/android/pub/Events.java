@@ -48,26 +48,26 @@ public class Events extends ExpandableListActivity {
 		 {
 			 case 0: 
 			 {
-					i = new Intent(this, HostingEvents.class);
+					i = new Intent(this, HostEvents.class);
 					startActivity(i);
 					return true;
 			 }
 			 case 1 :
 			 {		
 			 		
-				 	i = new Intent(this, SendInvites.class);
+				 	i = new Intent(this, HostEvents.class);
 					startActivity(i);
 					return true;
 			 }
 			 case 2 : 
 			 {
-					i = new Intent(this, ToSend.class);
+					i = new Intent(this, UserInvites.class);
 					startActivity(i);
 					return true;   
 		     } 
 			 case 3 :
 			 {
-			 		i = new Intent(this, Going.class);
+			 		i = new Intent(this, UserInvites.class);
 					startActivity(i);
 					return true;
 			 }
