@@ -1,6 +1,7 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 
@@ -9,6 +10,7 @@ import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.User;
 
 import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -19,16 +21,26 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Organise extends Activity implements OnClickListener{
+public class Organise extends ListActivity implements OnClickListener{
 	
-	private TextView cur_loc;
-	private TextView cur_pub;
+	private Button cur_pub;
+	private Button cur_time;
+	
 	private PubEvent event;
 	private int facebookId;
+	
+	private ArrayList<String> listItems=new ArrayList<String>();
+	private ArrayAdapter<String> adapter;
+	private ListView guest_list;
+	
 	 @Override
 	 public void onCreate(Bundle savedInstanceState)
 	 {
@@ -42,23 +54,41 @@ public class Organise extends Activity implements OnClickListener{
 	    		Toast.makeText(getApplicationContext(), "Received event: " + event.GetHost().getUserId().toString(), Toast.LENGTH_LONG).show();
 	    	}
 	    	else{
+	    		//TODO: this needs changing when pending passes in an event
 		    	facebookId = b.getInt("facebookId");
 		    	Toast.makeText(getApplicationContext(), "Received id: " + new Integer(facebookId).toString(), Toast.LENGTH_LONG).show();
 		    	Date date = new Date();
 		    	Integer fb = new Integer(facebookId);
 		    	AppUser host = new AppUser(fb);
 		    	event = new PubEvent(date, (User)host);
+		    	event.SetPubLocation(new PubLocation());
+		    	event.AddUser(new AppUser(143));
 	    	}
 
-	    	cur_loc = (TextView)findViewById(R.id.current_location);
-	    	cur_pub = (TextView)findViewById(R.id.current_pub);
+	    	cur_pub = (Button)findViewById(R.id.pub_button);
+	    	cur_pub.setText(event.GetPubLocation().pubName);
+	    	cur_time = (Button)findViewById(R.id.time_button);
+	    	cur_time.setText(event.GetStartTime().toString());
 	    	
-	    	Button button_organise = (Button)findViewById(R.id.location_button);
-	    	button_organise.setOnClickListener(this);
-	    	Button button_choose_guests = (Button)findViewById(R.id.chosen_guests_button);
-	    	button_choose_guests.setOnClickListener(this);
-	    	Button button_choose_time = (Button)findViewById(R.id.time_button);
-	    	button_choose_time.setOnClickListener(this);
+	    	//TODO: add guests from event
+	    	listItems.add("kim");
+	    	listItems.add("jason");
+	    	for(User s : event.GetUsers()) {
+	    		listItems.add(((AppUser) s).GetRealFacebookName());
+	    	}
+	    	guest_list = (ListView)findViewById(android.R.id.list);
+			adapter = new ArrayAdapter<String>(this, android.R.layout.test_list_item, listItems);
+			setListAdapter(adapter);
+	    	
+	    	cur_pub.setOnClickListener(this);
+	    	guest_list.setOnItemClickListener(new OnItemClickListener() {
+	    	    public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
+	    	    	Intent i = new Intent(getBaseContext(), Guests.class);
+					startActivity(i);
+	    	        }
+	    	      });
+	    	cur_time.setOnClickListener(this);
+	    	
 	    	Button button_save_event = (Button)findViewById(R.id.save_event);
 	    	button_save_event.setOnClickListener(this);
 	    	Button button_send_invites = (Button)findViewById(R.id.send_invites_event);
@@ -69,18 +99,23 @@ public class Organise extends Activity implements OnClickListener{
 		 super.onStart(); 
 		 findLocation();
 	}
+	 public void onListItemClick(View v)
+	 {
+		if(v.getId()==android.R.id.list) {
+			Intent i = new Intent(this, Guests.class);
+			Bundle b = new Bundle();
+			b.putSerializable("event",event);
+			i.putExtras(b);
+			startActivity(i);
+		}
+	 }
 	 public void onClick(View v)
 	 {
 		 Intent i;
 		 switch (v.getId()){
-			case R.id.location_button : {
+			case R.id.pub_button : {
 				i = new Intent(this, ChoosePub.class);
 				startActivity(i);
-				break;
-			}
-			case R.id.chosen_guests_button : {
-				i = new Intent(this, Pending.class);
-				startActivityForResult(i, 1);
 				break;
 			}
 			case R.id.time_button : {
@@ -110,11 +145,6 @@ public class Organise extends Activity implements OnClickListener{
 		 super.onActivityResult(requestCode, resultCode, data);
 		 if(resultCode==RESULT_OK) //This line is so when the back button is pressed the data changed by an Activity isn't stored.
 		 {
-			 if(requestCode==1)
-			 {
-				 Intent i = new Intent(this, Guests.class);	
-				 startActivity(i);
-			 }
 			 if(requestCode==3)
 			 {
 				 Date startTime = (Date)data.getExtras().getSerializable("time");

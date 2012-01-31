@@ -41,11 +41,8 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		switch (v.getId()) {
 		case R.id.organise_button : 
 		{
-			Bundle b = new Bundle();
-			b.putInt("facebookId", facebookId);
-			i = new Intent(this, Organise.class);
-			i.putExtras(b);
-			startActivityForResult(i,0);
+			i = new Intent(this,Pending.class);
+			startActivityForResult(i,1);
 			break;
 		}
 		case R.id.invites_button : {
@@ -57,11 +54,23 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		}
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		 if(requestCode==0&&resultCode==RESULT_OK)
+    	if(resultCode==RESULT_OK)
+    	{
+		 if(requestCode==0)
 		 {
 			 super.onActivityResult(requestCode, resultCode, data);
 			 Intent i = new Intent(this, Events.class);	
 			 startActivity(i);
 		 }
+		 if(requestCode==1)
+		 {
+			super.onActivityResult(requestCode, resultCode, data);
+			Bundle b = new Bundle();
+			b.putInt("facebookId", facebookId);
+			Intent i = new Intent(this, Organise.class);
+			i.putExtras(b);
+			startActivityForResult(i,0); 
+		 }
+    	}
 	 }
 }

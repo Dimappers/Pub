@@ -7,17 +7,16 @@
     <string name="save">Save</string>
   	<string name="organise">Organise</string>
  	<string name="location">Your current location is:</string> 
- 	<string name="default_location">Unknown</string>
-  	<string name="location_button">Change pub</string> 
+ 	<string name="default_location">Unknown</string> 
   	<string name="all_guests">View chosen guests</string> 
   	<string name="use_pub">Use pub</string>
-  	<string name="pub_location">The closest pub is:</string>
+  	<string name="pub_location">Pub:</string>
   	<string name="time_but">Set initial starting time</string>
   	<string name="use_guest">Use selected friend</string>
   	<string name="choose_date">Choose date:</string>
   	<string name="choose_time">Choose time:</string>
   	<string name="invites">View invites</string>
-  	<string name="location_error">Error: You must supply a location</string>  	
+  	<string name="location_error">An error has occurred, please try again.</string>  	
   	<string name="test">Test</string>
   	<string name="add_guest">Add guest</string>  	
   	<string name="show_sent_invites">Show Sent Invites</string>
@@ -55,6 +54,10 @@
   	<string name="cancel">Cancel</string>
   	
   	<string name="edit">Edit</string>
+  	
+  	<string name="time_title">Time:</string>
+  	
+  	<string name="guest_title">Guests:</string>
 
     
 </resources>

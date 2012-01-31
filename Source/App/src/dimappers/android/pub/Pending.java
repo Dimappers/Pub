@@ -12,9 +12,7 @@ public class Pending extends Activity {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.pending_guests);
     	findViewById(R.id.location_error).setVisibility(View.INVISIBLE);
-    	//TODO: find suitable guests
-    	//if error occurs:
-    	//findViewById(R.id.location_error).setVisibility(View.VISIBLE);
+    	//TODO: find suitable guests etc.
 		new DoLoading().execute(this);
 	}	
 }
@@ -31,12 +29,14 @@ class DoLoading extends AsyncTask<Pending,Integer,Integer>
         do {
         	t1 = System.currentTimeMillis();
         }
-        while ((t1 - t0) < (2 * 1000));
+        while ((t1 - t0) < (1 * 1000));
 		//end of fake wait
         
 		return null;
 	}
 	protected void onPostExecute(Integer result) {
+		//TODO: pass updated event back
+		activity.setResult(activity.RESULT_OK,activity.getIntent());
         activity.finish();
     }
 }
