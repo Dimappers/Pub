@@ -1,22 +1,27 @@
 package dimappers.android.pub;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ToSend extends Activity implements OnClickListener{
+public class UserInvites extends Activity implements OnClickListener{
 
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.to_send);
+		setContentView(R.layout.user_invites);
 		
     	findViewById(R.id.textView7).setVisibility(View.GONE);
     	findViewById(R.id.editText1).setVisibility(View.GONE);
@@ -31,6 +36,16 @@ public class ToSend extends Activity implements OnClickListener{
     	
     	Button button_make_comment = (Button) findViewById(R.id.make_a_comment);
     	button_make_comment.setOnClickListener(this);
+    	
+    	/*	TODO: Passing values to determine which page loaded this one: going or waiting for response to know the status.
+    	  	Attending button made green if going
+    	  	Decline button made red if not going
+    	  	Neither colour if undecided
+    	  	
+    	  	Make available from time textbox open time dialog and automatically have current start time put in
+    	  
+    	 	
+    	 */
 
 	}
 	
@@ -65,7 +80,7 @@ public class ToSend extends Activity implements OnClickListener{
 	
 	private void showAddDialog() 
 	{
-		 final Dialog commentDialog = new Dialog(ToSend.this);
+		 final Dialog commentDialog = new Dialog(UserInvites.this);
          commentDialog.setContentView(R.layout.making_comment);
          commentDialog.setTitle("Do you want to make a comment?");
          commentDialog.setCancelable(true);
@@ -93,7 +108,5 @@ public class ToSend extends Activity implements OnClickListener{
 		
 		commentDialog.show();
 	}
-	
-	
-	
+		
 }

@@ -25,7 +25,7 @@ public class AppUser extends User
 	//Get full facebook name, ie Thomas Kiley instead of thomas.kiley
 	String GetRealFacebookName()
 	{
-		return "";
+		return getUserId().toString();
 	}
 
 }

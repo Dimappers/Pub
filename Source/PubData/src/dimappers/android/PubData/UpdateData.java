@@ -1,18 +1,18 @@
 package dimappers.android.PubData;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 public class UpdateData implements Serializable{
 
-	private Date 						startTime;
+	private Calendar					startTime;
 	private PubLocation 				pubLocation;
 	private LinkedList<User>			users;
 	private int 						eventId;
 	
-	public UpdateData(int eventId, Date startTime, PubLocation pubLocation) {
+	public UpdateData(int eventId, Calendar startTime, PubLocation pubLocation) {
 		this.startTime = 	startTime;
 		this.pubLocation = 	pubLocation;
 		this.users = 		new LinkedList<User>();
@@ -23,7 +23,7 @@ public class UpdateData implements Serializable{
 	}
 	
 	public int getEventId() 						{ return this.eventId; }
-	public Date getStartTime() 						{ return this.startTime; }
+	public Calendar getStartTime() 					{ return this.startTime; }
 	public PubLocation getPubLocation() 			{ return this.pubLocation; }
 	public LinkedList<User> getUsers()	 			{ return this.users; }
 }

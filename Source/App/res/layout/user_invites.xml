@@ -67,32 +67,23 @@
             android:layout_height="wrap_content"
             android:text="@string/guests"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/textView6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="45dp"
-            android:text="TextView" />
     </RelativeLayout>
 
     <ListView
-        android:id="@+id/list_of_guests"
+        android:id="@+id/listView1"
         android:layout_width="match_parent"
         android:layout_height="116dp"
+        android:layout_weight="0.55"
         android:scrollbars="vertical" >
     </ListView>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:gravity="center" >
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/decline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -101,7 +92,7 @@
             android:text="@string/decline" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/going"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -144,22 +135,22 @@
         android:gravity="center" >
 
         <Button
-            android:id="@+id/button3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="52dp"
-            android:text="@string/send" />
-
-        <Button
             android:id="@+id/make_a_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="30dp"
+            android:layout_marginLeft="35dp"
             android:text="@string/make_a_comment" />
+
+        <Button
+            android:id="@+id/send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="23dp"
+            android:layout_toRightOf="@+id/make_a_comment"
+            android:text="@string/send" />
 
     </RelativeLayout>
 

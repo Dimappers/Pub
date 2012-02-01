@@ -1,6 +1,7 @@
 package dimappers.android.PubData;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,12 +20,12 @@ public class PubEvent implements Serializable
 	//Properties
 	private HashMap<User, GoingStatus>	users;
 	private User 						host;
-	private Date 						startTime;
+	private Calendar					startTime;
 	private PubLocation					pubLocation;
 	private int 						globalEventId;
 	
 	//Constructors
-	public PubEvent(Date startTime, User host)
+	public PubEvent(Calendar startTime, User host)
 	{
 		users = new HashMap<User, GoingStatus>();
 		users.put(host, GoingStatus.going);
@@ -32,7 +33,7 @@ public class PubEvent implements Serializable
 		this.startTime = startTime;
 	}
 	
-	public PubEvent(Date startTime, PubLocation pubLocation, User host)
+	public PubEvent(Calendar startTime, PubLocation pubLocation, User host)
 	{
 		users = new HashMap<User, GoingStatus>();
 		users.put(host, GoingStatus.going);
@@ -52,11 +53,11 @@ public class PubEvent implements Serializable
 		return users;
 	}
 	
-	public Date GetStartTime()
+	public Calendar GetStartTime()
 	{
 		return startTime;
 	}
-	public void SetStartTime(Date startTime)
+	public void SetStartTime(Calendar startTime)
 	{
 		this.startTime = startTime;
 	}
