@@ -32,7 +32,7 @@ public class Going extends Activity implements OnClickListener{
 		
 		Guests going_guests = new Guests();
 	
-		Collections.copy(listItems,going_guests.listItems);
+		//Collections.copy(listItems,going_guests.listItems);
     	guest_list = (ListView)findViewById(R.id.list_of_guests);
 		guest_list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		//adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, listItems);

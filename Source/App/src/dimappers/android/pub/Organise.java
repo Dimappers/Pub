@@ -82,6 +82,9 @@ public class Organise extends ListActivity implements OnClickListener{
 	    	guest_list.setOnItemClickListener(new OnItemClickListener() {
 	    	    public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 	    	    	Intent i = new Intent(getBaseContext(), Guests.class);
+	    	    	Bundle b = new Bundle();
+	    	    	b.putSerializable("event", event);
+	    	    	i.putExtras(b);
 					startActivity(i);
 	    	        }
 	    	      });

@@ -27,5 +27,11 @@ public class AppUser extends User
 	{
 		return getUserId().toString();
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "Id: " + GetRealFacebookName();		
+	}
 
 }

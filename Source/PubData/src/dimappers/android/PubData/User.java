@@ -24,7 +24,7 @@ public class User implements Serializable {
 	
 	public boolean isEqual(User otherUser)
 	{
-		return facebookUserId == otherUser.getUserId();
+		return facebookUserId.intValue() == getUserId().intValue();
 	}
 
 }
