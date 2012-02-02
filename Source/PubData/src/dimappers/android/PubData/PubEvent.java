@@ -71,6 +71,11 @@ public class PubEvent implements Serializable
 		this.pubLocation = pubLocation;
 	}
 	
+	public boolean DoesContainUser(User user)
+	{
+		return users.containsKey(user);
+	}
+	
 	public int GetEventId()
 	{
 		return globalEventId;

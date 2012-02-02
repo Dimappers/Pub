@@ -82,7 +82,10 @@ public class Organise extends ListActivity implements OnClickListener{
 	    	guest_list.setOnItemClickListener(new OnItemClickListener() {
 	    	    public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 	    	    	Intent i = new Intent(getBaseContext(), Guests.class);
-					startActivity(i);
+	    	    	Bundle b = new Bundle();
+	    	    	b.putSerializable("event", event);
+	    	    	i.putExtras(b);
+					startActivityForResult(i, 4);
 	    	        }
 	    	      });
 	    	
@@ -154,10 +157,14 @@ public class Organise extends ListActivity implements OnClickListener{
 			 }
 			 if(requestCode==3)
 			 {
-				 event = (PubEvent)data.getExtras().getSerializable("eventts");
-				 String s = event.GetStartTime().getTime().toString();
+				 event = (PubEvent)data.getExtras().getSerializable("event");
 				 UpdateFromEvent();
 			 } 
+			 else if(requestCode == 4)
+			 {
+				 event = (PubEvent)data.getExtras().getSerializable("event");
+				 UpdateFromEvent();
+			 }
 		 }
 	 }
 	//Finding current location
@@ -187,6 +194,8 @@ public class Organise extends ListActivity implements OnClickListener{
     	for(User s : event.GetUsers()) {
     		listItems.add(((AppUser) s).GetRealFacebookName());
     	}
+    	
+    	adapter.notifyDataSetChanged();
 	}
 }
 
