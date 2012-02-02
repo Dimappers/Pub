@@ -65,7 +65,7 @@ public class Organise extends ListActivity implements OnClickListener{
 	    	else{
 	    		//TODO: this needs changing when pending passes in an event
 		    	int i =  1/0;
-	    	}
+	    	} 
 
 	    	cur_pub = (Button)findViewById(R.id.pub_button);
 	    	cur_time = (Button)findViewById(R.id.time_button);

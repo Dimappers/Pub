@@ -1,17 +1,26 @@
 package dimappers.android.pub;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,8 +55,81 @@ public class UserInvites extends Activity implements OnClickListener{
     	  
     	 	
     	 */
+    	
+    	
 
+    	ListView list = (ListView) findViewById(R.id.listView1);
+    	 
+    	ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
+    	HashMap<String, String> map = new HashMap<String, String>();
+    	map.put("Comment", "yes");
+    	map.put("Guest", "Jason Karp");
+    	map.put("Available From Time", "8:00 PM");
+    	mylist.add(map);
+    	map = new HashMap<String, String>();
+    	map.put("Comment", "no");
+    	map.put("Guest", "Tom Kiley");
+    	map.put("Available From Time", "8:15 PM");
+    	mylist.add(map);
+    	map = new HashMap<String, String>();
+    	map.put("Comment", "no");
+    	map.put("Guest", "Tom Nicholls");
+    	map.put("Available From Time", "9:15 PM");
+    	mylist.add(map);
+    	map = new HashMap<String, String>();
+    	map.put("Comment", "no");
+    	map.put("Guest", "Kim Barrett");
+    	map.put("Available From Time", "9:00 PM");
+    	mylist.add(map);
+    	map = new HashMap<String, String>();
+    	map.put("Comment", "no");
+    	map.put("Guest", "Mark Fearnley");
+    	map.put("Available From Time", " ");
+    	mylist.add(map);
+    
+    	SimpleAdapter mSchedule = new SimpleAdapter(this, mylist, R.layout.row,
+    	            new String[] {"Comment", "Guest", "Available From Time"}, new int[] {R.id.envelope, R.id.guest, R.id.time});
+    	list.setAdapter(mSchedule);
 	}
+	
+	 @Override
+	 public boolean onCreateOptionsMenu(Menu menu) {
+	  //MenuInflater myMenuInflater = getMenuInflater();
+	  //myMenuInflater.inflate(R.menu.menu, menu);
+	    // return true;
+		 
+		 menu.add(R.string.edit);  
+		 menu.add(R.string.delete_event);
+		 menu.add(R.string.cancel);
+		 return super.onCreateOptionsMenu(menu);
+	 }
+
+	 @Override
+	 public boolean onOptionsItemSelected(MenuItem item) {
+	  
+		Intent i;	 
+		 
+		switch(item.getItemId()){
+	    case(R.id.edit_button):
+	    {
+			i = new Intent(this, Organise.class);
+			startActivity(i);
+	    
+			break;
+	    }
+	    case(R.id.delete_Event):
+	    {
+	    	displayAlert();
+	    	break; 
+	    }
+	    case(R.string.cancel):
+	    {
+	    break;
+	    }
+	  } 
+	  return true;
+	 } 
+	
 	
 	public void onClick(View v)
 	{
@@ -109,4 +191,26 @@ public class UserInvites extends Activity implements OnClickListener{
 		commentDialog.show();
 	}
 		
+
+
+	public  void displayAlert()
+	{
+		new AlertDialog.Builder(this).setMessage("Are you sure you want to delete this event?")  
+	       .setTitle("Alert")  
+	       .setCancelable(true)  
+	       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+	       public void onClick(DialogInterface dialog, int id) {
+	            finish();
+	            //TODO: Actually deletes the event!!!
+	       }
+	       })
+	       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+	       public void onClick(DialogInterface dialog, int id) {
+	            dialog.cancel();
+	       }
+	       })
+	       .show(); 
+	       
+	}
+
 }

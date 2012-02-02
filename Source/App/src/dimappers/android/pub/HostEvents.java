@@ -49,6 +49,23 @@ public class HostEvents extends Activity implements OnClickListener{
     	ImageButton button_cancel_event = (ImageButton) findViewById(R.id.cancel_Event);
     	button_cancel_event.setOnClickListener(this);
     	
+    	
+    	
+    	/*Bundle b = getIntent().getExtras();
+    	if(b.getSerializable("sent_event")!=null)
+    	{
+    		sent_event=(PubEvent)b.getSerializable("sent_event");
+    		Toast.makeText(getApplicationContext(), "Received event data: " + sent_event.GetHost().getUserId().toString(), Toast.LENGTH_LONG).show();
+    		
+    	}
+    	else{
+    		//TODO: when unsent event is sent
+	    	int i =  1/0;
+    	}*/
+    	
+    	
+    	
+    	
     	ListView list = (ListView) findViewById(R.id.listView1);
     	 
     	ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
@@ -119,6 +136,8 @@ public class HostEvents extends Activity implements OnClickListener{
 			PubEvent event = new PubEvent(Calendar.getInstance(), new AppUser(new Integer(1)));
 			event.SetPubLocation(new PubLocation());
 			
+			PubEvent event = new PubEvent(Calendar.getInstance(), new AppUser(new Integer(1)));
+			event.SetPubLocation(new PubLocation());
 			Bundle bundle = new Bundle();
 			bundle.putSerializable("event", event);
 			bundle.putInt("test", 1992);
