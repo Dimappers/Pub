@@ -46,10 +46,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
 			i = new Intent(this, Pending.class);
 			i.putExtras(b);
 			startActivityForResult(i,1);
-			
-			/*
-			i = new Intent(this,Pending.class);
-			startActivityForResult(i,1);*/
 			break;
 		}
 		case R.id.invites_button : {
@@ -72,12 +68,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		 if(requestCode==1)
 		 {
 			super.onActivityResult(requestCode, resultCode, data);
-			/*Bundle b = new Bundle();
-			b.putInt("facebookId", facebookId);
-			Intent i = new Intent(this, Organise.class);
-			i.putExtras(b);
-			startActivityForResult(i,0);*/
-			
 			Intent i = new Intent(this,Organise.class);
 			i.putExtras(data.getExtras());
 			startActivityForResult(i,0);

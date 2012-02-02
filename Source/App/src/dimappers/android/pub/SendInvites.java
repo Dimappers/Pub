@@ -26,7 +26,7 @@ public class SendInvites extends Activity implements OnClickListener{
 	{
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.send_invite);
+		//setContentView(R.layout.send_invite);
 		
 		Button button_send_invites = (Button)findViewById(R.id.send_Invites);
     	button_send_invites.setOnClickListener(this);
@@ -48,7 +48,7 @@ public class SendInvites extends Activity implements OnClickListener{
 		switch (v.getId()) {
 		case R.id.send_Invites : 
 		{
-			i = new Intent(this, HostingEvents.class);
+			i = new Intent(this, HostEvents.class);
 			startActivity(i);
 			break;
 		}
@@ -64,6 +64,7 @@ public class SendInvites extends Activity implements OnClickListener{
 			Bundle bundle = new Bundle();
 			bundle.putSerializable("event", event);
 			bundle.putInt("test", 1992);
+			bundle.putBoolean("NewEvent", false);
 			i = new Intent(this, Organise.class);
 			i.putExtras(bundle);
 			startActivity(i);

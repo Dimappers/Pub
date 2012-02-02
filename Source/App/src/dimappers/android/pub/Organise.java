@@ -111,17 +111,18 @@ public class Organise extends ListActivity implements OnClickListener{
 	 }
 	 public void onClick(View v)
 	 {
-		 Intent i;
+		Intent i;
+		Bundle b = new Bundle();
+		b.putSerializable("event", event);
 		 switch (v.getId()){
 			case R.id.pub_button : {
 				i = new Intent(this, ChoosePub.class);
-				startActivity(i);
+				i.putExtras(b);
+				startActivityForResult(i,1);
 				break;
 			}
 			case R.id.time_button : {
 				i = new Intent(this, ChooseTime.class);
-				Bundle b = new Bundle();
-				b.putSerializable("event", event);
 				i.putExtras(b);
 				startActivityForResult(i,3);
 				break;
@@ -145,12 +146,17 @@ public class Organise extends ListActivity implements OnClickListener{
 		 //super.onActivityResult(requestCode, resultCode, data);
 		 if(resultCode==RESULT_OK) //This line is so when the back button is pressed the data changed by an Activity isn't stored.
 		 {
+			 if(requestCode==1)
+			 {
+				 event = (PubEvent)data.getExtras().getSerializable("eventt");
+				 Toast.makeText(getApplicationContext(), event.GetPubLocation().pubName, Toast.LENGTH_LONG).show();
+				 UpdateFromEvent();
+			 }
 			 if(requestCode==3)
 			 {
 				 event = (PubEvent)data.getExtras().getSerializable("eventts");
 				 String s = event.GetStartTime().getTime().toString();
 				 UpdateFromEvent();
-				 //Toast.makeText(getApplicationContext(), "received info from ChooseTime: " + startTime.toString(), Toast.LENGTH_LONG).show();
 			 } 
 		 }
 	 }
@@ -176,7 +182,6 @@ public class Organise extends ListActivity implements OnClickListener{
 	{
 		cur_pub.setText(event.GetPubLocation().pubName);
 		cur_time.setText(event.GetStartTime().getTime().toString());
-		
 		
 		listItems.clear();
     	for(User s : event.GetUsers()) {

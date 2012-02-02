@@ -1,10 +1,12 @@
 package dimappers.android.pub;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.User;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -114,11 +116,13 @@ public class HostEvents extends Activity implements OnClickListener{
 		}
 		case R.id.edit_button :
 		{
-			PubEvent event = new PubEvent(new Date(), new User(new Integer(1)));
+			PubEvent event = new PubEvent(Calendar.getInstance(), new AppUser(new Integer(1)));
+			event.SetPubLocation(new PubLocation());
 			
 			Bundle bundle = new Bundle();
 			bundle.putSerializable("event", event);
 			bundle.putInt("test", 1992);
+			bundle.putBoolean("NewEvent", false);
 			i = new Intent(this, Organise.class);
 			i.putExtras(bundle);
 			startActivity(i);
