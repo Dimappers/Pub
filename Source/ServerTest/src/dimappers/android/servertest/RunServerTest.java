@@ -63,6 +63,35 @@ public class RunServerTest
 		System.out.println("Final result: " + totalTestsPassed + "/" + totalTests);
 	}
 	
+	private static User CreateHost()
+	{
+		return new User(0);
+	}
+	
+	private static User CreateGuest()
+	{
+		return new User(1);
+	}
+	
+	private static PubEvent CreatePubEvent()
+	{
+		System.out.println((double)42.0);
+		return new PubEvent(Calendar.getInstance(), new PubLocation(42, 36, "Spoons Leam"), CreateHost());
+	}
+	
+	private static PubEvent CreatePubEventWithGuest()
+	{
+		PubEvent event = new PubEvent(Calendar.getInstance(), new PubLocation(52.29009, -1.53585, "Robins Well"), CreateHost());
+		event.AddUser(CreateGuest());
+		
+		return event; 
+	}
+	
+	private static Socket GetSendSocket() throws UnknownHostException, IOException
+	{
+		return new Socket(InetAddress.getByName("localhost"), 2085);
+	}
+	
 	private static HashMap<String, Boolean> RunTest(TestType testType) throws ClassNotFoundException
 	{
 		HashMap<String, Boolean> tests = new HashMap<String, Boolean>();
@@ -292,36 +321,7 @@ public class RunServerTest
 		
 		return tests;
 	}
-	
-	private static User CreateHost()
-	{
-		return new User(0);
-	}
-	
-	private static User CreateGuest()
-	{
-		return new User(1);
-	}
-	
-	private static PubEvent CreatePubEvent()
-	{
-		System.out.println((double)42.0);
-		return new PubEvent(Calendar.getInstance(), new PubLocation(42, 36, "Spoons Leam"), CreateHost());
-	}
-	
-	private static PubEvent CreatePubEventWithGuest()
-	{
-		PubEvent event = new PubEvent(Calendar.getInstance(), new PubLocation(52.29009, -1.53585, "Robins Well"), CreateHost());
-		event.AddUser(CreateGuest());
-		
-		return event; 
-	}
-	
-	private static Socket GetSendSocket() throws UnknownHostException, IOException
-	{
-		return new Socket(InetAddress.getByName("localhost"), 2085);
-	}
-	
+
 	private static int createPubEventTest(PubEvent event) throws ClassNotFoundException
 	{
 		System.out.println("Running newEventMessage test");

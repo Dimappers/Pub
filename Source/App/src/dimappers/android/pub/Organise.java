@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 
+import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.User;
@@ -35,7 +36,7 @@ public class Organise extends ListActivity implements OnClickListener{
 	private Button cur_time;
 	
 	private PubEvent event;
-	private int facebookId;
+	private User facebookUser;
 	
 	private ArrayList<String> listItems=new ArrayList<String>();
 	private ArrayAdapter<String> adapter;
@@ -48,12 +49,12 @@ public class Organise extends ListActivity implements OnClickListener{
 	    	setContentView(R.layout.organise);
 	    	
 	    	Bundle b = getIntent().getExtras();
-	    	if(b.getSerializable("event")!=null)
+	    	if(b.getSerializable(Constants.CurrentWorkingEvent)!=null)
 	    	{
-	    		event=(PubEvent)b.getSerializable("event");
+	    		event=(PubEvent)b.getSerializable(Constants.CurrentWorkingEvent);
 	    		Toast.makeText(getApplicationContext(), "Received event: " + event.GetHost().getUserId().toString(), Toast.LENGTH_LONG).show();
 	    		
-	    		if(b.getBoolean("NewEvent"))
+	    		if(b.getBoolean(Constants.NewEventFlag))
 	    		{
 	    			Toast.makeText(getApplicationContext(), "New event...", 100).show();	    			
 	    		}
@@ -64,7 +65,7 @@ public class Organise extends ListActivity implements OnClickListener{
 	    	}
 	    	else{
 	    		//TODO: this needs changing when pending passes in an event
-		    	int i =  1/0;
+		    	setResult(Constants.MissingDataInBundle);
 	    	} 
 
 	    	cur_pub = (Button)findViewById(R.id.pub_button);
@@ -83,9 +84,9 @@ public class Organise extends ListActivity implements OnClickListener{
 	    	    public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 	    	    	Intent i = new Intent(getBaseContext(), Guests.class);
 	    	    	Bundle b = new Bundle();
-	    	    	b.putSerializable("event", event);
+	    	    	b.putSerializable(Constants.CurrentWorkingEvent, event);
 	    	    	i.putExtras(b);
-					startActivityForResult(i, 4);
+					startActivityForResult(i, Constants.GuestReturn);
 	    	        }
 	    	      });
 	    	
@@ -137,7 +138,7 @@ public class Organise extends ListActivity implements OnClickListener{
 				break;
 			}
 			case R.id.send_invites_event : {
-				//TODO: save event details, then send invites to server
+				
 				this.setResult(RESULT_OK, getIntent());
 				finish();
 				break;

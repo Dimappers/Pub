@@ -2,7 +2,9 @@ package dimappers.android.pub;
 
 import java.util.Calendar;
 
+import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.User;
 import android.app.ExpandableListActivity;
 import android.content.Context;
@@ -28,11 +30,15 @@ public class Events extends ExpandableListActivity {
 	
     ExpandableListAdapter mAdapter;
 	
+    int facebookId;
+    
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.events);
+		
+		facebookId = getIntent().getExtras().getInt(Constants.CurrentFacebookUser);
 		
 		mAdapter = new EventListAdapter(this);
         setListAdapter(mAdapter);
@@ -85,6 +91,19 @@ public class Events extends ExpandableListActivity {
 			 }
 			 return false; 
 	 }
+	 
+	 private PubEvent[] GetEvents()
+	 {
+		Calendar time1 = Calendar.getInstance();
+		time1.set(Calendar.HOUR_OF_DAY, 18);
+		
+		Calendar time2 = Calendar.getInstance();
+		time2.set(Calendar.HOUR_OF_DAY, 22);
+		return new PubEvent[] { new PubEvent(time1, new PubLocation(10,10,"Spoons"), 
+				new User(14)), new PubEvent(time2, new PubLocation(10,10,"Robins Wells"), new User(0)) } ; 
+	 }
+	 
+	 
 	 
 }
 
