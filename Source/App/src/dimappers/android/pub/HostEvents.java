@@ -16,6 +16,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -109,6 +111,51 @@ public class HostEvents extends Activity implements OnClickListener{
 		TODO: Pop up option menu, which allows you to edit event if you've already sent invites out ONLY.
 		*/
 	}
+	
+	 @Override
+	 public boolean onCreateOptionsMenu(Menu menu) {
+	  //MenuInflater myMenuInflater = getMenuInflater();
+	  //myMenuInflater.inflate(R.menu.menu, menu);
+	    // return true;
+		 
+		 menu.add(R.string.edit);  
+		 menu.add(R.string.delete_event);
+		 menu.add(R.string.cancel);
+		 return super.onCreateOptionsMenu(menu);
+	 }
+
+	 @Override
+	 public boolean onOptionsItemSelected(MenuItem item) {
+	  
+		Intent i;	 
+		 
+		switch(item.getItemId()){
+	    case(R.string.edit):
+	    {
+	    	PubEvent event = new PubEvent(Calendar.getInstance(), new AppUser(new Integer(1)));
+			event.SetPubLocation(new PubLocation());
+			Bundle bundle = new Bundle();
+			bundle.putSerializable("event", event);
+			bundle.putInt("test", 1992);
+			i = new Intent(this, Organise.class);
+			i.putExtras(bundle);
+			startActivity(i);
+			return true;
+	    
+	    }
+	    case(R.id.delete_Event):
+	    {
+	    	displayAlert();
+	    	break; 
+	    }
+	    case(R.string.cancel):
+	    {
+	    break;
+	    }
+	  } 
+	  return true;
+	 } 
+	
 	
 	public void onClick(View v)
 	{

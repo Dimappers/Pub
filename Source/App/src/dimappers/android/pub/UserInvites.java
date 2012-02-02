@@ -92,43 +92,6 @@ public class UserInvites extends Activity implements OnClickListener{
     	list.setAdapter(mSchedule);
 	}
 	
-	 @Override
-	 public boolean onCreateOptionsMenu(Menu menu) {
-	  //MenuInflater myMenuInflater = getMenuInflater();
-	  //myMenuInflater.inflate(R.menu.menu, menu);
-	    // return true;
-		 
-		 menu.add(R.string.edit);  
-		 menu.add(R.string.delete_event);
-		 menu.add(R.string.cancel);
-		 return super.onCreateOptionsMenu(menu);
-	 }
-
-	 @Override
-	 public boolean onOptionsItemSelected(MenuItem item) {
-	  
-		Intent i;	 
-		 
-		switch(item.getItemId()){
-	    case(R.id.edit_button):
-	    {
-			i = new Intent(this, Organise.class);
-			startActivity(i);
-	    
-			break;
-	    }
-	    case(R.id.delete_Event):
-	    {
-	    	displayAlert();
-	    	break; 
-	    }
-	    case(R.string.cancel):
-	    {
-	    break;
-	    }
-	  } 
-	  return true;
-	 } 
 	
 	
 	public void onClick(View v)
