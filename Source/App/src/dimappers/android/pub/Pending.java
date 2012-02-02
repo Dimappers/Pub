@@ -54,7 +54,6 @@ class DoLoading extends AsyncTask<Pending,Integer,Integer>
 	protected void onPostExecute(Integer result) {
 		//TODO: pass updated event back
 		activity.setResult(activity.RESULT_OK,activity.getIntent());
-		
 		Bundle eventBundle = new Bundle();
 		eventBundle.putSerializable("event", event);
 		eventBundle.putBoolean("NewEvent", true);

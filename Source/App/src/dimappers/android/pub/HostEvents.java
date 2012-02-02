@@ -180,12 +180,12 @@ public class HostEvents extends Activity implements OnClickListener{
 		}
 		case R.id.edit_button :
 		{
-			
 			PubEvent event = new PubEvent(Calendar.getInstance(), new AppUser(new Integer(1)));
 			event.SetPubLocation(new PubLocation());
 			Bundle bundle = new Bundle();
 			bundle.putSerializable("event", event);
 			bundle.putInt("test", 1992);
+			bundle.putBoolean("NewEvent", false);
 			i = new Intent(this, Organise.class);
 			i.putExtras(bundle);
 			startActivity(i);

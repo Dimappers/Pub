@@ -70,13 +70,10 @@ public class ChooseTime extends Activity implements OnClickListener{
     		case R.id.save_date_and_time : {
     			if(isInPast()) {alert();}
     			else {
-	    			Toast.makeText(getApplicationContext(), "stored time: "+event.GetStartTime().getTime().toString(), Toast.LENGTH_LONG).show();
-	    			Intent i = getIntent();
-	    			Bundle b = new Bundle();//i.getExtras();
-	    			b.putSerializable("eventts",event);
+	    			Bundle b = new Bundle();
+	    			b.putSerializable("event",event);
 	    			Intent returnIntent = new Intent();
 	    			returnIntent.putExtras(b);
-	    			String s = event.GetStartTime().getTime().toString();
 					this.setResult(RESULT_OK,returnIntent);
 	    			finish();
     			}

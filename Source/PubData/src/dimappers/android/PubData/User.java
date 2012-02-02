@@ -22,9 +22,23 @@ public class User implements Serializable {
 	//Encapsulation
 	public Integer getUserId() 	{ return facebookUserId; }	
 	
-	public boolean isEqual(User otherUser)
+	@Override
+	public boolean equals(Object otherUser)
 	{
-		return facebookUserId == otherUser.getUserId();
+		if(otherUser instanceof User)
+		{
+			return facebookUserId.equals(((User)otherUser).getUserId());
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return facebookUserId.hashCode();
 	}
 
 }
