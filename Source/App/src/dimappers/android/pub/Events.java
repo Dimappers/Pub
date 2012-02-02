@@ -1,5 +1,9 @@
 package dimappers.android.pub;
 
+import java.util.Calendar;
+
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.User;
 import android.app.ExpandableListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -35,7 +39,8 @@ public class Events extends ExpandableListActivity {
     	
          ExpandableListView expview = (ExpandableListView) findViewById(android.R.id.list);
 		 expview.setOnChildClickListener(this);
-                
+        
+		 
 	}
 
 	 public boolean onChildClick(ExpandableListView parent,View v, int groupPosition, int childPosition, long id) 
@@ -48,7 +53,13 @@ public class Events extends ExpandableListActivity {
 		 {
 			 case 0: 
 			 {
+				 	//PubEvent sent_event = new PubEvent(new Calendar(), new User(new Integer(1)));
+					
+					//Bundle bundle = new Bundle();
+					//bundle.putSerializable("sent_event", sent_event);
+					//bundle.putInt("test", 1992);
 					i = new Intent(this, HostEvents.class);
+					//i.putExtras(bundle);
 					startActivity(i);
 					return true;
 			 }

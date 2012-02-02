@@ -8,6 +8,7 @@ public class AppUser extends User
 {
 	//Properties
 
+
 	//Constructors
 	public AppUser(Integer facebookUserId)
 	{

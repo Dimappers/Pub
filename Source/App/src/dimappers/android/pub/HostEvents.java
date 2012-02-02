@@ -1,10 +1,12 @@
 package dimappers.android.pub;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.User;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -46,6 +48,23 @@ public class HostEvents extends Activity implements OnClickListener{
     	
     	ImageButton button_cancel_event = (ImageButton) findViewById(R.id.cancel_Event);
     	button_cancel_event.setOnClickListener(this);
+    	
+    	
+    	
+    	/*Bundle b = getIntent().getExtras();
+    	if(b.getSerializable("sent_event")!=null)
+    	{
+    		sent_event=(PubEvent)b.getSerializable("sent_event");
+    		Toast.makeText(getApplicationContext(), "Received event data: " + sent_event.GetHost().getUserId().toString(), Toast.LENGTH_LONG).show();
+    		
+    	}
+    	else{
+    		//TODO: when unsent event is sent
+	    	int i =  1/0;
+    	}*/
+    	
+    	
+    	
     	
     	ListView list = (ListView) findViewById(R.id.listView1);
     	 
@@ -114,8 +133,9 @@ public class HostEvents extends Activity implements OnClickListener{
 		}
 		case R.id.edit_button :
 		{
-			PubEvent event = new PubEvent(new Date(), new User(new Integer(1)));
 			
+			PubEvent event = new PubEvent(Calendar.getInstance(), new AppUser(new Integer(1)));
+			event.SetPubLocation(new PubLocation());
 			Bundle bundle = new Bundle();
 			bundle.putSerializable("event", event);
 			bundle.putInt("test", 1992);
