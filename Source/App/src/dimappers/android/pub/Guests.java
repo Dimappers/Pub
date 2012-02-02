@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,8 +12,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -52,23 +49,10 @@ public class Guests extends ListActivity implements OnClickListener{
 		setListAdapter(adapter);
 		
 		//Tick already selected guests
-		//This is O(n^2) probably need a better way of doing this
-		int count = guest_list.getCount();
 		for(int i  = 0; i < guest_list.getCount(); ++i)
 		{
-			boolean checked = false;
 			User listUser = listItems.get(i);
-			for(User user : event.GetUsers())
-			{
-				if(user.isEqual(listUser))
-				{
-					checked = true;
-					break;
-				}
-			}
-			/*CheckedTextView checkbox = (CheckedTextView)guest_list.geti);
-			checkbox.setChecked(checked);*/
-			guest_list.setItemChecked(i, checked);
+			guest_list.setItemChecked(i, event.DoesContainUser(listUser));
 		}
 		
     	
@@ -86,8 +70,11 @@ public class Guests extends ListActivity implements OnClickListener{
 		switch(v.getId())
 		{
 		case R.id.save : {
-			
-			
+			Bundle b = new Bundle();
+			b.putSerializable("event",event);
+			Intent returnIntent = new Intent();
+			returnIntent.putExtras(b);
+			this.setResult(RESULT_OK,returnIntent);
 			
 			finish();
 			break;
@@ -110,14 +97,12 @@ public class Guests extends ListActivity implements OnClickListener{
 		
 		//Add/Remove guest from
 		AppUser modifedUser = listItems.get(pos);
-		
-		if(event.GetUsers().contains(modifedUser))
+		if(event.DoesContainUser(modifedUser))
 		{
-			event.GetUsers().remove(modifedUser);
-		}
+			event.RemoveUser(modifedUser);		}
 		else
 		{
-			event.GetUsers().add(modifedUser);
+			event.AddUser(modifedUser);
 		}
 	}
 	

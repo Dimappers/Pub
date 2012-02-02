@@ -333,7 +333,7 @@ public class RequestHandlingThread extends Thread{
 		//Tell all the users invited to this event that they need updating
 		for(User user : event.GetUsers())
 		{
-			if(!user.isEqual(event.GetHost()))
+			if(!user.equals(event.GetHost()))
 			{
 				UserManager.markForUpdate(user, event.GetEventId());
 			}

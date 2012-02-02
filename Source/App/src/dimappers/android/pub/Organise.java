@@ -85,7 +85,7 @@ public class Organise extends ListActivity implements OnClickListener{
 	    	    	Bundle b = new Bundle();
 	    	    	b.putSerializable("event", event);
 	    	    	i.putExtras(b);
-					startActivity(i);
+					startActivityForResult(i, 4);
 	    	        }
 	    	      });
 	    	
@@ -150,11 +150,14 @@ public class Organise extends ListActivity implements OnClickListener{
 		 {
 			 if(requestCode==3)
 			 {
-				 event = (PubEvent)data.getExtras().getSerializable("eventts");
-				 String s = event.GetStartTime().getTime().toString();
+				 event = (PubEvent)data.getExtras().getSerializable("event");
 				 UpdateFromEvent();
-				 //Toast.makeText(getApplicationContext(), "received info from ChooseTime: " + startTime.toString(), Toast.LENGTH_LONG).show();
 			 } 
+			 else if(requestCode == 4)
+			 {
+				 event = (PubEvent)data.getExtras().getSerializable("event");
+				 UpdateFromEvent();
+			 }
 		 }
 	 }
 	//Finding current location
@@ -185,6 +188,8 @@ public class Organise extends ListActivity implements OnClickListener{
     	for(User s : event.GetUsers()) {
     		listItems.add(((AppUser) s).GetRealFacebookName());
     	}
+    	
+    	adapter.notifyDataSetChanged();
 	}
 }
 
