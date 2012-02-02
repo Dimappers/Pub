@@ -1,5 +1,6 @@
 package dimappers.android.pub;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import dimappers.android.PubData.Constants;
@@ -30,7 +31,7 @@ public class Events extends ExpandableListActivity {
 	
     ExpandableListAdapter mAdapter;
 	
-    int facebookId;
+    AppUser facebookUser;
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -38,9 +39,9 @@ public class Events extends ExpandableListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.events);
 		
-		facebookId = getIntent().getExtras().getInt(Constants.CurrentFacebookUser);
+		facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
 		
-		mAdapter = new EventListAdapter(this);
+		mAdapter = new EventListAdapter(this, GetEvents(), facebookUser);
         setListAdapter(mAdapter);
     	
          ExpandableListView expview = (ExpandableListView) findViewById(android.R.id.list);
@@ -100,106 +101,108 @@ public class Events extends ExpandableListActivity {
 		Calendar time2 = Calendar.getInstance();
 		time2.set(Calendar.HOUR_OF_DAY, 22);
 		return new PubEvent[] { new PubEvent(time1, new PubLocation(10,10,"Spoons"), 
-				new User(14)), new PubEvent(time2, new PubLocation(10,10,"Robins Wells"), new User(0)) } ; 
-	 }
-	 
-	 
-	 
+				facebookUser), new PubEvent(time2, new PubLocation(10,10,"Robins Wells"), new User(123)) } ; 
+	 }	 
 }
 
 class EventListAdapter extends BaseExpandableListAdapter {
 	
-    private String[] groups = { "Hosting", "Send Invites", "Waiting For Response", "Going" };
-    private String[][] children = {getHostedEvents(),getSendInvites(),getWaitingForResponse(), getGoing()};
-
-private String[] getHostedEvents()
-{
-	return new String[] {"Hosting1","Hosting2"};
-}
-
-private String[] getSendInvites()
-{
-	return new String[] {"Sending"};
-}
-
-private String[] getWaitingForResponse()
-{
-	return new String[] {"Waiting"};
-}
-
-private String[] getGoing()
-{
-	return new String[] {"Going"};
-}
-
-private Context context;
-
-public EventListAdapter(Context context) {
-    this.context = context;
-}
-
-
-public Object getChild(int groupPosition, int childPosition) {
-	return children[groupPosition][childPosition];
-}
-
-
-public long getChildId(int groupPosition, int childPosition) {
-	return childPosition;
-}
-
-public View getChildView(int groupPosition, int childPosition, boolean isLastChild,View convertView, ViewGroup parent) {
-    TextView textView = getGenericView();
-    textView.setText(getChild(groupPosition, childPosition).toString());
-    return textView;
-}
-
-public TextView getGenericView() {
-    // Layout parameters for the ExpandableListView
-    AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 64);
-    TextView textView = new TextView(context);
-    textView.setLayoutParams(lp);
-    // Center the text vertically
-    textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-    // Set the text starting position
-    textView.setPadding(36, 0, 0, 0);
-    return textView;
-}
-
-
-public int getChildrenCount(int groupPosition) {
-	return children[groupPosition].length;
-}
-
-
-public Object getGroup(int groupPosition) {
-	return groups[groupPosition];
-}
-
-
-public int getGroupCount() {
-	return groups.length;
-}
-
-
-public long getGroupId(int groupPosition) {
-	return groupPosition;
-}
-
-public View getGroupView(int groupPosition, boolean isExpanded, View convertView,ViewGroup parent) 
-{
-    TextView textView = getGenericView();
-    textView.setText(getGroup(groupPosition).toString());
-    return textView;
-}
-
-public boolean hasStableIds() {
-	return true;
-}
-
-public boolean isChildSelectable(int groupPosition, int childPosition) {
-	return true;
-}
+    private String[] groups = { "Waiting For Response", "Hosting", "Going", "Send Invites" };
+    //private String[][] children = {getHostedEvents(),getSendInvites(),getWaitingForResponse(), getGoing()};
+    private ArrayList<PubEvent>[] children;
+	
+	private Context context;
+	
+	public EventListAdapter(Context context, PubEvent[] allEvents, AppUser currentUser) {
+	    this.context = context;
+	    
+	    /*children = new ArrayList<PubEvent>[Constants.NumberOfEventCategories];
+	    for(int i = 0; i < children.length; ++i)
+	    {
+	    	
+	    }*/
+	    
+	    for(PubEvent event : allEvents)
+	    {
+	    	//Determine if host 
+	    	if(event.GetHost().equals(currentUser))
+	    	{
+	    		//We are the host
+	    		//Somehow determine if the event has been sent
+	    		children[Constants.HostedEventSent].add(event);
+	    	}
+	    	else
+	    	{
+	    		//We are not the host
+	    		//Some how determine if we have responded
+	    		children[Constants.NewEventNoResponse].add(event);
+	    	}
+	    }
+	}
+	
+	
+	public Object getChild(int groupPosition, int childPosition) {
+		return children[groupPosition].get(childPosition);
+	}
+	
+	
+	public long getChildId(int groupPosition, int childPosition) {
+		//TODO: not sure if this is correct - not sure if we use it either
+		return childPosition;
+	}
+	
+	public View getChildView(int groupPosition, int childPosition, boolean isLastChild,View convertView, ViewGroup parent) {
+	    TextView textView = getGenericView();
+	    textView.setText(getChild(groupPosition, childPosition).toString());
+	    return textView;
+	}
+	
+	public TextView getGenericView() {
+	    // Layout parameters for the ExpandableListView
+	    AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 64);
+	    TextView textView = new TextView(context);
+	    textView.setLayoutParams(lp);
+	    // Center the text vertically
+	    textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
+	    // Set the text starting position
+	    textView.setPadding(36, 0, 0, 0);
+	    return textView;
+	}
+	
+	
+	public int getChildrenCount(int groupPosition) {
+		return children[groupPosition].size();
+	}
+	
+	
+	public Object getGroup(int groupPosition) {
+		return groups[groupPosition];
+	}
+	
+	
+	public int getGroupCount() {
+		return groups.length;
+	}
+	
+	
+	public long getGroupId(int groupPosition) {
+		return groupPosition;
+	}
+	
+	public View getGroupView(int groupPosition, boolean isExpanded, View convertView,ViewGroup parent) 
+	{
+	    TextView textView = getGenericView();
+	    textView.setText(getGroup(groupPosition).toString());
+	    return textView;
+	}
+	
+	public boolean hasStableIds() {
+		return true;
+	}
+	
+	public boolean isChildSelectable(int groupPosition, int childPosition) {
+		return true;
+	}
 
 }
 

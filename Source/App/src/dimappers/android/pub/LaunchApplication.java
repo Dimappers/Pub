@@ -15,13 +15,13 @@ import android.widget.Toast;
 
 public class LaunchApplication extends Activity implements OnClickListener{
     /** Called when the activity is first created. */
-	User facebookId;
+	AppUser facebookUser;
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	
     	//need to log into Facebook if not logged in before
-    	facebookId = GetFacebookUser();
+    	facebookUser = GetFacebookUser();
     	
     	setContentView(R.layout.main);
     	
@@ -37,13 +37,13 @@ public class LaunchApplication extends Activity implements OnClickListener{
     {
     	Intent i;
 		Bundle b = new Bundle();
-		b.putSerializable(Constants.CurrentFacebookUser, facebookId);
+		b.putSerializable(Constants.CurrentFacebookUser, facebookUser);
 		switch (v.getId()) {
 			case R.id.organise_button : 
 			{
 				i = new Intent(this, Pending.class);
 				i.putExtras(b);
-				startActivityForResult(i,1);
+				startActivityForResult(i,Constants.FromPending);
 				break;
 			}
 			case R.id.invites_button : {
@@ -58,25 +58,25 @@ public class LaunchApplication extends Activity implements OnClickListener{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
     	if(resultCode==RESULT_OK)
     	{
-		 if(requestCode==0)
+		 if(requestCode == Constants.FromOrganise)
 		 {
 			 super.onActivityResult(requestCode, resultCode, data);
 			 Intent i = new Intent(this, Events.class);	
 			 startActivity(i);
 		 }
-		 if(requestCode==1)
+		 if(requestCode==Constants.FromPending)
 		 {
 			super.onActivityResult(requestCode, resultCode, data);
 			Intent i = new Intent(this,Organise.class);
 			i.putExtras(data.getExtras());
-			startActivityForResult(i,0);
+			startActivityForResult(i, Constants.FromOrganise);
 		 }
     	}
 	 }
     
-    private User GetFacebookUser()
+    private AppUser GetFacebookUser()
     {
     	//Get the facebook id - from login details possibly also authentication stuff
-    	return new User(14);
+    	return new AppUser(14);
     }
 }

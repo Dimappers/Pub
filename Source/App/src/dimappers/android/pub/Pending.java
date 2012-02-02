@@ -32,7 +32,7 @@ class DoLoading extends AsyncTask<Pending,Integer,Integer>
 {
 	private PubEvent event;
 	private Pending activity;
-	private User facebookUser;
+	private AppUser facebookUser;
 	@Override
 	protected Integer doInBackground(Pending... params) {
         activity = params[0];
@@ -42,7 +42,7 @@ class DoLoading extends AsyncTask<Pending,Integer,Integer>
         {
         	Debug.waitForDebugger();        	
         }
-        facebookUser = (User)b.getSerializable("facebookId");
+        facebookUser = (AppUser)b.getSerializable("facebookId");
     	//Toast.makeText(activity.getApplicationContext(), "Received id: " + new Integer(facebookId).toString(), Toast.LENGTH_LONG).show();
     	event = new PubEvent(Calendar.getInstance(), facebookUser);
     	event.SetPubLocation(new PubLocation());

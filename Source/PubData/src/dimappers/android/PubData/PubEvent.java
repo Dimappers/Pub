@@ -136,4 +136,10 @@ public class PubEvent implements Serializable
 	{
 		return event.GetEventId() == globalEventId;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return pubLocation.pubName + ":" + startTime.getTime().toString();  
+	}
 }

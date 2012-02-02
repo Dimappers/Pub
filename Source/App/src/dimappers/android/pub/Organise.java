@@ -64,7 +64,6 @@ public class Organise extends ListActivity implements OnClickListener{
 	    		}
 	    	}
 	    	else{
-	    		//TODO: this needs changing when pending passes in an event
 		    	setResult(Constants.MissingDataInBundle);
 	    	} 
 
@@ -103,32 +102,23 @@ public class Organise extends ListActivity implements OnClickListener{
 		 super.onStart(); 
 		 findLocation();
 	}
-	 public void onListItemClick(View v)
-	 {
-		if(v.getId()==android.R.id.list) {
-			Intent i = new Intent(this, Guests.class);
-			Bundle b = new Bundle();
-			b.putSerializable("event",event);
-			i.putExtras(b);
-			startActivity(i);
-		}
-	 }
+	 
 	 public void onClick(View v)
 	 {
 		Intent i;
 		Bundle b = new Bundle();
-		b.putSerializable("event", event);
+		b.putSerializable(Constants.CurrentWorkingEvent, event);
 		 switch (v.getId()){
 			case R.id.pub_button : {
 				i = new Intent(this, ChoosePub.class);
 				i.putExtras(b);
-				startActivityForResult(i,1);
+				startActivityForResult(i, Constants.PubLocationReturn);
 				break;
 			}
 			case R.id.time_button : {
 				i = new Intent(this, ChooseTime.class);
 				i.putExtras(b);
-				startActivityForResult(i,3);
+				startActivityForResult(i,Constants.StartingTimeReturn);
 				break;
 			}
 			case R.id.save_event : {
@@ -149,23 +139,10 @@ public class Organise extends ListActivity implements OnClickListener{
 	 public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		 //super.onActivityResult(requestCode, resultCode, data);
 		 if(resultCode==RESULT_OK) //This line is so when the back button is pressed the data changed by an Activity isn't stored.
-		 {
-			 if(requestCode==1)
-			 {
-				 event = (PubEvent)data.getExtras().getSerializable("eventt");
-				 Toast.makeText(getApplicationContext(), event.GetPubLocation().pubName, Toast.LENGTH_LONG).show();
-				 UpdateFromEvent();
-			 }
-			 if(requestCode==3)
-			 {
-				 event = (PubEvent)data.getExtras().getSerializable("event");
-				 UpdateFromEvent();
-			 } 
-			 else if(requestCode == 4)
-			 {
-				 event = (PubEvent)data.getExtras().getSerializable("event");
-				 UpdateFromEvent();
-			 }
+		 { 
+			 //We don't actually care what we are returning from, always get the latest event and update the screen
+			 event = (PubEvent)data.getExtras().getSerializable(Constants.CurrentWorkingEvent);
+			 UpdateFromEvent();
 		 }
 	 }
 	//Finding current location
