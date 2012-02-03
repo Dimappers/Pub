@@ -39,6 +39,7 @@ public class Organise extends ListActivity implements OnClickListener{
 	
 	private Button cur_pub;
 	private Button cur_time;
+	private EditText cur_loc;
 	
 	private PubEvent event;
 	private int facebookId;
@@ -102,6 +103,9 @@ public class Organise extends ListActivity implements OnClickListener{
 	    	button_save_event.setOnClickListener(this);
 	    	Button button_send_invites = (Button)findViewById(R.id.send_invites_event);
 	    	button_send_invites.setOnClickListener(this);
+	    	cur_loc=(TextView)findViewById(R.id.current_location);
+	    	cur_loc.setOnClickListener(this);
+	    	
 	 }
 	 @Override
 	 public void onStart(){
@@ -124,6 +128,27 @@ public class Organise extends ListActivity implements OnClickListener{
 		Bundle b = new Bundle();
 		b.putSerializable("event", event);
 		 switch (v.getId()){
+		 		 case R.id.current_location : {
+				 EditText loc = new EditText();
+				 new AlertDialog.Builder(this).setMessage("Enter your current location:")  
+		           .setTitle("Change Location")  
+		           .setCancelable(true)  
+		           .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		        	   cur_loc.setText(loc.getText());
+		        	   //TODO: turn off location listener
+		        	   findNewNearestPub();
+		        	   dialog.cancel();
+		           }
+		           })
+		           .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		                dialog.cancel();
+		           }
+		           })
+		           .setView(loc)
+		           .show(); 
+			 }
 			case R.id.pub_button : {
 				i = new Intent(this, ChoosePub.class);
 				i.putExtras(b);
@@ -202,6 +227,11 @@ public class Organise extends ListActivity implements OnClickListener{
     	}
     	
     	adapter.notifyDataSetChanged();
+	}
+	private void findNewNearestPub() {
+		//TODO: use cur_loc to find nearest pub (using Google places)
+		event.setPubLocation(/*new nearest found location*/);
+		UpdateFromEvent();
 	}
 	
 	private void sendEventToServer() throws UnknownHostException, IOException {
