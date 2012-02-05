@@ -1,11 +1,16 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.User;
@@ -174,6 +179,26 @@ public class Organise extends ListActivity implements OnClickListener{
     	}
     	
     	adapter.notifyDataSetChanged();
+	}
+	
+	private void sendEventToServer() throws UnknownHostException, IOException {
+		//TODO: Open a socket
+		
+		Socket socket = null; 
+		
+		socket = new Socket(Constants.ServerIp, Constants.Port);
+		
+		ObjectOutputStream serializer = null;
+		
+		serializer = new ObjectOutputStream(socket.getOutputStream());
+		//TODO: Send a message to server for new Event
+		
+		MessageType t = MessageType.newPubEventMessage;
+		serializer.writeObject(t);
+		serializer.writeObject(event);
+		serializer.flush();
+		//TODO: Send the event
+		//TODO: Send to Pending Screen
 	}
 }
 
