@@ -3,6 +3,7 @@ package dimappers.android.pub;
 import java.util.Calendar;
 
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.User;
 import android.app.ExpandableListActivity;
 import android.content.Context;
@@ -53,20 +54,25 @@ public class Events extends ExpandableListActivity {
 		 {
 			 case 0: 
 			 {
-				 	//PubEvent sent_event = new PubEvent(new Calendar(), new User(new Integer(1)));
-					
-					//Bundle bundle = new Bundle();
-					//bundle.putSerializable("sent_event", sent_event);
-					//bundle.putInt("test", 1992);
+				 	PubEvent sent_event = new PubEvent(Calendar.getInstance(), new User(new Integer(1)));
+					sent_event.SetPubLocation(new PubLocation());
+					Bundle bundle = new Bundle();
+					bundle.putSerializable("sent_event", sent_event);
+					bundle.putInt("test", 1992);
 					i = new Intent(this, HostEvents.class);
-					//i.putExtras(bundle);
+					i.putExtras(bundle);
 					startActivity(i);
 					return true;
 			 }
 			 case 1 :
 			 {		
-			 		
+				    PubEvent unsent_event = new PubEvent(Calendar.getInstance(), new User(new Integer(1)));
+					unsent_event.SetPubLocation(new PubLocation());
+					Bundle bundle = new Bundle();
+					bundle.putSerializable("unsent_event", unsent_event);
+					bundle.putInt("test", 1992);
 				 	i = new Intent(this, HostEvents.class);
+					i.putExtras(bundle);
 					startActivity(i);
 					return true;
 			 }
