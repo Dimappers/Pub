@@ -272,7 +272,7 @@ public class RequestHandlingThread extends Thread{
 
 		//Update the event file
 		PubEvent event = EventManager.GetPubEvent(response.GetEventId());
-		event.UpdateUserStatus(response.GetUser(), response.GetIsGoing());
+		event.UpdateUserStatus(response);
 
 		for(User user : event.GetUsers())
 		{

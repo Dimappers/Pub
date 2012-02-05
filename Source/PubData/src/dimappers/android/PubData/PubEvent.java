@@ -18,7 +18,7 @@ import java.util.Set;
 public class PubEvent implements Serializable
 {
 	//Properties
-	private HashMap<User, GoingStatus>	users;
+	private HashMap<User, UserStatus>	users;
 	private User 						host;
 	private Calendar					startTime;
 	private PubLocation					pubLocation;
@@ -27,16 +27,16 @@ public class PubEvent implements Serializable
 	//Constructors
 	public PubEvent(Calendar startTime, User host)
 	{
-		users = new HashMap<User, GoingStatus>();
-		users.put(host, GoingStatus.going);
+		users = new HashMap<User, UserStatus>();
+		users.put(host, new UserStatus(GoingStatus.going, startTime, null));
 		this.host = host;
 		this.startTime = startTime;
 	}
 	
 	public PubEvent(Calendar startTime, PubLocation pubLocation, User host)
 	{
-		users = new HashMap<User, GoingStatus>();
-		users.put(host, GoingStatus.going);
+		users = new HashMap<User, UserStatus>();
+		users.put(host, new UserStatus(GoingStatus.going, startTime, null));
 		this.host = host;
 		this.pubLocation = pubLocation;
 		this.startTime = startTime;
@@ -48,7 +48,7 @@ public class PubEvent implements Serializable
 		return users.keySet();
 	}
 	
-	public HashMap<User, GoingStatus> GetGoingStatus()
+	public HashMap<User, UserStatus> GetGoingStatus()
 	{
 		return users;
 	}
@@ -90,11 +90,7 @@ public class PubEvent implements Serializable
 	//Add a guest to the guest list
 	public void AddUser(User user)
 	{
-		users.put(user, GoingStatus.maybeGoing);
-	}
-	public void AddUser(User user, GoingStatus status)
-	{
-		users.put(user, status);
+		users.put(user, new UserStatus(GoingStatus.maybeGoing, startTime, null));
 	}
 	
 	//Remove a guest from the guest list
@@ -115,7 +111,7 @@ public class PubEvent implements Serializable
 		return host;
 	}
 	
-	public void UpdateUserStatus(User user, boolean isGoing)
+	/*public void UpdateUserStatus(User user, boolean isGoing)
 	{
 		if(users.containsKey(user))
 		{
@@ -128,7 +124,16 @@ public class PubEvent implements Serializable
 			{
 				status = GoingStatus.notGoing;
 			}
-			users.put(user, status);
+			
+			//users.put(user, );
+		}
+	}*/
+	
+	public void UpdateUserStatus(ResponseData response)
+	{
+		if(users.containsKey(response.GetUser()))
+		{
+			users.put(response.GetUser(), response.MakeUserStatus());
 		}
 	}
 	

@@ -3,207 +3,240 @@ package dimappers.android.pub;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import dimappers.android.PubData.Constants;
-import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.PubLocation;
-import dimappers.android.PubData.User;
 import android.app.ExpandableListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.Button;
-import android.widget.ExpandableListAdapter;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.widget.TextView;
-import android.widget.Toast;
+import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.PubLocation;
+import dimappers.android.PubData.ResponseData;
+import dimappers.android.PubData.User;
 
 public class Events extends ExpandableListActivity {
-	
-    ExpandableListAdapter mAdapter;
-	
-    AppUser facebookUser;
-    
+
+	ExpandableListAdapter mAdapter;
+
+	AppUser facebookUser;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.events);
-		
+
 		facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
-		
+
 		mAdapter = new EventListAdapter(this, GetEvents(), facebookUser);
-        setListAdapter(mAdapter);
-    	
-         ExpandableListView expview = (ExpandableListView) findViewById(android.R.id.list);
-		 expview.setOnChildClickListener(this);
-        
-		 
+		setListAdapter(mAdapter);
+
+		ExpandableListView expview = (ExpandableListView) findViewById(android.R.id.list);
+		expview.setOnChildClickListener(this);
 	}
 
-	 public boolean onChildClick(ExpandableListView parent,View v, int groupPosition, int childPosition, long id) 
-	 {
-		 Intent i;
-		 groupPosition = (int) mAdapter.getGroupId(groupPosition);
-		 childPosition = (int) mAdapter.getChildId(groupPosition, childPosition);
-		 
-		 switch(groupPosition)
-		 {
-			 case 0: 
-			 {
-				 	//PubEvent sent_event = new PubEvent(new Calendar(), new User(new Integer(1)));
-					
-					//Bundle bundle = new Bundle();
-					//bundle.putSerializable("sent_event", sent_event);
-					//bundle.putInt("test", 1992);
-					i = new Intent(this, HostEvents.class);
-					//i.putExtras(bundle);
-					startActivity(i);
-					return true;
-			 }
-			 case 1 :
-			 {		
-			 		
-				 	i = new Intent(this, HostEvents.class);
-					startActivity(i);
-					return true;
-			 }
-			 case 2 : 
-			 {
-					i = new Intent(this, UserInvites.class);
-					startActivity(i);
-					return true;   
-		     } 
-			 case 3 :
-			 {
-			 		i = new Intent(this, UserInvites.class);
-					startActivity(i);
-					return true;
-			 }
-			 }
-			 return false; 
-	 }
-	 
-	 private PubEvent[] GetEvents()
-	 {
+	public boolean onChildClick(ExpandableListView parent,View v, int groupPosition, int childPosition, long id) 
+	{
+		Intent i;
+		groupPosition = (int) mAdapter.getGroupId(groupPosition);
+		childPosition = (int) mAdapter.getChildId(groupPosition, childPosition);
+
+		Bundle bundle = new Bundle();
+		bundle.putSerializable(Constants.CurrentWorkingEvent, (PubEvent)mAdapter.getChild(groupPosition, childPosition));
+		bundle.putAll(getIntent().getExtras());
+
+		switch(groupPosition)
+		{
+			case Constants.ProposedEventNoResponse: 
+			{
+				i = new Intent(this, UserInvites.class);
+				i.putExtras(bundle);
+				startActivity(i);
+				return true;
+
+			}
+			case Constants.HostedEventSent :
+			{		
+				i = new Intent(this, HostEvents.class);
+				i.putExtras(bundle);
+				startActivity(i);
+				return true;
+			}
+			case Constants.ProposedEventHaveResponded : 
+			{
+				i = new Intent(this, UserInvites.class);
+				i.putExtras(bundle);
+				startActivity(i);
+				return true;   
+			} 
+			case Constants.HostedEventSaved :
+			{
+				i = new Intent(this, HostEvents.class);
+				i.putExtras(bundle);
+				startActivity(i);
+				return true;
+			}
+		}
+		return false; 
+	}
+
+	private PubEvent[] GetEvents()
+	{
 		Calendar time1 = Calendar.getInstance();
 		time1.set(Calendar.HOUR_OF_DAY, 18);
-		
+
 		Calendar time2 = Calendar.getInstance();
 		time2.set(Calendar.HOUR_OF_DAY, 22);
-		return new PubEvent[] { new PubEvent(time1, new PubLocation(10,10,"Spoons"), 
-				facebookUser), new PubEvent(time2, new PubLocation(10,10,"Robins Wells"), new User(123)) } ; 
-	 }	 
+		
+		PubEvent dummyEventA = new PubEvent(time1, new PubLocation(10,10,"Spoons"), facebookUser);
+		PubEvent dummyEventB = new PubEvent(time2, new PubLocation(10,10,"Robins Wells"), new User(123));
+		
+		dummyEventB.AddUser(new User(142));
+		dummyEventB.AddUser(new User(42));
+		dummyEventB.AddUser(new User(124));
+		
+		dummyEventA.AddUser(new User(1494));
+		dummyEventA.AddUser(new User(123951));
+		
+		dummyEventB.UpdateUserStatus(new ResponseData(new User(42), 123, true));
+		ResponseData anotherResponse = new ResponseData(new User(42), 123, true, time2, "Yeah busy till 10");
+		dummyEventB.UpdateUserStatus(anotherResponse);
+		
+		
+		return new PubEvent[] {dummyEventA, dummyEventB } ; 
+	}	 
 }
 
 class EventListAdapter extends BaseExpandableListAdapter {
-	
-    private String[] groups = { "Waiting For Response", "Hosting", "Going", "Send Invites" };
-    //private String[][] children = {getHostedEvents(),getSendInvites(),getWaitingForResponse(), getGoing()};
-    private ArrayList<PubEvent>[] children;
-	
+
+	private final String[] groups = { "Waiting For Response", "Hosting", "Going", "Send Invites" };
+	//ProposedEventNoResponse, HostedEventSent, ProposedEventResponded, HostedEventSaved
+
+	//Cannot have array of generics in Java :(
+	private ArrayList<PubEvent> waitingForResponse;
+	private ArrayList<PubEvent> hosting;
+	private ArrayList<PubEvent> going;
+	private ArrayList<PubEvent> savedEvents;
+
 	private Context context;
-	
+
 	public EventListAdapter(Context context, PubEvent[] allEvents, AppUser currentUser) {
-	    this.context = context;
-	    
-	    /*children = new ArrayList<PubEvent>[Constants.NumberOfEventCategories];
-	    for(int i = 0; i < children.length; ++i)
-	    {
-	    	
-	    }*/
-	    
-	    for(PubEvent event : allEvents)
-	    {
-	    	//Determine if host 
-	    	if(event.GetHost().equals(currentUser))
-	    	{
-	    		//We are the host
-	    		//Somehow determine if the event has been sent
-	    		children[Constants.HostedEventSent].add(event);
-	    	}
-	    	else
-	    	{
-	    		//We are not the host
-	    		//Some how determine if we have responded
-	    		children[Constants.NewEventNoResponse].add(event);
-	    	}
-	    }
+		this.context = context;
+
+		waitingForResponse = new ArrayList<PubEvent>();
+		hosting = new ArrayList<PubEvent>();
+		going = new ArrayList<PubEvent>();
+		savedEvents = new ArrayList<PubEvent>();
+
+		for(PubEvent event : allEvents)
+		{
+			//Determine if host 
+			if(event.GetHost().equals(currentUser))
+			{
+				//We are the host
+				//Somehow determine if the event has been sent
+				hosting.add(event);
+			}
+			else
+			{
+				//We are not the host
+				//Some how determine if we have responded
+				waitingForResponse.add(event);
+			}
+		}
 	}
-	
-	
+
+
 	public Object getChild(int groupPosition, int childPosition) {
-		return children[groupPosition].get(childPosition);
+		return GetRelevantList(groupPosition).get(childPosition);
 	}
-	
-	
+
+	private ArrayList<PubEvent> GetRelevantList(int groupPosition)
+	{
+		switch(groupPosition)
+		{
+			case Constants.HostedEventSaved:
+				return savedEvents;
+
+			case Constants.HostedEventSent:
+				return hosting;
+
+			case Constants.ProposedEventNoResponse:
+				return waitingForResponse;
+
+			case Constants.ProposedEventHaveResponded:
+				return going;
+		}
+
+		Log.d(Constants.MsgError, "Attempted to get non-existant group on the events screen");
+		return null;
+	}
+
 	public long getChildId(int groupPosition, int childPosition) {
 		//TODO: not sure if this is correct - not sure if we use it either
 		return childPosition;
 	}
-	
+
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild,View convertView, ViewGroup parent) {
-	    TextView textView = getGenericView();
-	    textView.setText(getChild(groupPosition, childPosition).toString());
-	    return textView;
+		TextView textView = getGenericView();
+		textView.setText(getChild(groupPosition, childPosition).toString());
+		return textView;
 	}
-	
+
 	public TextView getGenericView() {
-	    // Layout parameters for the ExpandableListView
-	    AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 64);
-	    TextView textView = new TextView(context);
-	    textView.setLayoutParams(lp);
-	    // Center the text vertically
-	    textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-	    // Set the text starting position
-	    textView.setPadding(36, 0, 0, 0);
-	    return textView;
+		// Layout parameters for the ExpandableListView
+		AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 64);
+		TextView textView = new TextView(context);
+		textView.setLayoutParams(lp);
+		// Center the text vertically
+		textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
+		// Set the text starting position
+		textView.setPadding(36, 0, 0, 0);
+		return textView;
 	}
-	
-	
+
+
 	public int getChildrenCount(int groupPosition) {
-		return children[groupPosition].size();
+		return GetRelevantList(groupPosition).size();
 	}
-	
-	
+
+
 	public Object getGroup(int groupPosition) {
 		return groups[groupPosition];
 	}
-	
-	
+
+
 	public int getGroupCount() {
 		return groups.length;
 	}
-	
-	
+
+
 	public long getGroupId(int groupPosition) {
 		return groupPosition;
 	}
-	
+
 	public View getGroupView(int groupPosition, boolean isExpanded, View convertView,ViewGroup parent) 
 	{
-	    TextView textView = getGenericView();
-	    textView.setText(getGroup(groupPosition).toString());
-	    return textView;
+		TextView textView = getGenericView();
+		textView.setText(getGroup(groupPosition).toString());
+		return textView;
 	}
-	
+
 	public boolean hasStableIds() {
 		return true;
 	}
-	
+
 	public boolean isChildSelectable(int groupPosition, int childPosition) {
 		return true;
 	}
 
 }
 
-        

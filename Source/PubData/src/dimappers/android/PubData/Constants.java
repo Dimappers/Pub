@@ -19,14 +19,20 @@ public final class Constants {
 	public static final int StartingTimeReturn = 3;
 	
 	//Events Array Positions
-	public static final int NewEventNoResponse = 0;
+	public static final int ProposedEventNoResponse = 0;
 	public static final int HostedEventSent = 1;
-	public static final int NewEventHaveResponded = 2;
+	public static final int ProposedEventHaveResponded = 2;
 	public static final int HostedEventSaved = 3;
 	public static final int NumberOfEventCategories = 4;
 	
 	//Server stuff
 	public static final String ServerIp = "127.0.0.1";
 	public static final int Port = 2085;
+	
+	//Log categories
+	public static final String MsgInfo = "Dimap:Info";
+	public static final String MsgWarning = "Dimap:Warning";
+	public static final String MsgError = "Dimap:Error";
+	
 	
 }

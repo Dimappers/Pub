@@ -1,8 +1,16 @@
 package dimappers.android.pub;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
+
+import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.GoingStatus;
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.User;
+import dimappers.android.PubData.UserStatus;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -11,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,8 +33,11 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class UserInvites extends Activity implements OnClickListener{
+public class UserInvites extends Activity implements OnClickListener {
 
+	PubEvent event;
+	AppUser facebookUser;
+	
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
@@ -56,13 +68,49 @@ public class UserInvites extends Activity implements OnClickListener{
     	 	
     	 */
     	
-    	
+    	event = (PubEvent)getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent);
+    	if(event == null)
+    	{
+    		Log.d(Constants.MsgError, "Event missing for showing details about");
+    		setResult(Constants.MissingDataInBundle);
+    		finish();
+    	}
+    	facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
+    	if(facebookUser == null)
+    	{
+    		Log.d(Constants.MsgError, "Host data missing for showing details about");
+    		setResult(Constants.MissingDataInBundle);
+    		finish();
+    	}
 
     	ListView list = (ListView) findViewById(R.id.listView1);
     	 
+    	
+    	/* TODO: Possibly change PubEvent to have hash map to User, ResponseData (at the moment just stores weather
+    	 * they said yes or not, need things like msg, time free etc */
+    	
+    	
     	ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
-    	HashMap<String, String> map = new HashMap<String, String>();
-    	map.put("Comment", "yes");
+    	
+    	
+    	for(Entry<User, UserStatus> userResponse : event.GetGoingStatus().entrySet())
+    	{
+    		HashMap<String, String> map = new HashMap<String, String>();
+    		if(userResponse.getValue().messageToHost == null)
+    		{
+    			map.put("Comment", "no");
+    		}
+    		else
+    		{
+    			map.put("Comment", "yes");
+    		}
+    		String freeFromWhen = userResponse.getValue().freeFrom.get(Calendar.HOUR_OF_DAY) + ":" + userResponse.getValue().freeFrom.get(Calendar.MINUTE);
+    		map.put("Avaliable From Time", freeFromWhen);
+    		map.put("Guest", AppUser.AppUserFromUser(userResponse.getKey()).GetRealFacebookName());
+    		
+    		mylist.add(map);
+    	}
+    	/*map.put("Comment", "yes");
     	map.put("Guest", "Jason Karp");
     	map.put("Available From Time", "8:00 PM");
     	mylist.add(map);
@@ -85,7 +133,7 @@ public class UserInvites extends Activity implements OnClickListener{
     	map.put("Comment", "no");
     	map.put("Guest", "Mark Fearnley");
     	map.put("Available From Time", " ");
-    	mylist.add(map);
+    	mylist.add(map);*/
     
     	SimpleAdapter mSchedule = new SimpleAdapter(this, mylist, R.layout.row,
     	            new String[] {"Comment", "Guest", "Available From Time"}, new int[] {R.id.envelope, R.id.guest, R.id.time});
