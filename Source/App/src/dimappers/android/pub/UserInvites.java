@@ -1,8 +1,16 @@
 package dimappers.android.pub;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
+
+import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.GoingStatus;
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.User;
+import dimappers.android.PubData.UserStatus;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -11,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,13 +33,36 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class UserInvites extends Activity implements OnClickListener{
+public class UserInvites extends Activity implements OnClickListener {
 
+	PubEvent event;
+	AppUser facebookUser;
+	
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		
 		setContentView(R.layout.user_invites);
+		
+		event = (PubEvent)getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent);
+    	if(event == null)
+    	{
+    		Log.d(Constants.MsgError, "Event missing for showing details about");
+    		setResult(Constants.MissingDataInBundle);
+    		finish();
+    	}
+    	facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
+    	if(facebookUser == null)
+    	{
+    		Log.d(Constants.MsgError, "Host data missing for showing details about");
+    		setResult(Constants.MissingDataInBundle);
+    		finish();
+    	}
+		
+    	TextView pubNameText = (TextView) findViewById(R.id.pubNameText);
+    	pubNameText.setText(event.GetPubLocation().toString());
+    	
+    	TextView startTime = (TextView) findViewById(R.id.startTimeText);
+    	startTime.setText(event.GetStartTime().getTime().toString());
 		
     	findViewById(R.id.textView7).setVisibility(View.GONE);
     	findViewById(R.id.editText1).setVisibility(View.GONE);
@@ -45,6 +77,7 @@ public class UserInvites extends Activity implements OnClickListener{
     	
     	Button button_make_comment = (Button) findViewById(R.id.make_a_comment);
     	button_make_comment.setOnClickListener(this);
+    
     	
     	/*	TODO: Passing values to determine which page loaded this one: going or waiting for response to know the status.
     	  	Attending button made green if going
@@ -60,75 +93,42 @@ public class UserInvites extends Activity implements OnClickListener{
 
     	ListView list = (ListView) findViewById(R.id.listView1);
     	 
+    	
+    	/* TODO: Possibly change PubEvent to have hash map to User, ResponseData (at the moment just stores weather
+    	 * they said yes or not, need things like msg, time free etc */
+    	
+    	
     	ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
-    	HashMap<String, String> map = new HashMap<String, String>();
-    	map.put("Comment", "yes");
-    	map.put("Guest", "Jason Karp");
-    	map.put("Available From Time", "8:00 PM");
-    	mylist.add(map);
-    	map = new HashMap<String, String>();
-    	map.put("Comment", "no");
-    	map.put("Guest", "Tom Kiley");
-    	map.put("Available From Time", "8:15 PM");
-    	mylist.add(map);
-    	map = new HashMap<String, String>();
-    	map.put("Comment", "no");
-    	map.put("Guest", "Tom Nicholls");
-    	map.put("Available From Time", "9:15 PM");
-    	mylist.add(map);
-    	map = new HashMap<String, String>();
-    	map.put("Comment", "no");
-    	map.put("Guest", "Kim Barrett");
-    	map.put("Available From Time", "9:00 PM");
-    	mylist.add(map);
-    	map = new HashMap<String, String>();
-    	map.put("Comment", "no");
-    	map.put("Guest", "Mark Fearnley");
-    	map.put("Available From Time", " ");
-    	mylist.add(map);
-    
+    	
+    	
+    	for(Entry<User, UserStatus> userResponse : event.GetGoingStatus().entrySet())
+    	{
+    		HashMap<String, String> map = new HashMap<String, String>();
+    		if(userResponse.getValue().messageToHost == null)
+    		{
+    			map.put("Comment", "no");
+    		}
+    		else
+    		{
+    			map.put("Comment", "yes");
+    		}
+    		String freeFromWhen = event.GetStartTime().get(Calendar.HOUR_OF_DAY) + ":" + event.GetStartTime().get(Calendar.MINUTE);
+    		if(userResponse.getValue().freeFrom != null)
+    		{
+    			freeFromWhen = userResponse.getValue().freeFrom.get(Calendar.HOUR_OF_DAY) + ":" + userResponse.getValue().freeFrom.get(Calendar.MINUTE);
+    		}
+    		map.put("Available From Time", freeFromWhen);
+    		map.put("Guest", AppUser.AppUserFromUser(userResponse.getKey()).GetRealFacebookName());
+    		
+    		mylist.add(map);
+    	}
+ 
+    	//TODO: The SDK says all the things in the last parameter should be text views, ours are not (R.id.envelope) do we need to write our own SimpleAdapter
     	SimpleAdapter mSchedule = new SimpleAdapter(this, mylist, R.layout.row,
     	            new String[] {"Comment", "Guest", "Available From Time"}, new int[] {R.id.envelope, R.id.guest, R.id.time});
     	list.setAdapter(mSchedule);
 	}
 	
-	 @Override
-	 public boolean onCreateOptionsMenu(Menu menu) {
-	  //MenuInflater myMenuInflater = getMenuInflater();
-	  //myMenuInflater.inflate(R.menu.menu, menu);
-	    // return true;
-		 
-		 menu.add(R.string.edit);  
-		 menu.add(R.string.delete_event);
-		 menu.add(R.string.cancel);
-		 return super.onCreateOptionsMenu(menu);
-	 }
-
-	 @Override
-	 public boolean onOptionsItemSelected(MenuItem item) {
-	  
-		Intent i;	 
-		 
-		switch(item.getItemId()){
-	    case(R.id.edit_button):
-	    {
-			i = new Intent(this, Organise.class);
-			startActivity(i);
-	    
-			break;
-	    }
-	    case(R.id.delete_Event):
-	    {
-	    	displayAlert();
-	    	break; 
-	    }
-	    case(R.string.cancel):
-	    {
-	    break;
-	    }
-	  } 
-	  return true;
-	 } 
 	
 	
 	public void onClick(View v)

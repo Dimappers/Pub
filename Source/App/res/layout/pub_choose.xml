@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/relativeLayout1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content" >
         <EditText
             android:id="@+id/input_pub"
             android:layout_width="wrap_content"
@@ -15,8 +15,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/use_pub_button"
-            android:hint="Input pub here"
-             />
+            android:text="Input pub here" />
 
         <Button
             android:id="@+id/use_pub_button"
@@ -28,17 +27,19 @@
 
     </RelativeLayout>
 
-       <ListView
+        <ListView 
             android:id="@android:id/list"
             android:layout_width="fill_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="wrap_content">
+
 
              </ListView>
-
+    
        <ImageView
-           android:id="@+id/google_logo"
+            android:layout_width="wrap_content"
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
            android:src="@drawable/powered_by_google_on_non_white" />
 
 </LinearLayout>

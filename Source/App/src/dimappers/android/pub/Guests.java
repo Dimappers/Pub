@@ -2,6 +2,7 @@ package dimappers.android.pub;
 
 import java.util.ArrayList;
 
+import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
 
@@ -16,7 +17,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class Guests extends ListActivity implements OnClickListener{
-	private static final int RESULT_ERROR = -1;
 	ArrayList<AppUser> listItems=new ArrayList<AppUser>();
 	ArrayAdapter<AppUser> adapter;
 	ListView guest_list;
@@ -28,19 +28,17 @@ public class Guests extends ListActivity implements OnClickListener{
     	setContentView(R.layout.guests);
     	
     	Bundle bundle = getIntent().getExtras();
-    	event = (PubEvent) bundle.getSerializable("event");
+    	event = (PubEvent) bundle.getSerializable(Constants.CurrentWorkingEvent);
     	
     	if(event == null)
     	{
     		Toast.makeText(getApplicationContext(), "Error finding pub data - please restart", 100).show();
-    		setResult(RESULT_ERROR);
+    		setResult(Constants.MissingDataInBundle);
     		finish();
     	}
     
     	UpdateListView();
     	
-    	//TODO: When not just "Test Guest", need to have different checkboxes & cases in the switch for each
-    	//Could extend onClickListener for each guest in this class & extend classes within constructors for add_guest/save buttons
     	
     	guest_list = (ListView)findViewById(android.R.id.list);
     	guest_list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -71,7 +69,7 @@ public class Guests extends ListActivity implements OnClickListener{
 		{
 		case R.id.save : {
 			Bundle b = new Bundle();
-			b.putSerializable("event",event);
+			b.putSerializable(Constants.CurrentWorkingEvent,event);
 			Intent returnIntent = new Intent();
 			returnIntent.putExtras(b);
 			this.setResult(RESULT_OK,returnIntent);
@@ -115,16 +113,11 @@ public class Guests extends ListActivity implements OnClickListener{
     	}
 	}
 	
-	public void UpdateEventFromList()
-	{
-		
-	}
-	
 	private AppUser[] GetUsers()
 	{
 		//TODO: Generate a list of all facebook friends 
 		
-		return new AppUser[]{ new AppUser(12), new AppUser(124), new AppUser(1238), new AppUser(143), new AppUser(12341) };
+		return new AppUser[]{ new AppUser(12), new AppUser(124), new AppUser(1238), new AppUser(143), new AppUser(12341), new AppUser(14) };
 	}
 	
 	private AppUser[] GetSortedUsers()

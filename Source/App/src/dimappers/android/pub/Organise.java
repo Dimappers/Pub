@@ -46,7 +46,7 @@ public class Organise extends ListActivity implements OnClickListener{
 	private Location location;
 	
 	private PubEvent event;
-	private int facebookId;
+	private User facebookUser;
 	
 	private ArrayList<String> listItems=new ArrayList<String>();
 	private ArrayAdapter<String> adapter;
@@ -59,12 +59,12 @@ public class Organise extends ListActivity implements OnClickListener{
 	    	setContentView(R.layout.organise);
 	    	
 	    	Bundle b = getIntent().getExtras();
-	    	if(b.getSerializable("event")!=null)
+	    	if(b.getSerializable(Constants.CurrentWorkingEvent)!=null)
 	    	{
-	    		event=(PubEvent)b.getSerializable("event");
+	    		event=(PubEvent)b.getSerializable(Constants.CurrentWorkingEvent);
 	    		Toast.makeText(getApplicationContext(), "Received event: " + event.GetHost().getUserId().toString(), Toast.LENGTH_LONG).show();
 	    		
-	    		if(b.getBoolean("NewEvent"))
+	    		if(b.getBoolean(Constants.IsSavedEventFlag))
 	    		{
 	    			Toast.makeText(getApplicationContext(), "New event...", 100).show();	    			
 	    		}
@@ -74,8 +74,7 @@ public class Organise extends ListActivity implements OnClickListener{
 	    		}
 	    	}
 	    	else{
-	    		//TODO: this needs changing when pending passes in an event
-		    	int i =  1/0;
+		    	setResult(Constants.MissingDataInBundle);
 	    	} 
 
 	    	cur_pub = (Button)findViewById(R.id.pub_button);
@@ -94,9 +93,9 @@ public class Organise extends ListActivity implements OnClickListener{
 	    	    public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 	    	    	Intent i = new Intent(getBaseContext(), Guests.class);
 	    	    	Bundle b = new Bundle();
-	    	    	b.putSerializable("event", event);
+	    	    	b.putSerializable(Constants.CurrentWorkingEvent, event);
 	    	    	i.putExtras(b);
-					startActivityForResult(i, 4);
+					startActivityForResult(i, Constants.GuestReturn);
 	    	        }
 	    	      });
 	    	
@@ -116,21 +115,12 @@ public class Organise extends ListActivity implements OnClickListener{
 		 super.onStart(); 
 		 findLocation();
 	}
-	 public void onListItemClick(View v)
-	 {
-		if(v.getId()==android.R.id.list) {
-			Intent i = new Intent(this, Guests.class);
-			Bundle b = new Bundle();
-			b.putSerializable("event",event);
-			i.putExtras(b);
-			startActivity(i);
-		}
-	 }
+	 
 	 public void onClick(View v)
 	 {
 		Intent i;
 		Bundle b = new Bundle();
-		b.putSerializable("event", event);
+		b.putSerializable(Constants.CurrentWorkingEvent, event);
 		 switch (v.getId()){
 		 		 case R.id.current_location : {
 		 			 //FIXME: need to do this in a way that involves long/lat - if we even want it at all!
@@ -160,13 +150,13 @@ public class Organise extends ListActivity implements OnClickListener{
 				b.putDouble("lat",location.getLatitude());
 				b.putDouble("long",location.getLongitude());
 				i.putExtras(b);
-				startActivityForResult(i,1);
+				startActivityForResult(i, Constants.PubLocationReturn);
 				break;
 			}
 			case R.id.time_button : {
 				i = new Intent(this, ChooseTime.class);
 				i.putExtras(b);
-				startActivityForResult(i,3);
+				startActivityForResult(i,Constants.StartingTimeReturn);
 				break;
 			}
 			case R.id.save_event : {
@@ -176,7 +166,7 @@ public class Organise extends ListActivity implements OnClickListener{
 				break;
 			}
 			case R.id.send_invites_event : {
-				//TODO: save event details, then send invites to server
+				
 				this.setResult(RESULT_OK, getIntent());
 				finish();
 				break;
@@ -187,23 +177,10 @@ public class Organise extends ListActivity implements OnClickListener{
 	 public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		 //super.onActivityResult(requestCode, resultCode, data);
 		 if(resultCode==RESULT_OK) //This line is so when the back button is pressed the data changed by an Activity isn't stored.
-		 {
-			 if(requestCode==1)
-			 {
-				 event = (PubEvent)data.getExtras().getSerializable("eventt");
-				 Toast.makeText(getApplicationContext(), event.GetPubLocation().pubName, Toast.LENGTH_LONG).show();
-				 UpdateFromEvent();
-			 }
-			 if(requestCode==3)
-			 {
-				 event = (PubEvent)data.getExtras().getSerializable("event");
-				 UpdateFromEvent();
-			 } 
-			 else if(requestCode == 4)
-			 {
-				 event = (PubEvent)data.getExtras().getSerializable("event");
-				 UpdateFromEvent();
-			 }
+		 { 
+			 //We don't actually care what we are returning from, always get the latest event and update the screen
+			 event = (PubEvent)data.getExtras().getSerializable(Constants.CurrentWorkingEvent);
+			 UpdateFromEvent();
 		 }
 	 }
 	//Finding current location

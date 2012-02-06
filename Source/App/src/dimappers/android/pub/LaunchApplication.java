@@ -2,6 +2,8 @@ package dimappers.android.pub;
 
 import dimappers.android.PubData.AcknoledgementData;
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.User;
+import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.RefreshData;
 import dimappers.android.PubData.ResponseData;
@@ -21,13 +23,13 @@ import android.widget.Toast;
 
 public class LaunchApplication extends Activity implements OnClickListener{
     /** Called when the activity is first created. */
-	int facebookId;
+	AppUser facebookUser;
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	
     	//need to log into Facebook if not logged in before
-    	facebookId = 1238;
+    	facebookUser = GetFacebookUser();
     	
     	setContentView(R.layout.main);
     	
@@ -43,7 +45,8 @@ public class LaunchApplication extends Activity implements OnClickListener{
     public void onClick(View v)
     {
     	Intent i;
-		
+		Bundle b = new Bundle();
+		b.putSerializable(Constants.CurrentFacebookUser, facebookUser);
 		switch (v.getId()) {
 		case R.id.organise_button : 
 		{
@@ -57,6 +60,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		case R.id.invites_button : {
 			
 			i = new Intent(this, Events.class);
+			i.putExtras(b);
 			startActivity(i);
 			break;
 		}
@@ -65,19 +69,25 @@ public class LaunchApplication extends Activity implements OnClickListener{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
     	if(resultCode==RESULT_OK)
     	{
-		 if(requestCode==0)
+		 if(requestCode == Constants.FromOrganise)
 		 {
 			 super.onActivityResult(requestCode, resultCode, data);
 			 Intent i = new Intent(this, Events.class);	
 			 startActivity(i);
 		 }
-		 if(requestCode==1)
+		 if(requestCode==Constants.FromPending)
 		 {
 			super.onActivityResult(requestCode, resultCode, data);
 			Intent i = new Intent(this,Organise.class);
 			i.putExtras(data.getExtras());
-			startActivityForResult(i,0);
+			startActivityForResult(i, Constants.FromOrganise);
 		 }
     	}
 	 }
+    
+    private AppUser GetFacebookUser()
+    {
+    	//Get the facebook id - from login details possibly also authentication stuff
+    	return new AppUser(14);
+    }
 }

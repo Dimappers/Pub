@@ -34,5 +34,10 @@ public class AppUser extends User
 	{
 		return "Id: " + GetRealFacebookName();		
 	}
+	
+	public static AppUser AppUserFromUser(User user)
+	{
+		return new AppUser(user.getUserId());
+	}
 
 }

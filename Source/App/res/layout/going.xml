@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:gravity="right" >
+        android:gravity="center" >
 
         <TextView
             android:id="@+id/textView1"
@@ -28,11 +28,9 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="45dp"
             android:text="TextView" />
-
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/relativeLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -58,81 +56,110 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/relativeLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center" >
 
         <TextView
-            android:id="@+id/guests"
+            android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="14dp"
             android:text="@string/guests"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="45dp"
+            android:text="TextView" />
     </RelativeLayout>
 
-     <LinearLayout
-     xmlns:android="http://schemas.android.com/apk/res/android"
-     android:paddingTop="4dip"
-     android:paddingBottom="6dip"
-     android:layout_width="fill_parent"
-     android:layout_height="wrap_content"
-     android:orientation="horizontal">
-        
     <ListView
-        android:id="@+id/listView1"
+        android:id="@+id/list_of_guests"
         android:layout_width="match_parent"
-        android:layout_height="352dp" />
-    
-     <TextView android:id="@+id/TRAIN_CELL"
-         android:layout_width="50dip"
-         android:layout_height="wrap_content"/>
- 
-     <TextView android:id="@+id/FROM_CELL"
-         android:layout_width="70dip"
-         android:layout_height="wrap_content" android:layout_weight="1"/>
- 
-     <TextView android:id="@+id/TO_CELL"
-         android:layout_width="60dip"
-         android:layout_height="wrap_content"  android:layout_weight="1"/>
-	</LinearLayout>
+        android:layout_height="116dp"
+        android:scrollbars="vertical" >
+    </ListView>
 
     <RelativeLayout
-        android:id="@+id/relativeLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center" >
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="71dp"
+            android:text="@string/decline" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="60dp"
+            android:text="@string/going" />
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/relativeLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center" >
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="25dp"
+            android:text="@string/available_from"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:id="@+id/editText1"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="46dp"
+            android:layout_toRightOf="@+id/textView7"
+            android:inputType="time" >
+
+            <requestFocus />
+        </EditText>
+    </RelativeLayout>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center" >
 
         <Button
-            android:id="@+id/send_Invites"
+            android:id="@+id/button3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_marginRight="52dp"
-            android:text="@string/send_invites" />
+            android:text="@string/send" />
 
         <Button
-            android:id="@+id/edit_button"
+            android:id="@+id/make_a_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="54dp"
-            android:text="@string/edit" />
+            android:layout_marginLeft="30dp"
+            android:text="@string/make_a_comment" />
 
     </RelativeLayout>
 

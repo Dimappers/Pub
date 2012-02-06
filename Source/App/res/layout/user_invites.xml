@@ -21,13 +21,12 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="45dp"
-            android:text="TextView" />
+            android:text="TextView" android:id="@+id/pubNameText"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -46,13 +45,12 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/textView5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="45dp"
-            android:text="TextView" />
+            android:text="TextView" android:id="@+id/startTimeText"/>
     </RelativeLayout>
 
     <RelativeLayout
