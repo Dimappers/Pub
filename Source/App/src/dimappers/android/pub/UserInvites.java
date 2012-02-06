@@ -58,11 +58,11 @@ public class UserInvites extends Activity implements OnClickListener {
     		finish();
     	}
 		
-    	TextView pubNameText = (TextView) findViewById(R.id.pubNameText);
+    	TextView pubNameText = (TextView) findViewById(R.id.userInvitesPubNameText);
     	pubNameText.setText(event.GetPubLocation().toString());
     	
-    	TextView startTime = (TextView) findViewById(R.id.startTimeText);
-    	startTime.setText(event.GetStartTime().getTime().toString());
+    	TextView startTime = (TextView) findViewById(R.id.userInviteStartTimeText);
+    	startTime.setText(event.GetFormattedStartTime());
 		
     	findViewById(R.id.textView7).setVisibility(View.GONE);
     	findViewById(R.id.editText1).setVisibility(View.GONE);

@@ -10,9 +10,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center" >
-
+
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/userInvitesPubNameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -20,13 +20,6 @@
             android:text="@string/pub_name"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="45dp"
-            android:text="TextView" android:id="@+id/pubNameText"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -34,9 +27,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center" >
-
+
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/userInviteStartTimeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -44,13 +37,6 @@
             android:text="@string/current_start_time"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="45dp"
-            android:text="TextView" android:id="@+id/startTimeText"/>
     </RelativeLayout>
 
     <RelativeLayout

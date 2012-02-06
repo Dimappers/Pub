@@ -25,6 +25,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -57,23 +58,26 @@ public class Organise extends ListActivity implements OnClickListener{
 	    	if(b.getSerializable(Constants.CurrentWorkingEvent)!=null)
 	    	{
 	    		event=(PubEvent)b.getSerializable(Constants.CurrentWorkingEvent);
-	    		Toast.makeText(getApplicationContext(), "Received event: " + event.GetHost().getUserId().toString(), Toast.LENGTH_LONG).show();
+	    		Log.d(Constants.MsgInfo, "Event received - host: " + event.GetHost().getUserId());
 	    		
 	    		if(b.getBoolean(Constants.IsSavedEventFlag))
 	    		{
-	    			Toast.makeText(getApplicationContext(), "New event...", 100).show();	    			
+	    			Log.d(Constants.MsgInfo, "Event has been created before");	    			
 	    		}
 	    		else
 	    		{
-	    			Toast.makeText(getApplicationContext(), "Old event...", 100).show();
+	    			Log.d(Constants.MsgInfo, "Event has just been generated");
 	    		}
 	    	}
 	    	else{
 		    	setResult(Constants.MissingDataInBundle);
+		    	finish();
 	    	} 
 
 	    	cur_pub = (Button)findViewById(R.id.pub_button);
+	    	cur_pub.setText(event.GetPubLocation().toString());
 	    	cur_time = (Button)findViewById(R.id.time_button);
+	    	cur_time.setText(event.GetFormattedStartTime());
 	    	
 	    	guest_list = (ListView)findViewById(android.R.id.list);
 	    	adapter = new ArrayAdapter<String>(this, android.R.layout.test_list_item, listItems);
@@ -174,8 +178,8 @@ public class Organise extends ListActivity implements OnClickListener{
 		cur_time.setText(event.GetStartTime().getTime().toString());
 		
 		listItems.clear();
-    	for(User s : event.GetUsers()) {
-    		listItems.add(((AppUser) s).GetRealFacebookName());
+    	for(User user : event.GetUsers()) {
+    		listItems.add(AppUser.AppUserFromUser(user).GetRealFacebookName());
     	}
     	
     	adapter.notifyDataSetChanged();

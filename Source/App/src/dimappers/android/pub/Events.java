@@ -20,6 +20,7 @@ import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.GoingStatus;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.ResponseData;
@@ -64,7 +65,6 @@ public class Events extends ExpandableListActivity {
 				i.putExtras(bundle);
 				startActivity(i);
 				return true;
-
 			}
 			case Constants.HostedEventSent :
 			{		
@@ -97,6 +97,7 @@ public class Events extends ExpandableListActivity {
 	{
 		Calendar time1 = Calendar.getInstance();
 		time1.set(Calendar.HOUR_OF_DAY, 18);
+		time1.add(Calendar.DAY_OF_MONTH, 1);
 
 		Calendar time2 = Calendar.getInstance();
 		time2.set(Calendar.HOUR_OF_DAY, 22);
@@ -122,13 +123,13 @@ public class Events extends ExpandableListActivity {
 
 class EventListAdapter extends BaseExpandableListAdapter {
 
-	private final String[] groups = { "Waiting For Response", "Hosting", "Going", "Send Invites" };
+	private final String[] groups = { "Waiting For Response", "Hosting", "Responded to", "Send Invites" };
 	//ProposedEventNoResponse, HostedEventSent, ProposedEventResponded, HostedEventSaved
 
 	//Cannot have array of generics in Java :(
 	private ArrayList<PubEvent> waitingForResponse;
 	private ArrayList<PubEvent> hosting;
-	private ArrayList<PubEvent> going;
+	private ArrayList<PubEvent> respondedTo;
 	private ArrayList<PubEvent> savedEvents;
 
 	private Context context;
@@ -138,7 +139,7 @@ class EventListAdapter extends BaseExpandableListAdapter {
 
 		waitingForResponse = new ArrayList<PubEvent>();
 		hosting = new ArrayList<PubEvent>();
-		going = new ArrayList<PubEvent>();
+		respondedTo = new ArrayList<PubEvent>();
 		savedEvents = new ArrayList<PubEvent>();
 
 		for(PubEvent event : allEvents)
@@ -147,14 +148,26 @@ class EventListAdapter extends BaseExpandableListAdapter {
 			if(event.GetHost().equals(currentUser))
 			{
 				//We are the host
-				//Somehow determine if the event has been sent
-				hosting.add(event);
+				if(event.GetEventId() >= 0) //if the event has an id then it has been sent to the server
+				{
+					hosting.add(event);
+				}
+				else //if not then it is only storred locally
+				{
+					savedEvents.add(event);
+				}
 			}
 			else
 			{
 				//We are not the host
-				//Some how determine if we have responded
-				waitingForResponse.add(event);
+				if(event.GetGoingStatus().get(currentUser).goingStatus == GoingStatus.maybeGoing) //we have not replied if status is still maybe
+				{
+					waitingForResponse.add(event);
+				}
+				else //otherwise we have replied with yes or no
+				{
+					respondedTo.add(event);
+				}
 			}
 		}
 	}
@@ -178,7 +191,7 @@ class EventListAdapter extends BaseExpandableListAdapter {
 				return waitingForResponse;
 
 			case Constants.ProposedEventHaveResponded:
-				return going;
+				return respondedTo;
 		}
 
 		Log.d(Constants.MsgError, "Attempted to get non-existant group on the events screen");

@@ -5,10 +5,13 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
+import dimappers.android.PubData.User;
+import dimappers.android.PubData.UserStatus;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -87,18 +90,27 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
     	  ListView list = (ListView) findViewById(R.id.listView1);
     	
       	  ArrayList<GuestList> mData = new ArrayList<GuestList>();
-      	  
-      	 // List mData = new ArrayList();
-      	  mData.add(new GuestList("Jason Karp", "8:00 PM"));
-      	  mData.add(new GuestList("Mark Fearnley", "8:15 PM"));
-      	  mData.add(new GuestList("Tom Kiley", "9:00 PM"));
-      	  mData.add(new GuestList("Kim Barrett", "8:30 PM"));
-      	  mData.add(new GuestList("Tom Nicholls", "8:00 PM"));
+      	  for(Entry<User, UserStatus> userResponse : event.GetGoingStatus().entrySet())
+      	  {
+      		String freeFromWhen = event.GetStartTime().get(Calendar.HOUR_OF_DAY) + ":" + event.GetStartTime().get(Calendar.MINUTE);
+    		if(userResponse.getValue().freeFrom != null)
+    		{
+    			freeFromWhen = userResponse.getValue().freeFrom.get(Calendar.HOUR_OF_DAY) + ":" + userResponse.getValue().freeFrom.get(Calendar.MINUTE);
+    		}
+      		mData.add(new GuestList(AppUser.AppUserFromUser(userResponse.getKey()).GetRealFacebookName(), freeFromWhen));  
+      	  }
       	  
       	  GuestListAdapter gadapter = new GuestListAdapter(this, mData);
       	  list.setAdapter(gadapter);
                     
     	
+      	  TextView pubNameText = (TextView)findViewById(R.id.hostEventsPubName);
+      	  pubNameText.setText(event.GetPubLocation().toString());
+      	  
+      	  
+      	  TextView startTimeText = (TextView)findViewById(R.id.hostEventsCurrentStartTime);
+      	  startTimeText.setText(event.GetFormattedStartTime());
+      	  
     	/*TODO: Need to have passed two numbers, either 0 or 1 for example telling me whether this page has 
     	 been loaded from host or sendInvites so to know what to hide and show.(delete and cancel image buttons, send and edit button)
 		
@@ -133,11 +145,11 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		switch(item.getItemId()){
 	    case(R.id.edit):
 	    {
-	    	PubEvent event = new PubEvent(Calendar.getInstance(), new AppUser(new Integer(1)));
-			event.SetPubLocation(new PubLocation());
-			Bundle bundle = new Bundle();
-			bundle.putSerializable("event", event);
-			bundle.putInt("test", 1992);
+	    	Bundle bundle = new Bundle();
+	    	bundle.putAll(getIntent().getExtras());
+			bundle.putSerializable(Constants.CurrentWorkingEvent, event);
+			bundle.putBoolean(Constants.IsSavedEventFlag, true);
+			
 			i = new Intent(this, Organise.class);
 			i.putExtras(bundle);
 			startActivity(i);
@@ -173,12 +185,11 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		}
 		case R.id.edit_button :
 		{
-			PubEvent event = new PubEvent(Calendar.getInstance(), new AppUser(new Integer(1)));
-			event.SetPubLocation(new PubLocation());
 			Bundle bundle = new Bundle();
-			bundle.putSerializable("event", event);
-			bundle.putInt("test", 1992);
-			bundle.putBoolean("NewEvent", false);
+	    	bundle.putAll(getIntent().getExtras());
+			bundle.putSerializable(Constants.CurrentWorkingEvent, event);
+			bundle.putBoolean(Constants.IsSavedEventFlag, true);
+			
 			i = new Intent(this, Organise.class);
 			i.putExtras(bundle);
 			startActivity(i);
@@ -241,7 +252,6 @@ class GuestListAdapter extends BaseAdapter
 	{
 		this.mData = (List<GuestList>) mData;
 		this.context = context;
-		
 	}
 	public int getCount() {
 		return mData.size();

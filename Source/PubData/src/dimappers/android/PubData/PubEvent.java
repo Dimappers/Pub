@@ -31,6 +31,7 @@ public class PubEvent implements Serializable
 		users.put(host, new UserStatus(GoingStatus.going, startTime, null));
 		this.host = host;
 		this.startTime = startTime;
+		globalEventId = -1;
 	}
 	
 	public PubEvent(Calendar startTime, PubLocation pubLocation, User host)
@@ -40,6 +41,7 @@ public class PubEvent implements Serializable
 		this.host = host;
 		this.pubLocation = pubLocation;
 		this.startTime = startTime;
+		globalEventId = -1;
 	}
 	
 	//Getter/setter methods
@@ -111,24 +113,6 @@ public class PubEvent implements Serializable
 		return host;
 	}
 	
-	/*public void UpdateUserStatus(User user, boolean isGoing)
-	{
-		if(users.containsKey(user))
-		{
-			GoingStatus status;
-			if(isGoing)
-			{
-				status = GoingStatus.going;
-			}
-			else
-			{
-				status = GoingStatus.notGoing;
-			}
-			
-			//users.put(user, );
-		}
-	}*/
-	
 	public void UpdateUserStatus(ResponseData response)
 	{
 		if(users.containsKey(response.GetUser()))
@@ -145,6 +129,39 @@ public class PubEvent implements Serializable
 	@Override
 	public String toString()
 	{
-		return pubLocation.pubName + ":" + startTime.getTime().toString();  
+		return pubLocation.pubName + " : " + GetFormattedStartTime();
+	}
+	
+	public String GetFormattedStartTime()
+	{
+		String time;
+		
+		String date;
+		Calendar currentTime = Calendar.getInstance();
+		if(startTime.get(Calendar.DAY_OF_MONTH) == currentTime.get(Calendar.DAY_OF_MONTH))
+		{
+			date = "Today";
+		}
+		else 
+		{
+			currentTime.add(Calendar.DAY_OF_MONTH, 1);
+			if(currentTime.get(Calendar.DAY_OF_MONTH) == startTime.get(Calendar.DAY_OF_MONTH))
+			{
+				date = "Tomorrow";
+			}
+			else if(startTime.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR))
+			{
+				//Same year - don't bother with year
+				date = startTime.get(Calendar.DAY_OF_MONTH) + "/" + (startTime.get(Calendar.MONTH) + 1);
+			}
+			else
+			{
+				date = startTime.get(Calendar.DAY_OF_MONTH) + "/" + (startTime.get(Calendar.MONTH) + 1) + startTime.get(Calendar.YEAR);
+			}
+		}
+		
+		time = date + " at " + startTime.get(Calendar.HOUR_OF_DAY) + ":" + startTime.get(Calendar.MINUTE);
+		
+		return time;
 	}
 }
