@@ -99,22 +99,22 @@ public class Events extends ExpandableListActivity {
 		Calendar time2 = Calendar.getInstance();
 		time2.set(Calendar.HOUR_OF_DAY, 22);
 		
-		PubEvent dummyEventA = new PubEvent(time1, new PubLocation(10,10,"Spoons"), facebookUser);
-		PubEvent dummyEventB = new PubEvent(time2, new PubLocation(10,10,"Robins Wells"), new User(123));
+		PubEvent hostedEvent = new PubEvent(time2, new PubLocation(10,10,"Spoons"), facebookUser);
+		PubEvent invitedEvent = new PubEvent(time1, new PubLocation(10,10,"Robins Wells"), new User(123));
 		
-		dummyEventB.AddUser(new User(142));
-		dummyEventB.AddUser(new User(42));
-		dummyEventB.AddUser(new User(124));
+		invitedEvent.AddUser(new User(142));
+		invitedEvent.AddUser(new User(42));
+		invitedEvent.AddUser(new User(124));
+		invitedEvent.AddUser(facebookUser); //add ourself to the event
 		
-		dummyEventA.AddUser(new User(1494));
-		dummyEventA.AddUser(new User(123951));
+		hostedEvent.AddUser(new User(1494));
+		hostedEvent.AddUser(new User(123951));
 		
-		dummyEventB.UpdateUserStatus(new ResponseData(new User(42), 123, true));
-		ResponseData anotherResponse = new ResponseData(new User(42), 123, true, time2, "Yeah busy till 10");
-		dummyEventB.UpdateUserStatus(anotherResponse);
+		invitedEvent.UpdateUserStatus(new ResponseData(new User(42), 123, true));
+		ResponseData anotherResponse = new ResponseData(new User(124), 123, true, time2, "Yeah busy till 10");
+		invitedEvent.UpdateUserStatus(anotherResponse);
 		
-		
-		return new PubEvent[] {dummyEventA, dummyEventB } ; 
+		return new PubEvent[] {hostedEvent, invitedEvent } ; 
 	}	 
 }
 

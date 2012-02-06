@@ -119,7 +119,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		 //return true;
 	 }
 
-	 @Override
 	 public boolean onMenuItemClick(MenuItem item) {
 	  
 		Intent i;	 
@@ -250,7 +249,6 @@ class GuestListAdapter extends BaseAdapter
 		this.context = context;
 		
 	}
-	@Override
 	public int getCount() {
 		return mData.size();
 	}
@@ -267,18 +265,14 @@ class GuestListAdapter extends BaseAdapter
 		return time[position];
 	}
 	
-
-	@Override
 	public Object getItem(int position) {
 		return mData.get(position);
 	}
-
-	@Override
 	public long getItemId(int position) {
 		return position;
 	}
-
-	@Override
+	
+	
 	public View getView(int position, View convertView, ViewGroup parent) {
 		
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
