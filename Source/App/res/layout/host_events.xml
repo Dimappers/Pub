@@ -29,22 +29,6 @@
             android:layout_marginRight="45dp"
             android:text="TextView" />
 
-        <ImageButton
-            android:id="@+id/delete_Event"
-            android:layout_width="42dp"
-            android:layout_height="40dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:src="@android:drawable/ic_menu_delete" />
-
-        <ImageButton
-            android:id="@+id/cancel_Event"
-            android:layout_width="42dp"
-            android:layout_height="40dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:src="@android:drawable/ic_delete" />
-
     </RelativeLayout>
 
     <RelativeLayout
@@ -103,7 +87,7 @@
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
-        android:layout_height="261dp" />
+        android:layout_height="352dp" />
     
      <TextView android:id="@+id/TRAIN_CELL"
          android:layout_width="50dip"

@@ -59,7 +59,7 @@ public class Organise extends ListActivity implements OnClickListener{
 	    		event=(PubEvent)b.getSerializable(Constants.CurrentWorkingEvent);
 	    		Toast.makeText(getApplicationContext(), "Received event: " + event.GetHost().getUserId().toString(), Toast.LENGTH_LONG).show();
 	    		
-	    		if(b.getBoolean(Constants.NewEventFlag))
+	    		if(b.getBoolean(Constants.IsSavedEventFlag))
 	    		{
 	    			Toast.makeText(getApplicationContext(), "New event...", 100).show();	    			
 	    		}

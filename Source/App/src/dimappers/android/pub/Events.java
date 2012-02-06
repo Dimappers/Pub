@@ -69,6 +69,7 @@ public class Events extends ExpandableListActivity {
 			case Constants.HostedEventSent :
 			{		
 				i = new Intent(this, HostEvents.class);
+				bundle.putBoolean(Constants.IsSavedEventFlag, false);
 				i.putExtras(bundle);
 				startActivity(i);
 				return true;
@@ -83,6 +84,7 @@ public class Events extends ExpandableListActivity {
 			case Constants.HostedEventSaved :
 			{
 				i = new Intent(this, HostEvents.class);
+				bundle.putBoolean(Constants.IsSavedEventFlag, true);
 				i.putExtras(bundle);
 				startActivity(i);
 				return true;

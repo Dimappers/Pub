@@ -10,9 +10,11 @@
     <ImageButton
         android:id="@+id/envelope"
         android:layout_width="30dp"
-        android:layout_height="76dp"
-        android:layout_weight="0.03"
-        android:src="@drawable/comment" />
+        android:layout_height="20dp"
+        android:padding="2dip"
+        android:scaleType="fitCenter"
+        android:background="#80000000"
+        android:src="@drawable/email_open" />
  
      <TextView
          android:id="@+id/guest"

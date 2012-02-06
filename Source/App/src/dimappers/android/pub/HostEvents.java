@@ -3,20 +3,25 @@ package dimappers.android.pub;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewStub;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,14 +31,18 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 public class HostEvents extends Activity implements OnClickListener, OnMenuItemClickListener{
 
 	private PubEvent event;
+	private AppUser facebookUser;
 	private GuestListAdapter gadapter;
+	private ImageButton comment_made;
+	public static boolean sent;
+
 	
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -45,52 +54,50 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
     	button_send_invites.setOnClickListener(this);
     	
     	Button button_edit = (Button) findViewById(R.id.edit_button);
-    	button_edit.setOnClickListener(this);
+    	button_edit.setOnClickListener(this);    	
+		
     	
-    	ImageButton button_delete_event = (ImageButton) findViewById(R.id.delete_Event);
-    	button_delete_event.setOnClickListener(this);
-    	
-    	ImageButton button_cancel_event = (ImageButton) findViewById(R.id.cancel_Event);
-    	button_cancel_event.setOnClickListener(this);
-    	
-    	
-    	
-    	Bundle b = getIntent().getExtras();
-    	if(b.getSerializable("sent_event")!=null)
+    	event = (PubEvent)getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent);
+    	if(event == null)
     	{
-    		event=(PubEvent)b.getSerializable("sent_event");
-			findViewById(R.id.send_Invites).setVisibility(View.GONE);
-			findViewById(R.id.edit_button).setVisibility(View.GONE);
-
-    		//Toast.makeText(getApplicationContext(), "Received event data: " + event.GetHost().getUserId().toString(), Toast.LENGTH_LONG).show();
-    		
+    		Log.d(Constants.MsgError, "Event missing for showing details about");
+    		setResult(Constants.MissingDataInBundle);
+    		finish();
     	}
-    	else if(b.getSerializable("unsent_event") != null)
+    	facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
+    	if(facebookUser == null)
     	{
-    		event=(PubEvent)b.getSerializable("unsent_event");
-			findViewById(R.id.send_Invites).setVisibility(View.VISIBLE);
+    		Log.d(Constants.MsgError, "Host data missing for showing details about");
+    		setResult(Constants.MissingDataInBundle);
+    		finish();
+    	}
+    	
+    	sent = !getIntent().getExtras().getBoolean(Constants.IsSavedEventFlag); //if we have saved the event, it has not been sent
+    	if(sent)
+    	{
+    		findViewById(R.id.send_Invites).setVisibility(View.GONE);
+			findViewById(R.id.edit_button).setVisibility(View.GONE);
+    	}
+    	else
+    	{
+    		findViewById(R.id.send_Invites).setVisibility(View.VISIBLE);
 			findViewById(R.id.edit_button).setVisibility(View.VISIBLE);
-
-    		//Toast.makeText(getApplicationContext(), "Received event data: " + event.GetHost().getUserId().toString(), Toast.LENGTH_LONG).show();
     	}
     	
     	  ListView list = (ListView) findViewById(R.id.listView1);
     	
-      	  ArrayList<String> mData = new ArrayList<String>();
+      	  ArrayList<GuestList> mData = new ArrayList<GuestList>();
       	  
-      	
+      	 // List mData = new ArrayList();
+      	  mData.add(new GuestList("Jason Karp", "8:00 PM"));
+      	  mData.add(new GuestList("Mark Fearnley", "8:15 PM"));
+      	  mData.add(new GuestList("Tom Kiley", "9:00 PM"));
+      	  mData.add(new GuestList("Kim Barrett", "8:30 PM"));
+      	  mData.add(new GuestList("Tom Nicholls", "8:00 PM"));
       	  
       	  GuestListAdapter gadapter = new GuestListAdapter(this, mData);
       	  list.setAdapter(gadapter);
-          
-          
-    	//ListView list = (ListView) findViewById(R.id.listView1);
-          
-    	
-    
-    	/*SimpleAdapter mSchedule = new SimpleAdapter(this, mData, R.layout.row,
-    	            new String[] {"Comment", "Guest", "Available From Time"}, new int[] {R.id.envelope, R.id.guest, R.id.time});
-    	list.setAdapter(mSchedule);*/
+                    
     	
     	/*TODO: Need to have passed two numbers, either 0 or 1 for example telling me whether this page has 
     	 been loaded from host or sendInvites so to know what to hide and show.(delete and cancel image buttons, send and edit button)
@@ -164,16 +171,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			//startActivity(i);
 			break;
 		}
-		case R.id.delete_Event :
-		{
-			displayAlert();
-			break;
-		}
-		case R.id.cancel_Event :
-		{
-			displayCancelAlert();
-			break;
-		}
 		case R.id.edit_button :
 		{
 			PubEvent event = new PubEvent(Calendar.getInstance(), new AppUser(new Integer(1)));
@@ -190,7 +187,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	
 		}
     }
-
+	
 
 	public  void displayAlert()
     {
@@ -238,33 +235,18 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 class GuestListAdapter extends BaseAdapter 
 {
 	private Context context;
-	private ArrayList<String> mData;
+	private final List<GuestList> mData;	
 
-	private String[] guests = {"Jason Karp", "Mark Fearnley"};
-	private String[] time = {"8:00 PM", "8:15 PM"};
-
-	public GuestListAdapter(Context context, ArrayList<String> mData)
+	public GuestListAdapter(Context context, List<GuestList> mData)
 	{
-		this.mData = mData;
+		this.mData = (List<GuestList>) mData;
 		this.context = context;
 		
 	}
 	public int getCount() {
 		return mData.size();
 	}
-	
-	public Object getGuest(int position)
-	{
 
-		return guests[position];
-	}
-	
-	public Object getTime(int position)
-	{
-		
-		return time[position];
-	}
-	
 	public Object getItem(int position) {
 		return mData.get(position);
 	}
@@ -273,26 +255,114 @@ class GuestListAdapter extends BaseAdapter
 	}
 	
 	
-	public View getView(int position, View convertView, ViewGroup parent) {
-		
+	public View getView(int position, View convertView, ViewGroup parent) 
+	{
+		GuestListView glView = null;
+
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View rowView = inflater.inflate(R.layout.row, parent, false);
 		
-		ImageView comment = (ImageView) rowView.findViewById(R.id.envelope);
-		TextView guest = (TextView) rowView.findViewById(R.id.guest);
-		TextView time = (TextView) rowView.findViewById(R.id.time);
+		glView = new GuestListView();
 		
-		guest.setText(getGuest(position).toString());
-		time.setText(getTime(position).toString());
-		//if (guest != null) {
-			comment.setImageLevel(R.drawable.comment);
-		//} else {
-		//	comment.setImageLevel(R.drawable.icon);
-		//}
+		ImageView comment = (ImageView) rowView.findViewById(R.id.envelope);
+		glView.guest = (TextView) rowView.findViewById(R.id.guest);
+		glView.time = (TextView) rowView.findViewById(R.id.time);
+		
+		GuestList guestList = mData.get(position);
+
+		glView.guest.setText(guestList.getGuest().toString());
+		glView.time.setText(guestList.getTime().toString());
+		
+    	if(HostEvents.sent == true )
+    	{
+			comment.setImageLevel(R.drawable.email_open);
+			comment.setClickable(true);
+			comment.setOnClickListener(new OnClickListener() {
+		            public void onClick(View v) 
+		            {
+		        		showAddDialog();
+
+		            }
+
+			});
+		} 
+		else
+		{
+			comment.setVisibility(View.GONE);
+		}
 
 		return rowView;
 	}
+	
+	//Dialog box for comments received from guests but at moment shows only old comment dialog box.
+	private void showAddDialog() 
+	{
+		 final Dialog commentDialog = new Dialog(context);
+         commentDialog.setContentView(R.layout.making_comment);
+         commentDialog.setTitle("Do you want to make a comment?");
+         commentDialog.setCancelable(true);
+		
+        TextView text = (TextView) commentDialog.findViewById(R.id.comment_text_box);
 
+		Button attachButton = (Button) commentDialog.findViewById(R.id.attach); 
+		Button cancelButton = (Button) commentDialog.findViewById(R.id.cancel); 
+
+		attachButton.setOnClickListener(new OnClickListener() { 
+		// @Override 
+		public void onClick(View v) { 
+
+		Toast.makeText(context, "Make a comment", 
+		Toast.LENGTH_LONG).show(); 
+		} 
+		}); 
+
+		cancelButton.setOnClickListener(new OnClickListener() { 
+		// @Override 
+		public void onClick(View v) { 
+		commentDialog.dismiss(); 
+		} 
+		});
+		
+		commentDialog.show();
+	}
 	
 }
 
+class GuestList
+{
+	private String guest;
+	private String time;
+	
+	public GuestList(String guest, String time)
+	{
+		this.guest = guest;
+		this.time = time;
+	}
+	
+	public void setGuest(String guest)
+	{
+		this.guest = guest;
+	}
+	
+	public String getGuest()
+	{
+		return guest;
+	}
+	
+	public void setTime(String time)
+	{
+		this.time = time;
+	}
+	
+	public String getTime()
+	{
+		return time;
+	}
+	
+}
+
+class GuestListView
+{
+	protected TextView guest;
+	protected TextView time;	
+}

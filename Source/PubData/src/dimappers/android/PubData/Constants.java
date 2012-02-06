@@ -4,7 +4,7 @@ public final class Constants {
 	//Common bundle tags
 	public static final String CurrentWorkingEvent = "event";
 	public static final String CurrentFacebookUser = "facebookId";
-	public static final String NewEventFlag = "NewEvent";
+	public static final String IsSavedEventFlag = "NewEvent";
 	
 	//Error constants
 	public static final int MissingDataInBundle = -12;

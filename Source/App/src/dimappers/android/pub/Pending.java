@@ -56,7 +56,7 @@ class DoLoading extends AsyncTask<Pending,Integer,Integer>
 		activity.setResult(activity.RESULT_OK,activity.getIntent());
 		Bundle eventBundle = new Bundle();
 		eventBundle.putSerializable(Constants.CurrentWorkingEvent, event);
-		eventBundle.putBoolean(Constants.NewEventFlag, true);
+		eventBundle.putBoolean(Constants.IsSavedEventFlag, true);
 		activity.getIntent().putExtras(eventBundle);
         activity.finish();
     }
