@@ -73,6 +73,8 @@ public class Organise extends ListActivity implements OnClickListener{
 	    		{
 	    			Log.d(Constants.MsgInfo, "Event has just been generated");
 	    		}
+	    		
+	    		facebookUser = (User)b.getSerializable(Constants.CurrentFacebookUser);
 	    	}
 	    	else{
 		    	setResult(Constants.MissingDataInBundle);

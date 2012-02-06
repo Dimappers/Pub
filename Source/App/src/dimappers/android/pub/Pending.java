@@ -9,6 +9,7 @@ import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.User;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Debug;
@@ -42,7 +43,7 @@ class DoLoading extends AsyncTask<Pending,Integer,Integer>
         {
         	Debug.waitForDebugger();        	
         }
-        facebookUser = (AppUser)b.getSerializable("facebookId");
+        facebookUser = (AppUser)b.getSerializable(Constants.CurrentFacebookUser);
     	//Toast.makeText(activity.getApplicationContext(), "Received id: " + new Integer(facebookId).toString(), Toast.LENGTH_LONG).show();
     	event = new PubEvent(Calendar.getInstance(), facebookUser);
     	event.SetPubLocation(new PubLocation());
@@ -53,11 +54,14 @@ class DoLoading extends AsyncTask<Pending,Integer,Integer>
 	}
 	protected void onPostExecute(Integer result) {
 		//TODO: pass updated event back
-		activity.setResult(activity.RESULT_OK,activity.getIntent());
 		Bundle eventBundle = new Bundle();
+		eventBundle.putAll(activity.getIntent().getExtras());
 		eventBundle.putSerializable(Constants.CurrentWorkingEvent, event);
 		eventBundle.putBoolean(Constants.IsSavedEventFlag, true);
-		activity.getIntent().putExtras(eventBundle);
+		
+		Intent intent = new Intent();
+		intent.putExtras(eventBundle);
+		activity.setResult(Activity.RESULT_OK, intent);
         activity.finish();
     }
 }

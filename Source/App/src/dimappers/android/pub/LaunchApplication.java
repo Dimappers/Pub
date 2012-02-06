@@ -49,7 +49,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		{
 			i = new Intent(this, Pending.class);
 			i.putExtras(b);
-			startActivityForResult(i,1);
+			startActivityForResult(i,Constants.FromPending);
 			break;
 		}
 		case R.id.invites_button : {
@@ -70,10 +70,10 @@ public class LaunchApplication extends Activity implements OnClickListener{
 			 Intent i = new Intent(this, Events.class);	
 			 startActivity(i);
 		 }
-		 if(requestCode==Constants.FromPending)
+		 else if(requestCode==Constants.FromPending)
 		 {
 			super.onActivityResult(requestCode, resultCode, data);
-			Intent i = new Intent(this,Organise.class);
+			Intent i = new Intent(this, Organise.class);
 			i.putExtras(data.getExtras());
 			startActivityForResult(i, Constants.FromOrganise);
 		 }
