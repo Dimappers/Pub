@@ -14,7 +14,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.SyncStateContract.Constants;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -38,8 +37,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	
     	Button button_invites = (Button)findViewById(R.id.invites_button);
     	button_invites.setOnClickListener(this);
-    	
-    	AppUser user = new AppUser(facebookId);
     	//Toast.makeText(getApplicationContext(), "User id: " + user.getUserId().toString(), 200).show();
     }
     public void onClick(View v)
@@ -50,8 +47,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		switch (v.getId()) {
 		case R.id.organise_button : 
 		{
-			Bundle b = new Bundle();
-			b.putInt("facebookId", facebookId);
 			i = new Intent(this, Pending.class);
 			i.putExtras(b);
 			startActivityForResult(i,1);
