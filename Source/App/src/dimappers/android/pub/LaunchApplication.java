@@ -1,12 +1,20 @@
 package dimappers.android.pub;
 
+import dimappers.android.PubData.AcknoledgementData;
+import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.PubLocation;
+import dimappers.android.PubData.RefreshData;
+import dimappers.android.PubData.ResponseData;
+import dimappers.android.PubData.UpdateData;
+import dimappers.android.PubData.User;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.SyncStateContract.Constants;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -31,6 +39,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	Button button_invites = (Button)findViewById(R.id.invites_button);
     	button_invites.setOnClickListener(this);
     	
+    	AppUser user = new AppUser(facebookId);
     	//Toast.makeText(getApplicationContext(), "User id: " + user.getUserId().toString(), 200).show();
     }
     public void onClick(View v)
@@ -39,20 +48,22 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		Bundle b = new Bundle();
 		b.putSerializable(Constants.CurrentFacebookUser, facebookUser);
 		switch (v.getId()) {
-			case R.id.organise_button : 
-			{
-				i = new Intent(this, Pending.class);
-				i.putExtras(b);
-				startActivityForResult(i,Constants.FromPending);
-				break;
-			}
-			case R.id.invites_button : {
-				
-				i = new Intent(this, Events.class);
-				i.putExtras(b);
-				startActivity(i);
-				break;
-			}
+		case R.id.organise_button : 
+		{
+			Bundle b = new Bundle();
+			b.putInt("facebookId", facebookId);
+			i = new Intent(this, Pending.class);
+			i.putExtras(b);
+			startActivityForResult(i,1);
+			break;
+		}
+		case R.id.invites_button : {
+			
+			i = new Intent(this, Events.class);
+			i.putExtras(b);
+			startActivity(i);
+			break;
+		}
 		}
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

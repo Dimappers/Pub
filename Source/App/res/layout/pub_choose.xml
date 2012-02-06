@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/relativeLayout1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content" >
         <EditText
             android:id="@+id/input_pub"
             android:layout_width="wrap_content"
@@ -26,63 +26,20 @@
             android:text="@string/use_pub" />
 
     </RelativeLayout>
-<ScrollView
-       		android:id="@+id/scrollView1"
-        	android:layout_width="match_parent"
-        	android:layout_height="wrap_content" >
-        
-    <TableLayout
-        android:id="@+id/tableLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
 
-        <TableRow
-            android:id="@+id/tableRow1"
+        <ListView 
+            android:id="@android:id/list"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+
+             </ListView>
+    
+       <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/test"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
+           android:src="@drawable/powered_by_google_on_non_white" />
 
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/test"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/test"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </TableRow>
-    </TableLayout>
-</ScrollView>
 </LinearLayout>
