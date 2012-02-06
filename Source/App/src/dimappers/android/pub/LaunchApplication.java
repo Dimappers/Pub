@@ -1,5 +1,12 @@
 package dimappers.android.pub;
 
+import dimappers.android.PubData.AcknoledgementData;
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.PubLocation;
+import dimappers.android.PubData.RefreshData;
+import dimappers.android.PubData.ResponseData;
+import dimappers.android.PubData.UpdateData;
+import dimappers.android.PubData.User;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -30,8 +37,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	Button button_invites = (Button)findViewById(R.id.invites_button);
     	button_invites.setOnClickListener(this);
     	
-    	//AppUser user = new AppUser(facebookId);
-    	
+    	AppUser user = new AppUser(facebookId);
     	//Toast.makeText(getApplicationContext(), "User id: " + user.getUserId().toString(), 200).show();
     }
     public void onClick(View v)

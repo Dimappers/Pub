@@ -1,15 +1,39 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.google.api.client.googleapis.GoogleHeaders;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.HttpResponseException;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.apache.ApacheHttpTransport;
+import com.google.api.client.http.json.JsonHttpParser;
+import com.google.api.client.json.JsonEncoding;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.JsonGenerator;
+import com.google.api.client.json.JsonParser;
+import com.google.api.client.json.jackson.JacksonFactory;
+
+import dimappers.android.PubData.Constants;
+
 import android.util.Base64;
+import android.util.Log;
 
 import java.net.URL;
 import java.io.BufferedReader;
@@ -17,61 +41,88 @@ import java.io.InputStreamReader;
 
 public class PubFinder {
 
- // Note: Generally, you should store your private key someplace safe
- // and read them into your code
+ private String API_KEY = "AIzaSyBg0eJlYa_70fG8dc1xdHKFT3BoEWwEQ6M";
 
- private static String keyString = "YOUR_PRIVATE_KEY";
-
- // The URL shown in these examples is a static URL which should already
- // be URL-encoded. In practice, you will likely have code
- // which assembles your URL from user or web service input
- // and plugs those values into its parameters.
- private static String urlString = "YOUR_URL_TO_SIGN";
-
- // This variable stores the binary key, which is computed from the string (Base64) key
- private static byte[] key;
-
- public static void main(String[] args) throws IOException, InvalidKeyException, NoSuchAlgorithmException, URISyntaxException {
-
-   // Convert the string to a URL so we can parse it
-   URL url = new URL(urlString);
-
-   PubFinder signer = new PubFinder(keyString);
-   String request = signer.signRequest(url.getPath(),url.getQuery());
-
-   System.out.println("Signed URL :" + url.getProtocol() + "://" + url.getHost() + request);
+ private final String PLACES_SEARCH_URL =  "https://maps.googleapis.com/maps/api/place/search/json?";
+ 
+ private double latitude;
+ private double longitude;
+ 
+ public PubFinder(double latitude, double longitude) {
+	 this.latitude = latitude;
+	 this.longitude = longitude;
  }
-
- public PubFinder(String keyString) throws IOException {
-   // Convert the key from 'web safe' base 64 to binary
-   keyString = keyString.replace('-', '+');
-   keyString = keyString.replace('_', '/');
-   System.out.println("Key: " + keyString);
-   this.key = Base64.decode(keyString,Base64.DEFAULT);
- }
-
- public String signRequest(String path, String query) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, URISyntaxException {
-
-   // Retrieve the proper URL components to sign
-   String resource = path + '?' + query;
-
-   // Get an HMAC-SHA1 signing key from the raw key bytes
-   SecretKeySpec sha1Key = new SecretKeySpec(key, "HmacSHA1");
-
-   // Get an HMAC-SHA1 Mac instance and initialize it with the HMAC-SHA1 key
-   Mac mac = Mac.getInstance("HmacSHA1");
-   mac.init(sha1Key);
-
-   // compute the binary signature for the request
-   byte[] sigBytes = mac.doFinal(resource.getBytes());
-
-   // base 64 encode the binary signature
-   String signature = "";//Base64.encode(sigBytes, 0);
-
-   // convert the signature to 'web safe' base 64
-   signature = signature.replace('+', '-');
-   signature = signature.replace('/', '_');
-
-   return resource + "&signature=" + signature;
- }
+  
+  public List<Place> performSearch() throws Exception {
+	   try {
+		    HttpRequestFactory httpRequestFactory = createRequestFactory(transport);
+		    HttpRequest request = httpRequestFactory.buildGetRequest(new GenericUrl(PLACES_SEARCH_URL));
+		    request.getUrl().put("key", API_KEY);
+		    request.getUrl().put("location", latitude + "," + longitude);
+		    request.getUrl().put("radius", 5000);
+		    request.getUrl().put("sensor", "true");
+		    request.getUrl().put("types", "bar");
+		     
+		    PlacesList places = request.execute().parseAs(PlacesList.class);
+		    
+		    return places.results;
+	   }
+	   catch (HttpResponseException e) {
+		    System.err.println(e.getResponse().parseAsString());
+		    throw e;
+	   }
+  }
+  
+  private static final HttpTransport transport = new ApacheHttpTransport();
+  
+  public static HttpRequestFactory createRequestFactory(final HttpTransport transport) {
+   
+  return transport.createRequestFactory(new HttpRequestInitializer() {
+	  public void initialize(HttpRequest request) {
+		  GoogleHeaders headers = new GoogleHeaders();
+		  headers.setApplicationName("Pub");
+		  request.setHeaders(headers);
+		  JsonHttpParser parser = new JsonHttpParser(new JacksonFactory());
+		  request.addParser(parser);
+	  }
+	  });
+  }
+  
+  /*public void performDetails(String reference) throws Exception {
+	  try {
+		   HttpRequestFactory httpRequestFactory = createRequestFactory(transport);
+		   HttpRequest request = httpRequestFactory.buildGetRequest(new GenericUrl(PLACES_DETAILS_URL));
+		   request.getUrl().put("key", API_KEY);
+		   request.getUrl().put("reference", reference);
+		   request.getUrl().put("sensor", "false");
+		    
+		   PlaceDetail place = request.execute().parseAs(PlaceDetail.class);
+		 
+	  } 
+	  catch (HttpResponseException e) {
+		   System.err.println(e.getResponse().parseAsString());
+		   throw e;
+	  }
+	 }
+  
+  private static final String PLACES_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/json?";
+  
+  
+  public void performAutoComplete() throws Exception {
+   try {
+	    HttpRequestFactory httpRequestFactory = createRequestFactory(transport);
+	    HttpRequest request = httpRequestFactory.buildGetRequest(new GenericUrl(PLACES_AUTOCOMPLETE_URL));
+	    request.getUrl().put("key", API_KEY);
+	    request.getUrl().put("input", "mos");
+	    request.getUrl().put("location", latitude + "," + longitude);
+	    request.getUrl().put("radius", 500);
+	    request.getUrl().put("sensor", "false");
+	    PlacesAutocompleteList places = request.execute().parseAs(PlacesAutocompleteList.class);
+   } 
+   catch (HttpResponseException e)
+   {
+	    System.err.println(e.getResponse().parseAsString());
+	    throw e;
+   }
+  }*/
 }

@@ -43,7 +43,7 @@ public class Guests extends ListActivity implements OnClickListener{
     	//Could extend onClickListener for each guest in this class & extend classes within constructors for add_guest/save buttons
     	
     	guest_list = (ListView)findViewById(android.R.id.list);
-		guest_list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+    	guest_list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		
 		adapter = new ArrayAdapter<AppUser>(this, android.R.layout.simple_list_item_multiple_choice, listItems);
 		setListAdapter(adapter);

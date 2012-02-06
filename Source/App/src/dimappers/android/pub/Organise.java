@@ -16,8 +16,10 @@ import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.User;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -31,6 +33,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +42,8 @@ public class Organise extends ListActivity implements OnClickListener{
 	
 	private Button cur_pub;
 	private Button cur_time;
-	private EditText cur_loc;
+	private TextView cur_loc;
+	private Location location;
 	
 	private PubEvent event;
 	private int facebookId;
@@ -129,7 +133,8 @@ public class Organise extends ListActivity implements OnClickListener{
 		b.putSerializable("event", event);
 		 switch (v.getId()){
 		 		 case R.id.current_location : {
-				 EditText loc = new EditText();
+		 			 //FIXME: need to do this in a way that involves long/lat - if we even want it at all!
+				 final EditText loc = new EditText(getApplicationContext());
 				 new AlertDialog.Builder(this).setMessage("Enter your current location:")  
 		           .setTitle("Change Location")  
 		           .setCancelable(true)  
@@ -148,9 +153,12 @@ public class Organise extends ListActivity implements OnClickListener{
 		           })
 		           .setView(loc)
 		           .show(); 
+				 break;
 			 }
 			case R.id.pub_button : {
 				i = new Intent(this, ChoosePub.class);
+				b.putDouble("lat",location.getLatitude());
+				b.putDouble("long",location.getLongitude());
 				i.putExtras(b);
 				startActivityForResult(i,1);
 				break;
@@ -206,7 +214,7 @@ public class Organise extends ListActivity implements OnClickListener{
 		//Define a listener that responds to location updates
 		MyLocationListener locationListener = new MyLocationListener(this);
 		//Using most recent location before searching to allow for faster loading
-		Location location = (locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
+		location = (locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
 		locationListener.makeUseOfNewLocation(location);
 		
 		/*TODO: Not sure if we even need this bottom bit - could just use the last known location. 
@@ -230,7 +238,7 @@ public class Organise extends ListActivity implements OnClickListener{
 	}
 	private void findNewNearestPub() {
 		//TODO: use cur_loc to find nearest pub (using Google places)
-		event.setPubLocation(/*new nearest found location*/);
+		event.SetPubLocation(new PubLocation()/*new nearest found location*/);
 		UpdateFromEvent();
 	}
 	
