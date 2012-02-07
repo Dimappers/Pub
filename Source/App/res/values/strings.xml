@@ -58,6 +58,8 @@
   	<string name="time_title">Time:</string>
   	
   	<string name="guest_title">Guests:</string>
+  	
+  	<string name="search">Search</string>
 
     
 </resources>
