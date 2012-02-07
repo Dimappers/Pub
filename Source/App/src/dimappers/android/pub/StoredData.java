@@ -6,11 +6,9 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Base64;
 import android.util.Log;
-
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 

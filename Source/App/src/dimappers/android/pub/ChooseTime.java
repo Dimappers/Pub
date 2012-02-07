@@ -1,15 +1,9 @@
 package dimappers.android.pub;
 
 import java.util.Calendar;
-import java.util.Date;
-
-import dimappers.android.PubData.PubEvent;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,10 +11,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import dimappers.android.PubData.PubEvent;
 
 public class ChooseTime extends Activity implements OnClickListener{
 	private PubEvent event;

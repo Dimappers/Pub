@@ -3,35 +3,26 @@ package dimappers.android.pub;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map.Entry;
-
-import dimappers.android.PubData.Constants;
-import dimappers.android.PubData.GoingStatus;
-import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.User;
-import dimappers.android.PubData.UserStatus;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.User;
+import dimappers.android.PubData.UserStatus;
 
 public class UserInvites extends Activity implements OnClickListener {
 
@@ -132,9 +123,7 @@ public class UserInvites extends Activity implements OnClickListener {
 	
 	
 	public void onClick(View v)
-	{
-		Intent i;
-		
+	{	
 		switch (v.getId()) {
 		case R.id.going : 
 		{

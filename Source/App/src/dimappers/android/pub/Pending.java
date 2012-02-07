@@ -1,20 +1,16 @@
 package dimappers.android.pub;
 
-import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Date;
 
-import dimappers.android.PubData.Constants;
-import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.PubLocation;
-import dimappers.android.PubData.User;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Debug;
 import android.view.View;
-import android.widget.Toast;
+import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.PubLocation;
 
 public class Pending extends Activity {
 	View v;
@@ -61,6 +57,7 @@ class DoLoading extends AsyncTask<Pending,Integer,Integer>
 		
 		Intent intent = new Intent();
 		intent.putExtras(eventBundle);
+		
 		activity.setResult(Activity.RESULT_OK, intent);
         activity.finish();
     }
