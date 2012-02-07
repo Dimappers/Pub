@@ -177,8 +177,9 @@ public class Organise extends ListActivity implements OnClickListener{
 			}
 			case R.id.send_invites_event : {
 				i = new Intent();
+				event.SetEventId(1); //In reality this should be set by server, sent back to the app which fills in actual global id
 				StoredData storedData = StoredData.getInstance();
-				storedData.AddNewSavedEvent(event);
+				storedData.AddNewSentEvent(event);
 				i.putExtras(b);
 				setResult(RESULT_OK, i);
 				finish();

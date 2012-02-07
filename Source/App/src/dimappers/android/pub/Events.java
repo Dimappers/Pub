@@ -93,12 +93,12 @@ public class Events extends ExpandableListActivity {
 		return false; 
 	}
 
-	private PubEvent[] GetEvents()
+	private ArrayList<PubEvent> GetEvents()
 	{
 		ArrayList<PubEvent> events = new ArrayList<PubEvent>();
 		
 		StoredData storedData = StoredData.getInstance();
-		
+		events.addAll(storedData.GetAllEvents());
 		
 		
 		Calendar time1 = Calendar.getInstance();
@@ -124,7 +124,10 @@ public class Events extends ExpandableListActivity {
 		ResponseData anotherResponse = new ResponseData(new User(124), 123, true, time2, "Yeah busy till 10");
 		invitedEvent.UpdateUserStatus(anotherResponse);
 		
-		return new PubEvent[] {hostedEvent, invitedEvent } ; 
+		//return new PubEvent[] {hostedEvent, invitedEvent } ;
+		events.add(invitedEvent);
+		events.add(hostedEvent);
+		return events;
 	}	 
 }
 
@@ -141,7 +144,7 @@ class EventListAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
 
-	public EventListAdapter(Context context, PubEvent[] allEvents, AppUser currentUser) {
+	public EventListAdapter(Context context, ArrayList<PubEvent> events, AppUser currentUser) {
 		this.context = context;
 
 		waitingForResponse = new ArrayList<PubEvent>();
@@ -149,7 +152,7 @@ class EventListAdapter extends BaseExpandableListAdapter {
 		respondedTo = new ArrayList<PubEvent>();
 		savedEvents = new ArrayList<PubEvent>();
 
-		for(PubEvent event : allEvents)
+		for(PubEvent event : events)
 		{
 			//Determine if host 
 			if(event.GetHost().equals(currentUser))

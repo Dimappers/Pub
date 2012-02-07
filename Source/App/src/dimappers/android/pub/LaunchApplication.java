@@ -41,7 +41,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	if(encodedLoadedData == "NoneLoaded")
     	{
     		//first time the app has been run
-    		StoredData.Init(null);
+    		StoredData.Init(null, dataStore.edit());
     	}
     	else
     	{
@@ -51,7 +51,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     		{
     			objectReader = new ObjectInputStream(new ByteArrayInputStream(data));
     			StoredData storedData = (StoredData)objectReader.readObject();
-    			StoredData.Init(storedData);
+    			StoredData.Init(storedData, dataStore.edit());
     			objectReader.close();
     		} catch (StreamCorruptedException e)
     		{
@@ -93,32 +93,26 @@ public class LaunchApplication extends Activity implements OnClickListener{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
     	if(resultCode==RESULT_OK)
     	{
-		 if(requestCode == Constants.FromOrganise)
-		 {
-			 super.onActivityResult(requestCode, resultCode, data);
-			 Intent i = new Intent(this, Events.class);	
-			 i.getExtras().putAll(data.getExtras());
-			 startActivity(i);
-		 }
-		 else if(requestCode==Constants.FromPending)
-		 {
-			super.onActivityResult(requestCode, resultCode, data);
-			Intent i = new Intent(this, Organise.class);
-			i.putExtras(data.getExtras());
-			startActivityForResult(i, Constants.FromOrganise);
-		 }
+    		if(requestCode == Constants.FromOrganise)
+    		{
+    			super.onActivityResult(requestCode, resultCode, data);
+    			Intent i = new Intent(this, Events.class);	
+    			i.putExtras(data.getExtras());
+    			startActivity(i);
+    		}
+    		else if(requestCode==Constants.FromPending)
+    		{
+    			super.onActivityResult(requestCode, resultCode, data);
+    			Intent i = new Intent(this, Organise.class);
+    			i.putExtras(data.getExtras());
+    			startActivityForResult(i, Constants.FromOrganise);
+    		}
     	}
-	 }
+    }
     
     private AppUser GetFacebookUser()
     {
     	//Get the facebook id - from login details possibly also authentication stuff
     	return new AppUser(14);
-    }
-    
-    @Override
-    public void onDestroy()
-    {
-    	//Save data...
     }
 }
