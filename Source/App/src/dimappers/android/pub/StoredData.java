@@ -98,6 +98,10 @@ public class StoredData implements Serializable
 		return recentHistory[i]; //returns oldest history or null if no history
 	}
 	
+	private void setEditor(Editor sharedPrefEditor) {
+		editor = sharedPrefEditor;
+	}
+	
 	private void SaveData()
 	{
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
@@ -110,7 +114,8 @@ public class StoredData implements Serializable
 			Log.d(Constants.MsgError, "Error saving data");
 			return;
 		}
-		editor.putString(Constants.SaveDataName, new String(Base64.encode(data.toByteArray(), Base64.DEFAULT)));
+		String s =  new String(Base64.encode(data.toByteArray(), Base64.DEFAULT));
+		editor.putString(Constants.SaveDataName, s);
 		editor.commit();
 	}
 	
@@ -132,9 +137,10 @@ public class StoredData implements Serializable
 		else
 		{
 			instance = loadedStore;
+			instance.setEditor(sharedPrefEditor);
 		}
 	}
-	
+
 	public static StoredData getInstance()
 	{
 		if(instance == null)

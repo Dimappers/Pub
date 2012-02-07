@@ -38,9 +38,9 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 		    	super.onCreate(savedInstanceState);
 		    	setContentView(R.layout.pub_choose);
 		    	
-		    	event = (PubEvent) getIntent().getExtras().getSerializable("event");
-		    	latitude = getIntent().getExtras().getDouble("lat");
-		    	longitude = getIntent().getExtras().getDouble("long");
+		    	event = (PubEvent) getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent);
+		    	latitude = getIntent().getExtras().getDouble(Constants.CurrentLatitude);
+		    	longitude = getIntent().getExtras().getDouble(Constants.CurrentLongitude);
 		    	
 		    	pub_input = (EditText)findViewById(R.id.input_pub);
 		    	

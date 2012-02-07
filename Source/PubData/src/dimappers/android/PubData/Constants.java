@@ -5,6 +5,8 @@ public final class Constants {
 	public static final String CurrentWorkingEvent = "event";
 	public static final String CurrentFacebookUser = "facebookId";
 	public static final String IsSavedEventFlag = "NewEvent";
+	public static final String CurrentLatitude = "lat";
+	public static final String CurrentLongitude = "long";
 	
 	//Error constants
 	public static final int MissingDataInBundle = -12;

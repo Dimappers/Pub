@@ -39,7 +39,6 @@ public class Organise extends ListActivity implements OnClickListener{
 	private Button cur_pub;
 	private Button cur_time;
 	private TextView cur_loc;
-	private Location location;
 	
 	private PubEvent event;
 	private User facebookUser;
@@ -109,13 +108,28 @@ public class Organise extends ListActivity implements OnClickListener{
 	    	button_send_invites.setOnClickListener(this);
 	    	cur_loc=(TextView)findViewById(R.id.current_location);
 	    	cur_loc.setOnClickListener(this);
-	    	
+	  
+	    	double latitude = getIntent().getExtras().getDouble(Constants.CurrentLatitude);
+	    	double longitude = getIntent().getExtras().getDouble(Constants.CurrentLongitude);
+	    	String place = null;
+	    	Geocoder gc = new Geocoder(getApplicationContext());
+	    	try {
+	    		List<Address> list = gc.getFromLocation(latitude, longitude, 5);
+	    		int i = 0;
+	    		while (i<list.size()) 
+	    		{
+	    			String temp = list.get(i).getLocality();
+	    			if(temp!=null) {place = temp;}
+	    			i++;
+	    		}
+	    		if(place!=null) {cur_loc.setText(place);}
+	    		else {cur_loc.setText("(" + latitude + "," + longitude + ")");}
+	    	}
+	    	//This is thrown if the phone has no Internet connection.
+	    	catch (IOException e) {
+	    		cur_loc.setText("(" + latitude + "," + longitude + ")");
+	    	}
 	 }
-	 @Override
-	 public void onStart(){
-		 super.onStart(); 
-		 findLocation();
-	}
 	 
 	 public void onClick(View v)
 	 {
@@ -149,8 +163,6 @@ public class Organise extends ListActivity implements OnClickListener{
 			 }
 			case R.id.pub_button : {
 				i = new Intent(this, ChoosePub.class);
-				b.putDouble("lat",location.getLatitude());
-				b.putDouble("long",location.getLongitude());
 				i.putExtras(b);
 				startActivityForResult(i, Constants.PubLocationReturn);
 				break;
@@ -192,23 +204,7 @@ public class Organise extends ListActivity implements OnClickListener{
 			 UpdateFromEvent();
 		 }
 	 }
-	//Finding current location
-	private void findLocation()
-	{		
-		//Acquire a reference to the system Location Manager
-		LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-		//Define a listener that responds to location updates
-		MyLocationListener locationListener = new MyLocationListener(this);
-		//Using most recent location before searching to allow for faster loading
-		location = (locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
-		locationListener.makeUseOfNewLocation(location);
-		
-		/*TODO: Not sure if we even need this bottom bit - could just use the last known location. 
-		 * In that case MyLocationListener could be incorporated into this class*/
-		
-		//Register the listener with the Location Manager to receive location updates
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-	 }
+
 	
 	private void UpdateFromEvent()
 	{
@@ -246,43 +242,5 @@ public class Organise extends ListActivity implements OnClickListener{
 		serializer.flush();
 		//TODO: Send the event
 		//TODO: Send to Pending Screen
-	}
-}
-
-class MyLocationListener implements LocationListener{
-	Organise organise;
-	TextView cur_loc;
-	MyLocationListener(Organise organise) {
-		this.organise = organise; 
-		cur_loc = (TextView)organise.findViewById(R.id.current_location);
-	}
-	public void onLocationChanged(Location location) {makeUseOfNewLocation(location);}
-	public void onStatusChanged(String provider, int status, Bundle extras) {}
-	public void onProviderEnabled(String provider) {}
-	public void onProviderDisabled(String provider) {}
-	
-	//This method should find the current town from the latitude/longitude of the location
-	public void makeUseOfNewLocation(Location location) {
-		String place = null;
-		if(location!=null)
-		{
-			Geocoder gc = new Geocoder(organise.getApplicationContext());
-			try {
-				List<Address> list = gc.getFromLocation(location.getLatitude(), location.getLongitude(), 5);
-				int i = 0;
-				while (i<list.size()) 
-				{
-					String temp = list.get(i).getLocality();
-					if(temp!=null) {place = temp;}
-					i++;
-				}
-				if(place!=null) {cur_loc.setText(place);}
-				else {cur_loc.setText("(" + location.getLatitude() + "," + location.getLongitude() + ")");}
-			}
-			//This is thrown if the phone has no Internet connection.
-			catch (IOException e) {
-				cur_loc.setText("(" + location.getLatitude() + "," + location.getLongitude() + ")");
-			}
-		}
 	}
 }
