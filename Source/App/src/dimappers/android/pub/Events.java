@@ -3,14 +3,11 @@ package dimappers.android.pub;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import dimappers.android.PubData.PubLocation;
 import android.app.ExpandableListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,8 +90,14 @@ public class Events extends ExpandableListActivity {
 		return false; 
 	}
 
-	private PubEvent[] GetEvents()
+	private ArrayList<PubEvent> GetEvents()
 	{
+		ArrayList<PubEvent> events = new ArrayList<PubEvent>();
+		
+		StoredData storedData = StoredData.getInstance();
+		events.addAll(storedData.GetAllEvents());
+		
+		
 		Calendar time1 = Calendar.getInstance();
 		time1.set(Calendar.HOUR_OF_DAY, 18);
 		time1.add(Calendar.DAY_OF_MONTH, 1);
@@ -112,12 +115,16 @@ public class Events extends ExpandableListActivity {
 		
 		hostedEvent.AddUser(new User(1494));
 		hostedEvent.AddUser(new User(123951));
+		hostedEvent.SetEventId(1); //Pretend we have sent it to the server
 		
 		invitedEvent.UpdateUserStatus(new ResponseData(new User(42), 123, true));
 		ResponseData anotherResponse = new ResponseData(new User(124), 123, true, time2, "Yeah busy till 10");
 		invitedEvent.UpdateUserStatus(anotherResponse);
 		
-		return new PubEvent[] {hostedEvent, invitedEvent } ; 
+		//return new PubEvent[] {hostedEvent, invitedEvent } ;
+		events.add(invitedEvent);
+		events.add(hostedEvent);
+		return events;
 	}	 
 }
 
@@ -134,7 +141,7 @@ class EventListAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
 
-	public EventListAdapter(Context context, PubEvent[] allEvents, AppUser currentUser) {
+	public EventListAdapter(Context context, ArrayList<PubEvent> events, AppUser currentUser) {
 		this.context = context;
 
 		waitingForResponse = new ArrayList<PubEvent>();
@@ -142,7 +149,7 @@ class EventListAdapter extends BaseExpandableListAdapter {
 		respondedTo = new ArrayList<PubEvent>();
 		savedEvents = new ArrayList<PubEvent>();
 
-		for(PubEvent event : allEvents)
+		for(PubEvent event : events)
 		{
 			//Determine if host 
 			if(event.GetHost().equals(currentUser))

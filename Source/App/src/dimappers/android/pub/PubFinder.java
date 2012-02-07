@@ -1,19 +1,7 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 import com.google.api.client.googleapis.GoogleHeaders;
 import com.google.api.client.http.GenericUrl;
@@ -24,21 +12,9 @@ import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.http.json.JsonHttpParser;
-import com.google.api.client.json.JsonEncoding;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.JsonGenerator;
-import com.google.api.client.json.JsonParser;
 import com.google.api.client.json.jackson.JacksonFactory;
 
-import dimappers.android.PubData.Constants;
 import dimappers.android.pub.PlacesAutocompleteList.PlaceAutoComplete;
-
-import android.util.Base64;
-import android.util.Log;
-
-import java.net.URL;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 public class PubFinder {
 

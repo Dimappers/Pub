@@ -2,10 +2,6 @@ package dimappers.android.pub;
 
 import java.util.ArrayList;
 
-import dimappers.android.PubData.Constants;
-import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.User;
-
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +11,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.User;
 
 public class Guests extends ListActivity implements OnClickListener{
 	ArrayList<AppUser> listItems=new ArrayList<AppUser>();

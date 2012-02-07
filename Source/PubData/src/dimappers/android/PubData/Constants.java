@@ -34,5 +34,5 @@ public final class Constants {
 	public static final String MsgWarning = "Dimap:Warning";
 	public static final String MsgError = "Dimap:Error";
 	
-	
+	public static final String SaveDataName = "PubStore";
 }
