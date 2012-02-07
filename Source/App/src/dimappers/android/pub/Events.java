@@ -95,6 +95,12 @@ public class Events extends ExpandableListActivity {
 
 	private PubEvent[] GetEvents()
 	{
+		ArrayList<PubEvent> events = new ArrayList<PubEvent>();
+		
+		StoredData storedData = StoredData.getInstance();
+		
+		
+		
 		Calendar time1 = Calendar.getInstance();
 		time1.set(Calendar.HOUR_OF_DAY, 18);
 		time1.add(Calendar.DAY_OF_MONTH, 1);
@@ -112,6 +118,7 @@ public class Events extends ExpandableListActivity {
 		
 		hostedEvent.AddUser(new User(1494));
 		hostedEvent.AddUser(new User(123951));
+		hostedEvent.SetEventId(1); //Pretend we have sent it to the server
 		
 		invitedEvent.UpdateUserStatus(new ResponseData(new User(42), 123, true));
 		ResponseData anotherResponse = new ResponseData(new User(124), 123, true, time2, "Yeah busy till 10");

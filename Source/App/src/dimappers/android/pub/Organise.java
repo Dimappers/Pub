@@ -126,6 +126,7 @@ public class Organise extends ListActivity implements OnClickListener{
 	 {
 		Intent i;
 		Bundle b = new Bundle();
+		b.putAll(getIntent().getExtras()); 
 		b.putSerializable(Constants.CurrentWorkingEvent, event);
 		 switch (v.getId()){
 		 		 case R.id.current_location : {
@@ -166,14 +167,20 @@ public class Organise extends ListActivity implements OnClickListener{
 				break;
 			}
 			case R.id.save_event : {
-				//TODO: save event details
-				this.setResult(RESULT_OK, getIntent());
+				i = new Intent();
+				StoredData storedData = StoredData.getInstance();
+				storedData.AddNewSavedEvent(event);
+				i.putExtras(b);
+				setResult(RESULT_OK, i);
 				finish();
 				break;
 			}
 			case R.id.send_invites_event : {
-				
-				this.setResult(RESULT_OK, getIntent());
+				i = new Intent();
+				StoredData storedData = StoredData.getInstance();
+				storedData.AddNewSavedEvent(event);
+				i.putExtras(b);
+				setResult(RESULT_OK, i);
 				finish();
 				break;
 			}
