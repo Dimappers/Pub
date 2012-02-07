@@ -10,10 +10,13 @@ import java.util.List;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 
+import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
+import dimappers.android.pub.PlacesAutocompleteList.PlaceAutoComplete;
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -23,6 +26,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,19 +38,13 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 		EditText pub_input;
 		PubEvent event;
 		ListView pub_list;
-		ArrayAdapter<String> adapter;
-		ArrayList<String> listItems = new ArrayList<String>();
+		ArrayAdapter<Place> adapter;
+		ArrayList<Place> listItems = new ArrayList<Place>();
+		
+		PubFinder finder;
 
 		double latitude;
 		double longitude;
-				
-		/*Info for GoogleMaps:
-		 *Currently using debug fingerprint:
-		 *http://code.google.com/android/add-ons/google-apis/mapkey.html
-		 *keytool -v -list -alias androiddebugkey -keystore debug.keystore -storepass android -keypass android
-		 *MD5 CERTIFICATE: 3B:05:12:7D:DF:18:C3:A2:ED:EF:74:CF:FB:80:E7:F7
-		 *API KEY: 06fMFhCUyUDwPs7xO1tbEuiMgxLZPfhL8dSYGxA
-		*/
 	
 		 @Override
 		    public void onCreate(Bundle savedInstanceState) {
@@ -58,20 +56,12 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 		    	longitude = getIntent().getExtras().getDouble("long");
 		    	
 		    	pub_input = (EditText)findViewById(R.id.input_pub);
-		    	pub_input.addTextChangedListener(new TextWatcher(){
-					public void afterTextChanged(Editable arg0) {
-						Toast.makeText(getApplicationContext(),pub_input.getText().toString(),Toast.LENGTH_LONG).show();
-						}
-					public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {		
-					}
-					public void onTextChanged(CharSequence s, int start, int before, int count) {
-					}
-		    		});
 		    	
+				finder = new PubFinder(latitude,longitude);
 		    	getPubs();
 		    	
 		    	pub_list = (ListView)findViewById(android.R.id.list);
-				adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems);
+				adapter = new ArrayAdapter<Place>(this, android.R.layout.simple_list_item_1, listItems);
 				setListAdapter(adapter);
 
 		    	Button use_pub = (Button)findViewById(R.id.use_pub_button);
@@ -80,41 +70,55 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 		 
 		 public void onClick(View v) {
 			 switch(v.getId()) {
-			 case R.id.use_pub_button : {
-				 event.SetPubLocation(new PubLocation(0,0,pub_input.getText().toString()));
-				 Bundle b = new Bundle();
-				 b.putSerializable("eventt", event);
-				 Intent i = new Intent();
-				 i.putExtras(b);
-				 this.setResult(RESULT_OK,i);
-				 finish();
-				 break;
-			 }
+				 case R.id.use_pub_button : {
+					 getPubs(pub_input.getText().toString());
+					break;
+				 }
 			 }
 		 }
+		 public void onListItemClick(ListView l, View v, int pos, long id) {
+			 super.onListItemClick(l,v,pos,id);
+			 Place place = listItems.get(pos);
+			 event.SetPubLocation(
+					 new PubLocation(
+							 place.geometry.location.lat,
+							 place.geometry.location.lng,
+							 place.name)
+					 );
+			 Place_Detailed pd = null;
+			try {
+				pd = finder.performDetails(listItems.get(pos).reference).result;
+			} catch (Exception e) {
+				Log.d(Constants.MsgInfo,"Exception thrown from performDetails(...)");
+				e.printStackTrace();
+			}
+			 Log.d(Constants.MsgInfo, pd.name + " has a rating of " + pd.rating);
+			 Intent i = new Intent();
+			 i.putExtra(Constants.CurrentWorkingEvent, event);
+			 this.setResult(RESULT_OK,i);
+			 finish();
+		 }
 		 
-		 public void getPubs() {
+		 private void getPubs() {getPubs("");}
+		 
+		 private void getPubs(String keyword) {
 			 try {
-				PubFinder finder = new PubFinder(latitude,longitude);
-				List<Place> places = finder.performSearch();
+				List<Place> places = finder.performSearch(keyword);
+				listItems.clear();
 				for(Place p: places) {
-					listItems.add(p.toString());
+					listItems.add(p);
 				}
 			} catch (InvalidKeyException e) {
-				// TODO Auto-generated catch block
-				Log.d("ERROR","InvalidKeyException");
+				Log.d(Constants.MsgInfo,"InvalidKeyException");
 				e.printStackTrace();
 			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				Log.d("ERROR","NoSuchAlgorithmException");
+				Log.d(Constants.MsgInfo,"NoSuchAlgorithmException");
 				e.printStackTrace();
 			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				Log.d("ERROR","URISyntaxException");
+				Log.d(Constants.MsgInfo,"URISyntaxException");
 				e.printStackTrace();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				Log.d("ERROR","Exception");
+				Log.d(Constants.MsgInfo,"Exception");
 				e.printStackTrace();
 			}
 		 }
