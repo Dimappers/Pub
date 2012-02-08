@@ -66,6 +66,9 @@ public class LaunchApplication extends Activity implements OnClickListener{
     			finish();
     		}
     	}
+    	
+    	Intent startServiceIntent = new Intent(this, PubService.class);
+    	startService(startServiceIntent);
     }
     public void onClick(View v)
     {
