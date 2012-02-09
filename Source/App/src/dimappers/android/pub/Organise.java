@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
@@ -139,16 +140,47 @@ public class Organise extends ListActivity implements OnClickListener{
 		b.putSerializable(Constants.CurrentWorkingEvent, event);
 		 switch (v.getId()){
 		 		 case R.id.current_location : {
-		 			 //FIXME: need to do this in a way that involves long/lat - if we even want it at all!
+		 			 //TODO: maybe make this obvious it's able to be clicked??
 				 final EditText loc = new EditText(getApplicationContext());
 				 new AlertDialog.Builder(this).setMessage("Enter your current location:")  
 		           .setTitle("Change Location")  
 		           .setCancelable(true)  
 		           .setPositiveButton("Save", new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
-		        	   cur_loc.setText(loc.getText());
 		        	   //TODO: turn off location listener
-		        	   findNewNearestPub();
+		        	   Geocoder geocoder = new Geocoder(getApplicationContext());
+		        	   try {
+		        		   List<Address> addresses = geocoder.getFromLocationName(loc.getText().toString(), 5);
+		        		   double lat = 0;
+		        		   double latsum = 0;
+		        		   double lng = 0;
+		        		   double lngsum = 0;
+		        		   if(addresses!=null) {
+			        		   for(int i=0; i<addresses.size(); i++) {
+			        			   Address a = addresses.get(i);
+			        			   if(a!=null) 
+			        			   {
+			        				   if(lat==0) {lat = a.getLatitude();}
+			        				   else {
+			        					   latsum+=a.getLatitude();
+			        					   lat=latsum/i;
+			        					   }
+			        				   if(lng==0) {lng = a.getLongitude();}
+			        				   else {
+			        					   lngsum+=a.getLongitude();
+			        					   lng=lngsum/i;
+			        				   }
+			        			   }
+			        		   }
+		        		   }
+			        	  if(lat!=0&&lng!=0&&findNewNearestPub(lat,lng)) {cur_loc.setText(loc.getText()); UpdateFromEvent();}
+			        	  else {Toast.makeText(getApplicationContext(), "Unrecognised location", Toast.LENGTH_SHORT).show();}
+		        		  } 
+		        	   catch (IOException e) 
+		        	   {
+		        			  Log.d(Constants.MsgError,"Error in finding latitude & longitude from given location.");
+		        			  e.printStackTrace();
+		        		  }
 		        	   dialog.cancel();
 		           }
 		           })
@@ -218,10 +250,20 @@ public class Organise extends ListActivity implements OnClickListener{
     	
     	adapter.notifyDataSetChanged();
 	}
-	private void findNewNearestPub() {
-		//TODO: use cur_loc to find nearest pub (using Google places)
-		event.SetPubLocation(new PubLocation()/*new nearest found location*/);
-		UpdateFromEvent();
+	private boolean findNewNearestPub(double lat, double lng) {
+		PubFinder finder = new PubFinder(lat,lng);
+		try {
+			List<Place> list = finder.performSearch();
+			for(Place p : list) {
+				//TODO: Should maybe give user choice over which address is selected, not just pick the first one
+				if(p!=null) {event.SetPubLocation(new PubLocation(p.geometry.location.lat,p.geometry.location.lng,p.name)); return true;}
+			}
+		} catch (Exception e) {
+			Log.d(Constants.MsgError, "Cannot find pubs based on this location.");
+			e.printStackTrace();
+			return false;
+		}
+		return false;
 	}
 	
 	private void sendEventToServer() throws UnknownHostException, IOException {

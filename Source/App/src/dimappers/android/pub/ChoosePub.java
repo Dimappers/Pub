@@ -95,6 +95,7 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 				for(Place p: places) {
 					listItems.add(p);
 				}
+				adapter.notifyDataSetChanged();
 			} catch (InvalidKeyException e) {
 				Log.d(Constants.MsgInfo,"InvalidKeyException");
 				e.printStackTrace();
