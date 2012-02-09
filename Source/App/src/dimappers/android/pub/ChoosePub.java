@@ -1,37 +1,24 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.apache.ApacheHttpTransport;
-
-import dimappers.android.PubData.Constants;
-import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.PubLocation;
-import dimappers.android.pub.PlacesAutocompleteList.PlaceAutoComplete;
-import android.app.Activity;
 import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
+import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.PubLocation;
 
 public class ChoosePub extends ListActivity implements OnClickListener {
 		
@@ -51,9 +38,9 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 		    	super.onCreate(savedInstanceState);
 		    	setContentView(R.layout.pub_choose);
 		    	
-		    	event = (PubEvent) getIntent().getExtras().getSerializable("event");
-		    	latitude = getIntent().getExtras().getDouble("lat");
-		    	longitude = getIntent().getExtras().getDouble("long");
+		    	event = (PubEvent) getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent);
+		    	latitude = getIntent().getExtras().getDouble(Constants.CurrentLatitude);
+		    	longitude = getIntent().getExtras().getDouble(Constants.CurrentLongitude);
 		    	
 		    	pub_input = (EditText)findViewById(R.id.input_pub);
 		    	
@@ -66,8 +53,7 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 
 		    	Button use_pub = (Button)findViewById(R.id.use_pub_button);
 		    	use_pub.setOnClickListener(this);
-		 }
-		 
+		 }	 
 		 public void onClick(View v) {
 			 switch(v.getId()) {
 				 case R.id.use_pub_button : {
@@ -108,6 +94,7 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 				for(Place p: places) {
 					listItems.add(p);
 				}
+				adapter.notifyDataSetChanged();
 			} catch (InvalidKeyException e) {
 				Log.d(Constants.MsgInfo,"InvalidKeyException");
 				e.printStackTrace();

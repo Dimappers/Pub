@@ -2,20 +2,12 @@ package dimappers.android.pub;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
-import dimappers.android.PubData.Constants;
-import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.PubLocation;
-import dimappers.android.PubData.User;
-import dimappers.android.PubData.UserStatus;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewStub;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,6 +27,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.User;
+import dimappers.android.PubData.UserStatus;
 
 
 public class HostEvents extends Activity implements OnClickListener, OnMenuItemClickListener{
@@ -59,6 +54,8 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
     	Button button_edit = (Button) findViewById(R.id.edit_button);
     	button_edit.setOnClickListener(this);    	
 		
+    	ListView list = (ListView) findViewById(R.id.listView1);
+
     	
     	event = (PubEvent)getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent);
     	if(event == null)
@@ -86,11 +83,9 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
     		findViewById(R.id.send_Invites).setVisibility(View.VISIBLE);
 			findViewById(R.id.edit_button).setVisibility(View.VISIBLE);
     	}
-    	
-    	  ListView list = (ListView) findViewById(R.id.listView1);
-    	
+    	    	
       	  ArrayList<GuestList> mData = new ArrayList<GuestList>();
-      	  for(Entry<User, UserStatus> userResponse : event.GetGoingStatus().entrySet())
+      	  for(Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
       	  {
       		String freeFromWhen = event.GetStartTime().get(Calendar.HOUR_OF_DAY) + ":" + event.GetStartTime().get(Calendar.MINUTE);
     		if(userResponse.getValue().freeFrom != null)
@@ -109,18 +104,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
       	  
       	  
       	  TextView startTimeText = (TextView)findViewById(R.id.hostEventsCurrentStartTime);
-      	  startTimeText.setText(event.GetFormattedStartTime());
-      	  
-    	/*TODO: Need to have passed two numbers, either 0 or 1 for example telling me whether this page has 
-    	 been loaded from host or sendInvites so to know what to hide and show.(delete and cancel image buttons, send and edit button)
-		
-		TODO: Develop list todo the cool stuff.
-		
-		TODO: Find good positions for delete/cancel image buttons
-		
-		TODO: Pop up option menu, which allows you to edit event if you've already sent invites out ONLY.
-		*/
-    	
+      	  startTimeText.setText(event.GetFormattedStartTime());    	
     		
 	}
 	
@@ -135,7 +119,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		 cancel.setOnMenuItemClickListener(this);
 	    	
 		 return super.onCreateOptionsMenu(menu);
-		 //return true;
 	 }
 
 	 public boolean onMenuItemClick(MenuItem item) {
@@ -207,8 +190,9 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
            .setCancelable(true)  
            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
            public void onClick(DialogInterface dialog, int id) {
-                finish();
-                //TODO: Actually deletes the event!!!
+               StoredData.getInstance().DeleteSavedEvent(event); 
+        	   finish();
+                
            }
            })
            .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -270,7 +254,7 @@ class GuestListAdapter extends BaseAdapter
 		GuestListView glView = null;
 
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View rowView = inflater.inflate(R.layout.row, parent, false);
+		View rowView = inflater.inflate(R.layout.hosted_row, parent, false);
 		
 		glView = new GuestListView();
 		
@@ -291,14 +275,12 @@ class GuestListAdapter extends BaseAdapter
 		            public void onClick(View v) 
 		            {
 		        		showAddDialog();
-
 		            }
-
 			});
 		} 
 		else
 		{
-			comment.setVisibility(View.GONE);
+			comment.setVisibility(View.GONE);	
 		}
 
 		return rowView;
@@ -308,32 +290,22 @@ class GuestListAdapter extends BaseAdapter
 	private void showAddDialog() 
 	{
 		 final Dialog commentDialog = new Dialog(context);
-         commentDialog.setContentView(R.layout.making_comment);
-         commentDialog.setTitle("Do you want to make a comment?");
-         commentDialog.setCancelable(true);
+         commentDialog.setContentView(R.layout.received_comment);
+         //commentDialog.setTitle(R.id.title);  //After this should have the user name who sent message 
 		
-        TextView text = (TextView) commentDialog.findViewById(R.id.comment_text_box);
-
-		Button attachButton = (Button) commentDialog.findViewById(R.id.attach); 
-		Button cancelButton = (Button) commentDialog.findViewById(R.id.cancel); 
-
-		attachButton.setOnClickListener(new OnClickListener() { 
-		// @Override 
-		public void onClick(View v) { 
-
-		Toast.makeText(context, "Make a comment", 
-		Toast.LENGTH_LONG).show(); 
-		} 
-		}); 
-
-		cancelButton.setOnClickListener(new OnClickListener() { 
-		// @Override 
-		public void onClick(View v) { 
-		commentDialog.dismiss(); 
-		} 
-		});
-		
-		commentDialog.show();
+ 		 ImageButton cancelButton = (ImageButton) commentDialog.findViewById(R.id.cancel_dialog); 
+  
+         TextView text = (TextView) commentDialog.findViewById(R.id.comments_received);
+         text.setClickable(false);
+         
+         cancelButton.setOnClickListener(new OnClickListener() { 
+     		// @Override 
+     		public void onClick(View v) { 
+     		commentDialog.dismiss(); 
+     		} 
+     		});
+         
+         commentDialog.show();
 	}
 	
 }

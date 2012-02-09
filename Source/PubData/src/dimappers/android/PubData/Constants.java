@@ -8,13 +8,18 @@ public final class Constants {
 	public static final String CurrentWorkingEvent = "event";
 	public static final String CurrentFacebookUser = "facebookId";
 	public static final String IsSavedEventFlag = "NewEvent";
+	public static final String CurrentLatitude = "lat";
+	public static final String CurrentLongitude = "long";
 	
 	//Error constants
 	public static final int MissingDataInBundle = -12;
+	public static final int ErrorEventId = -384051;
+	public static final int EventIdNotAssigned = -1;
 	
 	//Launch application return codes
 	public static final int FromPending = 0;
 	public static final int FromOrganise = 1;
+	public static final int NoInternet = 2;
 	
 	//Organise return codes
 	public static final int PubLocationReturn = 1;
@@ -37,5 +42,5 @@ public final class Constants {
 	public static final String MsgWarning = "Dimap:Warning";
 	public static final String MsgError = "Dimap:Error";
 	
-	
+	public static final String SaveDataName = "PubStore";
 }

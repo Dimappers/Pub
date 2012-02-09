@@ -1,15 +1,9 @@
 package dimappers.android.pub;
 
 import java.util.Calendar;
-import java.util.Date;
-
-import dimappers.android.PubData.PubEvent;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,10 +11,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import dimappers.android.PubData.PubEvent;
 
 public class ChooseTime extends Activity implements OnClickListener{
 	private PubEvent event;
@@ -60,33 +53,57 @@ public class ChooseTime extends Activity implements OnClickListener{
     	Calendar currentDate = event.GetStartTime();
     	return currentDate.compareTo(Calendar.getInstance()) <= -1;
     }
-    private boolean isStrangeTime(int hour) {
-    	if(hour<16) {return true;} 
-    	return false;
+    private boolean isStrangeTime() {
+    	return event.GetStartTime().get(Calendar.HOUR_OF_DAY)<16;
+    }
+    private boolean tooFarAhead()
+    {
+    	Calendar c = Calendar.getInstance();
+    	return event.GetStartTime().getTimeInMillis() - c.getTimeInMillis() > 604800000; //number of milliseconds in a week
     }
     public void onClick(View v) {
     	switch(v.getId())
     	{
     		case R.id.save_date_and_time : {
-    			if(isInPast()) {alert();}
-    			else {
-	    			Bundle b = new Bundle();
-	    			b.putSerializable("event",event);
-	    			Intent returnIntent = new Intent();
-	    			returnIntent.putExtras(b);
-					this.setResult(RESULT_OK,returnIntent);
-	    			finish();
-    			}
+    			if(isInPast()) {alertPast();}
+    			else if(tooFarAhead()) {alertFuture();}
+    			else if(isStrangeTime()) {ask();}
+    			else {returnTime();}
     			break;
     		}
     	}
     }
-    private void alert() {
+    private void returnTime() {
+    	Bundle b = new Bundle();
+		b.putSerializable("event",event);
+		Intent returnIntent = new Intent();
+		returnIntent.putExtras(b);
+		this.setResult(RESULT_OK,returnIntent);
+		finish();
+    }
+    private void alertPast() {
     	new AlertDialog.Builder(this).setMessage("This time is in the past. Please choose a different one.")  
-        .setTitle("Alert")  
+        .setTitle("Error")  
         .setCancelable(false)  
         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int id) {dialog.cancel();}}).show(); 
+    }
+    private void alertFuture() {
+    	new AlertDialog.Builder(this).setMessage("Cannot plan a trip for more than a week in the future.")  
+        .setTitle("Error")  
+        .setCancelable(false)  
+        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int id) {dialog.cancel();}}).show(); 
+    }
+    private void ask() {
+    	new AlertDialog.Builder(this).setMessage("You have selected " + event.GetFormattedStartTime() + ". Are you sure you want to use this time?")  
+        .setTitle("Strange Time")  
+        .setCancelable(false)  
+        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        	public void onClick(DialogInterface dialog, int id) {returnTime(); dialog.cancel();}})
+        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+        	public void onClick(DialogInterface dialog, int id) {dialog.cancel();} 
+        }).show(); 
     }
     
     private DatePicker.OnDateChangedListener onDateChangedListener = new DatePicker.OnDateChangedListener() {
@@ -99,10 +116,7 @@ public class ChooseTime extends Activity implements OnClickListener{
 	};
 	
 	private TimePicker.OnTimeChangedListener onTimeChangedListener = new TimePicker.OnTimeChangedListener() {
-    	public void onTimeChanged(TimePicker view, int newHour, int newMinute) {
-    		
-    		if(isStrangeTime(newHour)) {/*TODO: notify!*/}
-    		
+    	public void onTimeChanged(TimePicker view, int newHour, int newMinute) {   		
     		Calendar currentDate = event.GetStartTime();
     		currentDate.set(Calendar.HOUR_OF_DAY, newHour);
     		currentDate.set(Calendar.MINUTE, newMinute);

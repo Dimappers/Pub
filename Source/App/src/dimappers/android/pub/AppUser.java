@@ -2,7 +2,6 @@ package dimappers.android.pub;
 
 import android.provider.MediaStore.Images;
 import dimappers.android.PubData.User;
-import dimappers.android.PubData.PubTripState;
 
 public class AppUser extends User
 {

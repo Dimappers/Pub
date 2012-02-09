@@ -31,7 +31,7 @@ public class PubEvent implements Serializable
 		users.put(host, new UserStatus(GoingStatus.going, startTime, null));
 		this.host = host;
 		this.startTime = startTime;
-		globalEventId = -1;
+		globalEventId = Constants.EventIdNotAssigned;
 	}
 	
 	public PubEvent(Calendar startTime, PubLocation pubLocation, User host)
@@ -41,7 +41,7 @@ public class PubEvent implements Serializable
 		this.host = host;
 		this.pubLocation = pubLocation;
 		this.startTime = startTime;
-		globalEventId = -1;
+		globalEventId = Constants.EventIdNotAssigned;
 	}
 	
 	//Getter/setter methods
@@ -50,9 +50,14 @@ public class PubEvent implements Serializable
 		return users.keySet();
 	}
 	
-	public HashMap<User, UserStatus> GetGoingStatus()
+	public HashMap<User, UserStatus> GetGoingStatusMap()
 	{
 		return users;
+	}
+	
+	public GoingStatus GetUserGoingStatus(User user)
+	{
+		return users.get(user).goingStatus;
 	}
 	
 	public Calendar GetStartTime()

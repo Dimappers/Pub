@@ -1,21 +1,12 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
 
-import dimappers.android.PubData.Constants;
-import dimappers.android.PubData.MessageType;
-import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.PubLocation;
-import dimappers.android.PubData.User;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
@@ -38,13 +29,17 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.MessageType;
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.PubLocation;
+import dimappers.android.PubData.User;
 
 public class Organise extends ListActivity implements OnClickListener{
 	
 	private Button cur_pub;
 	private Button cur_time;
 	private TextView cur_loc;
-	private Location location;
 	
 	private PubEvent event;
 	private User facebookUser;
@@ -52,6 +47,10 @@ public class Organise extends ListActivity implements OnClickListener{
 	private ArrayList<String> listItems=new ArrayList<String>();
 	private ArrayAdapter<String> adapter;
 	private ListView guest_list;
+	
+	private boolean locSet = false;
+	private double latSet;
+	private double lngSet;
 	
 	 @Override
 	 public void onCreate(Bundle savedInstanceState)
@@ -114,47 +113,102 @@ public class Organise extends ListActivity implements OnClickListener{
 	    	button_send_invites.setOnClickListener(this);
 	    	cur_loc=(TextView)findViewById(R.id.current_location);
 	    	cur_loc.setOnClickListener(this);
-	    	
+	  
+	    	double latitude = getIntent().getExtras().getDouble(Constants.CurrentLatitude);
+	    	double longitude = getIntent().getExtras().getDouble(Constants.CurrentLongitude);
+	    	String place = null;
+	    	Geocoder gc = new Geocoder(getApplicationContext());
+	    	try {
+	    		List<Address> list = gc.getFromLocation(latitude, longitude, 5);
+	    		int i = 0;
+	    		while (i<list.size()) 
+	    		{
+	    			String temp = list.get(i).getLocality();
+	    			if(temp!=null) {place = temp;}
+	    			i++;
+	    		}
+	    		if(place!=null) {cur_loc.setText(place);}
+	    		else {cur_loc.setText("Unknown");}
+	    	}
+	    	//This is thrown if the phone has no Internet connection.
+	    	catch (IOException e) {
+	    		cur_loc.setText("No location avaliable");
+	    	}
 	 }
-	 @Override
-	 public void onStart(){
-		 super.onStart(); 
-		 findLocation();
-	}
 	 
 	 public void onClick(View v)
 	 {
 		Intent i;
 		Bundle b = new Bundle();
+		b.putAll(getIntent().getExtras()); 
 		b.putSerializable(Constants.CurrentWorkingEvent, event);
 		 switch (v.getId()){
 		 		 case R.id.current_location : {
-		 			 //FIXME: need to do this in a way that involves long/lat - if we even want it at all!
-				 final EditText loc = new EditText(getApplicationContext());
-				 new AlertDialog.Builder(this).setMessage("Enter your current location:")  
-		           .setTitle("Change Location")  
-		           .setCancelable(true)  
-		           .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-		           public void onClick(DialogInterface dialog, int id) {
-		        	   cur_loc.setText(loc.getText());
-		        	   //TODO: turn off location listener
-		        	   findNewNearestPub();
-		        	   dialog.cancel();
-		           }
-		           })
-		           .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
-		           public void onClick(DialogInterface dialog, int id) {
-		                dialog.cancel();
-		           }
-		           })
-		           .setView(loc)
-		           .show(); 
-				 break;
+		 			 //TODO: maybe make this obvious it's able to be clicked??
+					 final EditText loc = new EditText(getApplicationContext());
+					 new AlertDialog.Builder(this).setMessage("Enter your current location:")  
+			           .setTitle("Change Location")  
+			           .setCancelable(true)  
+			           .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+			           public void onClick(DialogInterface dialog, int id) {
+			        	   //TODO: turn off location listener
+			        	   Geocoder geocoder = new Geocoder(getApplicationContext());
+			        	   try {
+			        		   List<Address> addresses = geocoder.getFromLocationName(loc.getText().toString(), 5);
+			        		   double lat = 0;
+			        		   double latsum = 0;
+			        		   double lng = 0;
+			        		   double lngsum = 0;
+			        		   if(addresses!=null) {
+				        		   for(int i=0; i<addresses.size(); i++) {
+				        			   Address a = addresses.get(i);
+				        			   if(a!=null) 
+				        			   {
+				        				   if(lat==0) {lat = a.getLatitude();}
+				        				   else {
+				        					   latsum+=a.getLatitude();
+				        					   lat=latsum/i;
+				        					   }
+				        				   if(lng==0) {lng = a.getLongitude();}
+				        				   else {
+				        					   lngsum+=a.getLongitude();
+				        					   lng=lngsum/i;
+				        				   }
+				        			   }
+				        		   }
+			        		   }
+				        	  if(lat!=0&&lng!=0&&findNewNearestPub(lat,lng)){
+				        		  latSet=lat;
+				        		  lngSet=lng;
+				        		  locSet=true;
+				        		  cur_loc.setText(loc.getText()); 
+				        		  UpdateFromEvent();
+				        	 }
+				        	  else {Toast.makeText(getApplicationContext(), "Unrecognised location", Toast.LENGTH_SHORT).show();}
+			        		  } 
+			        	   catch (IOException e) 
+			        	   {
+			        			  Log.d(Constants.MsgError,"Error in finding latitude & longitude from given location.");
+			        			  e.printStackTrace();
+			        		  }
+			        	   dialog.cancel();
+			           }
+			           })
+			           .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
+			           public void onClick(DialogInterface dialog, int id) {
+			                dialog.cancel();
+			           }
+			           })
+			           .setView(loc)
+			           .show(); 
+					 break;
 			 }
 			case R.id.pub_button : {
 				i = new Intent(this, ChoosePub.class);
-				b.putDouble("lat",location.getLatitude());
-				b.putDouble("long",location.getLongitude());
+				if(locSet){
+					b.putDouble(Constants.CurrentLatitude, latSet);
+					b.putDouble(Constants.CurrentLongitude, lngSet);
+				}
 				i.putExtras(b);
 				startActivityForResult(i, Constants.PubLocationReturn);
 				break;
@@ -166,14 +220,21 @@ public class Organise extends ListActivity implements OnClickListener{
 				break;
 			}
 			case R.id.save_event : {
-				//TODO: save event details
-				this.setResult(RESULT_OK, getIntent());
+				i = new Intent();
+				StoredData storedData = StoredData.getInstance();
+				storedData.AddNewSavedEvent(event);
+				i.putExtras(b);
+				setResult(RESULT_OK, i);
 				finish();
 				break;
 			}
 			case R.id.send_invites_event : {
-				
-				this.setResult(RESULT_OK, getIntent());
+				i = new Intent();
+				event.SetEventId(1); //In reality this should be set by server, sent back to the app which fills in actual global id
+				StoredData storedData = StoredData.getInstance();
+				storedData.AddNewSentEvent(event);
+				i.putExtras(b);
+				setResult(RESULT_OK, i);
 				finish();
 				break;
 			}
@@ -189,28 +250,12 @@ public class Organise extends ListActivity implements OnClickListener{
 			 UpdateFromEvent();
 		 }
 	 }
-	//Finding current location
-	private void findLocation()
-	{		
-		//Acquire a reference to the system Location Manager
-		LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-		//Define a listener that responds to location updates
-		MyLocationListener locationListener = new MyLocationListener(this);
-		//Using most recent location before searching to allow for faster loading
-		location = (locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
-		locationListener.makeUseOfNewLocation(location);
-		
-		/*TODO: Not sure if we even need this bottom bit - could just use the last known location. 
-		 * In that case MyLocationListener could be incorporated into this class*/
-		
-		//Register the listener with the Location Manager to receive location updates
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-	 }
+
 	
 	private void UpdateFromEvent()
 	{
 		cur_pub.setText(event.GetPubLocation().pubName);
-		cur_time.setText(event.GetStartTime().getTime().toString());
+		cur_time.setText(event.GetFormattedStartTime());
 		
 		listItems.clear();
     	for(User user : event.GetUsers()) {
@@ -219,10 +264,20 @@ public class Organise extends ListActivity implements OnClickListener{
     	
     	adapter.notifyDataSetChanged();
 	}
-	private void findNewNearestPub() {
-		//TODO: use cur_loc to find nearest pub (using Google places)
-		event.SetPubLocation(new PubLocation()/*new nearest found location*/);
-		UpdateFromEvent();
+	private boolean findNewNearestPub(double lat, double lng) {
+		PubFinder finder = new PubFinder(lat,lng);
+		try {
+			List<Place> list = finder.performSearch();
+			for(Place p : list) {
+				//TODO: Should maybe give user choice over which address is selected, not just pick the first one
+				if(p!=null) {event.SetPubLocation(new PubLocation(p.geometry.location.lat,p.geometry.location.lng,p.name)); return true;}
+			}
+		} catch (Exception e) {
+			Log.d(Constants.MsgError, "Cannot find pubs based on this location.");
+			e.printStackTrace();
+			return false;
+		}
+		return false;
 	}
 	
 	private void sendEventToServer() throws UnknownHostException, IOException {
@@ -243,43 +298,5 @@ public class Organise extends ListActivity implements OnClickListener{
 		serializer.flush();
 		//TODO: Send the event
 		//TODO: Send to Pending Screen
-	}
-}
-
-class MyLocationListener implements LocationListener{
-	Organise organise;
-	TextView cur_loc;
-	MyLocationListener(Organise organise) {
-		this.organise = organise; 
-		cur_loc = (TextView)organise.findViewById(R.id.current_location);
-	}
-	public void onLocationChanged(Location location) {makeUseOfNewLocation(location);}
-	public void onStatusChanged(String provider, int status, Bundle extras) {}
-	public void onProviderEnabled(String provider) {}
-	public void onProviderDisabled(String provider) {}
-	
-	//This method should find the current town from the latitude/longitude of the location
-	public void makeUseOfNewLocation(Location location) {
-		String place = null;
-		if(location!=null)
-		{
-			Geocoder gc = new Geocoder(organise.getApplicationContext());
-			try {
-				List<Address> list = gc.getFromLocation(location.getLatitude(), location.getLongitude(), 5);
-				int i = 0;
-				while (i<list.size()) 
-				{
-					String temp = list.get(i).getLocality();
-					if(temp!=null) {place = temp;}
-					i++;
-				}
-				if(place!=null) {cur_loc.setText(place);}
-				else {cur_loc.setText("(" + location.getLatitude() + "," + location.getLongitude() + ")");}
-			}
-			//This is thrown if the phone has no Internet connection.
-			catch (IOException e) {
-				cur_loc.setText("(" + location.getLatitude() + "," + location.getLongitude() + ")");
-			}
-		}
 	}
 }
