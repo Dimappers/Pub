@@ -139,6 +139,8 @@ public class StoredData implements Serializable
 			Log.d(Constants.MsgWarning, "This does not appear to be a saved event");
 		}
 		savedEvents.remove(event.GetEventId());
+		
+		SaveData();
 	}
 	
 	private void SaveData()
