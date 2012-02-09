@@ -1,6 +1,7 @@
 package dimappers.android.pub;
 
 import java.util.Calendar;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,26 +14,25 @@ import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 
 public class Pending extends Activity {
-	View v;
+	TextView text;
 	@Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.pending_guests);
-    	findViewById(R.id.location_error).setVisibility(View.INVISIBLE);
-    	//TODO: find suitable guests etc.
-    	findLocation();
-    	
-		
+    	text = (TextView) findViewById(R.id.location_error);
+    	findLocation();	
 	}	
 	
 	//Finding current location
 	private void findLocation()
 	{		
+		updateText("Finding current location");
 		//Acquire a reference to the system Location Manager
 		LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 		//Define a listener that responds to location updates
@@ -55,6 +55,9 @@ public class Pending extends Activity {
 		//Register the listener with the Location Manager to receive location updates
 		
 	 }
+	public void updateText(String s) {
+		text.setText(s);
+	}
 	
 	public void GiveLocation(Location location)
 	{
@@ -91,14 +94,22 @@ class DoLoading extends AsyncTask<Pending,Integer,Integer>
         	Debug.waitForDebugger();        	
         }
         facebookUser = (AppUser)b.getSerializable(Constants.CurrentFacebookUser);
-    	//Toast.makeText(activity.getApplicationContext(), "Received id: " + new Integer(facebookId).toString(), Toast.LENGTH_LONG).show();
+        publishProgress(new Integer(0));
     	event = new PubEvent(Calendar.getInstance(), facebookUser);
-    	event.SetPubLocation(new PubLocation());
+    	publishProgress(new Integer(1));
+    	findPub();
+    	publishProgress(new Integer(2));
     	event.AddUser(new AppUser(143));
     	event.AddUser(new AppUser(12341));
         
 		return null;
 	}
+	protected void onProgressUpdate(Integer... progress) {
+		if(progress[0].intValue()==0) {activity.updateText("Creating new event");}
+		else if(progress[0].intValue()==1) {activity.updateText("Choosing a pub");}
+		else if(progress[0].intValue()==2) {activity.updateText("Picking guests");}
+	}
+	
 	protected void onPostExecute(Integer result) {
 		//TODO: pass updated event back
 		Bundle eventBundle = new Bundle();
@@ -114,10 +125,30 @@ class DoLoading extends AsyncTask<Pending,Integer,Integer>
 		activity.setResult(Activity.RESULT_OK, intent);
         activity.finish();
     }
-	
 	public void SetLocation(Location location)
 	{
 		this.location = location;
+	}
+	private void findPub() {
+		PubFinder pubfinder = new PubFinder(location.getLatitude(),location.getLongitude());
+		Place pub = new Place();
+		pub.name="Unknown";
+		double lat = 0;
+		double lng = 0;
+		try {
+			List<Place> list = pubfinder.performSearch();
+			if(list!=null&&list.size()!=0)
+			{
+				pub = list.get(0);
+				lat = pub.geometry.location.lat;
+				lng = pub.geometry.location.lng;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			Log.d(Constants.MsgError,"Error while finding pubs.");
+			e.printStackTrace();
+		}
+		event.SetPubLocation(new PubLocation(lat,lng,pub.name));
 	}
 }
 
