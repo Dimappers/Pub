@@ -6,24 +6,26 @@ import com.google.api.client.util.Key;
  
 public class PlacesAutocompleteList {
  
- @Key
- public List<PlaceAutoComplete> predictions;
+	@Key String status;
+	
+ @Key public List<PlaceAutoComplete> predictions;
  
- public static class PlaceAutoComplete {
- 
-  @Key
-  public String id;
- 
-  @Key
-  public String description;
- 
-  @Key
-  public String reference;
- 
-  @Override
-  public String toString() {
-   return description + " - " + id + " - " + reference;
-  }
- 
- }
+ 	public static class PlaceAutoComplete {
+ 		
+ 		@Key String description;
+ 		@Key String reference;
+ 		@Key List<Term> terms;
+ 		
+ 		@Override
+ 		public String toString()
+ 		{
+ 			return description + ": " + reference;
+ 		}
+ 		
+ 		public static class Term {
+ 			@Key String value;
+ 			@Key int offset;
+ 		}
+ 	}
+
 }

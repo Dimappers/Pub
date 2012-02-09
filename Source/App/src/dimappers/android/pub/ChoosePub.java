@@ -53,8 +53,7 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 
 		    	Button use_pub = (Button)findViewById(R.id.use_pub_button);
 		    	use_pub.setOnClickListener(this);
-		 }
-		 
+		 }	 
 		 public void onClick(View v) {
 			 switch(v.getId()) {
 				 case R.id.use_pub_button : {

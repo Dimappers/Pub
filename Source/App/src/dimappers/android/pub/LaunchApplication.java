@@ -6,8 +6,11 @@ import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -23,6 +26,10 @@ public class LaunchApplication extends Activity implements OnClickListener{
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	
+      	if(!isNetworkAvailable()) {
+       		Intent i = new Intent(this, NoInternet.class); 
+       		startActivityForResult(i,Constants.NoInternet);
+       	}
     	//need to log into Facebook if not logged in before
     	facebookUser = GetFacebookUser();
     	
@@ -109,7 +116,16 @@ public class LaunchApplication extends Activity implements OnClickListener{
     			i.putExtras(data.getExtras());
     			startActivityForResult(i, Constants.FromOrganise);
     		}
+    		else if(requestCode==Constants.NoInternet)
+    		{
+    			super.onActivityResult(requestCode, resultCode, data);
+    			finish();
+    		}
     	}
+    }
+    
+    private boolean isNetworkAvailable() {
+        return ((ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo()!=null;
     }
     
     private AppUser GetFacebookUser()

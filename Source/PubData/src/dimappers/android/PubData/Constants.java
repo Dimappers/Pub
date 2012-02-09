@@ -14,6 +14,7 @@ public final class Constants {
 	//Launch application return codes
 	public static final int FromPending = 0;
 	public static final int FromOrganise = 1;
+	public static final int NoInternet = 2;
 	
 	//Organise return codes
 	public static final int PubLocationReturn = 1;

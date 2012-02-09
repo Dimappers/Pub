@@ -144,7 +144,6 @@ class DoLoading extends AsyncTask<Pending,Integer,Integer>
 				lng = pub.geometry.location.lng;
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			Log.d(Constants.MsgError,"Error while finding pubs.");
 			e.printStackTrace();
 		}
