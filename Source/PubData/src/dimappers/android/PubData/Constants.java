@@ -10,6 +10,8 @@ public final class Constants {
 	
 	//Error constants
 	public static final int MissingDataInBundle = -12;
+	public static final int ErrorEventId = -384051;
+	public static final int EventIdNotAssigned = -1;
 	
 	//Launch application return codes
 	public static final int FromPending = 0;

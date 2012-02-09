@@ -10,10 +10,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -24,7 +26,8 @@ import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
 
-public class UserInvites extends Activity implements OnClickListener {
+public class UserInvites extends Activity implements OnClickListener, OnLongClickListener 
+{
 
 	PubEvent event;
 	AppUser facebookUser;
@@ -54,55 +57,37 @@ public class UserInvites extends Activity implements OnClickListener {
     	
     	TextView startTime = (TextView) findViewById(R.id.userInviteStartTimeText);
     	startTime.setText(event.GetFormattedStartTime());
-		
-    	findViewById(R.id.textView7).setVisibility(View.GONE);
-    	findViewById(R.id.editText1).setVisibility(View.GONE);
-    	findViewById(R.id.make_a_comment).setVisibility(View.GONE);
-    	findViewById(R.id.send).setVisibility(View.GONE);
+
     	
     	Button button_going = (Button)findViewById(R.id.going);
     	button_going.setOnClickListener(this);
     	
+    	Button button_long_click_going = (Button)findViewById(R.id.going);
+    	button_long_click_going.setOnLongClickListener(this);
+    	
     	Button button_decline = (Button) findViewById(R.id.decline);
     	button_decline.setOnClickListener(this);
-    	
-    	Button button_make_comment = (Button) findViewById(R.id.make_a_comment);
-    	button_make_comment.setOnClickListener(this);
     
     	
     	/*	TODO: Passing values to determine which page loaded this one: going or waiting for response to know the status.
-    	  	Attending button made green if going
-    	  	Decline button made red if not going
-    	  	Neither colour if undecided
     	  	
     	  	Make available from time textbox open time dialog and automatically have current start time put in
-    	  
-    	 	
+    	     	 	
     	 */
-    	
-    	
 
-    	ListView list = (ListView) findViewById(R.id.listView1);
+    	ListView list = (ListView) findViewById(R.id.listView2);
     	 
     	
     	/* TODO: Possibly change PubEvent to have hash map to User, ResponseData (at the moment just stores weather
-    	 * they said yes or not, need things like msg, time free etc */
+    	 * they said yes or no, need things like msg, time free etc */
     	
     	
     	ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
     	
-    	
-    	for(Entry<User, UserStatus> userResponse : event.GetGoingStatus().entrySet())
+    	for(Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
     	{
     		HashMap<String, String> map = new HashMap<String, String>();
-    		if(userResponse.getValue().messageToHost == null)
-    		{
-    			map.put("Comment", "no");
-    		}
-    		else
-    		{
-    			map.put("Comment", "yes");
-    		}
+    
     		String freeFromWhen = event.GetStartTime().get(Calendar.HOUR_OF_DAY) + ":" + event.GetStartTime().get(Calendar.MINUTE);
     		if(userResponse.getValue().freeFrom != null)
     		{
@@ -115,8 +100,8 @@ public class UserInvites extends Activity implements OnClickListener {
     	}
  
     	//TODO: The SDK says all the things in the last parameter should be text views, ours are not (R.id.envelope) do we need to write our own SimpleAdapter
-    	SimpleAdapter mSchedule = new SimpleAdapter(this, mylist, R.layout.row,
-    	            new String[] {"Comment", "Guest", "Available From Time"}, new int[] {R.id.envelope, R.id.guest, R.id.time});
+    	SimpleAdapter mSchedule = new SimpleAdapter(this, mylist, R.layout.user_row,
+    	            new String[] {"Guest", "Available From Time"}, new int[] {R.id.user_guest, R.id.user_time});
     	list.setAdapter(mSchedule);
 	}
 	
@@ -127,27 +112,34 @@ public class UserInvites extends Activity implements OnClickListener {
 		switch (v.getId()) {
 		case R.id.going : 
 		{
-			findViewById(R.id.textView7).setVisibility(View.VISIBLE);
-	    	findViewById(R.id.editText1).setVisibility(View.VISIBLE);
-	    	findViewById(R.id.make_a_comment).setVisibility(View.VISIBLE);
-	    	findViewById(R.id.send).setVisibility(View.VISIBLE);
+	    	
+	    	findViewById(R.id.going).setBackgroundColor(Color.GREEN);
+	    	findViewById(R.id.decline).setBackgroundResource(android.R.drawable.btn_default);
+	    	
 			break;
 		}
 		case R.id.decline :
 		{
-	    	findViewById(R.id.make_a_comment).setVisibility(View.VISIBLE);
-	    	findViewById(R.id.send).setVisibility(View.VISIBLE);
-	    	findViewById(R.id.textView7).setVisibility(View.GONE);
-	    	findViewById(R.id.editText1).setVisibility(View.GONE);
-			break;
-		}
-		case R.id.make_a_comment :
-		{
-			showAddDialog();
+	    	
+	    	findViewById(R.id.decline).setBackgroundColor(Color.RED);
+	    	findViewById(R.id.going).setBackgroundResource(android.R.drawable.btn_default);
+
 			break;
 		}
 		}
     }
+	
+	public boolean onLongClick(View v)
+	{
+		switch (v.getId()) {
+		case R.id.going :
+		{
+			showAddDialog();
+			return true;
+		}
+		}
+		return false;
+	}
 	
 	private void showAddDialog() 
 	{
@@ -178,28 +170,6 @@ public class UserInvites extends Activity implements OnClickListener {
 		});
 		
 		commentDialog.show();
-	}
-		
-
-
-	public  void displayAlert()
-	{
-		new AlertDialog.Builder(this).setMessage("Are you sure you want to delete this event?")  
-	       .setTitle("Alert")  
-	       .setCancelable(true)  
-	       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-	       public void onClick(DialogInterface dialog, int id) {
-	            finish();
-	            //TODO: Actually deletes the event!!!
-	       }
-	       })
-	       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-	       public void onClick(DialogInterface dialog, int id) {
-	            dialog.cancel();
-	       }
-	       })
-	       .show(); 
-	       
 	}
 
 }

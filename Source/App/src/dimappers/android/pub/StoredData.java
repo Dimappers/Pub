@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 
 import android.content.SharedPreferences.Editor;
 import android.util.Base64;
@@ -16,44 +18,68 @@ public class StoredData implements Serializable
 {	
 	private final int HistoryDepth = 15;
 	
-	private ArrayList<PubEvent> savedEvents; //Events the users has created and saved
-	private ArrayList<PubEvent> sentEvents;
-	private ArrayList<PubEvent> invitedEvents;
+	private HashMap<Integer, PubEvent> savedEvents; //Events the users has created and saved
+	private HashMap<Integer, PubEvent> sentEvents;
+	private HashMap<Integer, PubEvent> invitedEvents;
 	private PubEvent[] recentHistory; //Stores the events most recently acted upon (ie went ahead);
 	
-	private int nextSlot;
+	private int nextHistorySlot;
+	private int nextSavedEventId;
 	transient private Editor editor;
 	
 	public StoredData(Editor editor)
 	{
-		nextSlot = 0;
+		nextHistorySlot = 0;
 		recentHistory = new PubEvent[HistoryDepth];
-		savedEvents = new ArrayList<PubEvent>();
-		sentEvents = new ArrayList<PubEvent>();
-		invitedEvents = new ArrayList<PubEvent>();
+		savedEvents = new HashMap<Integer, PubEvent>();
+		sentEvents = new HashMap<Integer, PubEvent>();
+		invitedEvents = new HashMap<Integer, PubEvent>();
+		
+		nextSavedEventId = -2;
 		
 		this.editor = editor;
 		
 		SaveData();
 	}
 	
-	public ArrayList<PubEvent> GetSavedEvents()
+	public Collection<PubEvent> GetSavedEvents()
 	{
-		return savedEvents;
+		return savedEvents.values();
 	}
 	
 	public ArrayList<PubEvent> GetAllEvents()
 	{
 		ArrayList<PubEvent> allEvents = new ArrayList<PubEvent>();
-		allEvents.addAll(savedEvents);
-		allEvents.addAll(sentEvents);
-		allEvents.addAll(invitedEvents);
+		allEvents.addAll(savedEvents.values());
+		allEvents.addAll(sentEvents.values());
+		allEvents.addAll(invitedEvents.values());
 		return allEvents;
 	}
 	
 	public void AddNewSavedEvent(PubEvent savedEvent)
 	{
-		savedEvents.add(savedEvent);
+		if(savedEvent.GetEventId() >= 0)
+		{
+			Log.d(Constants.MsgWarning, "This event appears to have been saved");
+		}
+		
+		if(savedEvent.GetEventId() == Constants.EventIdNotAssigned)
+		{
+			// Skip the error event id
+			if(nextSavedEventId == Constants.ErrorEventId)
+			{
+				--nextSavedEventId;
+			}
+
+			savedEvent.SetEventId(nextSavedEventId);
+
+			--nextSavedEventId;
+			savedEvents.put(savedEvent.GetEventId(), savedEvent);
+		}
+		else
+		{
+			savedEvents.put(savedEvent.GetEventId(), savedEvent); //Override the existing event with the new data
+		}
 		
 		SaveData();
 	}
@@ -65,14 +91,18 @@ public class StoredData implements Serializable
 			Log.d(Constants.MsgWarning, "This event does not appear to have been sent to the server");
 		}
 		
-		sentEvents.add(sentEvent);
+		sentEvents.put(sentEvent.GetEventId(), sentEvent);
 		
 		SaveData();
 	}
 	
 	public void AddNewInvitedEvent(PubEvent invitedEvent)
 	{
-		invitedEvents.add(invitedEvent);
+		if(invitedEvent.GetEventId() < 0)
+		{
+			Log.d(Constants.MsgWarning, "This event doesn't have a valid ID");
+		}
+		invitedEvents.put(invitedEvent.GetEventId(), invitedEvent);
 		SaveData();
 	}
 	
@@ -84,22 +114,33 @@ public class StoredData implements Serializable
 	
 	public void PushNewEvent(PubEvent newEvent)
 	{
-		recentHistory[nextSlot] = newEvent;
-		nextSlot++;
-		nextSlot %= HistoryDepth;
+		recentHistory[nextHistorySlot] = newEvent;
+		nextHistorySlot++;
+		nextHistorySlot %= HistoryDepth;
 		SaveData();
 	}
 	
 	public PubEvent PeekOldestEvent()
 	{
 		int i;
-		for(i = nextSlot - 1; recentHistory[i] == null && i != nextSlot; --i);
+		for(i = nextHistorySlot - 1; recentHistory[i] == null && i != nextHistorySlot; --i);
 		
 		return recentHistory[i]; //returns oldest history or null if no history
 	}
 	
 	private void setEditor(Editor sharedPrefEditor) {
 		editor = sharedPrefEditor;
+	}
+	
+	public void DeleteSavedEvent(PubEvent event)
+	{
+		if(event.GetEventId() >= 0)
+		{
+			Log.d(Constants.MsgWarning, "This does not appear to be a saved event");
+		}
+		savedEvents.remove(event.GetEventId());
+		
+		SaveData();
 	}
 	
 	private void SaveData()
@@ -117,6 +158,11 @@ public class StoredData implements Serializable
 		String s =  new String(Base64.encode(data.toByteArray(), Base64.DEFAULT));
 		editor.putString(Constants.SaveDataName, s);
 		editor.commit();
+	}
+	
+	public void ClearSavedData()
+	{
+		editor.clear();
 	}
 	
 	//Use these methods to get the active stored data
@@ -148,5 +194,14 @@ public class StoredData implements Serializable
 			Log.d(Constants.MsgError, "Data store has not been initalised");
 		}
 		return instance;
+	}
+
+	public Collection<PubEvent> GetHostedEvents() {
+		return sentEvents.values();
+	}
+	
+	public Collection<PubEvent> GetInvitedEvents()
+	{
+		return invitedEvents.values();
 	}
  }

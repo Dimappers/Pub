@@ -305,7 +305,7 @@ public class RunServerTest
 						{
 							eventFound = true;
 							
-							userUpdated = hostEventsAfterRespond[i].GetGoingStatus().get(CreateGuest()).goingStatus == GoingStatus.going;
+							userUpdated = hostEventsAfterRespond[i].GetGoingStatusMap().get(CreateGuest()).goingStatus == GoingStatus.going;
 							
 							break;
 						}
