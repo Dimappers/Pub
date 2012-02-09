@@ -48,6 +48,10 @@ public class Organise extends ListActivity implements OnClickListener{
 	private ArrayAdapter<String> adapter;
 	private ListView guest_list;
 	
+	private boolean locSet = false;
+	private double latSet;
+	private double lngSet;
+	
 	 @Override
 	 public void onCreate(Bundle savedInstanceState)
 	 {
@@ -124,11 +128,11 @@ public class Organise extends ListActivity implements OnClickListener{
 	    			i++;
 	    		}
 	    		if(place!=null) {cur_loc.setText(place);}
-	    		else {cur_loc.setText("(" + latitude + "," + longitude + ")");}
+	    		else {cur_loc.setText("Unknown");}
 	    	}
 	    	//This is thrown if the phone has no Internet connection.
 	    	catch (IOException e) {
-	    		cur_loc.setText("(" + latitude + "," + longitude + ")");
+	    		cur_loc.setText("No location avaliable");
 	    	}
 	 }
 	 
@@ -141,60 +145,70 @@ public class Organise extends ListActivity implements OnClickListener{
 		 switch (v.getId()){
 		 		 case R.id.current_location : {
 		 			 //TODO: maybe make this obvious it's able to be clicked??
-				 final EditText loc = new EditText(getApplicationContext());
-				 new AlertDialog.Builder(this).setMessage("Enter your current location:")  
-		           .setTitle("Change Location")  
-		           .setCancelable(true)  
-		           .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-		           public void onClick(DialogInterface dialog, int id) {
-		        	   //TODO: turn off location listener
-		        	   Geocoder geocoder = new Geocoder(getApplicationContext());
-		        	   try {
-		        		   List<Address> addresses = geocoder.getFromLocationName(loc.getText().toString(), 5);
-		        		   double lat = 0;
-		        		   double latsum = 0;
-		        		   double lng = 0;
-		        		   double lngsum = 0;
-		        		   if(addresses!=null) {
-			        		   for(int i=0; i<addresses.size(); i++) {
-			        			   Address a = addresses.get(i);
-			        			   if(a!=null) 
-			        			   {
-			        				   if(lat==0) {lat = a.getLatitude();}
-			        				   else {
-			        					   latsum+=a.getLatitude();
-			        					   lat=latsum/i;
-			        					   }
-			        				   if(lng==0) {lng = a.getLongitude();}
-			        				   else {
-			        					   lngsum+=a.getLongitude();
-			        					   lng=lngsum/i;
-			        				   }
-			        			   }
+					 final EditText loc = new EditText(getApplicationContext());
+					 new AlertDialog.Builder(this).setMessage("Enter your current location:")  
+			           .setTitle("Change Location")  
+			           .setCancelable(true)  
+			           .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+			           public void onClick(DialogInterface dialog, int id) {
+			        	   //TODO: turn off location listener
+			        	   Geocoder geocoder = new Geocoder(getApplicationContext());
+			        	   try {
+			        		   List<Address> addresses = geocoder.getFromLocationName(loc.getText().toString(), 5);
+			        		   double lat = 0;
+			        		   double latsum = 0;
+			        		   double lng = 0;
+			        		   double lngsum = 0;
+			        		   if(addresses!=null) {
+				        		   for(int i=0; i<addresses.size(); i++) {
+				        			   Address a = addresses.get(i);
+				        			   if(a!=null) 
+				        			   {
+				        				   if(lat==0) {lat = a.getLatitude();}
+				        				   else {
+				        					   latsum+=a.getLatitude();
+				        					   lat=latsum/i;
+				        					   }
+				        				   if(lng==0) {lng = a.getLongitude();}
+				        				   else {
+				        					   lngsum+=a.getLongitude();
+				        					   lng=lngsum/i;
+				        				   }
+				        			   }
+				        		   }
 			        		   }
-		        		   }
-			        	  if(lat!=0&&lng!=0&&findNewNearestPub(lat,lng)) {cur_loc.setText(loc.getText()); UpdateFromEvent();}
-			        	  else {Toast.makeText(getApplicationContext(), "Unrecognised location", Toast.LENGTH_SHORT).show();}
-		        		  } 
-		        	   catch (IOException e) 
-		        	   {
-		        			  Log.d(Constants.MsgError,"Error in finding latitude & longitude from given location.");
-		        			  e.printStackTrace();
-		        		  }
-		        	   dialog.cancel();
-		           }
-		           })
-		           .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
-		           public void onClick(DialogInterface dialog, int id) {
-		                dialog.cancel();
-		           }
-		           })
-		           .setView(loc)
-		           .show(); 
-				 break;
+				        	  if(lat!=0&&lng!=0&&findNewNearestPub(lat,lng)){
+				        		  latSet=lat;
+				        		  lngSet=lng;
+				        		  locSet=true;
+				        		  cur_loc.setText(loc.getText()); 
+				        		  UpdateFromEvent();
+				        	 }
+				        	  else {Toast.makeText(getApplicationContext(), "Unrecognised location", Toast.LENGTH_SHORT).show();}
+			        		  } 
+			        	   catch (IOException e) 
+			        	   {
+			        			  Log.d(Constants.MsgError,"Error in finding latitude & longitude from given location.");
+			        			  e.printStackTrace();
+			        		  }
+			        	   dialog.cancel();
+			           }
+			           })
+			           .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
+			           public void onClick(DialogInterface dialog, int id) {
+			                dialog.cancel();
+			           }
+			           })
+			           .setView(loc)
+			           .show(); 
+					 break;
 			 }
 			case R.id.pub_button : {
 				i = new Intent(this, ChoosePub.class);
+				if(locSet){
+					b.putDouble(Constants.CurrentLatitude, latSet);
+					b.putDouble(Constants.CurrentLongitude, lngSet);
+				}
 				i.putExtras(b);
 				startActivityForResult(i, Constants.PubLocationReturn);
 				break;
@@ -241,7 +255,7 @@ public class Organise extends ListActivity implements OnClickListener{
 	private void UpdateFromEvent()
 	{
 		cur_pub.setText(event.GetPubLocation().pubName);
-		cur_time.setText(event.GetStartTime().getTime().toString());
+		cur_time.setText(event.GetFormattedStartTime());
 		
 		listItems.clear();
     	for(User user : event.GetUsers()) {
