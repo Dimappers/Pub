@@ -92,7 +92,7 @@ public class UserInvites extends Activity implements OnClickListener {
     	ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
     	
     	
-    	for(Entry<User, UserStatus> userResponse : event.GetGoingStatus().entrySet())
+    	for(Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
     	{
     		HashMap<String, String> map = new HashMap<String, String>();
     		if(userResponse.getValue().messageToHost == null)

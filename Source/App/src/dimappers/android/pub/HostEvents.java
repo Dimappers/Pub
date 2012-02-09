@@ -85,7 +85,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
     	  ListView list = (ListView) findViewById(R.id.listView1);
     	
       	  ArrayList<GuestList> mData = new ArrayList<GuestList>();
-      	  for(Entry<User, UserStatus> userResponse : event.GetGoingStatus().entrySet())
+      	  for(Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
       	  {
       		String freeFromWhen = event.GetStartTime().get(Calendar.HOUR_OF_DAY) + ":" + event.GetStartTime().get(Calendar.MINUTE);
     		if(userResponse.getValue().freeFrom != null)
@@ -202,8 +202,9 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
            .setCancelable(true)  
            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
            public void onClick(DialogInterface dialog, int id) {
-                finish();
-                //TODO: Actually deletes the event!!!
+               StoredData.getInstance().DeleteSavedEvent(event); 
+        	   finish();
+                
            }
            })
            .setNegativeButton("No", new DialogInterface.OnClickListener() {

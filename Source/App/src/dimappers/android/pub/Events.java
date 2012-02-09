@@ -2,6 +2,7 @@ package dimappers.android.pub;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 
 import android.app.ExpandableListActivity;
 import android.content.Context;
@@ -13,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 import dimappers.android.PubData.Constants;
@@ -25,10 +25,10 @@ import dimappers.android.PubData.User;
 
 public class Events extends ExpandableListActivity {
 
-	ExpandableListAdapter mAdapter;
+	BaseExpandableListAdapter mAdapter;
 
 	AppUser facebookUser;
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -37,9 +37,8 @@ public class Events extends ExpandableListActivity {
 
 		facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
 
-		mAdapter = new EventListAdapter(this, GetEvents(), facebookUser);
+		mAdapter = new EventListAdapter(this, facebookUser);
 		setListAdapter(mAdapter);
-
 		ExpandableListView expview = (ExpandableListView) findViewById(android.R.id.list);
 		expview.setOnChildClickListener(this);
 	}
@@ -89,6 +88,13 @@ public class Events extends ExpandableListActivity {
 		}
 		return false; 
 	}
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		mAdapter.notifyDataSetChanged();
+	}
 
 	private ArrayList<PubEvent> GetEvents()
 	{
@@ -125,7 +131,7 @@ public class Events extends ExpandableListActivity {
 		events.add(invitedEvent);
 		events.add(hostedEvent);
 		return events;
-	}	 
+	}
 }
 
 class EventListAdapter extends BaseExpandableListAdapter {
@@ -133,72 +139,53 @@ class EventListAdapter extends BaseExpandableListAdapter {
 	private final String[] groups = { "Waiting For Response", "Hosting", "Responded to", "Send Invites" };
 	//ProposedEventNoResponse, HostedEventSent, ProposedEventResponded, HostedEventSaved
 
-	//Cannot have array of generics in Java :(
-	private ArrayList<PubEvent> waitingForResponse;
-	private ArrayList<PubEvent> hosting;
-	private ArrayList<PubEvent> respondedTo;
-	private ArrayList<PubEvent> savedEvents;
-
 	private Context context;
+	private User currentUser;
 
-	public EventListAdapter(Context context, ArrayList<PubEvent> events, AppUser currentUser) {
+	public EventListAdapter(Context context, AppUser currentUser) {
 		this.context = context;
-
-		waitingForResponse = new ArrayList<PubEvent>();
-		hosting = new ArrayList<PubEvent>();
-		respondedTo = new ArrayList<PubEvent>();
-		savedEvents = new ArrayList<PubEvent>();
-
-		for(PubEvent event : events)
-		{
-			//Determine if host 
-			if(event.GetHost().equals(currentUser))
-			{
-				//We are the host
-				if(event.GetEventId() >= 0) //if the event has an id then it has been sent to the server
-				{
-					hosting.add(event);
-				}
-				else //if not then it is only storred locally
-				{
-					savedEvents.add(event);
-				}
-			}
-			else
-			{
-				//We are not the host
-				if(event.GetGoingStatus().get(currentUser).goingStatus == GoingStatus.maybeGoing) //we have not replied if status is still maybe
-				{
-					waitingForResponse.add(event);
-				}
-				else //otherwise we have replied with yes or no
-				{
-					respondedTo.add(event);
-				}
-			}
-		}
+		this.currentUser = currentUser;
 	}
 
 
 	public Object getChild(int groupPosition, int childPosition) {
-		return GetRelevantList(groupPosition).get(childPosition);
+		return (PubEvent)GetRelevantList(groupPosition).toArray()[childPosition];
 	}
 
-	private ArrayList<PubEvent> GetRelevantList(int groupPosition)
+	private Collection<PubEvent> GetRelevantList(int groupPosition)
 	{
 		switch(groupPosition)
 		{
 			case Constants.HostedEventSaved:
-				return savedEvents;
+				return StoredData.getInstance().GetSavedEvents();
 
 			case Constants.HostedEventSent:
-				return hosting;
+				return StoredData.getInstance().GetHostedEvents();
 
 			case Constants.ProposedEventNoResponse:
-				return waitingForResponse;
+				ArrayList<PubEvent> noResponse = new ArrayList<PubEvent>();
+				for(PubEvent event : StoredData.getInstance().GetInvitedEvents())
+				{
+					if(event.GetUserGoingStatus(currentUser) == GoingStatus.maybeGoing)
+					{
+						noResponse.add(event);
+					}
+				}
+				
+				return noResponse;
 
 			case Constants.ProposedEventHaveResponded:
-				return respondedTo;
+				ArrayList<PubEvent> haveResponse = new ArrayList<PubEvent>();
+				for(PubEvent event : StoredData.getInstance().GetInvitedEvents())
+				{
+					//at the moment this list includes all responses, can change this for just going
+					if(event.GetUserGoingStatus(currentUser) != GoingStatus.maybeGoing) 
+					{
+						haveResponse.add(event);
+					}
+				}
+				
+				return haveResponse;
 		}
 
 		Log.d(Constants.MsgError, "Attempted to get non-existant group on the events screen");
@@ -262,6 +249,5 @@ class EventListAdapter extends BaseExpandableListAdapter {
 	public boolean isChildSelectable(int groupPosition, int childPosition) {
 		return true;
 	}
-
 }
 
