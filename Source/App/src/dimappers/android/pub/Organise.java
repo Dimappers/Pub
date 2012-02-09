@@ -270,7 +270,7 @@ public class Organise extends ListActivity implements OnClickListener{
 			List<Place> list = finder.performSearch();
 			for(Place p : list) {
 				//TODO: Should maybe give user choice over which address is selected, not just pick the first one
-				if(p!=null) {event.SetPubLocation(new PubLocation(p.geometry.location.lat,p.geometry.location.lng,p.name)); return true;}
+				if(p!=null) {event.SetPubLocation(new PubLocation((float)p.geometry.location.lat,(float)p.geometry.location.lng,p.name)); return true;}
 			}
 		} catch (Exception e) {
 			Log.d(Constants.MsgError, "Cannot find pubs based on this location.");

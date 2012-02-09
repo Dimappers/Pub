@@ -147,7 +147,7 @@ class DoLoading extends AsyncTask<Pending,Integer,Integer>
 			Log.d(Constants.MsgError,"Error while finding pubs.");
 			e.printStackTrace();
 		}
-		event.SetPubLocation(new PubLocation(lat,lng,pub.name));
+		event.SetPubLocation(new PubLocation((float)lat,(float)lng,pub.name));
 	}
 }
 
