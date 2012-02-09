@@ -81,7 +81,7 @@ public class RunServerTest
 	
 	private static PubEvent CreatePubEventWithGuest()
 	{
-		PubEvent event = new PubEvent(Calendar.getInstance(), new PubLocation(52.29009, -1.53585, "Robins Well"), CreateHost());
+		PubEvent event = new PubEvent(Calendar.getInstance(), new PubLocation(52.29009f, -1.53585f, "Robins Well"), CreateHost());
 		event.AddUser(CreateGuest());
 		
 		return event; 

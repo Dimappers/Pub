@@ -1,6 +1,9 @@
 package dimappers.android.PubData;
 
 public final class Constants {
+	// Debugging mode for server
+	public static final boolean debug = true;
+	
 	//Common bundle tags
 	public static final String CurrentWorkingEvent = "event";
 	public static final String CurrentFacebookUser = "facebookId";

@@ -5,23 +5,23 @@ import java.io.Serializable;
 /* This class holds information about a pub location
  * It does nothing with this data, it is purely a data store
  * 
- * Author: TK
- */
+ * Author: TK */
+ 
 public class PubLocation implements Serializable
 {
 	//Properties
-	public double 			latitudeCoordinate;
-	public double 			longitudeCoordinate;
+	public float 			latitudeCoordinate;
+	public float 			longitudeCoordinate;
 	public String			pubName;
 
 	public PubLocation()
 	{
-		latitudeCoordinate = 0.0;
-		longitudeCoordinate = 0.0;
+		latitudeCoordinate = 0.0f;
+		longitudeCoordinate = 0.0f;
 		pubName = "Undefined location";
 	}
 	
-	public PubLocation(double latitudeCoordinate, double longitudeCoordinate, String pubName)
+	public PubLocation(float latitudeCoordinate, float longitudeCoordinate, String pubName)
 	{
 		this.latitudeCoordinate = latitudeCoordinate;
 		this.longitudeCoordinate = longitudeCoordinate;
@@ -39,3 +39,4 @@ public class PubLocation implements Serializable
 		return other.latitudeCoordinate == latitudeCoordinate && other.longitudeCoordinate == longitudeCoordinate;
 	}
 }
+
