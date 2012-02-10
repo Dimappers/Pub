@@ -1,12 +1,14 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
@@ -17,10 +19,13 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -29,6 +34,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import dimappers.android.PubData.AcknoledgementData;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
@@ -229,13 +235,7 @@ public class Organise extends ListActivity implements OnClickListener{
 				break;
 			}
 			case R.id.send_invites_event : {
-				i = new Intent();
-				event.SetEventId(1); //In reality this should be set by server, sent back to the app which fills in actual global id
-				StoredData storedData = StoredData.getInstance();
-				storedData.AddNewSentEvent(event);
-				i.putExtras(b);
-				setResult(RESULT_OK, i);
-				finish();
+				sendEventToServer();
 				break;
 			}
 		 }
@@ -280,23 +280,85 @@ public class Organise extends ListActivity implements OnClickListener{
 		return false;
 	}
 	
-	private void sendEventToServer() throws UnknownHostException, IOException {
+	private void sendEventToServer() {
+		Bundle b = getIntent().getExtras();
+		b.putSerializable(Constants.CurrentWorkingEvent, event);
+		
+		// Inflating the loading bar
+		LayoutInflater i = (LayoutInflater) getLayoutInflater();
+		ViewGroup parent = (ViewGroup) findViewById(R.id.organise_screen);
+		
+		View pBar = i.inflate(R.layout.loading_bar, parent, false);
+		parent.addView(pBar);
+		new SendData().execute(this);
+
+		//TODO: Send the event
+		//TODO: Send to Pending Screen
+	}
+}
+
+class SendData extends AsyncTask<Organise, Integer, Boolean> {
+	Organise activity;
+	PubEvent event;
+	
+	protected Boolean doInBackground(Organise... organise) {
+		
+		// Saves the activity to the class
+		activity = organise[0];
+		event = (PubEvent) activity.getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent);
+		
 		//TODO: Open a socket
 		
 		Socket socket = null; 
-		
-		socket = new Socket(Constants.ServerIp, Constants.Port);
+		try {
+			socket = new Socket(Constants.ServerIp, Constants.Port);
+		} catch (IOException e) {
+			//TODO: Handle exception indicating that connection can't be established
+			return false;
+		}
 		
 		ObjectOutputStream serializer = null;
+		ObjectInputStream deserializer = null;
 		
-		serializer = new ObjectOutputStream(socket.getOutputStream());
-		//TODO: Send a message to server for new Event
+		try {
+			serializer = new ObjectOutputStream(socket.getOutputStream());
+			deserializer = new ObjectInputStream(socket.getInputStream());
+		} catch (IOException e) {
+			//TODO: Handle Exception When the network is buggered
+			return false;
+		}
 		
 		MessageType t = MessageType.newPubEventMessage;
-		serializer.writeObject(t);
-		serializer.writeObject(event);
-		serializer.flush();
-		//TODO: Send the event
-		//TODO: Send to Pending Screen
+		try {
+			serializer.writeObject(t);
+			serializer.writeObject(event);
+			serializer.flush();
+		} catch (IOException e) {
+			//TODO: Handle an exception when we cannae send the data
+			return false;
+		}
+		
+		try {
+			AcknoledgementData a = (AcknoledgementData)deserializer.readObject();
+			event.SetEventId(a.globalEventId);
+		} catch (IOException e) {
+			//TODO: Handle when we don't receive a Acknowledgement properly
+			return false;
+		} catch (ClassNotFoundException e) {
+			//TODO: Handle when what we receive aint what we want
+		}
+		
+		return true;
+	}
+	
+	protected void onPostExecute(Boolean... b) {
+		Intent i = new Intent();
+		
+		StoredData storedData = StoredData.getInstance();
+		storedData.AddNewSentEvent(event);
+		
+		i.putExtras(activity.getIntent().getExtras());
+		activity.setResult(Activity.RESULT_OK, i);
+		activity.finish();
 	}
 }
