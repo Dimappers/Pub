@@ -53,16 +53,21 @@ public class ChooseTime extends Activity implements OnClickListener{
     	Calendar currentDate = event.GetStartTime();
     	return currentDate.compareTo(Calendar.getInstance()) <= -1;
     }
-    private boolean isStrangeTime(int hour) {
-    	if(hour<16) {return true;} 
-    	return false;
+    private boolean isStrangeTime() {
+    	return event.GetStartTime().get(Calendar.HOUR_OF_DAY)<16;
+    }
+    private boolean tooFarAhead()
+    {
+    	Calendar c = Calendar.getInstance();
+    	return event.GetStartTime().getTimeInMillis() - c.getTimeInMillis() > 604800000; //number of milliseconds in a week
     }
     public void onClick(View v) {
     	switch(v.getId())
     	{
     		case R.id.save_date_and_time : {
-    			if(isInPast()) {alert();}
-    			else if(isStrangeTime(event.GetStartTime().MONTH)) {ask();}
+    			if(isInPast()) {alertPast();}
+    			else if(tooFarAhead()) {alertFuture();}
+    			else if(isStrangeTime()) {ask();}
     			else {returnTime();}
     			break;
     		}
@@ -76,8 +81,15 @@ public class ChooseTime extends Activity implements OnClickListener{
 		this.setResult(RESULT_OK,returnIntent);
 		finish();
     }
-    private void alert() {
+    private void alertPast() {
     	new AlertDialog.Builder(this).setMessage("This time is in the past. Please choose a different one.")  
+        .setTitle("Error")  
+        .setCancelable(false)  
+        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int id) {dialog.cancel();}}).show(); 
+    }
+    private void alertFuture() {
+    	new AlertDialog.Builder(this).setMessage("Cannot plan a trip for more than a week in the future.")  
         .setTitle("Error")  
         .setCancelable(false)  
         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
