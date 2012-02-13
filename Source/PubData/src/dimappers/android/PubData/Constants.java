@@ -17,6 +17,9 @@ public final class Constants {
 	public static final int FromPending = 0;
 	public static final int FromOrganise = 1;
 	
+	//HostEvent return codes
+	public static final int FromEdit = 0;
+	
 	//Organise return codes
 	public static final int PubLocationReturn = 1;
 	public static final int GuestReturn = 2;
