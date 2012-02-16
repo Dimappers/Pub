@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
 
+import net.awl.appgarden.sdk.AppGardenAgent;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -30,17 +32,17 @@ public class LaunchApplication extends Activity implements OnClickListener{
        		Intent i = new Intent(this, NoInternet.class); 
        		startActivityForResult(i,Constants.NoInternet);
        	}
-    	//need to log into Facebook if not logged in before
+    	//TODO: need to log into Facebook here if not logged in before
     	facebookUser = GetFacebookUser();
     	
     	setContentView(R.layout.main);
+    	//AppGardenAgent.startSchoolYear(this, "e8428bc2-8ce9-4dec-b5c3-20b5e42738c9");
     	
     	Button button_organise = (Button)findViewById(R.id.organise_button);
     	button_organise.setOnClickListener(this);
     	
     	Button button_invites = (Button)findViewById(R.id.invites_button);
     	button_invites.setOnClickListener(this);
-    	//Toast.makeText(getApplicationContext(), "User id: " + user.getUserId().toString(), 200).show();
     	
     	SharedPreferences dataStore = getPreferences(MODE_PRIVATE);
     	String encodedLoadedData = dataStore.getString(Constants.SaveDataName, "NoneLoaded");
@@ -100,28 +102,33 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	}
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+    	//AppGardenAgent.onActivityResult(requestCode, resultCode, data);
     	if(resultCode==RESULT_OK)
     	{
     		if(requestCode == Constants.FromOrganise)
     		{
-    			super.onActivityResult(requestCode, resultCode, data);
     			Intent i = new Intent(this, Events.class);	
     			i.putExtras(data.getExtras());
     			startActivity(i);
     		}
     		else if(requestCode==Constants.FromPending)
     		{
-    			super.onActivityResult(requestCode, resultCode, data);
     			Intent i = new Intent(this, Organise.class);
     			i.putExtras(data.getExtras());
     			startActivityForResult(i, Constants.FromOrganise);
     		}
     		else if(requestCode==Constants.NoInternet)
     		{
-    			super.onActivityResult(requestCode, resultCode, data);
-    			finish();
+    			//FIXME: application won't launch if no internet
+    			if(!isNetworkAvailable()){finish();}
     		}
     	}
+    }
+    @Override
+    public void onDestroy() {
+    	super.onDestroy();
+        //AppGardenAgent.summerBreak();
     }
     
     private boolean isNetworkAvailable() {

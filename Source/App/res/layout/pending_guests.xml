@@ -22,5 +22,15 @@
         android:gravity="center_horizontal"
         android:text="@string/location_error"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/cancelbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/location_error"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="42dp"
+        android:text="@string/cancelunderline"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>
