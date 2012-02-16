@@ -21,6 +21,9 @@ public final class Constants {
 	public static final int FromOrganise = 1;
 	public static final int NoInternet = 2;
 	
+	//HostEvent return codes
+	public static final int FromEdit = 0;
+	
 	//Pending screen progress update codes
 	public static final Integer CreatingEvent = new Integer(0);
 	public static final Integer ChoosingPub = new Integer(1);
