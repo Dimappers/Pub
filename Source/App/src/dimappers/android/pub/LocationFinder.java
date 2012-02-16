@@ -25,13 +25,15 @@ public class LocationFinder {
 			Location location = new Location("Hello");
 			location.setLatitude(52.0);
 			location.setLongitude(-1.5);
+			return location;
 		}
 		else
 		{
 			Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		if(location != null) {return location;}
+			if(location != null) {return location;}
 			else{locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);}
-		return l;
+			return l;
+		}
 	}
 	public void locationFound(Location l) {this.l=l;}
 }
