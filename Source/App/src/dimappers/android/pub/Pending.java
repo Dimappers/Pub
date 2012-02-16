@@ -21,10 +21,13 @@ import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 
 public class Pending extends Activity implements OnClickListener{
-	TextView text;
-	AppUser facebookUser;
+	
+	private TextView text;
+	private AppUser facebookUser;
+	private Location currentLocation;
+	
 	PubEvent event; 
-	Location currentLocation;
+	
 	boolean personFinished;
 	boolean pubFinished;
 	
@@ -36,7 +39,6 @@ public class Pending extends Activity implements OnClickListener{
     	((TextView)findViewById(R.id.cancelbutton)).setOnClickListener(this);
     	findLocation();	
 	}	
-	//Finding current location
 	private void findLocation()
 	{		
 		updateText("Finding current location");
@@ -76,17 +78,16 @@ public class Pending extends Activity implements OnClickListener{
 		if(v.getId()==R.id.cancelbutton) {finish();}
 	}
 	public void onFinish() {
+		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle()));
+        finish();
+	}
+	private Bundle fillBundle() {
 		Bundle eventBundle = new Bundle();
 		eventBundle.putAll(getIntent().getExtras());
 		eventBundle.putSerializable(Constants.CurrentWorkingEvent, event);
 		eventBundle.putBoolean(Constants.IsSavedEventFlag, true);
 		eventBundle.putDouble(Constants.CurrentLatitude, currentLocation.getLatitude());
 		eventBundle.putDouble(Constants.CurrentLongitude, currentLocation.getLongitude());
-		
-		Intent intent = new Intent();
-		intent.putExtras(eventBundle);
-		
-		setResult(Activity.RESULT_OK, intent);
-        finish();
+		return eventBundle;
 	}
 }

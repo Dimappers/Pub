@@ -16,8 +16,8 @@ public class PubFinding extends AsyncTask<Object, Integer, Integer> {
 	@Override
 	protected Integer doInBackground(Object... params) { 
 		try {
-		location = (Location) params[0];
-		activity = (Pending) params[1];
+			location = (Location) params[0];
+			activity = (Pending) params[1];
 		}
 		catch(Exception e) {Log.d(Constants.MsgError,"Wrong input entered."); return null;}
 		
