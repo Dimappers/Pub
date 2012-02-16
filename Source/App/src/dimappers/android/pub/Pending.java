@@ -36,7 +36,8 @@ public class Pending extends Activity implements OnClickListener{
 	{		
 		updateText("Finding current location");
 		LocationFinder lc = new LocationFinder(this);
-		lc.findLocation();
+		Location location = lc.findLocation();
+		giveLocation(location);
 	 }
 	public void updateText(String s) {
 		text.setText(s);
