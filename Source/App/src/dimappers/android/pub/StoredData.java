@@ -16,37 +16,48 @@ import dimappers.android.PubData.PubEvent;
 
 public class StoredData implements Serializable
 {	
-	private final int HistoryDepth = 15;
+	//private final int HistoryDepth = 15;
 	
 	private HashMap<Integer, PubEvent> savedEvents; //Events the users has created and saved
 	private HashMap<Integer, PubEvent> sentEvents;
 	private HashMap<Integer, PubEvent> invitedEvents;
-	private PubEvent[] recentHistory; //Stores the events most recently acted upon (ie went ahead);
+	//private PubEvent[] recentHistory; //Stores the events most recently acted upon (ie went ahead);
 	
-	private int nextHistorySlot;
+	//private int nextHistorySlot;
 	private int nextSavedEventId;
-	transient private Editor editor;
+	private boolean needsSaving;
+	//transient private Editor editor;
 	
-	public StoredData(Editor editor)
+	
+	
+	private StoredData()
 	{
-		nextHistorySlot = 0;
-		recentHistory = new PubEvent[HistoryDepth];
+		//nextHistorySlot = 0;
+		//recentHistory = new PubEvent[HistoryDepth];
 		savedEvents = new HashMap<Integer, PubEvent>();
 		sentEvents = new HashMap<Integer, PubEvent>();
 		invitedEvents = new HashMap<Integer, PubEvent>();
 		
 		nextSavedEventId = -2;
 		
-		this.editor = editor;
-		
-		SaveData();
+		needsSaving = false;
 	}
 	
 	public Collection<PubEvent> GetSavedEvents()
 	{
 		return savedEvents.values();
 	}
+
+	public Collection<PubEvent> GetSentEvents()
+	{
+		return sentEvents.values();
+	}
 	
+	public Collection<PubEvent> GetInvitedEvents()
+	{
+		return invitedEvents.values();
+	}
+
 	public ArrayList<PubEvent> GetAllEvents()
 	{
 		ArrayList<PubEvent> allEvents = new ArrayList<PubEvent>();
@@ -106,32 +117,6 @@ public class StoredData implements Serializable
 		SaveData();
 	}
 	
-	
-	public PubEvent[] GetRecentHistory()
-	{
-		return recentHistory;
-	}
-	
-	public void PushNewEvent(PubEvent newEvent)
-	{
-		recentHistory[nextHistorySlot] = newEvent;
-		nextHistorySlot++;
-		nextHistorySlot %= HistoryDepth;
-		SaveData();
-	}
-	
-	public PubEvent PeekOldestEvent()
-	{
-		int i;
-		for(i = nextHistorySlot - 1; recentHistory[i] == null && i != nextHistorySlot; --i);
-		
-		return recentHistory[i]; //returns oldest history or null if no history
-	}
-	
-	private void setEditor(Editor sharedPrefEditor) {
-		editor = sharedPrefEditor;
-	}
-	
 	public void DeleteSavedEvent(PubEvent event)
 	{
 		if(event.GetEventId() >= 0)
@@ -145,63 +130,14 @@ public class StoredData implements Serializable
 	
 	private void SaveData()
 	{
-		ByteArrayOutputStream data = new ByteArrayOutputStream();
-		ObjectOutputStream objectWriter;
-		try {
-			objectWriter = new ObjectOutputStream(data);
-			objectWriter.writeObject(this);
-			objectWriter.close();
-		} catch (IOException e) {
-			Log.d(Constants.MsgError, "Error saving data");
-			return;
-		}
-		String s =  new String(Base64.encode(data.toByteArray(), Base64.DEFAULT));
-		editor.putString(Constants.SaveDataName, s);
-		editor.commit();
+		needsSaving = true;
 	}
 	
-	public void ClearSavedData()
+	public class StoredDataFactory
 	{
-		editor.clear();
-	}
-	
-	//Use these methods to get the active stored data
-	private static StoredData instance = null;
-	
-	public static void Init(StoredData loadedStore, Editor sharedPrefEditor)
-	{
-		if(instance != null)
+		public StoredData createFromScratch()
 		{
-			Log.d(Constants.MsgWarning, "Data store has already been initalised");
-			return;
+			return new StoredData();
 		}
-		
-		if(loadedStore == null)
-		{
-			instance = new StoredData(sharedPrefEditor);
-		}
-		else
-		{
-			instance = loadedStore;
-			instance.setEditor(sharedPrefEditor);
-		}
-	}
-
-	public static StoredData getInstance()
-	{
-		if(instance == null)
-		{
-			Log.d(Constants.MsgError, "Data store has not been initalised");
-		}
-		return instance;
-	}
-
-	public Collection<PubEvent> GetHostedEvents() {
-		return sentEvents.values();
-	}
-	
-	public Collection<PubEvent> GetInvitedEvents()
-	{
-		return invitedEvents.values();
 	}
  }

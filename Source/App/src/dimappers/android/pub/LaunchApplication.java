@@ -8,12 +8,15 @@ import java.io.StreamCorruptedException;
 import net.awl.appgarden.sdk.AppGardenAgent;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -44,41 +47,10 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	Button button_invites = (Button)findViewById(R.id.invites_button);
     	button_invites.setOnClickListener(this);
     	
-    	SharedPreferences dataStore = getPreferences(MODE_PRIVATE);
-    	String encodedLoadedData = dataStore.getString(Constants.SaveDataName, "NoneLoaded");
-    	if(encodedLoadedData == "NoneLoaded")
-    	{
-    		//first time the app has been run
-    		StoredData.Init(null, dataStore.edit());
-    	}
-    	else
-    	{
-    		byte [] data = Base64.decode( encodedLoadedData, Base64.DEFAULT );
-    		ObjectInputStream objectReader;
-    		try
-    		{
-    			objectReader = new ObjectInputStream(new ByteArrayInputStream(data));
-    			StoredData storedData = (StoredData)objectReader.readObject();
-    			StoredData.Init(storedData, dataStore.edit());
-    			objectReader.close();
-    		} catch (StreamCorruptedException e)
-    		{
-    			Log.d(Constants.MsgError, "Error reading input file - StreamCorrupted");
-    			finish();
-    		} catch (IOException e)
-    		{
-    			Log.d(Constants.MsgError, "Error reading input file - IOException");
-    			finish();
-    		} catch (ClassNotFoundException e)
-    		{
-    			Log.d(Constants.MsgError, "Error casting input file");
-    			finish();
-    		}
-    	}
-    	
     	Intent startServiceIntent = new Intent(this, PubService.class);
     	startService(startServiceIntent);
     }
+    
     public void onClick(View v)
     {
     	Intent i;
@@ -101,6 +73,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     		}
     	}
     }
+    
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
     	AppGardenAgent.onActivityResult(requestCode, resultCode, data);

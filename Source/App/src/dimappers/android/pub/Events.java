@@ -28,6 +28,7 @@ public class Events extends ExpandableListActivity {
 	BaseExpandableListAdapter mAdapter;
 
 	AppUser facebookUser;
+	IPubService service;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -37,7 +38,9 @@ public class Events extends ExpandableListActivity {
 
 		facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
 
-		mAdapter = new EventListAdapter(this, facebookUser);
+		service = PubService.bindToServiceInterface(this);
+		
+		mAdapter = new EventListAdapter(this, facebookUser, service);
 		setListAdapter(mAdapter);
 		ExpandableListView expview = (ExpandableListView) findViewById(android.R.id.list);
 		expview.setOnChildClickListener(this);
@@ -100,8 +103,7 @@ public class Events extends ExpandableListActivity {
 	{
 		ArrayList<PubEvent> events = new ArrayList<PubEvent>();
 		
-		StoredData storedData = StoredData.getInstance();
-		events.addAll(storedData.GetAllEvents());
+		events.addAll(service.GetSavedEvents());
 		
 		
 		Calendar time1 = Calendar.getInstance();
@@ -141,10 +143,12 @@ class EventListAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
 	private User currentUser;
+	private IPubService serviceInterface;
 
-	public EventListAdapter(Context context, AppUser currentUser) {
+	public EventListAdapter(Context context, AppUser currentUser, IPubService serviceInterface) {
 		this.context = context;
 		this.currentUser = currentUser;
+		this.serviceInterface = serviceInterface;
 	}
 
 
@@ -157,14 +161,14 @@ class EventListAdapter extends BaseExpandableListAdapter {
 		switch(groupPosition)
 		{
 			case Constants.HostedEventSaved:
-				return StoredData.getInstance().GetSavedEvents();
+				return serviceInterface.GetSavedEvents();
 
 			case Constants.HostedEventSent:
-				return StoredData.getInstance().GetHostedEvents();
+				return serviceInterface.GetSentEvents();
 
 			case Constants.ProposedEventNoResponse:
 				ArrayList<PubEvent> noResponse = new ArrayList<PubEvent>();
-				for(PubEvent event : StoredData.getInstance().GetInvitedEvents())
+				for(PubEvent event : serviceInterface.GetAllInvited())
 				{
 					if(event.GetUserGoingStatus(currentUser) == GoingStatus.maybeGoing)
 					{
@@ -176,7 +180,7 @@ class EventListAdapter extends BaseExpandableListAdapter {
 
 			case Constants.ProposedEventHaveResponded:
 				ArrayList<PubEvent> haveResponse = new ArrayList<PubEvent>();
-				for(PubEvent event : StoredData.getInstance().GetInvitedEvents())
+				for(PubEvent event : serviceInterface.GetAllInvited())
 				{
 					//at the moment this list includes all responses, can change this for just going
 					if(event.GetUserGoingStatus(currentUser) != GoingStatus.maybeGoing) 
