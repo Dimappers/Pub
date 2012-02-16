@@ -35,22 +35,13 @@ public class Pending extends Activity implements OnClickListener{
 	private void findLocation()
 	{		
 		updateText("Finding current location");
-		
-		LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-		MyLocationListener locationListener = new MyLocationListener(this);
-		
-		//TO EMULATOR USERS: Must use DDMS (Window>Perspective) to set a GPS location before clicking organise
-		//TO PHONE USERS: This bit seems not to work if you're using WiFi... (& maybe have only just turned phone on?)
-		//FIXME: Mend it
-		Location location = (locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
-		if(location == null) {location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);}
-		if(location != null){GiveLocation(location);}
-		else{locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);}
+		LocationFinder lc = new LocationFinder(this);
+		lc.findLocation();
 	 }
 	public void updateText(String s) {
 		text.setText(s);
 	}	
-	public void GiveLocation(Location location)
+	public void giveLocation(Location location)
 	{
 		DoLoading task = new DoLoading();
 		task.SetLocation(location);
@@ -148,21 +139,5 @@ class DoLoading extends AsyncTask<Pending,Integer,Integer>
 			e.printStackTrace();
 		}
 		event.SetPubLocation(new PubLocation((float)lat,(float)lng,pub.name));
-	}
-}
-
-class MyLocationListener implements LocationListener{
-	Pending pending;
-	MyLocationListener(Pending pending) {
-		this.pending = pending; 
-	}
-	public void onLocationChanged(Location location) {makeUseOfNewLocation(location);}
-	public void onStatusChanged(String provider, int status, Bundle extras) {}
-	public void onProviderEnabled(String provider) {}
-	public void onProviderDisabled(String provider) {}
-	
-	//This method should find the current town from the latitude/longitude of the location
-	public void makeUseOfNewLocation(Location location) {
-		pending.GiveLocation(location);
 	}
 }

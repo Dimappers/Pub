@@ -36,7 +36,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	facebookUser = GetFacebookUser();
     	
     	setContentView(R.layout.main);
-    	//AppGardenAgent.startSchoolYear(this, "e8428bc2-8ce9-4dec-b5c3-20b5e42738c9");
+    	AppGardenAgent.startSchoolYear(this, "e8428bc2-8ce9-4dec-b5c3-20b5e42738c9");
     	
     	Button button_organise = (Button)findViewById(R.id.organise_button);
     	button_organise.setOnClickListener(this);
@@ -103,7 +103,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-    	//AppGardenAgent.onActivityResult(requestCode, resultCode, data);
+    	AppGardenAgent.onActivityResult(requestCode, resultCode, data);
     	if(resultCode==RESULT_OK)
     	{
     		if(requestCode == Constants.FromOrganise)
@@ -128,7 +128,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     @Override
     public void onDestroy() {
     	super.onDestroy();
-        //AppGardenAgent.summerBreak();
+        AppGardenAgent.summerBreak();
     }
     
     private boolean isNetworkAvailable() {
