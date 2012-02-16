@@ -181,7 +181,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	 }
 	 @Override
 	 public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		 //super.onActivityResult(requestCode, resultCode, data);
+		 super.onActivityResult(requestCode, resultCode, data);
 		 if(resultCode==RESULT_OK) //This line is so when the back button is pressed the data changed by an Activity isn't stored.
 		 { 
 			 //We don't actually care what we are returning from, always get the latest event and update the screen

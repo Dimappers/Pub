@@ -6,16 +6,15 @@ import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
 
 import net.awl.appgarden.sdk.AppGardenAgent;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Surface;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -35,7 +34,14 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	//TODO: need to log into Facebook here if not logged in before
     	facebookUser = GetFacebookUser();
     	
-    	setContentView(R.layout.main);
+        if(getWindowManager().getDefaultDisplay().getRotation()==Surface.ROTATION_90||getWindowManager().getDefaultDisplay().getRotation()==Surface.ROTATION_270)
+        {
+      	  setContentView(R.layout.main_hor);
+        }
+        else {
+      	  setContentView(R.layout.main);
+        }
+        
     	AppGardenAgent.startSchoolYear(this, "e8428bc2-8ce9-4dec-b5c3-20b5e42738c9");
     	
     	Button button_organise = (Button)findViewById(R.id.organise_button);

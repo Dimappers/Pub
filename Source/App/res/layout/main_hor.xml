@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/main_screen"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-    
-	<Button
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" 
+    android:layout_weight="1">
+    	<Button
 	    android:id="@+id/organise_button"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
@@ -19,27 +22,27 @@
 	    android:layout_alignParentTop="true"
 	    android:text="@string/organise" 
 	    android:textAppearance="?android:attr/textAppearanceLarge"/>
-	    
-	<Button
+    	
+    		<Button
 	    android:id="@+id/invites_button"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
+	    android:layout_weight="1"
 	    android:layout_marginTop="20sp"
 	    android:layout_marginBottom="20sp"
 	    android:layout_marginLeft="20sp"
 	    android:layout_marginRight="20sp"
-	    android:layout_weight="1"
 	    android:layout_alignParentLeft="true"
 	    android:layout_alignParentTop="true"
 	    android:text="@string/invites"
 	    android:textAppearance="?android:attr/textAppearanceLarge" />
-    
-    <ListView
-		android:id= "@android:id/list"
-		android:layout_width="match_parent"
-		android:layout_height="fill_parent" 
-		android:layout_weight="1"
-		android:scrollbars="vertical"/>
-    
-            
+    		</LinearLayout>
+    		
+    		<ListView
+    		    android:id="@android:id/list"
+    		    android:layout_width="match_parent"
+    		    android:layout_height="fill_parent"
+    		    android:layout_weight="1"
+    		    android:scrollbars="vertical" />
+
 </LinearLayout>
