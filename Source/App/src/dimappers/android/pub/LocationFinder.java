@@ -1,5 +1,6 @@
 package dimappers.android.pub;
 
+import dimappers.android.PubData.Constants;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -17,10 +18,18 @@ public class LocationFinder {
 		locationListener = new MyLocationListener(p);
 	}	
 	public void findLocation() {
-		//TO EMULATOR USERS: Must use DDMS (Window>Perspective) to set a GPS location before clicking organise
-		Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		if(location != null) {p.giveLocation(location);}
-		else{locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);}
+		if(Constants.emulator)
+		{
+			Location location = new Location("Hello");
+			location.setLatitude(52.0);
+			location.setLongitude(-1.5);
+		}
+		else
+		{
+			Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			if(location != null) {p.giveLocation(location);}
+			else{locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);}
+		}
 	}
 }
 
