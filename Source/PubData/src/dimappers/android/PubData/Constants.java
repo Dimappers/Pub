@@ -24,6 +24,11 @@ public final class Constants {
 	//HostEvent return codes
 	public static final int FromEdit = 0;
 	
+	//Pending screen progress update codes
+	public static final Integer CreatingEvent = new Integer(0);
+	public static final Integer ChoosingPub = new Integer(1);
+	public static final Integer PickingGuests = new Integer(2);
+	
 	//Organise return codes
 	public static final int PubLocationReturn = 1;
 	public static final int GuestReturn = 2;
