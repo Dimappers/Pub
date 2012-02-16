@@ -2,7 +2,7 @@ package dimappers.android.pub;
 
 import com.google.api.client.util.Key;
 
-public class Location {
+public class LocationGoogle {
 	
 	 @Key
 	 double lat;
