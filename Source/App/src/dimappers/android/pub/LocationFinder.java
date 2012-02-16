@@ -22,7 +22,7 @@ public class LocationFinder {
 	public Location findLocation() {
 		if(Constants.emulator)
 		{
-			Location location = new Location("Hello");
+			Location location = new Location("Test Location - Emulator");
 			location.setLatitude(52.0);
 			location.setLongitude(-1.5);
 			return location;
