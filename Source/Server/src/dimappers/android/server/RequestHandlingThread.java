@@ -33,7 +33,7 @@ public class RequestHandlingThread extends Thread{
 		//Deserialise data in to classes - in reality we will have to send some messages before explaining what is coming 
 		ObjectInputStream deserialiser = null;
 		ObjectOutputStream serialiser = null;
-		MessageType message = null;
+		MessageType message = MessageType.unknownMessageType;
 		try
 		{
 			deserialiser = new ObjectInputStream(clientSocket.getInputStream());
@@ -114,8 +114,9 @@ public class RequestHandlingThread extends Thread{
 			break;
 		}
 
+		case unknownMessageType:
 		default:
-			System.out.println("Message type not recognised :(");
+			HandleException(new ServerException(ExceptionType.UnknownMessageTypeError));
 			break;
 		}
 	}
