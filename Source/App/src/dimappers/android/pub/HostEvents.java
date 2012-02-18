@@ -8,10 +8,13 @@ import java.util.Map.Entry;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,12 +43,15 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	private ImageButton comment_made;
 	public static boolean sent;
 
+	IPubService serviceInterface;
+	
 
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.host_events);
+		
+		bindService(new Intent(this, PubService.class), connection, 0);
 
 		Button button_send_invites = (Button)findViewById(R.id.send_Invites);
 		button_send_invites.setOnClickListener(this);
@@ -181,7 +187,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		.setCancelable(true)  
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				PubService.bindToServiceInterface(getParent()).RemoveSavedEvent(event); 
+				serviceInterface.RemoveSavedEvent(event);
 				finish();
 
 			}
@@ -227,6 +233,20 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		gadapter.updateList(event);
 		gadapter.notifyDataSetChanged();
 	}
+	
+	private ServiceConnection connection = new ServiceConnection()
+	{
+		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
+		{
+			serviceInterface = (IPubService)serviceBinder;
+			
+		}
+
+		public void onServiceDisconnected(ComponentName arg0)
+		{			
+		}
+		
+	};
 }
 
 class GuestListAdapter extends BaseAdapter 
