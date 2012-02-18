@@ -181,7 +181,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		.setCancelable(true)  
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				StoredData.getInstance().DeleteSavedEvent(event); 
+				PubService.bindToServiceInterface(getParent()).RemoveSavedEvent(event); 
 				finish();
 
 			}
