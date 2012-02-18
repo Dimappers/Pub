@@ -60,11 +60,16 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	private double latSet;
 	private double lngSet;
 	
+	IPubService serviceInterface;
+	
 	 @Override
 	 public void onCreate(Bundle savedInstanceState)
 	 {
 	    	super.onCreate(savedInstanceState);
 	    	setContentView(R.layout.organise);
+	    	
+	    	//Bind to service
+	    	bindService(new Intent(this, PubService.class), connection, 0);
 	    	
 	    	Bundle b = getIntent().getExtras();
 	    	if(b.getSerializable(Constants.CurrentWorkingEvent)!=null)
@@ -169,7 +174,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			}
 			case R.id.save_event : {
 				i = new Intent();
-				PubService.bindToServiceInterface(this).GiveNewSavedEvent(event);
+				serviceInterface.GiveNewSavedEvent(event);
 				i.putExtras(b);
 				setResult(RESULT_OK, i);
 				finish();
@@ -308,6 +313,22 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 
 		//TODO: Move this into the service
 	}
+	
+	private ServiceConnection connection = new ServiceConnection()
+	{
+
+		public void onServiceConnected(ComponentName className, IBinder service)
+		{
+			//Give the interface to the app
+			serviceInterface = (IPubService)service;
+			
+		}
+
+		public void onServiceDisconnected(ComponentName className)
+		{
+		}
+		
+	};
 }
 
 class SendData extends AsyncTask<Organise, Integer, Boolean> {

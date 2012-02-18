@@ -30,7 +30,7 @@ public class StoredData implements Serializable
 	
 	
 	
-	private StoredData()
+	public StoredData()
 	{
 		//nextHistorySlot = 0;
 		//recentHistory = new PubEvent[HistoryDepth];
@@ -131,13 +131,5 @@ public class StoredData implements Serializable
 	private void SaveData()
 	{
 		needsSaving = true;
-	}
-	
-	public class StoredDataFactory
-	{
-		public StoredData createFromScratch()
-		{
-			return new StoredData();
-		}
 	}
  }
