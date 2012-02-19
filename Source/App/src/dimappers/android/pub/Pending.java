@@ -54,6 +54,7 @@ public class Pending extends Activity implements OnClickListener{
 	}	
 	public void startTasks(Location location) {
 
+		
         if(location == null){Log.d(Constants.MsgError, "Need to set location first."); updateText("An error has occurred, please try again.");}
         else{Log.d(Constants.MsgInfo, "Using location: " + location.getLatitude() + ", " + location.getLongitude());}
         
