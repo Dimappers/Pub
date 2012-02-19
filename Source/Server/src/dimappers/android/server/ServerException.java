@@ -37,6 +37,7 @@ enum ExceptionType
 	MessageReceivedCastingObject,
 	MessageReceivedStreamCorrupted,
 	MessageReceivedUnknownError,
+	UnknownMessageTypeError,
 
 	//NewEvent errors
 	NewEventReadingObject,

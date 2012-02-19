@@ -1,6 +1,10 @@
 package dimappers.android.server;
 
 import java.sql.SQLException;
+import java.util.Calendar;
+
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.PubLocation;
 
 public class DBTest {
 	
@@ -10,11 +14,31 @@ public class DBTest {
 		ServerUser user2 = new ServerUser(2);
 		ServerUser user3 = new ServerUser(3);
 		
+		db.clearTables();
+		
 		for (int i=1; i<=3; ++i) {
-			System.out.println(i);
-			user1.addEvent(i);
-			user2.addEvent(i+1);
-			user3.addEvent(i+2);
+			db.addUser(new ServerUser(i));
+			db.addUser(new ServerUser(i+3));
+			
+			ServerUser user = new ServerUser(i);
+			PubLocation loc = new PubLocation();
+			Calendar cal = Calendar.getInstance();
+			
+			loc.latitudeCoordinate = 20 + i;
+			loc.longitudeCoordinate = 20 + i;
+			loc.pubName = "Pub " + i;
+			
+			cal.setTimeInMillis(Calendar.getInstance().getTimeInMillis()+100*i);
+			PubEvent event = new PubEvent(cal, loc, user);
+			event.SetEventId(i);
+			
+			for (int j=1; j<=6; ++j) {
+				if (j%i==0) {
+					event.AddUser(new ServerUser(j));
+				}
+			}
+			
+			db.addEvent(event);
 		}
 		
 		Object[] u1t = user1.getAllEvents().toArray();
@@ -23,14 +47,12 @@ public class DBTest {
 		}
 		user2.SetHasApp(true);
 		
-		db.addUser(user1);
-		db.addUser(user2);
-		db.addUser(user3);
-		
 		
 		System.out.println(db.getUser(1).toString());
 		System.out.println(db.getUser(2).toString());
 		System.out.println(db.getUser(3).toString());
+		System.out.println("Lat: " + db.getEvent(1).GetPubLocation().latitudeCoordinate + " Lon: " + 
+							db.getEvent(1).GetPubLocation().longitudeCoordinate);
 	}
 
 }

@@ -53,8 +53,7 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 
 		    	Button use_pub = (Button)findViewById(R.id.use_pub_button);
 		    	use_pub.setOnClickListener(this);
-		 }
-		 
+		 }	 
 		 public void onClick(View v) {
 			 switch(v.getId()) {
 				 case R.id.use_pub_button : {
@@ -68,8 +67,8 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 			 Place place = listItems.get(pos);
 			 event.SetPubLocation(
 					 new PubLocation(
-							 place.geometry.location.lat,
-							 place.geometry.location.lng,
+							 (float)place.geometry.location.lat,
+							 (float)place.geometry.location.lng,
 							 place.name)
 					 );
 			 Place_Detailed pd = null;

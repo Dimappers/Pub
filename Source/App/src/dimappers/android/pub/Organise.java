@@ -1,26 +1,33 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.content.Context;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -29,13 +36,14 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import dimappers.android.PubData.AcknoledgementData;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.User;
 
-public class Organise extends ListActivity implements OnClickListener{
+public class Organise extends ListActivity implements OnClickListener, OnMenuItemClickListener{
 	
 	private Button cur_pub;
 	private Button cur_time;
@@ -52,11 +60,16 @@ public class Organise extends ListActivity implements OnClickListener{
 	private double latSet;
 	private double lngSet;
 	
+	IPubService serviceInterface;
+	
 	 @Override
 	 public void onCreate(Bundle savedInstanceState)
 	 {
 	    	super.onCreate(savedInstanceState);
 	    	setContentView(R.layout.organise);
+	    	
+	    	//Bind to service
+	    	bindService(new Intent(this, PubService.class), connection, 0);
 	    	
 	    	Bundle b = getIntent().getExtras();
 	    	if(b.getSerializable(Constants.CurrentWorkingEvent)!=null)
@@ -143,66 +156,6 @@ public class Organise extends ListActivity implements OnClickListener{
 		b.putAll(getIntent().getExtras()); 
 		b.putSerializable(Constants.CurrentWorkingEvent, event);
 		 switch (v.getId()){
-		 		 case R.id.current_location : {
-		 			 //TODO: maybe make this obvious it's able to be clicked??
-					 final EditText loc = new EditText(getApplicationContext());
-					 new AlertDialog.Builder(this).setMessage("Enter your current location:")  
-			           .setTitle("Change Location")  
-			           .setCancelable(true)  
-			           .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-			           public void onClick(DialogInterface dialog, int id) {
-			        	   //TODO: turn off location listener
-			        	   Geocoder geocoder = new Geocoder(getApplicationContext());
-			        	   try {
-			        		   List<Address> addresses = geocoder.getFromLocationName(loc.getText().toString(), 5);
-			        		   double lat = 0;
-			        		   double latsum = 0;
-			        		   double lng = 0;
-			        		   double lngsum = 0;
-			        		   if(addresses!=null) {
-				        		   for(int i=0; i<addresses.size(); i++) {
-				        			   Address a = addresses.get(i);
-				        			   if(a!=null) 
-				        			   {
-				        				   if(lat==0) {lat = a.getLatitude();}
-				        				   else {
-				        					   latsum+=a.getLatitude();
-				        					   lat=latsum/i;
-				        					   }
-				        				   if(lng==0) {lng = a.getLongitude();}
-				        				   else {
-				        					   lngsum+=a.getLongitude();
-				        					   lng=lngsum/i;
-				        				   }
-				        			   }
-				        		   }
-			        		   }
-				        	  if(lat!=0&&lng!=0&&findNewNearestPub(lat,lng)){
-				        		  latSet=lat;
-				        		  lngSet=lng;
-				        		  locSet=true;
-				        		  cur_loc.setText(loc.getText()); 
-				        		  UpdateFromEvent();
-				        	 }
-				        	  else {Toast.makeText(getApplicationContext(), "Unrecognised location", Toast.LENGTH_SHORT).show();}
-			        		  } 
-			        	   catch (IOException e) 
-			        	   {
-			        			  Log.d(Constants.MsgError,"Error in finding latitude & longitude from given location.");
-			        			  e.printStackTrace();
-			        		  }
-			        	   dialog.cancel();
-			           }
-			           })
-			           .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
-			           public void onClick(DialogInterface dialog, int id) {
-			                dialog.cancel();
-			           }
-			           })
-			           .setView(loc)
-			           .show(); 
-					 break;
-			 }
 			case R.id.pub_button : {
 				i = new Intent(this, ChoosePub.class);
 				if(locSet){
@@ -221,28 +174,21 @@ public class Organise extends ListActivity implements OnClickListener{
 			}
 			case R.id.save_event : {
 				i = new Intent();
-				StoredData storedData = StoredData.getInstance();
-				storedData.AddNewSavedEvent(event);
+				serviceInterface.GiveNewSavedEvent(event);
 				i.putExtras(b);
 				setResult(RESULT_OK, i);
 				finish();
 				break;
 			}
 			case R.id.send_invites_event : {
-				i = new Intent();
-				event.SetEventId(1); //In reality this should be set by server, sent back to the app which fills in actual global id
-				StoredData storedData = StoredData.getInstance();
-				storedData.AddNewSentEvent(event);
-				i.putExtras(b);
-				setResult(RESULT_OK, i);
-				finish();
+				sendEventToServer();
 				break;
 			}
 		 }
 	 }
 	 @Override
 	 public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		 //super.onActivityResult(requestCode, resultCode, data);
+		 super.onActivityResult(requestCode, resultCode, data);
 		 if(resultCode==RESULT_OK) //This line is so when the back button is pressed the data changed by an Activity isn't stored.
 		 { 
 			 //We don't actually care what we are returning from, always get the latest event and update the screen
@@ -250,6 +196,79 @@ public class Organise extends ListActivity implements OnClickListener{
 			 UpdateFromEvent();
 		 }
 	 }
+	 @Override
+	 public boolean onCreateOptionsMenu(Menu menu) 
+	 {
+		 MenuItem edit = menu.add(0, Menu.NONE, 0, "Change Location");
+		 edit.setOnMenuItemClickListener(this);
+	    	
+		 return super.onCreateOptionsMenu(menu);
+	 }
+
+	 public boolean onMenuItemClick(MenuItem item) {
+		switch(item.getItemId()){
+		 case Menu.NONE : {
+			 final EditText loc = new EditText(getApplicationContext());
+			 new AlertDialog.Builder(this).setMessage("Enter your current location:")  
+	           .setTitle("Change Location")  
+	           .setCancelable(true)  
+	           .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int id) {
+	        	   //TODO: turn off location listener
+	        	   Geocoder geocoder = new Geocoder(getApplicationContext());
+	        	   try {
+	        		   List<Address> addresses = geocoder.getFromLocationName(loc.getText().toString(), 5);
+	        		   double lat = 0;
+	        		   double latsum = 0;
+	        		   double lng = 0;
+	        		   double lngsum = 0;
+	        		   if(addresses!=null) {
+		        		   for(int i=0; i<addresses.size(); i++) {
+		        			   Address a = addresses.get(i);
+		        			   if(a!=null) 
+		        			   {
+		        				   if(lat==0) {lat = a.getLatitude();}
+		        				   else {
+		        					   latsum+=a.getLatitude();
+		        					   lat=latsum/i;
+		        					   }
+		        				   if(lng==0) {lng = a.getLongitude();}
+		        				   else {
+		        					   lngsum+=a.getLongitude();
+		        					   lng=lngsum/i;
+		        				   }
+		        			   }
+		        		   }
+	        		   }
+		        	  if(lat!=0&&lng!=0&&findNewNearestPub(lat,lng)){
+		        		  latSet=lat;
+		        		  lngSet=lng;
+		        		  locSet=true;
+		        		  cur_loc.setText(loc.getText()); 
+		        		  UpdateFromEvent();
+		        	 }
+		        	  else {Toast.makeText(getApplicationContext(), "Unrecognised location", Toast.LENGTH_SHORT).show();}
+	        		  } 
+	        	   catch (IOException e) 
+	        	   {
+	        			  Log.d(Constants.MsgError,"Error in finding latitude & longitude from given location.");
+	        			  e.printStackTrace();
+	        		  }
+	        	   dialog.cancel();
+	           }
+	           })
+	           .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int id) {
+	                dialog.cancel();
+	           }
+	           })
+	           .setView(loc)
+	           .show(); 
+			 return true;
+		 }
+	 }
+	return false;
+	 } 
 
 	
 	private void UpdateFromEvent()
@@ -270,7 +289,7 @@ public class Organise extends ListActivity implements OnClickListener{
 			List<Place> list = finder.performSearch();
 			for(Place p : list) {
 				//TODO: Should maybe give user choice over which address is selected, not just pick the first one
-				if(p!=null) {event.SetPubLocation(new PubLocation(p.geometry.location.lat,p.geometry.location.lng,p.name)); return true;}
+				if(p!=null) {event.SetPubLocation(new PubLocation((float)p.geometry.location.lat,(float)p.geometry.location.lng,p.name)); return true;}
 			}
 		} catch (Exception e) {
 			Log.d(Constants.MsgError, "Cannot find pubs based on this location.");
@@ -280,23 +299,98 @@ public class Organise extends ListActivity implements OnClickListener{
 		return false;
 	}
 	
-	private void sendEventToServer() throws UnknownHostException, IOException {
+	private void sendEventToServer() {
+		Bundle b = getIntent().getExtras();
+		b.putSerializable(Constants.CurrentWorkingEvent, event);
+		
+		// Inflating the loading bar
+		LayoutInflater i = (LayoutInflater) getLayoutInflater();
+		ViewGroup parent = (ViewGroup) findViewById(R.id.organise_screen);
+		
+		View pBar = i.inflate(R.layout.loading_bar, parent, false);
+		parent.addView(pBar);
+		new SendData().execute(this);
+
+		//TODO: Move this into the service
+	}
+	
+	private ServiceConnection connection = new ServiceConnection()
+	{
+
+		public void onServiceConnected(ComponentName className, IBinder service)
+		{
+			//Give the interface to the app
+			serviceInterface = (IPubService)service;
+			
+		}
+
+		public void onServiceDisconnected(ComponentName className)
+		{
+		}
+		
+	};
+}
+
+class SendData extends AsyncTask<Organise, Integer, Boolean> {
+	Organise activity;
+	PubEvent event;
+	
+	protected Boolean doInBackground(Organise... organise) {
+		
+		// Saves the activity to the class
+		activity = organise[0];
+		event = (PubEvent) activity.getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent);
+		
 		//TODO: Open a socket
 		
 		Socket socket = null; 
-		
-		socket = new Socket(Constants.ServerIp, Constants.Port);
+		try {
+			socket = new Socket(Constants.ServerIp, Constants.Port);
+		} catch (IOException e) {
+			//TODO: Handle exception indicating that connection can't be established
+			return false;
+		}
 		
 		ObjectOutputStream serializer = null;
+		ObjectInputStream deserializer = null;
 		
-		serializer = new ObjectOutputStream(socket.getOutputStream());
-		//TODO: Send a message to server for new Event
+		try {
+			serializer = new ObjectOutputStream(socket.getOutputStream());
+			deserializer = new ObjectInputStream(socket.getInputStream());
+		} catch (IOException e) {
+			//TODO: Handle Exception When the network is buggered
+			return false;
+		}
 		
 		MessageType t = MessageType.newPubEventMessage;
-		serializer.writeObject(t);
-		serializer.writeObject(event);
-		serializer.flush();
-		//TODO: Send the event
-		//TODO: Send to Pending Screen
+		try {
+			serializer.writeObject(t);
+			serializer.writeObject(event);
+			serializer.flush();
+		} catch (IOException e) {
+			//TODO: Handle an exception when we cannae send the data
+			return false;
+		}
+		
+		try {
+			AcknoledgementData a = (AcknoledgementData)deserializer.readObject();
+			event.SetEventId(a.globalEventId);
+		} catch (IOException e) {
+			//TODO: Handle when we don't receive a Acknowledgement properly
+			return false;
+		} catch (ClassNotFoundException e) {
+			//TODO: Handle when what we receive aint what we want
+		}
+		
+		return true;
+	}
+	
+	protected void onPostExecute(Boolean... b) {
+		Intent i = new Intent();
+		
+		
+		i.putExtras(activity.getIntent().getExtras());
+		activity.setResult(Activity.RESULT_OK, i);
+		activity.finish();
 	}
 }

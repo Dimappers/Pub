@@ -2,10 +2,12 @@ package dimappers.android.PubData;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
+
+import org.jdom.Element;
 
 
 /*This class holds information about a pub trip
@@ -17,6 +19,12 @@ import java.util.Set;
  */
 public class PubEvent implements Serializable
 {
+	private final String eventIdTag = "EventId";
+	private final String usersTag = "Users";
+	private final String invitedUserTag = "InvitedUser";
+	private final String hostTag = "Host";
+	private final String startTimeTag = "StartTime";
+	
 	//Properties
 	private HashMap<User, UserStatus>	users;
 	private User 						host;
@@ -31,7 +39,7 @@ public class PubEvent implements Serializable
 		users.put(host, new UserStatus(GoingStatus.going, startTime, null));
 		this.host = host;
 		this.startTime = startTime;
-		globalEventId = -1;
+		globalEventId = Constants.EventIdNotAssigned;
 	}
 	
 	public PubEvent(Calendar startTime, PubLocation pubLocation, User host)
@@ -41,7 +49,12 @@ public class PubEvent implements Serializable
 		this.host = host;
 		this.pubLocation = pubLocation;
 		this.startTime = startTime;
-		globalEventId = -1;
+		globalEventId = Constants.EventIdNotAssigned;
+	}
+	
+	public PubEvent(Element element)
+	{
+		readXml(element);
 	}
 	
 	//Getter/setter methods
@@ -50,9 +63,14 @@ public class PubEvent implements Serializable
 		return users.keySet();
 	}
 	
-	public HashMap<User, UserStatus> GetGoingStatus()
+	public HashMap<User, UserStatus> GetGoingStatusMap()
 	{
 		return users;
+	}
+	
+	public GoingStatus GetUserGoingStatus(User user)
+	{
+		return users.get(user).goingStatus;
 	}
 	
 	public Calendar GetStartTime()
@@ -159,9 +177,77 @@ public class PubEvent implements Serializable
 				date = startTime.get(Calendar.DAY_OF_MONTH) + "/" + (startTime.get(Calendar.MONTH) + 1) + startTime.get(Calendar.YEAR);
 			}
 		}
-		
-		time = date + " at " + startTime.get(Calendar.HOUR_OF_DAY) + ":" + startTime.get(Calendar.MINUTE);
+		String minTime = Integer.toString(startTime.get(Calendar.MINUTE));
+		if(startTime.get(Calendar.MINUTE) < 10)
+		{
+			minTime = "0" + minTime;
+		}
+		time = date + " at " + startTime.get(Calendar.HOUR_OF_DAY) + ":" + minTime;
 		
 		return time;
 	}
+	
+	public Element writeXml()
+	{
+		Element pubEventElement = new Element(getClass().getSimpleName());
+		
+		Element eventIdElement = new Element(eventIdTag);
+		eventIdElement.addContent(Integer.toString(globalEventId));
+		pubEventElement.addContent(eventIdElement);
+		
+		Element startTimeElement = new Element(startTimeTag);
+		startTimeElement.addContent(Long.toString(startTime.getTimeInMillis()));
+		pubEventElement.addContent(startTimeElement);
+		
+		pubEventElement.addContent(pubLocation.writeXml());
+		
+		Element hostElement = new Element(hostTag);
+		hostElement.addContent(host.writeXml());
+		pubEventElement.addContent(hostElement);
+		
+		Element usersElement = new Element(usersTag);
+		for(Entry<User, UserStatus> userEntry : users.entrySet())
+		{
+			Element invitedUserElement = new Element(invitedUserTag);
+			
+			invitedUserElement.addContent(userEntry.getKey().writeXml());
+			invitedUserElement.addContent(userEntry.getValue().writeXml());
+			
+			usersElement.addContent(invitedUserElement);
+		}
+		pubEventElement.addContent(usersElement);
+		
+		return pubEventElement;
+	}
+	
+	public void readXml(Element element)
+	{
+		globalEventId = Integer.parseInt(element.getChildText(eventIdTag));
+		
+		startTime = Calendar.getInstance();
+		startTime.setTimeInMillis(Long.parseLong(element.getChildText(startTimeTag)));
+		
+		pubLocation = new PubLocation(element.getChild(PubLocation.class.getSimpleName()));
+		
+		host = new User(element.getChild(hostTag).getChild(User.class.getSimpleName()));
+		
+		users = new HashMap<User, UserStatus>();
+		List<Element> invitedElements = element.getChild(usersTag).getChildren(invitedUserTag);
+		for(Element invitedUserElement : invitedElements)
+		{
+			User user = new User(invitedUserElement.getChild(User.class.getSimpleName()));
+			UserStatus status = new UserStatus(invitedUserElement.getChild(UserStatus.class.getSimpleName()));
+			
+			users.put(user, status);
+		}
+	}
 }
+
+
+
+
+
+
+
+
+

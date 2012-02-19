@@ -4,8 +4,11 @@
       android:versionName="1.0" xmlns:android="http://schemas.android.com/apk/res/android">
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-library android:required="true" android:name="com.google.android.maps"></uses-library>
-    
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.READ_LOGS"/>
+	
+	<uses-library android:required="true" android:name="com.google.android.maps"/>   
     
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
         <activity android:name="LaunchApplication"
@@ -15,18 +18,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="Organise" android:label="@string/app_name"></activity>
-        <activity android:name="Guests" android:label="@string/app_name"></activity>
-        <activity android:name="ChooseTime" android:label="@string/app_name"></activity>
-        <activity android:label="@string/app_name" android:name="Events"></activity>
-        <activity android:name="ChoosePub" android:label="@string/app_name"></activity>
-        <activity android:label="@string/app_name" android:name="Pending"></activity>
-        <activity android:label="@string/app_name" android:name="ChooseGuest"></activity>
-        <activity android:name="Making_Comment" android:label="@string/app_name"></activity>
-        <activity android:name="HostEvents" android:label="@string/app_name"></activity>
-        <activity android:name="UserInvites" android:label="@string/app_name"></activity>
-        <service android:name="PubService" android:label="PubUpdateChecker"></service>
+        <activity android:name="Organise" android:label="@string/app_name"/>
+        <activity android:name="Guests" android:label="@string/app_name"/>
+        <activity android:name="ChooseTime" android:label="@string/app_name"/>
+        <activity android:label="@string/app_name" android:name="Events"/>
+        <activity android:name="ChoosePub" android:label="@string/app_name"/>
+        <activity android:label="@string/app_name" android:name="Pending"/>
+        <activity android:label="@string/app_name" android:name="ChooseGuest"/>
+        <activity android:name="Making_Comment" android:label="@string/app_name"/>
+        <activity android:name="HostEvents" android:label="@string/app_name"/>
+        <activity android:name="UserInvites" android:label="@string/app_name"/>
+        <service android:name="PubService" android:label="PubUpdateChecker"/>
+        <activity android:name="NoInternet" android:label="@string/app_name"/>
         <activity android:label="@string/app_name" android:name="CurrentEvents"></activity>
-
     </application>
 </manifest>
