@@ -30,6 +30,5 @@
         <activity android:name="UserInvites" android:label="@string/app_name"/>
         <service android:name="PubService" android:label="PubUpdateChecker"/>
         <activity android:name="NoInternet" android:label="@string/app_name"/>
-        <activity android:label="@string/app_name" android:name="CurrentEvents"></activity>
     </application>
 </manifest>
