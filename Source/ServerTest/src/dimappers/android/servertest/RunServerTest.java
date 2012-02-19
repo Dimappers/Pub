@@ -3,10 +3,10 @@ package dimappers.android.servertest;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.*;
-import java.text.DateFormat;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -16,13 +16,13 @@ import org.jdom.output.XMLOutputter;
 
 import dimappers.android.PubData.AcknoledgementData;
 import dimappers.android.PubData.GoingStatus;
+import dimappers.android.PubData.MessageType;
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.RefreshData;
 import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.UpdateData;
 import dimappers.android.PubData.User;
-import dimappers.android.PubData.MessageType;
-import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.PubLocation;
 
 public class RunServerTest
 {
@@ -33,16 +33,33 @@ public class RunServerTest
 	
 	public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException
 	{
+		//Checks for all the xml exporters - just wacks them in to the output and then reads them in 
 		Document xmlDoc;
 		{
 			Element root = new Element("PubMessage");
 			xmlDoc = new Document(root);
+			//SAXBuilder builder = new SAXBuilder();
+			
 			
 			root.addContent(CreateHost().writeXml());
 			AcknoledgementData ack = new AcknoledgementData(12434);
 			root.addContent(ack.writeXml());
 			PubLocation loc = new PubLocation(123, 12, "Spoons");
 			root.addContent(loc.writeXml());
+			
+			root.addContent(CreatePubEventWithGuest().writeXml());
+			
+			RefreshData rd = new RefreshData(new User(5325), true);
+			root.addContent(rd.writeXml());
+			
+			Calendar freeFrom = Calendar.getInstance();
+			freeFrom.set(Calendar.HOUR_OF_DAY, 9);
+			ResponseData response = new ResponseData(new User(124),295, true, freeFrom, "Hello");
+			root.addContent(response.writeXml());
+			
+			UpdateData ud = new UpdateData(234, freeFrom, new PubLocation(12, 12, "Spoons"));
+			root.addContent(ud.writeXml());
+			
 			
 			XMLOutputter outputter = new XMLOutputter();
 			outputter.output(xmlDoc, System.out);
@@ -54,6 +71,12 @@ public class RunServerTest
 			User user = new User(root.getChild(User.class.getSimpleName()));
 			AcknoledgementData ack = new AcknoledgementData(root.getChild(AcknoledgementData.class.getSimpleName()));
 			PubLocation loc = new PubLocation(root.getChild(PubLocation.class.getSimpleName()));
+			
+			PubEvent p = new PubEvent(root.getChild(PubEvent.class.getSimpleName()));
+			
+			RefreshData rd = new RefreshData(root.getChild(RefreshData.class.getSimpleName()));
+			ResponseData response = new ResponseData(root.getChild(ResponseData.class.getSimpleName()));
+			UpdateData ud = new UpdateData(root.getChild(UpdateData.class.getSimpleName()));
 			
 			System.in.read();
 		}
