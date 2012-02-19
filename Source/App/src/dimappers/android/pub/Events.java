@@ -5,9 +5,12 @@ import java.util.Calendar;
 import java.util.Collection;
 
 import android.app.ExpandableListActivity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -28,6 +31,7 @@ public class Events extends ExpandableListActivity {
 	BaseExpandableListAdapter mAdapter;
 
 	AppUser facebookUser;
+	IPubService serviceInterface;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -36,7 +40,9 @@ public class Events extends ExpandableListActivity {
 		setContentView(R.layout.events);
 
 		facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
-
+		bindService(new Intent(this, PubService.class), connection, 0);
+		
+		
 		mAdapter = new EventListAdapter(this, facebookUser);
 		setListAdapter(mAdapter);
 		ExpandableListView expview = (ExpandableListView) findViewById(android.R.id.list);
@@ -100,8 +106,7 @@ public class Events extends ExpandableListActivity {
 	{
 		ArrayList<PubEvent> events = new ArrayList<PubEvent>();
 		
-		StoredData storedData = StoredData.getInstance();
-		events.addAll(storedData.GetAllEvents());
+		events.addAll(serviceInterface.GetSavedEvents());
 		
 		
 		Calendar time1 = Calendar.getInstance();
@@ -132,6 +137,24 @@ public class Events extends ExpandableListActivity {
 		events.add(hostedEvent);
 		return events;
 	}
+	
+	private ServiceConnection connection = new ServiceConnection()
+	{
+
+		public void onServiceConnected(ComponentName className, IBinder service)
+		{
+			//Give the interface to the app
+			serviceInterface = (IPubService)service;
+			((EventListAdapter)mAdapter).setServiceInterface(serviceInterface);
+			mAdapter.notifyDataSetChanged();
+		}
+
+		public void onServiceDisconnected(ComponentName className)
+		{
+			
+		}
+		
+	};
 }
 
 class EventListAdapter extends BaseExpandableListAdapter {
@@ -141,10 +164,16 @@ class EventListAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
 	private User currentUser;
+	private IPubService serviceInterface;
 
 	public EventListAdapter(Context context, AppUser currentUser) {
 		this.context = context;
 		this.currentUser = currentUser;
+	}
+	
+	public void setServiceInterface(IPubService serviceInterface)
+	{
+		this.serviceInterface = serviceInterface;
 	}
 
 
@@ -154,17 +183,22 @@ class EventListAdapter extends BaseExpandableListAdapter {
 
 	private Collection<PubEvent> GetRelevantList(int groupPosition)
 	{
+		//If we are still waiting on the service to bind, display no data (maybe with progress bar
+		if(serviceInterface == null)
+		{
+			return new ArrayList<PubEvent>();
+		}
 		switch(groupPosition)
 		{
 			case Constants.HostedEventSaved:
-				return StoredData.getInstance().GetSavedEvents();
+				return serviceInterface.GetSavedEvents();
 
 			case Constants.HostedEventSent:
-				return StoredData.getInstance().GetHostedEvents();
+				return serviceInterface.GetSentEvents();
 
 			case Constants.ProposedEventNoResponse:
 				ArrayList<PubEvent> noResponse = new ArrayList<PubEvent>();
-				for(PubEvent event : StoredData.getInstance().GetInvitedEvents())
+				for(PubEvent event : serviceInterface.GetAllInvited())
 				{
 					if(event.GetUserGoingStatus(currentUser) == GoingStatus.maybeGoing)
 					{
@@ -176,7 +210,7 @@ class EventListAdapter extends BaseExpandableListAdapter {
 
 			case Constants.ProposedEventHaveResponded:
 				ArrayList<PubEvent> haveResponse = new ArrayList<PubEvent>();
-				for(PubEvent event : StoredData.getInstance().GetInvitedEvents())
+				for(PubEvent event : serviceInterface.GetAllInvited())
 				{
 					//at the moment this list includes all responses, can change this for just going
 					if(event.GetUserGoingStatus(currentUser) != GoingStatus.maybeGoing) 

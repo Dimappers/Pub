@@ -2,8 +2,12 @@ package dimappers.android.PubData;
 
 import java.io.Serializable;
 
-public class RefreshData implements Serializable{
+import org.jdom.Element;
 
+public class RefreshData implements Serializable {
+
+	private static final String fullupdateTag = "FullUpdate";
+	
 	private User 	user;
 	private boolean fullUpdate;
 	
@@ -13,8 +17,31 @@ public class RefreshData implements Serializable{
 		this.fullUpdate = fullUpdate;	// If True, needs a full update
 	}
 	
+	public RefreshData(Element element)
+	{
+		readXml(element);
+	}
+	
 	//Encapsulation
 	public User 	getUser() 		{ return user; }
 	public Integer 	getUserId()		{ return user.getUserId(); }
 	public boolean 	isFullUpdate() 	{ return fullUpdate; }
+	
+	public Element writeXml()
+	{
+		Element refreshElement = new Element(getClass().getSimpleName());
+		
+		refreshElement.addContent(user.writeXml());
+		Element fullUpdateElement = new Element(fullupdateTag);
+		fullUpdateElement.addContent(Boolean.toString(fullUpdate));
+		refreshElement.addContent(fullUpdateElement);
+		
+		return refreshElement;
+	}
+	
+	public void readXml(Element element)
+	{
+		user = new User(element.getChild(User.class.getSimpleName()));
+		fullUpdate = Boolean.parseBoolean(element.getChildText(fullupdateTag));
+	}
 }

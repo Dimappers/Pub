@@ -2,6 +2,8 @@ package dimappers.android.PubData;
 
 import java.io.Serializable;
 
+import org.jdom.Element;
+
 /* This class holds information about a pub location
  * It does nothing with this data, it is purely a data store
  * 
@@ -9,6 +11,11 @@ import java.io.Serializable;
  
 public class PubLocation implements Serializable
 {
+	//Xml tags
+	private static final String latTag = "Latitude";
+	private static final String longTag = "Longitude";
+	private static final String nameTag = "PubName";
+	
 	//Properties
 	public float 			latitudeCoordinate;
 	public float 			longitudeCoordinate;
@@ -19,6 +26,11 @@ public class PubLocation implements Serializable
 		latitudeCoordinate = 0.0f;
 		longitudeCoordinate = 0.0f;
 		pubName = "Undefined location";
+	}
+	
+	public PubLocation(Element element)
+	{
+		readXml(element);
 	}
 	
 	public PubLocation(float latitudeCoordinate, float longitudeCoordinate, String pubName)
@@ -37,6 +49,31 @@ public class PubLocation implements Serializable
 	public boolean equals(PubLocation other)
 	{
 		return other.latitudeCoordinate == latitudeCoordinate && other.longitudeCoordinate == longitudeCoordinate;
+	}
+	
+	public Element writeXml()
+	{
+		Element pubLocationTag = new Element(getClass().getSimpleName());
+		
+		Element latElement = new Element(latTag);
+		latElement.addContent(Float.toString(latitudeCoordinate));
+		Element longElement = new Element(longTag);
+		longElement.addContent(Float.toString(longitudeCoordinate));
+		Element nameElement = new Element(nameTag);
+		nameElement.addContent(pubName);
+		
+		pubLocationTag.addContent(latElement);
+		pubLocationTag.addContent(longElement);
+		pubLocationTag.addContent(nameElement);
+		
+		return pubLocationTag;
+	}
+	
+	public void readXml(Element element)
+	{
+		latitudeCoordinate = Float.parseFloat(element.getChildText(latTag));
+		longitudeCoordinate= Float.parseFloat(element.getChildText(longTag));
+		pubName = element.getChildText(nameTag);
 	}
 }
 

@@ -31,5 +31,7 @@ public enum MessageType {
 	 * Class to send to the server: 	UpdateData 
 	 * Class the server will send back: Nothing
 	 */
-	updateMessage
+	updateMessage,
+	
+	unknownMessageType
 }
