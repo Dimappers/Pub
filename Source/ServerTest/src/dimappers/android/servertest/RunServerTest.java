@@ -10,6 +10,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.output.XMLOutputter;
+
 import dimappers.android.PubData.AcknoledgementData;
 import dimappers.android.PubData.GoingStatus;
 import dimappers.android.PubData.RefreshData;
@@ -29,6 +33,31 @@ public class RunServerTest
 	
 	public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException
 	{
+		Document xmlDoc;
+		{
+			Element root = new Element("PubMessage");
+			xmlDoc = new Document(root);
+			
+			root.addContent(CreateHost().writeXml());
+			AcknoledgementData ack = new AcknoledgementData(12434);
+			root.addContent(ack.writeXml());
+			PubLocation loc = new PubLocation(123, 12, "Spoons");
+			root.addContent(loc.writeXml());
+			
+			XMLOutputter outputter = new XMLOutputter();
+			outputter.output(xmlDoc, System.out);
+		}
+		System.in.read();
+		
+		{
+			Element root = xmlDoc.getRootElement();
+			User user = new User(root.getChild(User.class.getSimpleName()));
+			AcknoledgementData ack = new AcknoledgementData(root.getChild(AcknoledgementData.class.getSimpleName()));
+			PubLocation loc = new PubLocation(root.getChild(PubLocation.class.getSimpleName()));
+			
+			System.in.read();
+		}
+		
 		if(args.length < 1)
 		{
 			System.out.println("Error: no test specified, running default");

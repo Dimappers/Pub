@@ -2,7 +2,6 @@ package dimappers.android.PubData;
 
 import java.io.Serializable;
 
-import org.jdom.Document;
 import org.jdom.Element;
 
 
@@ -50,7 +49,7 @@ public class User implements Serializable {
 		return facebookUserId.hashCode();
 	}
 	
-	public void writeXml(Document xmlDocument)
+	public Element writeXml()
 	{
 		/*At the moment just adds a <User>123</User> tag to reduce space - could be 
 		 * <User>
@@ -59,10 +58,10 @@ public class User implements Serializable {
 		 * If we have to add more information
 		 */
 		
-		Element user = new Element("User");
+		Element user = new Element(getClass().getSimpleName());
 		user.addContent(facebookUserId.toString());
 		
-		xmlDocument.addContent(user);
+		return user;
 	}
 	
 	public void readXml(Element userXmlElement)
