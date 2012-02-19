@@ -157,8 +157,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		// @Override 
 		public void onClick(View v) { 
 
-		Toast.makeText(getBaseContext(), "Make a comment", 
-		Toast.LENGTH_LONG).show(); 
+		Toast.makeText(getBaseContext(), "Make a comment", Toast.LENGTH_LONG).show(); 
 		} 
 		}); 
 
