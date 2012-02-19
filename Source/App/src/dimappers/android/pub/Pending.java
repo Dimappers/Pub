@@ -53,7 +53,6 @@ public class Pending extends Activity implements OnClickListener{
 		text.setText(s);
 	}	
 	public void startTasks(Location location) {
-
 		
         if(location == null){Log.d(Constants.MsgError, "Need to set location first."); updateText("An error has occurred, please try again.");}
         else{Log.d(Constants.MsgInfo, "Using location: " + location.getLatitude() + ", " + location.getLongitude());}
@@ -70,7 +69,6 @@ public class Pending extends Activity implements OnClickListener{
 	}
 	public void createEvent() {
         updateText("Creating Event");
-
         
         Bundle b = getIntent().getExtras();
         if(b == null){Debug.waitForDebugger();}
@@ -78,7 +76,6 @@ public class Pending extends Activity implements OnClickListener{
         facebookUser = AppUser.AppUserFromUser((User)b.getSerializable(Constants.CurrentFacebookUser));
         event = new PubEvent(Calendar.getInstance(), new User(facebookUser.getUserId()));
 	}
-
 	public void onClick(View v)
 	{
 		if(v.getId()==R.id.cancelbutton) {finish();}
@@ -95,7 +92,6 @@ public class Pending extends Activity implements OnClickListener{
 		eventBundle.putDouble(Constants.CurrentLatitude, currentLocation.getLatitude());
 		eventBundle.putDouble(Constants.CurrentLongitude, currentLocation.getLongitude());
 		return eventBundle;
-
 	}
 	public void errorOccurred() {
 	   	new AlertDialog.Builder(this).setMessage("An unexpected error has occurred. Please try again.")  

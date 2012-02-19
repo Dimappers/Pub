@@ -4,7 +4,9 @@
     android:layout_height="match_parent"
     android:gravity="center_vertical"
     android:orientation="vertical" >
-
+
+
+
     <ProgressBar
         android:id="@+id/progress"
         style="?android:attr/progressBarStyleLarge"
@@ -12,7 +14,10 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_gravity="center" />
-
+
+
+
+
     <TextView
         android:id="@+id/location_error"
         android:layout_width="match_parent"
@@ -20,10 +25,10 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:gravity="center_horizontal"
-
         android:text=""
         android:textAppearance="?android:attr/textAppearanceLarge" />
-
+
+
     <TextView
         android:id="@+id/cancelbutton"
         android:layout_width="wrap_content"

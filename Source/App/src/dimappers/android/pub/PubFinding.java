@@ -9,19 +9,16 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
 
-
 public class PubFinding extends AsyncTask<Object, Integer, Boolean> {
 	Location location;
 	Pending activity;
 	
 	@Override
-
 	protected Boolean doInBackground(Object... params) { 
 		try {
 			location = (Location) params[0];
 			activity = (Pending) params[1];
 		}
-
 		catch(Exception e) {Log.d(Constants.MsgError,"Wrong input entered."); return false;}
 		
     	publishProgress(Constants.ChoosingPub);
@@ -34,7 +31,6 @@ public class PubFinding extends AsyncTask<Object, Integer, Boolean> {
 	}
 	
 	@Override
-
 	protected void onPostExecute(Boolean result)
 	{
 		if(!result) {activity.errorOccurred();}
@@ -61,7 +57,6 @@ public class PubFinding extends AsyncTask<Object, Integer, Boolean> {
 		} catch (Exception e) {
 			Log.d(Constants.MsgError,"Error while finding pubs.");
 			e.printStackTrace();
-
 			return false;
 		}
 		activity.event.SetPubLocation(new PubLocation((float)lat,(float)lng,pub.name));
