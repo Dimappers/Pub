@@ -16,7 +16,7 @@
   	<string name="choose_date">Choose date:</string>
   	<string name="choose_time">Choose time:</string>
   	<string name="invites">View invites</string>
-  	<string name="location_error">An error has occurred, please try again.</string>  	
+  	<string name="location_error"></string>  	
   	<string name="test">Test</string>
   	<string name="add_guest">Add guest</string>  	
   	<string name="show_sent_invites">Show Sent Invites</string>
