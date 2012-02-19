@@ -87,12 +87,9 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	{
     		if(requestCode == Constants.FromOrganise)
     		{
-<<<<<<< HEAD
 
     			Intent i = new Intent(this, CurrentEvents.class);	
-=======
-    			Intent i = new Intent(this, Events.class);	
->>>>>>> 285ffae13f75020fbf5fac692aed6426171dbf8b
+
     			i.putExtras(data.getExtras());
     			startActivity(i);
     		}

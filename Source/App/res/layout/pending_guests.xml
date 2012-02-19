@@ -20,10 +20,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:gravity="center_horizontal"
-<<<<<<< HEAD
 
-=======
->>>>>>> 285ffae13f75020fbf5fac692aed6426171dbf8b
         android:text=""
         android:textAppearance="?android:attr/textAppearanceLarge" />
 

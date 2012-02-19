@@ -29,10 +29,6 @@ public final class Constants {
 	public static final Integer CreatingEvent = new Integer(0);
 	public static final Integer ChoosingPub = new Integer(1);
 	public static final Integer PickingGuests = new Integer(2);
-<<<<<<< HEAD
-
-=======
->>>>>>> 285ffae13f75020fbf5fac692aed6426171dbf8b
 	
 	public static final Integer PubFinderError = new Integer(0);
 	public static final Integer PubFinderOK = new Integer(1);
