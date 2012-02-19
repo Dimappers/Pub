@@ -287,16 +287,15 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		PubFinder finder = new PubFinder(lat,lng);
 		try {
 			List<Place> list = finder.performSearch();
-			for(Place p : list) {
-				//TODO: Should maybe give user choice over which address is selected, not just pick the first one
-				if(p!=null) {event.SetPubLocation(new PubLocation((float)p.geometry.location.lat,(float)p.geometry.location.lng,p.name)); return true;}
-			}
+			PubLocation best = new PubRanker(list).returnBest();
+			if(best==null) {return false;}
+			event.SetPubLocation(best);
+			return true;
 		} catch (Exception e) {
 			Log.d(Constants.MsgError, "Cannot find pubs based on this location.");
 			e.printStackTrace();
 			return false;
 		}
-		return false;
 	}
 	
 	private void sendEventToServer() {

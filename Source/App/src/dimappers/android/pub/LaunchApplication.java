@@ -72,7 +72,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     		}
     		case R.id.invites_button : {
 
-    			i = new Intent(this, CurrentEvents.class);
+    			i = new Intent(this, Events.class);
     			i.putExtras(b);
     			startActivity(i);
     			break;
@@ -99,7 +99,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
     		}
     		else if(requestCode==Constants.NoInternet)
     		{
-    			//FIXME: application won't launch if no internet
     			if(!isNetworkAvailable()){finish();}
     		}
     	}
