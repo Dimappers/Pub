@@ -99,7 +99,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
     		}
     		else if(requestCode==Constants.NoInternet)
     		{
-    			//FIXME: application won't launch if no internet
     			if(!isNetworkAvailable()){finish();}
     		}
     	}

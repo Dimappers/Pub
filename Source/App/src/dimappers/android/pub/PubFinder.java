@@ -63,9 +63,17 @@ public class PubFinder {
 		    HttpRequest request = setUp(PLACES_SEARCH_URL);	
 		    
 		    request.getUrl().put("location", latitude + "," + longitude);
-		    request.getUrl().put("radius", radiusForSearch);
-		    request.getUrl().put("types", "bar");	    
-		    if(keyword.length()!=0) {request.getUrl().put("keyword",keyword);}
+		    
+		    if(keyword.length()==0)
+		    {
+		    	request.getUrl().put("radius", radiusForSearch);
+		    	request.getUrl().put("types", "bar");
+		    }
+		    else
+		    {
+		    	request.getUrl().put("radius", radiusForSearch*2);
+		    	request.getUrl().put("keyword",keyword);
+		    }
 		     
 		    PlacesList places = request.execute().parseAs(PlacesList.class);		    
 		    return places.results;

@@ -29,6 +29,8 @@ public class Pending extends Activity implements OnClickListener{
 	private AppUser facebookUser;
 	private Location currentLocation;
 	
+	private boolean firstTime = true;
+	
 	PubEvent event; 
 	
 	boolean personFinished;
@@ -40,7 +42,7 @@ public class Pending extends Activity implements OnClickListener{
     	setContentView(R.layout.pending_guests);
     	text = (TextView) findViewById(R.id.location_error);
     	((TextView)findViewById(R.id.cancelbutton)).setOnClickListener(this);
-    	findLocation();	
+    	if(firstTime) {firstTime=false; findLocation();}
 	}	
 	private void findLocation()
 	{		

@@ -41,25 +41,15 @@ public class PubFinding extends AsyncTask<Object, Integer, Boolean> {
 	}
 	
 	private Boolean findPub() {
-		PubFinder pubfinder = new PubFinder(location.getLatitude(),location.getLongitude());
-		Place pub = new Place();
-		pub.name="Unknown";
-		double lat = 0;
-		double lng = 0;
 		try {
-			List<Place> list = pubfinder.performSearch();
-			if(list!=null&&list.size()!=0)
-			{
-				pub = list.get(0);
-				lat = pub.geometry.location.lat;
-				lng = pub.geometry.location.lng;
-			}
+			PubLocation best = new PubRanker(new PubFinder(location.getLatitude(),location.getLongitude()).performSearch()).returnBest();
+			if(best==null) {return false;}
+			activity.event.SetPubLocation(best);
+			return true;
 		} catch (Exception e) {
 			Log.d(Constants.MsgError,"Error while finding pubs.");
 			e.printStackTrace();
 			return false;
 		}
-		activity.event.SetPubLocation(new PubLocation((float)lat,(float)lng,pub.name));
-		return true;
 	}
 }
