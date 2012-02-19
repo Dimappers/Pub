@@ -30,6 +30,9 @@ public final class Constants {
 	public static final Integer ChoosingPub = new Integer(1);
 	public static final Integer PickingGuests = new Integer(2);
 	
+	public static final Integer PubFinderError = new Integer(0);
+	public static final Integer PubFinderOK = new Integer(1);
+	
 	//Organise return codes
 	public static final int PubLocationReturn = 1;
 	public static final int GuestReturn = 2;
@@ -43,8 +46,8 @@ public final class Constants {
 	public static final int NumberOfEventCategories = 4;
 	
 	//Server stuff
-	public static final String ServerIp = "127.0.0.1";
-	public static final int Port = 2085;
+	public static final String ServerIp = "81.111.109.139";
+	public static final int Port = 8031;
 	
 	//Log categories
 	public static final String MsgInfo = "Dimap:Info";
