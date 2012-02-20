@@ -71,7 +71,7 @@ public class StoredData implements Serializable
 	{
 		if(savedEvent.GetEventId() >= 0)
 		{
-			Log.d(Constants.MsgWarning, "This event appears to have been saved");
+			Log.d(Constants.MsgWarning, "This event appears to have been sent");
 		}
 		
 		if(savedEvent.GetEventId() == Constants.EventIdNotAssigned)

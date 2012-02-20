@@ -5,6 +5,7 @@ import java.util.TimerTask;
 
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.User;
 
 import android.app.Activity;
 import android.app.IntentService;
@@ -15,12 +16,15 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
 public class PubService extends IntentService
 {
+	User user;
 	public PubService() {
 		super("PubService");
 		hasStarted = false;
@@ -50,8 +54,12 @@ public class PubService extends IntentService
 		public Collection<PubEvent> GetSentEvents() {
 			return PubService.this.storedData.GetSentEvents();
 		}
+		
+		public Collection<PubEvent> GetInvitedEvents() {
+			return PubService.this.storedData.GetInvitedEvents();
+		}
 
-		public Collection<PubEvent> GetAllInvited() {
+		public Collection<PubEvent> GetAllEvents() {
 			return PubService.this.storedData.GetAllEvents();
 		}
 
@@ -64,6 +72,23 @@ public class PubService extends IntentService
 			PubService.this.storedData.DeleteSavedEvent(event);
 			
 		}
+
+		@Override
+		public void PerformUpdate(boolean fullUpdate) {
+			PubService.this.receiver.forceUpdate(fullUpdate);
+		}
+		
+		@Override 
+		public String Save()
+		{
+			return PubService.this.storedData.Save();
+		}
+		
+		public void Load(String loadedData)
+		{
+			PubService.this.storedData.Load(loadedData);
+		}
+		
     }
 
 	
@@ -71,12 +96,15 @@ public class PubService extends IntentService
 	
 	private StoredData storedData;
 	private boolean hasStarted;
+	private DataReceiver receiver;
  
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
 		Log.d(Constants.MsgInfo, "Service started");
 		storedData = new StoredData();
+		user = (User)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
+		receiver = new DataReceiver(this);
 	    return START_STICKY;
 	}
 	
@@ -87,7 +115,15 @@ public class PubService extends IntentService
 		return binder;
 	}
 	
+	public User getUser()
+	{
+		return user;
+	}
 	
+	public StoredData getDataStore()
+	{
+		return storedData;
+	}
 	
 	class GetUpdates extends TimerTask
 	{
