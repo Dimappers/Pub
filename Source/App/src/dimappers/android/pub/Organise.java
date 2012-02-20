@@ -149,6 +149,12 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	    	}
 	 }
 	 
+	 public void onDestroy()
+	 {
+		 super.onDestroy();
+		 unbindService(connection);
+	 }
+	 
 	 public void onClick(View v)
 	 {
 		Intent i;

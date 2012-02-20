@@ -52,8 +52,12 @@ public class PubService extends IntentService
 		public Collection<PubEvent> GetSentEvents() {
 			return PubService.this.storedData.GetSentEvents();
 		}
+		
+		public Collection<PubEvent> GetInvitedEvents() {
+			return PubService.this.storedData.GetInvitedEvents();
+		}
 
-		public Collection<PubEvent> GetAllInvited() {
+		public Collection<PubEvent> GetAllEvents() {
 			return PubService.this.storedData.GetAllEvents();
 		}
 

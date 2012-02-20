@@ -12,7 +12,7 @@ public interface IPubService extends IBinder {
 	
 	Collection<PubEvent> 	GetSavedEvents();
 	Collection<PubEvent> 	GetSentEvents();
-	Collection<PubEvent> 	GetAllInvited();
+	Collection<PubEvent> 	GetInvitedEvents();
 	PubEvent 				GetNextEvent();
 	
 	void					RemoveSavedEvent(PubEvent event);

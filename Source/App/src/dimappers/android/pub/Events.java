@@ -198,7 +198,7 @@ class EventListAdapter extends BaseExpandableListAdapter {
 
 			case Constants.ProposedEventNoResponse:
 				ArrayList<PubEvent> noResponse = new ArrayList<PubEvent>();
-				for(PubEvent event : serviceInterface.GetAllInvited())
+				for(PubEvent event : serviceInterface.GetInvitedEvents())
 				{
 					if(event.GetUserGoingStatus(currentUser) == GoingStatus.maybeGoing)
 					{
@@ -210,7 +210,7 @@ class EventListAdapter extends BaseExpandableListAdapter {
 
 			case Constants.ProposedEventHaveResponded:
 				ArrayList<PubEvent> haveResponse = new ArrayList<PubEvent>();
-				for(PubEvent event : serviceInterface.GetAllInvited())
+				for(PubEvent event : serviceInterface.GetInvitedEvents())
 				{
 					//at the moment this list includes all responses, can change this for just going
 					if(event.GetUserGoingStatus(currentUser) != GoingStatus.maybeGoing) 
