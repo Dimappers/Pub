@@ -273,7 +273,6 @@ class SeperatedListAdapter extends BaseAdapter
 		this.sections.put(section, adapter);  
 	}  
 
-	@Override
 	public int getCount() 
 	{
 		// total together all sections, plus one for each section header  
@@ -283,7 +282,6 @@ class SeperatedListAdapter extends BaseAdapter
 		return total; 
 	}
 
-	@Override
 	public Object getItem(int position) 
 	{
 		for(Object section : this.sections.keySet()) 
@@ -367,14 +365,12 @@ class SeperatedListAdapter extends BaseAdapter
 	}
 
 
-	@Override
 	public long getItemId(int position) 
 	{
 		return position;
 	}
 
 
-	@Override
 	public View getView(int position, View convertView, ViewGroup parent) 
 	{
 		int sectionnum = 0;  
