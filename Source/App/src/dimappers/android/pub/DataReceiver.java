@@ -1,6 +1,7 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -14,6 +15,7 @@ import android.util.Log;
 
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.MessageType;
+import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.RefreshData;
 
 public class DataReceiver
@@ -46,6 +48,7 @@ public class DataReceiver
 			doUpdate(false);
 		}
 		
+		//TODO: Test me once we can get xmls from the server
 		public void doUpdate(boolean fullUpdate)
 		{
 			RefreshData refreshRequest = new RefreshData(DataReceiver.this.service.getUser(), fullUpdate);
@@ -86,7 +89,14 @@ public class DataReceiver
 				return;
 			} //TODO: Replace with input stream 
 			
-			returnDocument.getRootElement().getChild(name)
+			Element eventsRoot = returnDocument.getRootElement().getChild("PubEvents");
+			
+			List<Element> eventsElements = eventsRoot.getChildren(PubEvent.class.getSimpleName());
+			for(Element eventElement : eventsElements)
+			{
+				PubEvent newEvent = new PubEvent(eventElement);
+				service.getDataStore().AddNewInvitedEvent(newEvent);
+			}
 		}
 		
 	}

@@ -66,6 +66,11 @@ public class PubService extends IntentService
 			PubService.this.storedData.DeleteSavedEvent(event);
 			
 		}
+
+		@Override
+		public void PerformUpdate(boolean fullUpdate) {
+			PubService.this.receiver.forceUpdate(fullUpdate);
+		}
     }
 
 	
@@ -73,6 +78,7 @@ public class PubService extends IntentService
 	
 	private StoredData storedData;
 	private boolean hasStarted;
+	private DataReceiver receiver;
  
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
@@ -81,7 +87,7 @@ public class PubService extends IntentService
 		storedData = new StoredData();
 		
 		user = (User)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
-		
+		receiver = new DataReceiver(this);
 	    return START_STICKY;
 	}
 	
@@ -95,6 +101,11 @@ public class PubService extends IntentService
 	public User getUser()
 	{
 		return user;
+	}
+	
+	public StoredData getDataStore()
+	{
+		return storedData;
 	}
 	
 	class GetUpdates extends TimerTask

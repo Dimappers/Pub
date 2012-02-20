@@ -17,4 +17,6 @@ public interface IPubService extends IBinder {
 	
 	void					RemoveSavedEvent(PubEvent event);
 	
+	void					PerformUpdate(boolean fullUpdate);
+	
 }
