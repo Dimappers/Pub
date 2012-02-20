@@ -72,7 +72,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     		}
     		case R.id.invites_button : {
 
-    			i = new Intent(this, Events.class);
+    			i = new Intent(this, CurrentEvents.class);
     			i.putExtras(b);
     			startActivity(i);
     			break;
@@ -87,7 +87,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	{
     		if(requestCode == Constants.FromOrganise)
     		{
-    			Intent i = new Intent(this, Events.class);	
+    			Intent i = new Intent(this, CurrentEvents.class);	
     			i.putExtras(data.getExtras());
     			startActivity(i);
     		}
