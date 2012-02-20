@@ -54,6 +54,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	button_invites.setOnClickListener(this);
     	
     	Intent startServiceIntent = new Intent(this, PubService.class);
+    	startServiceIntent.getExtras().putSerializable(Constants.CurrentFacebookUser, facebookUser);
     	startService(startServiceIntent);
     }
     

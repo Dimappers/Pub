@@ -5,6 +5,7 @@ import java.util.TimerTask;
 
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.User;
 
 import android.app.Activity;
 import android.app.IntentService;
@@ -21,6 +22,7 @@ import android.util.Log;
 
 public class PubService extends IntentService
 {
+	User user;
 	public PubService() {
 		super("PubService");
 		hasStarted = false;
@@ -77,6 +79,9 @@ public class PubService extends IntentService
 	{
 		Log.d(Constants.MsgInfo, "Service started");
 		storedData = new StoredData();
+		
+		user = (User)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
+		
 	    return START_STICKY;
 	}
 	
@@ -87,7 +92,10 @@ public class PubService extends IntentService
 		return binder;
 	}
 	
-	
+	public User getUser()
+	{
+		return user;
+	}
 	
 	class GetUpdates extends TimerTask
 	{
