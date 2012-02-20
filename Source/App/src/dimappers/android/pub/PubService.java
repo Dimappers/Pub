@@ -16,6 +16,8 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -75,6 +77,18 @@ public class PubService extends IntentService
 		public void PerformUpdate(boolean fullUpdate) {
 			PubService.this.receiver.forceUpdate(fullUpdate);
 		}
+		
+		@Override 
+		public String Save()
+		{
+			return PubService.this.storedData.Save();
+		}
+		
+		public void Load(String loadedData)
+		{
+			PubService.this.storedData.Load(loadedData);
+		}
+		
     }
 
 	
@@ -89,7 +103,6 @@ public class PubService extends IntentService
 	{
 		Log.d(Constants.MsgInfo, "Service started");
 		storedData = new StoredData();
-		
 		user = (User)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
 		receiver = new DataReceiver(this);
 	    return START_STICKY;

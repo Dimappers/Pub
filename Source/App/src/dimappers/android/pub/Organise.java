@@ -15,6 +15,8 @@ import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
@@ -181,6 +183,12 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			case R.id.save_event : {
 				i = new Intent();
 				serviceInterface.GiveNewSavedEvent(event);
+				String saveData = serviceInterface.Save();
+				SharedPreferences sp = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE);
+				Editor spe = sp.edit();
+				spe.putString(Constants.SaveDataName, saveData);
+				spe.commit();
+				
 				i.putExtras(b);
 				setResult(RESULT_OK, i);
 				finish();
