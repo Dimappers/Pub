@@ -86,7 +86,7 @@ public class DataReceiver
 				return;
 			} //TODO: Replace with input stream 
 			
-			
+			returnDocument.getRootElement().getChild(name)
 		}
 		
 	}
