@@ -4,10 +4,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.XMLOutputter;
+
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Base64;
 import android.util.Log;
@@ -16,6 +27,9 @@ import dimappers.android.PubData.PubEvent;
 
 public class StoredData implements Serializable
 {	
+	private final String hostSavedTag = "HostSaved";
+	private final String hostSentTag = "HostSent";
+	private final String invitedTag = "Invited";
 	//private final int HistoryDepth = 15;
 	
 	private HashMap<Integer, PubEvent> savedEvents; //Events the users has created and saved
@@ -26,9 +40,6 @@ public class StoredData implements Serializable
 	//private int nextHistorySlot;
 	private int nextSavedEventId;
 	private boolean needsSaving;
-	//transient private Editor editor;
-	
-	
 	
 	public StoredData()
 	{
@@ -91,8 +102,6 @@ public class StoredData implements Serializable
 		{
 			savedEvents.put(savedEvent.GetEventId(), savedEvent); //Override the existing event with the new data
 		}
-		
-		SaveData();
 	}
 	
 	public void AddNewSentEvent(PubEvent sentEvent)
@@ -104,7 +113,6 @@ public class StoredData implements Serializable
 		
 		sentEvents.put(sentEvent.GetEventId(), sentEvent);
 		
-		SaveData();
 	}
 	
 	public void AddNewInvitedEvent(PubEvent invitedEvent)
@@ -114,7 +122,6 @@ public class StoredData implements Serializable
 			Log.d(Constants.MsgWarning, "This event doesn't have a valid ID");
 		}
 		invitedEvents.put(invitedEvent.GetEventId(), invitedEvent);
-		SaveData();
 	}
 	
 	public void DeleteSavedEvent(PubEvent event)
@@ -124,12 +131,74 @@ public class StoredData implements Serializable
 			Log.d(Constants.MsgWarning, "This does not appear to be a saved event");
 		}
 		savedEvents.remove(event.GetEventId());
-		
-		SaveData();
 	}
 	
-	private void SaveData()
+	public String Save() {
+		//needsSaving = true;
+		Document saveDoc = new Document();
+		Element root = new Element("PubSaveData");
+		
+		Element rootSaved = new Element("HostSaved");
+		for(PubEvent event : savedEvents.values())
+		{
+			rootSaved.addContent(event.writeXml());
+		}
+		root.addContent(rootSaved);
+		
+		Element rootSent = new Element("HostSent");
+		for(PubEvent event : sentEvents.values())
+		{
+			rootSent.addContent(event.writeXml());
+		}
+		root.addContent(rootSent);
+		
+		Element rootInvited = new Element("Invited");
+		for(PubEvent event : invitedEvents.values())
+		{
+			rootInvited.addContent(event.writeXml());
+		}
+		root.addContent(rootInvited);
+		
+		saveDoc.setRootElement(root);
+		StringWriter writer = new StringWriter();
+		XMLOutputter outputter = new XMLOutputter();
+		try {
+			outputter.output(saveDoc, writer);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return writer.toString();
+	}
+	
+	public void Load(String loadedXml)
 	{
-		needsSaving = true;
+		SAXBuilder builder = new SAXBuilder();
+		if(loadedXml != "No data")
+		{
+			StringReader reader = new StringReader(loadedXml);
+			Document loadedDoc;
+			try {
+				loadedDoc = builder.build(reader);
+			} catch (JDOMException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+			
+			Element rootSaved = loadedDoc.getRootElement().getChild(hostSavedTag);
+			List<Element> pubEventElements = rootSaved.getChildren(PubEvent.class.getSimpleName());
+			for(Element pubEventElement : pubEventElements)
+			{
+				PubEvent newEvent = new PubEvent(pubEventElement);
+				savedEvents.put(newEvent.GetEventId(), newEvent);
+			}
+		}
 	}
  }
