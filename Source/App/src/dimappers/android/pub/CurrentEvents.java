@@ -39,8 +39,6 @@ import dimappers.android.PubData.User;
 public class CurrentEvents extends ListActivity implements OnItemClickListener 
 {
 	SeperatedListAdapter adapter;
-	IPubService serviceInterface; 
-	AppUser facebookUser;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -48,23 +46,14 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.current_events);
 
-		facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
+		AppUser facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
 		bindService(new Intent(this, PubService.class), connection, 0);
 
 		// Create the ListView Adapter
-		adapter = new SeperatedListAdapter(this, /*GetEvents(), */facebookUser);
-
-		/*adapter.addSection("Waiting For Response", new ArrayAdapter<PubEvent>(this,R.layout.list_item, adapter.waitingForResponse));  
-		adapter.addSection("Hosting", new ArrayAdapter<PubEvent>(this,R.layout.list_item, adapter.hosting));  
-		adapter.addSection("Responded To", new ArrayAdapter<PubEvent>(this,R.layout.list_item, adapter.respondedTo));  
-		adapter.addSection("Send Invites", new ArrayAdapter<PubEvent>(this,R.layout.list_item, adapter.savedEvents));*/  
-
-
-		ListView listview = (ListView) findViewById(android.R.id.list);
-
+		adapter = new SeperatedListAdapter(this,facebookUser);
 		setListAdapter(adapter);
-		listview.setOnItemClickListener(this);
 
+		((ListView)findViewById(android.R.id.list)).setOnItemClickListener(this);
 	}
 	
 	@Override 
@@ -89,11 +78,9 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 		else if(section == "Saved Events")
 			position = position - 4 - adapter.waitingForResponse.size() - adapter.hosting.size() - adapter.respondedTo.size();
 
-
 		Bundle bundle = new Bundle();
 		bundle.putSerializable(Constants.CurrentWorkingEvent, (PubEvent)adapter.getHeader(sectionnum, position));
 		bundle.putAll(getIntent().getExtras());		
-
 
 		switch(sectionnum)
 		{
@@ -137,49 +124,13 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 		adapter.notifyDataSetChanged();
 	}
 
-	private ArrayList<PubEvent> GetEvents()
-	{
-		ArrayList<PubEvent> events = new ArrayList<PubEvent>();
-
-		//events.addAll(serviceInterface.GetSavedEvents());
-
-
-		Calendar time1 = Calendar.getInstance();
-		time1.set(Calendar.HOUR_OF_DAY, 18);
-		time1.add(Calendar.DAY_OF_MONTH, 1);
-
-		Calendar time2 = Calendar.getInstance();
-		time2.set(Calendar.HOUR_OF_DAY, 22);
-
-		PubEvent hostedEvent = new PubEvent(time2, new PubLocation(10,10,"Spoons"), facebookUser);
-		PubEvent invitedEvent = new PubEvent(time1, new PubLocation(10,10,"Robins Wells"), new User(123));
-
-		invitedEvent.AddUser(new User(142));
-		invitedEvent.AddUser(new User(42));
-		invitedEvent.AddUser(new User(124));
-		invitedEvent.AddUser(facebookUser); //add ourself to the event
-
-		hostedEvent.AddUser(new User(1494));
-		hostedEvent.AddUser(new User(123951));
-		hostedEvent.SetEventId(1); //Pretend we have sent it to the server
-
-		invitedEvent.UpdateUserStatus(new ResponseData(new User(42), 123, true));
-		ResponseData anotherResponse = new ResponseData(new User(124), 123, true, time2, "Yeah busy till 10");
-		invitedEvent.UpdateUserStatus(anotherResponse);
-
-		//return new PubEvent[] {hostedEvent, invitedEvent } ;
-		events.add(invitedEvent);
-		events.add(hostedEvent);
-		return events;
-	}
-
 	private ServiceConnection connection = new ServiceConnection()
 	{
 
 		public void onServiceConnected(ComponentName className, IBinder service)
 		{
 			//Give the interface to the app
-			serviceInterface = (IPubService)service;
+			IPubService serviceInterface = (IPubService)service;
 			((SeperatedListAdapter)adapter).setServiceInterface(serviceInterface);
 			String loadData = CurrentEvents.this.getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).getString(Constants.SaveDataName, "NoSave");
 			if(loadData != "NoSave")
@@ -214,7 +165,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 		private Context context;
 		private User currentUser;
 
-		public SeperatedListAdapter(Context context/*, ArrayList<PubEvent> events*/, AppUser currentUser) 
+		public SeperatedListAdapter(Context context, AppUser currentUser) 
 		{  
 			this.context = context;
 			this.currentUser = currentUser;
@@ -224,36 +175,6 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 			hosting = new ArrayList<PubEvent>();
 			respondedTo = new ArrayList<PubEvent>();
 			savedEvents = new ArrayList<PubEvent>();
-
-
-			/*for(PubEvent event : events)
-			{
-				//Determine if host 
-				if(event.GetHost().equals(currentUser))
-				{
-					//We are the host
-					if(event.GetEventId() >= 0) //if the event has an id then it has been sent to the server
-					{
-						hosting.add(event);
-					}
-					else //if not then it is only stored locally
-					{
-						savedEvents.add(event);
-					}
-				}
-				else
-				{
-					//We are not the host
-					if(event.GetUserGoingStatus(currentUser) == GoingStatus.maybeGoing) //we have not replied if status is still maybe	
-					{
-						waitingForResponse.add(event);
-					}
-					else //otherwise we have replied with yes or no
-					{
-						respondedTo.add(event);
-					}
-				}
-			}*/
 		}  
 
 		public void setServiceInterface(IPubService serviceInterface)
@@ -307,10 +228,11 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 				}
 			}
 			
-			addSection("Saved Invites", hostingSaved);
+			//Keep in this order unless you want it to break!!! 
+			addSection("Waiting for response", waitingForResponse);		
 			addSection("Sent invites", hostingSent);
-			addSection("Waiting for response", waitingForResponse);
 			addSection("Responded to", respondedTo);
+			addSection("Saved Invites", hostingSaved);
 		}
 		
 		public void addSection(String section, Adapter adapter) 
@@ -375,53 +297,6 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 			}
 			return null;
 		}
-
-		//Position is counting both headers and events, not just headers
-		/*private Collection<PubEvent> GetRelevantList(int position)
-		{
-			//If we are still waiting on the service to bind, display no data (maybe with progress bar
-			if(serviceInterface == null)
-			{
-				return new ArrayList<PubEvent>();
-			}
-			switch(position)
-			{
-			case Constants.HostedEventSaved:
-				return serviceInterface.GetSavedEvents();
-
-			case Constants.HostedEventSent:
-				return serviceInterface.GetSentEvents();
-
-			case Constants.ProposedEventNoResponse:
-				ArrayList<PubEvent> noResponse = new ArrayList<PubEvent>();
-				for(PubEvent event : serviceInterface.GetAllInvited())
-				{
-					if(event.GetUserGoingStatus(currentUser) == GoingStatus.maybeGoing)
-					{
-						noResponse.add(event);
-					}
-				}
-
-				return noResponse;
-
-			case Constants.ProposedEventHaveResponded:
-				ArrayList<PubEvent> haveResponse = new ArrayList<PubEvent>();
-				for(PubEvent event : serviceInterface.GetAllInvited())
-				{
-					//at the moment this list includes all responses, can change this for just going
-					if(event.GetUserGoingStatus(currentUser) != GoingStatus.maybeGoing) 
-					{
-						haveResponse.add(event);
-					}
-				}
-
-				return haveResponse;
-			}
-
-			Log.d(Constants.MsgError, "Attempted to get non-existant group on the events screen");
-			return null;
-		}*/
-
 
 		@Override
 		public long getItemId(int position) 
