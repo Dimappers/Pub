@@ -15,10 +15,10 @@ import org.jdom.Element;
 public class User implements Serializable {
 	
 	//Properties
-	private Integer facebookUserId;
+	private Long facebookUserId;
 	
 	//Constructor
-	public User(Integer facebookUserId) {
+	public User(Long facebookUserId) {
 		this.facebookUserId = facebookUserId;
 	}
 	
@@ -28,7 +28,7 @@ public class User implements Serializable {
 	}
 	
 	//Encapsulation
-	public Integer getUserId() 	{ return facebookUserId; }	
+	public Long getUserId() 	{ return facebookUserId; }	
 	
 	@Override
 	public boolean equals(Object otherUser)
@@ -66,7 +66,14 @@ public class User implements Serializable {
 	
 	public void readXml(Element userXmlElement)
 	{
-		facebookUserId = Integer.parseInt(userXmlElement.getText());
+	
+		facebookUserId = Long.parseLong(userXmlElement.getText());
 	}
 
+	@Override
+	public String toString()
+	{
+		return facebookUserId.toString();
+	}
+	
 }

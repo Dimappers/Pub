@@ -113,6 +113,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	    	    public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 	    	    	Intent i = new Intent(getBaseContext(), Guests.class);
 	    	    	Bundle b = new Bundle();
+	    	    	b.putAll(getIntent().getExtras());
 	    	    	b.putSerializable(Constants.CurrentWorkingEvent, event);
 	    	    	i.putExtras(b);
 					startActivityForResult(i, Constants.GuestReturn);
@@ -195,7 +196,8 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				break;
 			}
 			case R.id.send_invites_event : {
-				sendEventToServer();
+				serviceInterface.GiveNewSentEvent(event);
+				//sendEventToServer(); //TODO: Do this in the DataSender class which should be called by the service on the above call
 				break;
 			}
 		 }

@@ -74,7 +74,7 @@
         android:layout_height="wrap_content"
         android:text="@string/guest_title"
         android:textAppearance="?android:attr/textAppearanceSmall" />
-
+   
     <ListView
         android:id="@+id/@android:id/list"
         android:layout_width="match_parent"
@@ -84,28 +84,26 @@
         android:layout_marginLeft="22dp"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout2"
+    <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content" 
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/send_invites_event"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="60dp"
+            android:layout_weight="1"
+        android:layout_marginLeft="22dp"
             android:text="@string/send_invites" />
 
         <Button
             android:id="@+id/save_event"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="60dp"
+            android:layout_weight="1"        
+            android:layout_marginRight="22dp"
             android:text="@string/save" />
-    </RelativeLayout>
-
+    </LinearLayout>
 </LinearLayout>

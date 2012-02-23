@@ -185,25 +185,25 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 				hostingSent.add(sentEvent);
 			}
 			
-			ArrayAdapter<PubEvent> waitingForResponse = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item);
-			ArrayAdapter<PubEvent> respondedTo = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item);
+			ArrayAdapter<PubEvent> waitingForResponses = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item);
+			ArrayAdapter<PubEvent> respondedto = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item);
 			
 			for(PubEvent event : serviceInterface.GetInvitedEvents())
 			{
 				if(event.GetUserGoingStatus(currentUser) == GoingStatus.maybeGoing)
 				{
-					waitingForResponse.add(event);
+					waitingForResponses.add(event);
 				}
 				else
 				{
-					respondedTo.add(event);
+					respondedto.add(event);
 				}
 			}
 			
 			//Keep in this order unless you want it to break!!! 
-			addSection("Waiting for response", waitingForResponse);		
+			addSection("Waiting for response", waitingForResponses);		
 			addSection("Sent invites", hostingSent);
-			addSection("Responded to", respondedTo);
+			addSection("Responded to", respondedto);
 			addSection("Saved Invites", hostingSaved);
 		}
 		

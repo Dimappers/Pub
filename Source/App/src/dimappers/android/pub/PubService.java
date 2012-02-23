@@ -81,7 +81,7 @@ public class PubService extends IntentService
 		
 		public String Save()
 		{
-			return PubService.this.storedData.Save();
+			return PubService.this.storedData.save();
 		}
 		
 		public void Load(String loadedData)
@@ -146,7 +146,7 @@ public class PubService extends IntentService
 			//TODO: Here we want to send query to server to find out if new events and tell the app if there is 
 			DataSender dataSender = new DataSender();
 			try {
-				dataSender.requestUpdate(new User(123));
+				dataSender.requestUpdate(new User(123L));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				Log.d(Constants.MsgError,"IOException");
