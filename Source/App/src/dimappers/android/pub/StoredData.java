@@ -133,6 +133,14 @@ public class StoredData implements Serializable
 		savedEvents.remove(event.GetEventId());
 	}
 	
+	public void notifySentEventHasId(int eventId)
+	{
+		PubEvent event = sentEvents.get(Constants.EventIdBeingSent);
+		event.SetEventId(eventId);
+		sentEvents.remove(Constants.EventIdBeingSent);
+		sentEvents.put(eventId, event);
+	}
+	
 	public String save() {
 		//needsSaving = true;
 		Document saveDoc = new Document();

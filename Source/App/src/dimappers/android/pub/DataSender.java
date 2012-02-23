@@ -26,11 +26,13 @@ public class DataSender {
 	
 	private Queue<Document> queue;
 	private SenderThread senderThread;
+	private PubService service;
 	
-	DataSender(){
+	DataSender(PubService service){
 		queue = new ArrayBlockingQueue<Document>(100);
 		senderThread = new SenderThread();
 		senderThread.execute(new Object[]{});
+		this.service = service;
 	}
 	
 	public void sendEvent(PubEvent event) {
@@ -112,6 +114,9 @@ public class DataSender {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
+				//Receive id back from host
+				service.getDataStore().notifySentEventHasId((int)(Math.random() * 1000));
 			}
 			return null;
 		}

@@ -17,6 +17,7 @@ public final class Constants {
 	//Error constants
 	public static final int MissingDataInBundle = -12;
 	public static final int ErrorEventId = -384051;
+	public static final int EventIdBeingSent = -1001; //Event id for event that is being sent but has not received its ID back
 	public static final int EventIdNotAssigned = -1;
 	
 	//Launch application return codes

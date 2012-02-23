@@ -24,4 +24,6 @@ public interface IPubService extends IBinder {
 	void					Load(String loadedData);
 	String 					Save();
 	
+	boolean					SendingMessage();
+	
 }
