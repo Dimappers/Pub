@@ -81,34 +81,33 @@ public class LaunchApplication extends Activity implements OnClickListener{
         /* Only call authorize if the access_token has expired */
         if(!facebook.isSessionValid()) {  	
         	facebook.authorize(this, new String[] { "email", "publish_checkins", "user_location", "friends_location" }, 42, new DialogListener() {
-        		@Override
         		public void onComplete(Bundle values) {
         			SharedPreferences.Editor editor = mPrefs.edit();
                     editor.putString("access_token", facebook.getAccessToken());
                     editor.putLong("access_expires", facebook.getAccessExpires());
                     editor.commit();
-                    
         		}
 
-        		@Override
         		public void onFacebookError(FacebookError error) {}
         		
-        		@Override
         		public void onError(DialogError e) {}
 
-        		@Override
         		public void onCancel() {}
         	});
         	
         }
-    	
+        else {getPerson();}
         
     	Button button_organise = (Button)findViewById(R.id.organise_button);
     	button_organise.setOnClickListener(this);
     	
     	Button button_invites = (Button)findViewById(R.id.invites_button);
     	button_invites.setOnClickListener(this);
-    	
+    
+    }
+    
+    private void getPerson()
+    {
     	JSONObject me = null;
 		try {
 			Log.d(Constants.MsgError, "Performing request");
@@ -177,21 +176,16 @@ public class LaunchApplication extends Activity implements OnClickListener{
     		case R.id.logoutfb_button : {
     			
     			mAsyncRunner.logout(getBaseContext(), new RequestListener() {
-    				  @Override
     				  public void onComplete(String response, Object state) {}
     				  
-    				  @Override
     				  public void onIOException(IOException e, Object state) {}
     				  
-    				  @Override
     				  public void onFileNotFoundException(FileNotFoundException e,
     				        Object state) {}
     				  
-    				  @Override
     				  public void onMalformedURLException(MalformedURLException e,
     				        Object state) {}
     				  
-    				  @Override
     				  public void onFacebookError(FacebookError e, Object state) {}
     				});
     		}
@@ -204,39 +198,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	if(requestCode == 42)
     	{
     		facebook.authorizeCallback(requestCode, resultCode, data);
-
-        	JSONObject me = null;
-    		try {
-    			Log.d(Constants.MsgError, "Performing request");
-    			me = new JSONObject(facebook.request("me"));
-    		} catch (MalformedURLException e) {
-    			// TODO Auto-generated catch block
-    			Log.d(Constants.MsgError, "Malformed");
-    			e.printStackTrace();
-    		} catch (JSONException e) {
-    			// TODO Auto-generated catch block
-    			Log.d(Constants.MsgError, "Jason");
-    			e.printStackTrace();
-    		} catch (IOException e) {
-    			// TODO Auto-generated catch block
-    			Log.d(Constants.MsgError, "IO");
-    			e.printStackTrace();
-    		}
-        	String id = null;
-    		try {
-    			Log.d(Constants.MsgError, Integer.toString(me.length()));
-    			Log.d(Constants.MsgError, me.toString(4));
-    			id = me.getString("id");
-    		} catch (JSONException e) {
-    			// TODO Auto-generated catch block
-    			Log.d(Constants.MsgError, "JSON");
-    			e.printStackTrace();
-    		}
-        	
-        	TextView text_userid = (TextView)findViewById(R.id.userid_text);
-        	if (id != null){
-        	text_userid.setText(id);
-        	}
+        	getPerson();
     	}
     	
     	if(resultCode==RESULT_OK)
