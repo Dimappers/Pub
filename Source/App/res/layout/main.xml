@@ -34,6 +34,34 @@
 	    android:text="@string/invites"
 	    android:textAppearance="?android:attr/textAppearanceLarge" />
     
+	<Button
+	    android:id="@+id/logoutfb_button"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:layout_marginTop="20sp"
+	    android:layout_marginBottom="20sp"
+	    android:layout_marginLeft="20sp"
+	    android:layout_marginRight="20sp"
+	    android:layout_weight="1"
+	    android:layout_alignParentLeft="true"
+	    android:layout_alignParentTop="true"
+	    android:text="@string/logoutfb"
+	    android:textAppearance="?android:attr/textAppearanceLarge" />
+	
+    <TextView
+        android:id="@+id/userid_text"
+        android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	     android:layout_marginTop="20sp"
+	    android:layout_marginBottom="20sp"
+	    android:layout_marginLeft="20sp"
+	    android:layout_marginRight="20sp"
+	    android:layout_weight="1"
+	    android:layout_alignParentLeft="true"
+	    android:layout_alignParentTop="true"
+	    android:text="@string/error"
+	    android:textAppearance="?android:attr/textAppearanceLarge" />
+    
     <ListView
 		android:id= "@android:id/list"
 		android:layout_width="match_parent"

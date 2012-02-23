@@ -62,5 +62,7 @@
   	
   	<string name="search">Search</string>
 
+  	<string name="logoutfb">Logout</string>
+  	<string name="error">Error</string>
     
 </resources>

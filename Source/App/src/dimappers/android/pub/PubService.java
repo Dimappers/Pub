@@ -79,7 +79,7 @@ public class PubService extends IntentService
 		
 		public String Save()
 		{
-			return PubService.this.storedData.Save();
+			return PubService.this.storedData.save();
 		}
 		
 		public void Load(String loadedData)

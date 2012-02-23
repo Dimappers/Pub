@@ -1,10 +1,19 @@
 package dimappers.android.pub;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.facebook.android.Facebook;
 
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -16,10 +25,12 @@ import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
 
 public class Guests extends ListActivity implements OnClickListener{
-	ArrayList<AppUser> listItems=new ArrayList<AppUser>();
-	ArrayAdapter<AppUser> adapter;
+	ArrayList<User> listItems=new ArrayList<User>();
+	ArrayAdapter<User> adapter;
 	ListView guest_list;
 	PubEvent event;
+	
+	Facebook facebook;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,7 +39,10 @@ public class Guests extends ListActivity implements OnClickListener{
     	
     	Bundle bundle = getIntent().getExtras();
     	event = (PubEvent) bundle.getSerializable(Constants.CurrentWorkingEvent);
-    	
+    	facebook = new Facebook("153926784723826");
+    	Log.d(Constants.MsgError, bundle.getString(Constants.AuthToken));
+    	facebook.setAccessToken(bundle.getString(Constants.AuthToken));
+    	facebook.setAccessExpires(bundle.getLong(Constants.Expires));
     	if(event == null)
     	{
     		Toast.makeText(getApplicationContext(), "Error finding pub data - please restart", 100).show();
@@ -42,7 +56,7 @@ public class Guests extends ListActivity implements OnClickListener{
     	guest_list = (ListView)findViewById(android.R.id.list);
     	guest_list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		
-		adapter = new ArrayAdapter<AppUser>(this, android.R.layout.simple_list_item_multiple_choice, listItems);
+		adapter = new ArrayAdapter<User>(this, android.R.layout.simple_list_item_multiple_choice, listItems);
 		setListAdapter(adapter);
 		
 		//Tick already selected guests
@@ -57,6 +71,8 @@ public class Guests extends ListActivity implements OnClickListener{
     	button_add_guest.setOnClickListener(this);
     	Button save = (Button)findViewById(R.id.save);
     	save.setOnClickListener(this);
+    	
+    	
 	}
 	public void onResume(View v){
 		super.onResume();
@@ -93,7 +109,7 @@ public class Guests extends ListActivity implements OnClickListener{
 		super.onListItemClick(l, v, pos, id);
 		
 		//Add/Remove guest from
-		AppUser modifedUser = listItems.get(pos);
+		User modifedUser = listItems.get(pos);
 		if(event.DoesContainUser(modifedUser))
 		{
 			event.RemoveUser(modifedUser);		}
@@ -108,18 +124,48 @@ public class Guests extends ListActivity implements OnClickListener{
 		listItems.clear();
     	
 		for(User user : GetSortedUsers()) {
-    		listItems.add(((AppUser) user));
+    		listItems.add(user);
     	}
 	}
 	
-	private AppUser[] GetUsers()
+	private User[] GetUsers()
 	{
 		//TODO: Generate a list of all facebook friends 
 		
-		return new AppUser[]{ new AppUser(12), new AppUser(124), new AppUser(1238), new AppUser(143), new AppUser(12341), new AppUser(14) };
+		JSONObject mefriends = null;
+    	try {
+			mefriends = new JSONObject(facebook.request("me/friends"));
+			Log.d(Constants.MsgError, mefriends.toString());
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	User[] friends;
+    	try {
+			JSONArray jasonsFriends = mefriends.getJSONArray("data");
+			friends = new User[jasonsFriends.length()];
+			for (int i=0; i < jasonsFriends.length(); i++)
+			{
+				JSONObject jason = (JSONObject) jasonsFriends.get(i);
+				friends[i] = new User(Long.parseLong(jason.getString("id")));
+			
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			Log.d(Constants.MsgError, "JASON: " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+		return friends;
 	}
 	
-	private AppUser[] GetSortedUsers()
+	private User[] GetSortedUsers()
 	{
 		//TODO: Should go through the users, put users that are selected first, then recommended users and finally by alphabet
 		return GetUsers();

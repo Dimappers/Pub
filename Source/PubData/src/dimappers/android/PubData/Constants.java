@@ -11,6 +11,8 @@ public final class Constants {
 	public static final String IsSavedEventFlag = "NewEvent";
 	public static final String CurrentLatitude = "lat";
 	public static final String CurrentLongitude = "long";
+	public static final String AuthToken = "authtoken";
+	public static final String Expires = "expires";
 	
 	//Error constants
 	public static final int MissingDataInBundle = -12;

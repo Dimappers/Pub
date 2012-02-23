@@ -193,7 +193,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 			else if(respondedTo.contains(getItem(position)) ==  true)
 				section = "Responded To";
 			else if(savedEvents.contains(getItem(position)) ==  true)
-				section = "Send Invites";
+				section = "Saved Events";
 
 			return section;
 
@@ -201,37 +201,37 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 
 		public void setData(IPubService serviceInterface)
 		{
-			ArrayAdapter<PubEvent> hostingSaved = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item);
+			ArrayAdapter<PubEvent> hostingSaved = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item, savedEvents);
 			for(PubEvent savedEvent : serviceInterface.GetSavedEvents())
 			{
 				hostingSaved.add(savedEvent);
 			}
 			
-			ArrayAdapter<PubEvent> hostingSent = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item);
+			ArrayAdapter<PubEvent> hostingSent = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item, hosting);
 			for(PubEvent sentEvent : serviceInterface.GetSentEvents())
 			{
 				hostingSent.add(sentEvent);
 			}
 			
-			ArrayAdapter<PubEvent> waitingForResponse = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item);
-			ArrayAdapter<PubEvent> respondedTo = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item);
+			ArrayAdapter<PubEvent> waitingForResponses = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item, waitingForResponse);
+			ArrayAdapter<PubEvent> respondedto = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item, respondedTo);
 			
 			for(PubEvent event : serviceInterface.GetInvitedEvents())
 			{
 				if(event.GetUserGoingStatus(currentUser) == GoingStatus.maybeGoing)
 				{
-					waitingForResponse.add(event);
+					waitingForResponses.add(event);
 				}
 				else
 				{
-					respondedTo.add(event);
+					respondedto.add(event);
 				}
 			}
 			
 			//Keep in this order unless you want it to break!!! 
-			addSection("Waiting for response", waitingForResponse);		
+			addSection("Waiting for response", waitingForResponses);		
 			addSection("Sent invites", hostingSent);
-			addSection("Responded to", respondedTo);
+			addSection("Responded to", respondedto);
 			addSection("Saved Invites", hostingSaved);
 		}
 		
@@ -277,7 +277,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 				position = 1;
 			else if(section == "Responded To")
 				position = 2;
-			else if(section == "Send Invites")
+			else if(section == "Saved Events")
 				position = 3;
 
 			return position;
@@ -288,12 +288,18 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 			return GetRelevantList(sectionnum).get(position);
 		}
 		
-		private ArrayList<PubEvent> GetRelevantList(int position)
+		private ArrayList<PubEvent> GetRelevantList(int sectionnum)
 		{
-			switch(position)
+			switch(sectionnum)
 			{
 			case Constants.HostedEventSent:
 				return hosting;
+			case Constants.HostedEventSaved:
+				return savedEvents;
+			case Constants.ProposedEventHaveResponded:
+				return respondedTo;
+			case Constants.ProposedEventNoResponse:
+				return waitingForResponse;
 			}
 			return null;
 		}

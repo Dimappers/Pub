@@ -1,5 +1,7 @@
 package dimappers.android.pub;
 
+import com.facebook.android.Facebook;
+
 import android.provider.MediaStore.Images;
 import dimappers.android.PubData.User;
 
@@ -9,7 +11,7 @@ public class AppUser extends User
 
 
 	//Constructors
-	public AppUser(Integer facebookUserId)
+	public AppUser(Long facebookUserId)
 	{
 		super(facebookUserId);
 	}
@@ -38,5 +40,6 @@ public class AppUser extends User
 	{
 		return new AppUser(user.getUserId());
 	}
+	
 
 }
