@@ -30,7 +30,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 {
 
 	PubEvent event;
-	AppUser facebookUser;
+	User facebookUser;
 	
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -44,7 +44,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     		setResult(Constants.MissingDataInBundle);
     		finish();
     	}
-    	facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
+    	facebookUser = (User)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
     	if(facebookUser == null)
     	{
     		Log.d(Constants.MsgError, "Host data missing for showing details about");
@@ -88,13 +88,13 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     	{
     		HashMap<String, String> map = new HashMap<String, String>();
     
-    		String freeFromWhen = event.GetStartTime().get(Calendar.HOUR_OF_DAY) + ":" + event.GetStartTime().get(Calendar.MINUTE);
+    		String freeFromWhen = event.GetFormattedStartTime();
     		if(userResponse.getValue().freeFrom != null)
     		{
-    			freeFromWhen = userResponse.getValue().freeFrom.get(Calendar.HOUR_OF_DAY) + ":" + userResponse.getValue().freeFrom.get(Calendar.MINUTE);
+    			freeFromWhen = PubEvent.GetFormattedDate(userResponse.getValue().freeFrom);
     		}
     		map.put("Available From Time", freeFromWhen);
-    		map.put("Guest", AppUser.AppUserFromUser(userResponse.getKey()).GetRealFacebookName());
+    		map.put("Guest", AppUser.getFacebookName(userResponse.getKey()));
     		
     		mylist.add(map);
     	}

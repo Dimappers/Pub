@@ -44,7 +44,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 	
 	Facebook facebook = new Facebook("153926784723826");
 	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
-	
+	private boolean useFacebook = false;
 	String FILENAME = "AndroidSSO_data";
 	private SharedPreferences mPrefs;
 	
@@ -67,37 +67,43 @@ public class LaunchApplication extends Activity implements OnClickListener{
         
     	AppGardenAgent.startSchoolYear(this, "e8428bc2-8ce9-4dec-b5c3-20b5e42738c9");
     	
-    	/* Get existing access_token if any */
-    	mPrefs = getPreferences(MODE_PRIVATE);
-        String access_token = mPrefs.getString("access_token", null);
-        long expires = mPrefs.getLong("access_expires", 0);
-        if(access_token != null) {
-        	Log.d(Constants.MsgError, "Token found: " + access_token);
-            facebook.setAccessToken(access_token);
-        }
-        if(expires != 0) {
-            facebook.setAccessExpires(expires);
-        }
-        /* Only call authorize if the access_token has expired */
-        if(!facebook.isSessionValid()) {  	
-        	facebook.authorize(this, new String[] { "email", "publish_checkins", "user_location", "friends_location" }, 42, new DialogListener() {
-        		public void onComplete(Bundle values) {
-        			SharedPreferences.Editor editor = mPrefs.edit();
-                    editor.putString("access_token", facebook.getAccessToken());
-                    editor.putLong("access_expires", facebook.getAccessExpires());
-                    editor.commit();
-        		}
-
-        		public void onFacebookError(FacebookError error) {}
-        		
-        		public void onError(DialogError e) {}
-
-        		public void onCancel() {}
-        	});
-        	
-        }
-        else {getPerson();}
-        
+    	if(useFacebook)
+    	{
+	    	/* Get existing access_token if any */
+	    	mPrefs = getPreferences(MODE_PRIVATE);
+	        String access_token = mPrefs.getString("access_token", null);
+	        long expires = mPrefs.getLong("access_expires", 0);
+	        if(access_token != null) {
+	        	Log.d(Constants.MsgError, "Token found: " + access_token);
+	            facebook.setAccessToken(access_token);
+	        }
+	        if(expires != 0) {
+	            facebook.setAccessExpires(expires);
+	        }
+	        /* Only call authorize if the access_token has expired */
+	        if(!facebook.isSessionValid()) {  	
+	        	facebook.authorize(this, new String[] { "email", "publish_checkins", "user_location", "friends_location" }, Constants.FromFacebookLogin, new DialogListener() {
+	        		public void onComplete(Bundle values) {
+	        			SharedPreferences.Editor editor = mPrefs.edit();
+	                    editor.putString("access_token", facebook.getAccessToken());
+	                    editor.putLong("access_expires", facebook.getAccessExpires());
+	                    editor.commit();
+	                    
+	        		}
+	
+	        		public void onFacebookError(FacebookError error) {}
+	        		
+	        		public void onError(DialogError e) {}
+	
+	        		public void onCancel() {}
+	        	});
+	        	
+	        }
+	        else 
+	        {
+	        	getPerson();
+	        }
+    	}
     	Button button_organise = (Button)findViewById(R.id.organise_button);
     	button_organise.setOnClickListener(this);
     	
@@ -108,7 +114,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     
     private void getPerson()
     {
-    	JSONObject me = null;
+    	JSONObject me;
 		try {
 			Log.d(Constants.MsgError, "Performing request");
 			me = new JSONObject(facebook.request("me"));
@@ -116,14 +122,20 @@ public class LaunchApplication extends Activity implements OnClickListener{
 			// TODO Auto-generated catch block
 			Log.d(Constants.MsgError, "Malformed");
 			e.printStackTrace();
+			finish();
+			return;
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			Log.d(Constants.MsgError, "Jason");
 			e.printStackTrace();
+			finish();
+			return;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			Log.d(Constants.MsgError, "IO");
 			e.printStackTrace();
+			finish();
+			return;
 		}
     	String id = null;
 		try {
@@ -140,8 +152,10 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	if (id != null){
     	text_userid.setText(id);
     	}
+    	
     	facebookUser = new User(Long.parseLong(id));
     	
+    	//Don't start the service until we are logged in to facebook
     	Intent startServiceIntent = new Intent(this, PubService.class);
     	Bundle b = new Bundle();
     	b.putSerializable(Constants.CurrentFacebookUser, facebookUser);
@@ -195,12 +209,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
     	AppGardenAgent.onActivityResult(requestCode, resultCode, data);
-    	if(requestCode == 42)
-    	{
-    		facebook.authorizeCallback(requestCode, resultCode, data);
-        	getPerson();
-    	}
-    	
+
     	if(resultCode==RESULT_OK)
     	{
     		if(requestCode == Constants.FromOrganise)
@@ -218,6 +227,11 @@ public class LaunchApplication extends Activity implements OnClickListener{
     		else if(requestCode==Constants.NoInternet)
     		{
     			if(!isNetworkAvailable()){finish();}
+    		}
+    		else if(requestCode == Constants.FromFacebookLogin)
+    		{
+    			facebook.authorizeCallback(requestCode, resultCode, data);
+            	getPerson();
     		}
     	}
     }

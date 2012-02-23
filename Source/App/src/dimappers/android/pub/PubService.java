@@ -1,5 +1,6 @@
 package dimappers.android.pub;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.TimerTask;
 
@@ -43,6 +44,8 @@ public class PubService extends IntentService
 		}
 
 		public int GiveNewSentEvent(PubEvent event) {
+			event.SetEventId(Constants.EventIdBeingSent);
+			PubService.this.sender.sendEvent(event);
 			PubService.this.storedData.AddNewSentEvent(event);
 			return event.GetEventId();
 		}
@@ -86,6 +89,11 @@ public class PubService extends IntentService
 		{
 			PubService.this.storedData.Load(loadedData);
 		}
+
+		public boolean SendingMessage() {
+			//TODO: Should check to see if a new event has been created but hasn't yet been sent
+			return false;
+		}
 		
     }
 
@@ -95,6 +103,7 @@ public class PubService extends IntentService
 	private StoredData storedData;
 	private boolean hasStarted;
 	private DataReceiver receiver;
+	private	DataSender sender;
  
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
@@ -103,6 +112,7 @@ public class PubService extends IntentService
 		storedData = new StoredData();
 		user = (User)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
 		receiver = new DataReceiver(this);
+		sender = new DataSender(this);
 	    return START_STICKY;
 	}
 	
@@ -122,28 +132,6 @@ public class PubService extends IntentService
 	{
 		return storedData;
 	}
-	
-	class GetUpdates extends TimerTask
-	{
-
-		@Override
-		public void run()
-		{
-			int icon = R.drawable.icon;
-			CharSequence tickerText = "Hello";
-			long when = System.currentTimeMillis();
-
-			Notification notification = new Notification(icon, tickerText, when);
-			PendingIntent p = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), 0);
-			notification.setLatestEventInfo(getApplicationContext(), "Hello2", "Hello3", p);
-			NotificationManager manager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-			manager.notify("MyNotte", 42, notification);
-			
-			//TODO: Here we want to send query to server to find out if new events and tell the app if there is 
-		}
-		
-	}
-
 
 
 	@Override

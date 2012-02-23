@@ -31,7 +31,7 @@ public class Guests extends ListActivity implements OnClickListener{
 	PubEvent event;
 	
 	Facebook facebook;
-	
+	private boolean useFacebook = false;
 	@Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
@@ -39,17 +39,21 @@ public class Guests extends ListActivity implements OnClickListener{
     	
     	Bundle bundle = getIntent().getExtras();
     	event = (PubEvent) bundle.getSerializable(Constants.CurrentWorkingEvent);
-    	facebook = new Facebook("153926784723826");
-    	Log.d(Constants.MsgError, bundle.getString(Constants.AuthToken));
-    	facebook.setAccessToken(bundle.getString(Constants.AuthToken));
-    	facebook.setAccessExpires(bundle.getLong(Constants.Expires));
+    	if(useFacebook)
+	    {
+    		facebook = new Facebook("153926784723826");
+	    	Log.d(Constants.MsgError, bundle.getString(Constants.AuthToken));
+	    	facebook.setAccessToken(bundle.getString(Constants.AuthToken));
+	    	facebook.setAccessExpires(bundle.getLong(Constants.Expires));
+	    	
+    	}
     	if(event == null)
     	{
     		Toast.makeText(getApplicationContext(), "Error finding pub data - please restart", 100).show();
     		setResult(Constants.MissingDataInBundle);
     		finish();
     	}
-    
+    	
     	UpdateListView();
     	
     	
@@ -131,38 +135,44 @@ public class Guests extends ListActivity implements OnClickListener{
 	private User[] GetUsers()
 	{
 		//TODO: Generate a list of all facebook friends 
-		
-		JSONObject mefriends = null;
-    	try {
-			mefriends = new JSONObject(facebook.request("me/friends"));
-			Log.d(Constants.MsgError, mefriends.toString());
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	User[] friends;
-    	try {
-			JSONArray jasonsFriends = mefriends.getJSONArray("data");
-			friends = new User[jasonsFriends.length()];
-			for (int i=0; i < jasonsFriends.length(); i++)
-			{
-				JSONObject jason = (JSONObject) jasonsFriends.get(i);
-				friends[i] = new User(Long.parseLong(jason.getString("id")));
-			
+		if(useFacebook)
+		{
+			JSONObject mefriends = null;
+	    	try {
+				mefriends = new JSONObject(facebook.request("me/friends"));
+				Log.d(Constants.MsgError, mefriends.toString());
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			Log.d(Constants.MsgError, "JASON: " + e.getMessage());
-			e.printStackTrace();
-			return null;
+	    	User[] friends;
+	    	try {
+				JSONArray jasonsFriends = mefriends.getJSONArray("data");
+				friends = new User[jasonsFriends.length()];
+				for (int i=0; i < jasonsFriends.length(); i++)
+				{
+					JSONObject jason = (JSONObject) jasonsFriends.get(i);
+					friends[i] = new User(Long.parseLong(jason.getString("id")));
+				
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				Log.d(Constants.MsgError, "JASON: " + e.getMessage());
+				e.printStackTrace();
+				return null;
+			}
+			return friends;
 		}
-		return friends;
+		else
+		{
+			return new User[]{new User(123L), new User(242L)};
+		}
 	}
 	
 	private User[] GetSortedUsers()

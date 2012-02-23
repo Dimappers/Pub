@@ -23,83 +23,118 @@ import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.User;
 
-public class Pending extends Activity implements OnClickListener{
-	
+public class Pending extends Activity implements OnClickListener {
+
 	private TextView text;
-	private AppUser facebookUser;
+	private User facebookUser;
 	private Location currentLocation;
-	
+
 	private boolean firstTime = true;
-	
-	PubEvent event; 
-	
+
+	PubEvent event;
+
 	boolean personFinished;
 	boolean pubFinished;
-	
+
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-    	super.onCreate(savedInstanceState);
-    	setContentView(R.layout.pending_guests);
-    	text = (TextView) findViewById(R.id.location_error);
-    	((TextView)findViewById(R.id.cancelbutton)).setOnClickListener(this);
-    	if(firstTime) {firstTime=false; findLocation();}
-	}	
-	private void findLocation()
-	{		
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.pending_guests);
+		text = (TextView) findViewById(R.id.location_error);
+		((TextView) findViewById(R.id.cancelbutton)).setOnClickListener(this);
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		if (firstTime) {
+			firstTime = false;
+			findLocation();
+		}
+	}
+
+	private void findLocation() {
 		updateText("Finding current location");
 		LocationFinder lc = new LocationFinder(this);
 		currentLocation = lc.findLocation();
-		startTasks(currentLocation);
-	 }
+		//FIXME: if location is not immediately available - this breaks
+		startTasks();
+	}
+
 	public void updateText(String s) {
 		text.setText(s);
-	}	
-	public void startTasks(Location location) {
-		
-        if(location == null){Log.d(Constants.MsgError, "Need to set location first."); updateText("An error has occurred, please try again.");}
-        else{Log.d(Constants.MsgInfo, "Using location: " + location.getLatitude() + ", " + location.getLongitude());}
-        
+	}
+
+	public void startTasks() {
+
+		if (currentLocation == null) {
+			Log.d(Constants.MsgError, "Need to set location first.");
+			updateText("An error has occurred, please try again.");
+			return;
+		} else {
+			Log.d(Constants.MsgInfo,
+					"Using location: " + currentLocation.getLatitude() + ", "
+							+ currentLocation.getLongitude());
+		}
+
 		createEvent();
-        
+
 		Object[] info = new Object[2];
-		info[0] = location;
+		info[0] = currentLocation;
 		info[1] = this;
 
 		new PubFinding().execute(info);
-		
-		new PersonFinder().execute(this);	
+
+		new PersonFinder().execute(this);
 	}
+
 	public void createEvent() {
-        updateText("Creating Event");
-        
-        Bundle b = getIntent().getExtras();
-        if(b == null){Debug.waitForDebugger();}
-        
-        facebookUser = AppUser.AppUserFromUser((User)b.getSerializable(Constants.CurrentFacebookUser));
-        event = new PubEvent(Calendar.getInstance(), new User(facebookUser.getUserId()));
+		updateText("Creating Event");
+
+		Bundle b = getIntent().getExtras();
+		if (b == null) {
+			Debug.waitForDebugger();
+		}
+
+		facebookUser = (User) b
+				.getSerializable(Constants.CurrentFacebookUser);
+		event = new PubEvent(new TimeFinder().chooseTime(), new User(
+				facebookUser.getUserId()));
 	}
-	public void onClick(View v)
-	{
-		if(v.getId()==R.id.cancelbutton) {finish();}
+
+	public void onClick(View v) {
+		if (v.getId() == R.id.cancelbutton) {
+			finish();
+		}
 	}
+
 	public void onFinish() {
 		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle()));
-        finish();
+		finish();
 	}
+
 	private Bundle fillBundle() {
 		Bundle eventBundle = new Bundle();
 		eventBundle.putAll(getIntent().getExtras());
 		eventBundle.putSerializable(Constants.CurrentWorkingEvent, event);
 		eventBundle.putBoolean(Constants.IsSavedEventFlag, true);
-		eventBundle.putDouble(Constants.CurrentLatitude, currentLocation.getLatitude());
-		eventBundle.putDouble(Constants.CurrentLongitude, currentLocation.getLongitude());
+		eventBundle.putDouble(Constants.CurrentLatitude,
+				currentLocation.getLatitude());
+		eventBundle.putDouble(Constants.CurrentLongitude,
+				currentLocation.getLongitude());
 		return eventBundle;
 	}
+
 	public void errorOccurred() {
-	   	new AlertDialog.Builder(this).setMessage("An unexpected error has occurred. Please try again.")  
-        .setTitle("Error")  
-        .setCancelable(false)  
-        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int id) {dialog.cancel(); finish();}}).show(); 
+		new AlertDialog.Builder(this)
+				.setMessage(
+						"An unexpected error has occurred. Please try again.")
+				.setTitle("Error").setCancelable(false)
+				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+						finish();
+					}
+				}).show();
 	}
 }

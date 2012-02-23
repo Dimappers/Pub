@@ -38,7 +38,7 @@ import dimappers.android.PubData.UserStatus;
 public class HostEvents extends Activity implements OnClickListener, OnMenuItemClickListener{
 
 	private PubEvent event;
-	private AppUser facebookUser;
+	private User facebookUser;
 	private GuestListAdapter gadapter;
 	private ImageButton comment_made;
 	public static boolean sent;
@@ -69,7 +69,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			setResult(Constants.MissingDataInBundle);
 			finish();
 		}
-		facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
+		facebookUser = (User)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
 		if(facebookUser == null)
 		{
 			Log.d(Constants.MsgError, "Host data missing for showing details about");
@@ -335,12 +335,12 @@ class GuestListAdapter extends BaseAdapter
 		mData.clear();
 		for(Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
 		{
-			String freeFromWhen = event.GetStartTime().get(Calendar.HOUR_OF_DAY) + ":" + event.GetStartTime().get(Calendar.MINUTE);
+			String freeFromWhen = event.GetFormattedStartTime();
 			if(userResponse.getValue().freeFrom != null)
 			{
-				freeFromWhen = userResponse.getValue().freeFrom.get(Calendar.HOUR_OF_DAY) + ":" + userResponse.getValue().freeFrom.get(Calendar.MINUTE);
+				freeFromWhen = PubEvent.GetFormattedDate(userResponse.getValue().freeFrom);
 			}
-			mData.add(new GuestList(AppUser.AppUserFromUser(userResponse.getKey()).GetRealFacebookName(), freeFromWhen));  
+			mData.add(new GuestList(AppUser.getFacebookName(userResponse.getKey()), freeFromWhen));  
 		}
 	}
 

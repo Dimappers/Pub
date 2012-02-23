@@ -11,7 +11,7 @@ public class AppUser extends User
 
 
 	//Constructors
-	public AppUser(Long facebookUserId)
+	private AppUser(Long facebookUserId)
 	{
 		super(facebookUserId);
 	}
@@ -19,7 +19,7 @@ public class AppUser extends User
 	//Public methods
 	
 	//Get facebook profile picture
-	Images GetFacebookImage()
+	/*Images GetFacebookImage()
 	{
 		return null;		
 	}
@@ -39,6 +39,11 @@ public class AppUser extends User
 	public static AppUser AppUserFromUser(User user)
 	{
 		return new AppUser(user.getUserId());
+	}*/
+	
+	public static String getFacebookName(User user)
+	{
+		return "Name: " + user.getUserId();
 	}
 	
 

@@ -46,7 +46,30 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.current_events);
 
-		AppUser facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
+		User facebookUser = (User)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
+		
+		
+		PubEvent createdEvent = (PubEvent) getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent); 
+		if(createdEvent != null) {
+			//Then skip straight in to the relevant next screen
+			Intent i;
+			Bundle b = new Bundle();
+			b.putAll(getIntent().getExtras());
+			
+			if(createdEvent.GetHost().equals(facebookUser))
+			{
+				i = new Intent(this, HostEvents.class);					
+			}
+			else
+			{
+				i = new Intent(this, UserInvites.class);
+			}
+			
+			i.putExtras(b);
+			startActivity(i);
+		}
+		
+		
 		bindService(new Intent(this, PubService.class), connection, 0);
 
 		// Create the ListView Adapter
@@ -66,20 +89,10 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 	public void onItemClick(AdapterView<?> parent, View convertView, int position, long location) 
 	{
 		Intent i;
-		Object section = adapter.getSection(position);
-		int sectionnum = (int) adapter.getHeaderId(section, position);
-
-		if(section == "Waiting For Response")
-			position = position - 1;
-		else if(section == "Hosting")
-			position = position - 2 - adapter.waitingForResponse.size();
-		else if(section == "Responded To")
-			position = position - 3 - adapter.waitingForResponse.size() - adapter.hosting.size();
-		else if(section == "Saved Events")
-			position = position - 4 - adapter.waitingForResponse.size() - adapter.hosting.size() - adapter.respondedTo.size();
+		int sectionnum = adapter.getItemCategory(position);
 
 		Bundle bundle = new Bundle();
-		bundle.putSerializable(Constants.CurrentWorkingEvent, (PubEvent)adapter.getHeader(sectionnum, position));
+		bundle.putSerializable(Constants.CurrentWorkingEvent, (PubEvent)adapter.getItem(position));
 		bundle.putAll(getIntent().getExtras());		
 
 		switch(sectionnum)
@@ -117,13 +130,6 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 		}
 	}
 
-	@Override
-	public void onResume()
-	{
-		super.onResume();
-		adapter.notifyDataSetChanged();
-	}
-
 	private ServiceConnection connection = new ServiceConnection()
 	{
 
@@ -131,7 +137,6 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 		{
 			//Give the interface to the app
 			IPubService serviceInterface = (IPubService)service;
-			((SeperatedListAdapter)adapter).setServiceInterface(serviceInterface);
 			String loadData = CurrentEvents.this.getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).getString(Constants.SaveDataName, "NoSave");
 			if(loadData != "NoSave")
 			{
@@ -156,65 +161,32 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 		public final ArrayAdapter<String> headers;  
 		public final static int TYPE_SECTION_HEADER = 0;
 
-		public ArrayList<PubEvent> waitingForResponse;
-		public ArrayList<PubEvent> hosting;
-		public ArrayList<PubEvent> respondedTo;
-		public ArrayList<PubEvent> savedEvents;
-
-		private IPubService serviceInterface;
-		private Context context;
 		private User currentUser;
 
-		public SeperatedListAdapter(Context context, AppUser currentUser) 
+		public SeperatedListAdapter(Context context, User facebookUser) 
 		{  
-			this.context = context;
-			this.currentUser = currentUser;
+			this.currentUser = facebookUser;
 
 			headers = new ArrayAdapter<String>(context, R.layout.header);  
-			waitingForResponse = new ArrayList<PubEvent>();
-			hosting = new ArrayList<PubEvent>();
-			respondedTo = new ArrayList<PubEvent>();
-			savedEvents = new ArrayList<PubEvent>();
 		}  
 
-		public void setServiceInterface(IPubService serviceInterface)
-		{
-			this.serviceInterface = serviceInterface;
-		}
-
-		public Object getSection(int position) 
-		{
-			String section = "null";
-
-			if(waitingForResponse.contains(getItem(position)) ==  true)
-				section = "Waiting For Response";
-			else if(hosting.contains(getItem(position)) ==  true)
-				section = "Hosting";
-			else if(respondedTo.contains(getItem(position)) ==  true)
-				section = "Responded To";
-			else if(savedEvents.contains(getItem(position)) ==  true)
-				section = "Saved Events";
-
-			return section;
-
-		}
-
+		//Read the data out of the service and put it in to the adapters
 		public void setData(IPubService serviceInterface)
 		{
-			ArrayAdapter<PubEvent> hostingSaved = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item, savedEvents);
+			ArrayAdapter<PubEvent> hostingSaved = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item);
 			for(PubEvent savedEvent : serviceInterface.GetSavedEvents())
 			{
 				hostingSaved.add(savedEvent);
 			}
 			
-			ArrayAdapter<PubEvent> hostingSent = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item, hosting);
+			ArrayAdapter<PubEvent> hostingSent = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item);
 			for(PubEvent sentEvent : serviceInterface.GetSentEvents())
 			{
 				hostingSent.add(sentEvent);
 			}
 			
-			ArrayAdapter<PubEvent> waitingForResponses = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item, waitingForResponse);
-			ArrayAdapter<PubEvent> respondedto = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item, respondedTo);
+			ArrayAdapter<PubEvent> waitingForResponses = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item);
+			ArrayAdapter<PubEvent> respondedto = new ArrayAdapter<PubEvent>(CurrentEvents.this.getApplicationContext(), R.layout.list_item);
 			
 			for(PubEvent event : serviceInterface.GetInvitedEvents())
 			{
@@ -241,7 +213,6 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 			this.sections.put(section, adapter);  
 		}  
 
-		@Override
 		public int getCount() 
 		{
 			// total together all sections, plus one for each section header  
@@ -251,67 +222,12 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 			return total; 
 		}
 
-		@Override
-		public Object getItem(int position) 
-		{
-			for(Object section : this.sections.keySet()) 
-			{  
-				Adapter adapter = sections.get(section);  
-				int size = adapter.getCount() + 1;  
-
-				// check if position inside this section  
-				if(position == 0) return section;  
-				if(position < size) return adapter.getItem(position - 1);  
-
-				// otherwise jump into next section  
-				position -= size;  
-			}  
-			return null; 
-		}
-
-		public int getHeaderId(Object section, int position)
-		{
-			if(section == "Waiting For Response")
-				position = 0;
-			else if(section == "Hosting")
-				position = 1;
-			else if(section == "Responded To")
-				position = 2;
-			else if(section == "Saved Events")
-				position = 3;
-
-			return position;
-		}
-
-		public Object getHeader(int sectionnum, int position)
-		{
-			return GetRelevantList(sectionnum).get(position);
-		}
-		
-		private ArrayList<PubEvent> GetRelevantList(int sectionnum)
-		{
-			switch(sectionnum)
-			{
-			case Constants.HostedEventSent:
-				return hosting;
-			case Constants.HostedEventSaved:
-				return savedEvents;
-			case Constants.ProposedEventHaveResponded:
-				return respondedTo;
-			case Constants.ProposedEventNoResponse:
-				return waitingForResponse;
-			}
-			return null;
-		}
-
-		@Override
 		public long getItemId(int position) 
 		{
 			return position;
 		}
 
 
-		@Override
 		public View getView(int position, View convertView, ViewGroup parent) 
 		{
 			int sectionnum = 0;  
@@ -331,7 +247,47 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 
 			return null;
 		}
-		
-	}
 
+		//Gets the PubEvent from the position, counting through the lists
+		public Object getItem(int position) {
+			//Identify section in
+			for(Adapter sectionAdapter : sections.values())
+			{
+				--position; //discount the header
+			
+				if(position < sectionAdapter.getCount()) // does this position fit in to this list?
+				{
+					return sectionAdapter.getItem(position);
+				}
+				else // no? ok move on to the next list discounting the length of this list
+				{
+					position -= sectionAdapter.getCount();
+				}
+			}
+			Log.d(Constants.MsgError, "Couldn't find position");
+			return null;	
+		}
+		
+		//Gets the category the item is in
+		public int getItemCategory(int position)
+		{
+			int i = 0;
+			for(Adapter sectionAdapter : sections.values())
+			{
+				--position; //discount the header
+			
+				if(position < sectionAdapter.getCount())
+				{
+					return i;
+				}
+				else
+				{
+					position -= sectionAdapter.getCount();
+					++i;
+				}
+			}
+			Log.d(Constants.MsgError, "Couldn't find position");
+			return -1;
+		}	
+	}
 }

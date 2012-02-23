@@ -51,7 +51,7 @@ public class DataReceiver
 		//TODO: Test me once we can get xmls from the server
 		public void doUpdate(boolean fullUpdate)
 		{
-			RefreshData refreshRequest = new RefreshData(DataReceiver.this.service.getUser(), fullUpdate);
+			/*RefreshData refreshRequest = new RefreshData(DataReceiver.this.service.getUser(), fullUpdate);
 			
 			Document document = new Document();
 			Element root = new Element("Message");
@@ -96,7 +96,7 @@ public class DataReceiver
 			{
 				PubEvent newEvent = new PubEvent(eventElement);
 				service.getDataStore().AddNewInvitedEvent(newEvent);
-			}
+			}*/
 		}
 		
 	}

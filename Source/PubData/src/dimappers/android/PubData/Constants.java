@@ -17,12 +17,14 @@ public final class Constants {
 	//Error constants
 	public static final int MissingDataInBundle = -12;
 	public static final int ErrorEventId = -384051;
+	public static final int EventIdBeingSent = -1001; //Event id for event that is being sent but has not received its ID back
 	public static final int EventIdNotAssigned = -1;
 	
 	//Launch application return codes
 	public static final int FromPending = 0;
 	public static final int FromOrganise = 1;
 	public static final int NoInternet = 2;
+	public static final int FromFacebookLogin = 3;
 	
 	//HostEvent return codes
 	public static final int FromEdit = 0;
