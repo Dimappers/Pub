@@ -46,7 +46,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.current_events);
 
-		AppUser facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
+		User facebookUser = (User)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
 		
 		
 		PubEvent createdEvent = (PubEvent) getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent); 
@@ -56,7 +56,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 			Bundle b = new Bundle();
 			b.putAll(getIntent().getExtras());
 			
-			if(createdEvent.GetHost() == facebookUser)
+			if(createdEvent.GetHost().equals(facebookUser))
 			{
 				i = new Intent(this, HostEvents.class);					
 			}
@@ -163,9 +163,9 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 
 		private User currentUser;
 
-		public SeperatedListAdapter(Context context, AppUser currentUser) 
+		public SeperatedListAdapter(Context context, User facebookUser) 
 		{  
-			this.currentUser = currentUser;
+			this.currentUser = facebookUser;
 
 			headers = new ArrayAdapter<String>(context, R.layout.header);  
 		}  

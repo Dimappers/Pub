@@ -152,39 +152,44 @@ public class PubEvent implements Serializable
 	
 	public String GetFormattedStartTime()
 	{
+		return PubEvent.GetFormattedDate(startTime);
+	}
+	
+	public static String GetFormattedDate(Calendar calendar)
+	{
 		String time;
 		
 		String date;
 		Calendar currentTime = Calendar.getInstance();
-		if(startTime.get(Calendar.DAY_OF_MONTH) == currentTime.get(Calendar.DAY_OF_MONTH))
+		if(calendar.get(Calendar.DAY_OF_MONTH) == currentTime.get(Calendar.DAY_OF_MONTH))
 		{
 			date = "Today";
 		}
 		else 
 		{
 			currentTime.add(Calendar.DAY_OF_MONTH, 1);
-			if(currentTime.get(Calendar.DAY_OF_MONTH) == startTime.get(Calendar.DAY_OF_MONTH))
+			if(currentTime.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH))
 			{
 				date = "Tomorrow";
 			}
-			else if(startTime.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR))
+			else if(calendar.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR))
 			{
 				//Same year - don't bother with year
-				date = startTime.get(Calendar.DAY_OF_MONTH) + "/" + (startTime.get(Calendar.MONTH) + 1);
+				date = calendar.get(Calendar.DAY_OF_MONTH) + "/" + (calendar.get(Calendar.MONTH) + 1);
 			}
 			else
 			{
-				date = startTime.get(Calendar.DAY_OF_MONTH) + "/" + (startTime.get(Calendar.MONTH) + 1) + startTime.get(Calendar.YEAR);
+				date = calendar.get(Calendar.DAY_OF_MONTH) + "/" + (calendar.get(Calendar.MONTH) + 1) + calendar.get(Calendar.YEAR);
 			}
 		}
-		String minTime = Integer.toString(startTime.get(Calendar.MINUTE));
-		if(startTime.get(Calendar.MINUTE) < 10)
+		String minTime = Integer.toString(calendar.get(Calendar.MINUTE));
+		if(calendar.get(Calendar.MINUTE) < 10)
 		{
 			minTime = "0" + minTime;
 		}
-		time = date + " at " + startTime.get(Calendar.HOUR_OF_DAY) + ":" + minTime;
+		time = date + " at " + calendar.get(Calendar.HOUR_OF_DAY) + ":" + minTime;
 		
-		return time;
+		return time;	
 	}
 	
 	public Element writeXml()

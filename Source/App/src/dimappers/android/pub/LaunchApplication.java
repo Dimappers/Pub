@@ -44,7 +44,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 	
 	Facebook facebook = new Facebook("153926784723826");
 	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
-	
+	private boolean useFacebook = false;
 	String FILENAME = "AndroidSSO_data";
 	private SharedPreferences mPrefs;
 	
@@ -67,36 +67,39 @@ public class LaunchApplication extends Activity implements OnClickListener{
         
     	AppGardenAgent.startSchoolYear(this, "e8428bc2-8ce9-4dec-b5c3-20b5e42738c9");
     	
-    	/* Get existing access_token if any */
-    	mPrefs = getPreferences(MODE_PRIVATE);
-        String access_token = mPrefs.getString("access_token", null);
-        long expires = mPrefs.getLong("access_expires", 0);
-        if(access_token != null) {
-        	Log.d(Constants.MsgError, "Token found: " + access_token);
-            facebook.setAccessToken(access_token);
-        }
-        if(expires != 0) {
-            facebook.setAccessExpires(expires);
-        }
-        /* Only call authorize if the access_token has expired */
-        if(!facebook.isSessionValid()) {  	
-        	facebook.authorize(this, new String[] { "email", "publish_checkins", "user_location", "friends_location" }, 42, new DialogListener() {
-        		public void onComplete(Bundle values) {
-        			SharedPreferences.Editor editor = mPrefs.edit();
-                    editor.putString("access_token", facebook.getAccessToken());
-                    editor.putLong("access_expires", facebook.getAccessExpires());
-                    editor.commit();
-                    
-        		}
-
-        		public void onFacebookError(FacebookError error) {}
-        		
-        		public void onError(DialogError e) {}
-
-        		public void onCancel() {}
-        	});
-        	
-        }
+    	if(useFacebook)
+    	{
+	    	/* Get existing access_token if any */
+	    	mPrefs = getPreferences(MODE_PRIVATE);
+	        String access_token = mPrefs.getString("access_token", null);
+	        long expires = mPrefs.getLong("access_expires", 0);
+	        if(access_token != null) {
+	        	Log.d(Constants.MsgError, "Token found: " + access_token);
+	            facebook.setAccessToken(access_token);
+	        }
+	        if(expires != 0) {
+	            facebook.setAccessExpires(expires);
+	        }
+	        /* Only call authorize if the access_token has expired */
+	        if(!facebook.isSessionValid()) {  	
+	        	facebook.authorize(this, new String[] { "email", "publish_checkins", "user_location", "friends_location" }, 42, new DialogListener() {
+	        		public void onComplete(Bundle values) {
+	        			SharedPreferences.Editor editor = mPrefs.edit();
+	                    editor.putString("access_token", facebook.getAccessToken());
+	                    editor.putLong("access_expires", facebook.getAccessExpires());
+	                    editor.commit();
+	                    
+	        		}
+	
+	        		public void onFacebookError(FacebookError error) {}
+	        		
+	        		public void onError(DialogError e) {}
+	
+	        		public void onCancel() {}
+	        	});
+	        	
+	        }
+    	}
     	
         
     	Button button_organise = (Button)findViewById(R.id.organise_button);
@@ -105,7 +108,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	Button button_invites = (Button)findViewById(R.id.invites_button);
     	button_invites.setOnClickListener(this);
     	
-    	JSONObject me = null;
+    	/*JSONObject me = null;
 		try {
 			Log.d(Constants.MsgError, "Performing request");
 			me = new JSONObject(facebook.request("me"));
@@ -137,7 +140,9 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	if (id != null){
     	text_userid.setText(id);
     	}
-    	facebookUser = new User(Long.parseLong(id));
+    	facebookUser = new User(Long.parseLong(id));*/
+    	
+    	facebookUser = new User(23487L);
     	
     	Intent startServiceIntent = new Intent(this, PubService.class);
     	Bundle b = new Bundle();

@@ -38,6 +38,7 @@
 	    android:id="@+id/logoutfb_button"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
+	    android:visibility = "gone"
 	    android:layout_marginTop="20sp"
 	    android:layout_marginBottom="20sp"
 	    android:layout_marginLeft="20sp"
@@ -60,8 +61,9 @@
 	    android:layout_alignParentLeft="true"
 	    android:layout_alignParentTop="true"
 	    android:text="@string/error"
+	    android:visibility="gone"
 	    android:textAppearance="?android:attr/textAppearanceLarge" />
-    
+     
     <ListView
 		android:id= "@android:id/list"
 		android:layout_width="match_parent"

@@ -26,7 +26,7 @@ import dimappers.android.PubData.User;
 public class Pending extends Activity implements OnClickListener {
 
 	private TextView text;
-	private AppUser facebookUser;
+	private User facebookUser;
 	private Location currentLocation;
 
 	private boolean firstTime = true;
@@ -96,8 +96,8 @@ public class Pending extends Activity implements OnClickListener {
 			Debug.waitForDebugger();
 		}
 
-		facebookUser = AppUser.AppUserFromUser((User) b
-				.getSerializable(Constants.CurrentFacebookUser));
+		facebookUser = (User) b
+				.getSerializable(Constants.CurrentFacebookUser);
 		event = new PubEvent(new TimeFinder().chooseTime(), new User(
 				facebookUser.getUserId()));
 	}

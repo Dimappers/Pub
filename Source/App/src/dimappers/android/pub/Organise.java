@@ -189,7 +189,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				Editor spe = sp.edit();
 				spe.putString(Constants.SaveDataName, saveData);
 				spe.commit();
-				
+				b.putBoolean(Constants.IsSavedEventFlag, true);
 				i.putExtras(b);
 				setResult(RESULT_OK, i);
 				finish();
@@ -197,7 +197,12 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			}
 			case R.id.send_invites_event : {
 				serviceInterface.GiveNewSentEvent(event);
+				Intent intent = new Intent();
 				//sendEventToServer(); //TODO: Do this in the DataSender class which should be called by the service on the above call
+				b.putBoolean(Constants.IsSavedEventFlag, false);
+				intent.putExtras(b);
+				setResult(RESULT_OK, intent);
+				finish();
 				break;
 			}
 		 }
@@ -294,7 +299,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		
 		listItems.clear();
     	for(User user : event.GetUsers()) {
-    		listItems.add(AppUser.AppUserFromUser(user).GetRealFacebookName());
+    		listItems.add(AppUser.getFacebookName(user));
     	}
     	
     	adapter.notifyDataSetChanged();
