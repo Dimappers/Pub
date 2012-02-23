@@ -73,12 +73,10 @@ public class PubService extends IntentService
 			
 		}
 
-		@Override
 		public void PerformUpdate(boolean fullUpdate) {
 			PubService.this.receiver.forceUpdate(fullUpdate);
 		}
 		
-		@Override 
 		public String Save()
 		{
 			return PubService.this.storedData.Save();

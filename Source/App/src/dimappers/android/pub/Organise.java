@@ -195,7 +195,8 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				break;
 			}
 			case R.id.send_invites_event : {
-				sendEventToServer();
+				serviceInterface.GiveNewSentEvent(event);
+				//sendEventToServer(); //TODO: Do this in the DataSender class which should be called by the service on the above call
 				break;
 			}
 		 }
