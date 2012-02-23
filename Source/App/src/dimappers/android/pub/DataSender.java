@@ -123,7 +123,6 @@ public class DataSender {
 		
 		@Override
 		protected void onPostExecute(Object result) {
-			// TODO Auto-generated method stub
 			super.onPostExecute(result);
 			if(queue.size() > 0)
 				Log.d(Constants.MsgWarning, "Sender thread killed with " + queue.size() + " document(s) left to send");

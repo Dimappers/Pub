@@ -55,7 +55,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
        		Intent i = new Intent(this, NoInternet.class); 
        		startActivityForResult(i,Constants.NoInternet);
        	}
-    	//TODO: need to log into Facebook here if not logged in before
         if(getWindowManager().getDefaultDisplay().getRotation()==Surface.ROTATION_90||getWindowManager().getDefaultDisplay().getRotation()==Surface.ROTATION_270)
         {
       	  setContentView(R.layout.main_hor);

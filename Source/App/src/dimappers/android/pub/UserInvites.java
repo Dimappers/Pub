@@ -69,18 +69,9 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     	button_decline.setOnClickListener(this);
     
     	
-    	/*	TODO: Passing values to determine which page loaded this one: going or waiting for response to know the status.
-    	  	
-    	  	Make available from time textbox open time dialog and automatically have current start time put in
-    	     	 	
-    	 */
+    	/*	TODO: Passing values to determine which page loaded this one: going or waiting for response to know the status.*/
 
-    	ListView list = (ListView) findViewById(R.id.listView2);
-    	 
-    	
-    	/* TODO: Possibly change PubEvent to have hash map to User, ResponseData (at the moment just stores weather
-    	 * they said yes or no, need things like msg, time free etc */
-    	
+    	ListView list = (ListView) findViewById(R.id.listView2);   	
     	
     	ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
     	

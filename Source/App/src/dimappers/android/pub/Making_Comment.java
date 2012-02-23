@@ -16,7 +16,7 @@ public class Making_Comment extends Activity implements OnClickListener{
 
 	}
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
+		// TODO: Write comment creator
 		
 	}
 }

@@ -118,7 +118,6 @@ public class PubService extends IntentService
 	
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
 		Log.d(Constants.MsgInfo, "Service bound too");
 		return binder;
 	}

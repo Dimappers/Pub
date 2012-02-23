@@ -44,7 +44,6 @@ public class DataReceiver
 		@Override
 		public void run()
 		{
-			// TODO Auto-generated method stub
 			doUpdate(false);
 		}
 		

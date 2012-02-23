@@ -134,7 +134,6 @@ public class Guests extends ListActivity implements OnClickListener{
 	
 	private User[] GetUsers()
 	{
-		//TODO: Generate a list of all facebook friends 
 		if(useFacebook)
 		{
 			JSONObject mefriends = null;
@@ -177,7 +176,7 @@ public class Guests extends ListActivity implements OnClickListener{
 	
 	private User[] GetSortedUsers()
 	{
-		//TODO: Should go through the users, put users that are selected first, then recommended users and finally by alphabet
+		//TODO: Hook up PersonRanker
 		return GetUsers();
 	}
 }

@@ -198,7 +198,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			case R.id.send_invites_event : {
 				serviceInterface.GiveNewSentEvent(event);
 				Intent intent = new Intent();
-				//sendEventToServer(); //TODO: Do this in the DataSender class which should be called by the service on the above call
 				b.putBoolean(Constants.IsSavedEventFlag, false);
 				intent.putExtras(b);
 				setResult(RESULT_OK, intent);
@@ -319,7 +318,8 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		}
 	}
 	
-	private void sendEventToServer() {
+	//TODO: Move this into the service
+	/*private void sendEventToServer() {
 		Bundle b = getIntent().getExtras();
 		b.putSerializable(Constants.CurrentWorkingEvent, event);
 		
@@ -331,8 +331,8 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		parent.addView(pBar);
 		new SendData().execute(this);
 
-		//TODO: Move this into the service
-	}
+		
+	}*/
 	
 	private ServiceConnection connection = new ServiceConnection()
 	{
@@ -351,7 +351,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	};
 }
 
-class SendData extends AsyncTask<Organise, Integer, Boolean> {
+/*class SendData extends AsyncTask<Organise, Integer, Boolean> {
 	Organise activity;
 	PubEvent event;
 	
@@ -413,4 +413,4 @@ class SendData extends AsyncTask<Organise, Integer, Boolean> {
 		activity.setResult(Activity.RESULT_OK, i);
 		activity.finish();
 	}
-}
+}*/

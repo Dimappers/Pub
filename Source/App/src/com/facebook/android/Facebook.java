@@ -623,7 +623,6 @@ public class Facebook {
             Util.showAlert(context, "Error",
                     "Application requires permission to access the Internet");
         } else {
-        	//FIXME: Should not use FbDialog but our own, I think -tk
             new FbDialog(context, url, listener).show();
         }
     }
