@@ -21,7 +21,6 @@ public class PubFinding extends AsyncTask<Object, Integer, Boolean> {
 		}
 		catch(Exception e) {Log.d(Constants.MsgError,"Wrong input entered."); return false;}
 		
-    	publishProgress(Constants.ChoosingPub);
 		return findPub();
 	}
 	
@@ -40,9 +39,13 @@ public class PubFinding extends AsyncTask<Object, Integer, Boolean> {
 		}
 	}
 	
+	public void updateProgress(Integer progress) {
+    	publishProgress(progress);
+	}
+	
 	private Boolean findPub() {
 		try {
-			PubLocation best = new PubRanker(new PubFinder(location.getLatitude(),location.getLongitude()).performSearch()).returnBest();
+			PubLocation best = new PubRanker(new PubFinder(location.getLatitude(),location.getLongitude()).performSearch()).returnBest(this);
 			if(best==null) {return false;}
 			activity.event.SetPubLocation(best);
 			return true;

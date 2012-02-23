@@ -2,12 +2,19 @@ package dimappers.android.pub;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
+import android.os.AsyncTask;
+import android.util.Log;
+
 import dimappers.android.PubData.AcknoledgementData;
+import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.RefreshData;
@@ -17,22 +24,26 @@ import dimappers.android.PubData.User;
 
 public class DataSender {
 	
-	DataSender() {}
+	private Queue<Document> queue;
+	private SenderThread senderThread;
 	
-	public void sendEvent(PubEvent event) throws IOException {
+	DataSender(){
+		queue = new ArrayBlockingQueue<Document>(100);
+		senderThread = new SenderThread();
+		senderThread.execute(new Object[]{});
+	}
+	
+	public void sendEvent(PubEvent event) {
 		
-		Element root = new Element("PubEvent");
+		Element root = new Element("Message");
 		Document xmlDoc = new Document(root);
 		
-		root.addContent(event.GetHost().writeXml());
-		root.addContent(new AcknoledgementData(event.GetEventId()).writeXml());
-		root.addContent(event.GetPubLocation().writeXml());
 		
+		Element messageTypeElement = new Element("MessageType");
+		messageTypeElement.addContent(MessageType.newPubEventMessage.toString());
+		root.addContent(messageTypeElement);
 		root.addContent(event.writeXml());
-		
-		XMLOutputter outputter = new XMLOutputter();
-		outputter.output(xmlDoc, System.out);
-		
+		addToSendQueue(xmlDoc);
 	}
 	
 	public void requestUpdate(User u) throws IOException { updates(u,false); }
@@ -47,9 +58,7 @@ public class DataSender {
 		RefreshData rd = new RefreshData(u, full);
 		root.addContent(rd.writeXml());
 		
-		XMLOutputter outputter = new XMLOutputter();
-		outputter.output(xmlDoc, System.out);
-		
+		addToSendQueue(xmlDoc);
 	}
 	
 	public void sendResponse(User u, int event, boolean going, Calendar freefrom, String msg) throws IOException {
@@ -60,9 +69,8 @@ public class DataSender {
 		ResponseData response = new ResponseData(u,event,going,freefrom,msg);
 		root.addContent(response.writeXml());
 		
-		XMLOutputter outputter = new XMLOutputter();
-		outputter.output(xmlDoc, System.out);
-		
+		addToSendQueue(xmlDoc);
+
 	}
 	
 	public void sendEventUpdates(int event, Calendar start, PubLocation pub) throws IOException {
@@ -73,8 +81,53 @@ public class DataSender {
 		UpdateData ud = new UpdateData(event, start, pub);
 		root.addContent(ud.writeXml());
 		
-		XMLOutputter outputter = new XMLOutputter();
-		outputter.output(xmlDoc, System.out);
+		addToSendQueue(xmlDoc);
 		
+	}
+	
+	private void addToSendQueue(Document xmlDoc)
+	{
+		queue.add(xmlDoc);
+	}
+	
+	class SenderThread extends AsyncTask<Object, Object, Object>
+	{
+		boolean running = true;
+		@Override
+		protected Object doInBackground(Object... params) {
+			while(running || DataSender.this.queue.size() > 0 )
+			{
+				Document xmlDoc;
+				try {
+					xmlDoc = ((ArrayBlockingQueue<Document>) DataSender.this.queue).take();
+				} catch (InterruptedException e1) {
+					Log.d(Constants.MsgError, "Sender thread was interupted");
+					continue;
+				}
+				
+				XMLOutputter outputter = new XMLOutputter();
+				try {
+					outputter.output(xmlDoc, System.out);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Object result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			if(queue.size() > 0)
+				Log.d(Constants.MsgWarning, "Sender thread killed with " + queue.size() + " document(s) left to send");
+		}
+		
+		//Stops the thread as soon as all documents have been sent
+		public void stop()
+		{
+			running = false;
+		}
 	}
 }

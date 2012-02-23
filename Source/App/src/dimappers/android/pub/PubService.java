@@ -1,5 +1,6 @@
 package dimappers.android.pub;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.TimerTask;
 
@@ -44,6 +45,7 @@ public class PubService extends IntentService
 
 		public int GiveNewSentEvent(PubEvent event) {
 			PubService.this.storedData.AddNewSentEvent(event);
+			PubService.this.sender.sendEvent(event);
 			return event.GetEventId();
 		}
 
@@ -73,12 +75,10 @@ public class PubService extends IntentService
 			
 		}
 
-		@Override
 		public void PerformUpdate(boolean fullUpdate) {
 			PubService.this.receiver.forceUpdate(fullUpdate);
 		}
 		
-		@Override 
 		public String Save()
 		{
 			return PubService.this.storedData.Save();
@@ -97,6 +97,7 @@ public class PubService extends IntentService
 	private StoredData storedData;
 	private boolean hasStarted;
 	private DataReceiver receiver;
+	private	DataSender sender;
  
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
@@ -105,6 +106,7 @@ public class PubService extends IntentService
 		storedData = new StoredData();
 		user = (User)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
 		receiver = new DataReceiver(this);
+		sender = new DataSender();
 	    return START_STICKY;
 	}
 	
@@ -142,6 +144,14 @@ public class PubService extends IntentService
 			manager.notify("MyNotte", 42, notification);
 			
 			//TODO: Here we want to send query to server to find out if new events and tell the app if there is 
+			DataSender dataSender = new DataSender();
+			try {
+				dataSender.requestUpdate(new User(123));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				Log.d(Constants.MsgError,"IOException");
+				e.printStackTrace();
+			}
 		}
 		
 	}
