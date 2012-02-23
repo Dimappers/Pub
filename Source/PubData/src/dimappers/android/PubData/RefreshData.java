@@ -24,7 +24,7 @@ public class RefreshData implements Serializable {
 	
 	//Encapsulation
 	public User 	getUser() 		{ return user; }
-	public Integer 	getUserId()		{ return user.getUserId(); }
+	public Long 	getUserId()		{ return user.getUserId(); }
 	public boolean 	isFullUpdate() 	{ return fullUpdate; }
 	
 	public Element writeXml()
