@@ -16,7 +16,7 @@ public class ServerUser extends dimappers.android.PubData.User
 	private boolean hasApp;
 	private HashMap<Integer, Boolean> events; //False means needs updating
 	
-	public ServerUser(Integer facebookUserId) {
+	public ServerUser(Long facebookUserId) {
 		super(facebookUserId);
 		hasApp = false;
 		events = new HashMap<Integer, Boolean>();

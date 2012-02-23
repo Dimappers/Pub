@@ -10,13 +10,13 @@ public class DBTest {
 	
 	public static void main(String[] args) throws SQLException {
 		DatabaseManager db = new DatabaseManager();
-		ServerUser user1 = new ServerUser(1);
-		ServerUser user2 = new ServerUser(2);
-		ServerUser user3 = new ServerUser(3);
+		ServerUser user1 = new ServerUser(1l);
+		ServerUser user2 = new ServerUser(2l);
+		ServerUser user3 = new ServerUser(3l);
 		
 		db.clearTables();
 		
-		for (int i=1; i<=3; ++i) {
+		for (long i=1; i<=3; ++i) {
 			db.addUser(new ServerUser(i));
 			db.addUser(new ServerUser(i+3));
 			
@@ -30,9 +30,9 @@ public class DBTest {
 			
 			cal.setTimeInMillis(Calendar.getInstance().getTimeInMillis()+100*i);
 			PubEvent event = new PubEvent(cal, loc, user);
-			event.SetEventId(i);
+			event.SetEventId((int)i);
 			
-			for (int j=1; j<=6; ++j) {
+			for (long j=1; j<=6; ++j) {
 				if (j%i==0) {
 					event.AddUser(new ServerUser(j));
 				}
@@ -48,9 +48,9 @@ public class DBTest {
 		user2.SetHasApp(true);
 		
 		
-		System.out.println(db.getUser(1).toString());
-		System.out.println(db.getUser(2).toString());
-		System.out.println(db.getUser(3).toString());
+		System.out.println(db.getUser(1l).toString());
+		System.out.println(db.getUser(2l).toString());
+		System.out.println(db.getUser(3l).toString());
 		System.out.println("Lat: " + db.getEvent(1).GetPubLocation().latitudeCoordinate + " Lon: " + 
 							db.getEvent(1).GetPubLocation().longitudeCoordinate);
 	}

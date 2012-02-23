@@ -11,12 +11,12 @@ public class UserManager {
 		// Private constructor to make class static
 	}
 
-	private static HashMap<Integer, ServerUser> users;
+	private static HashMap<Long, ServerUser> users;
 	private static int userCounter;
 	private static final int maxUsers = 10000;
 	
 	public static void init() {
-		users = new HashMap<Integer, ServerUser>();
+		users = new HashMap<Long, ServerUser>();
 		userCounter = 0;
 	}
 	

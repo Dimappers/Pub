@@ -135,8 +135,10 @@ public class RequestHandlingThread extends Thread{
 		} 
 		catch (Exception e) {
 			try {
+				System.out.println("Error!");
 				connectionStreamOut.writeObject(new AcknoledgementData(-1));
 			} catch (Exception e1) {
+
 				throw new ServerException(ExceptionType.NewEventSendingErrorBack, e1);
 			}
 			

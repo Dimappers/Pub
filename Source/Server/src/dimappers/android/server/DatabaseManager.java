@@ -16,7 +16,7 @@ public class DatabaseManager {
 		con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ServerData", "root", "dimap");
 	}
 	
-	public ServerUser getUser(Integer userId) throws SQLException {
+	public ServerUser getUser(Long userId) throws SQLException {
 		/* Given the User Id, returns a ServerUser class with the User's information in */
 		
 		ServerUser user = new ServerUser(userId);
@@ -25,7 +25,7 @@ public class DatabaseManager {
 															"FROM User, UserEvents " +
 															"WHERE User.id = ? AND User.id = UserEvents.userId");
 		
-		statement.setInt(1, userId);
+		statement.setLong(1, userId);
 		ResultSet rs = statement.executeQuery();
 		if (true) { // TODO: Check the result set isn't empty
 			while(rs.next()) {
@@ -44,7 +44,7 @@ public class DatabaseManager {
 		PreparedStatement statementUserEvents = con.prepareStatement("INSERT INTO UserEvents(userId, eventID) VALUES (?, ?)");
 		
 		// Add the User Info the the User table
-		statementUser.setInt(1, user.getUserId());
+		statementUser.setLong(1, user.getUserId());
 		statementUser.setBoolean(2, user.GetHasApp());
 		statementUser.execute();
 		
@@ -52,7 +52,7 @@ public class DatabaseManager {
 		// For each Event in the users event list, add it to the database
 		while (events.size() != 0) {
 			System.out.println("Events Size: " + events.size());
-			statementUserEvents.setInt(1, user.getUserId());
+			statementUserEvents.setLong(1, user.getUserId());
 			statementUserEvents.setInt(2, events.pop());
 			statementUserEvents.execute();
 		}
@@ -77,7 +77,7 @@ public class DatabaseManager {
 															"WHERE User.id = ?");
 		
 		statement.setBoolean(1, hasApp);
-		statement.setInt(2, user.getUserId());
+		statement.setLong(2, user.getUserId());
 		statement.execute();
 		
 		statement.close();
@@ -91,8 +91,8 @@ public class DatabaseManager {
 		PreparedStatement statement2 = con.prepareStatement("DELETE from UserEvents" +
 															"WHERE UserEvents.userId = ?");
 		
-		statement1.setInt(1, user.getUserId());
-		statement2.setInt(1, user.getUserId());
+		statement1.setLong(1, user.getUserId());
+		statement2.setLong(1, user.getUserId());
 		
 		statement1.execute();
 		statement2.execute();
@@ -107,7 +107,7 @@ public class DatabaseManager {
 		PreparedStatement statement = con.prepareStatement( "DELETE from UserEvents" +
 															"WHERE UserEvents.userId = ? AND UserEvents.eventId = ?");
 		
-		statement.setInt(1, user.getUserId());
+		statement.setLong(1, user.getUserId());
 		statement.setInt(2, event.GetEventId());
 		
 		statement.execute();
@@ -137,7 +137,7 @@ public class DatabaseManager {
 		Date startTime = new Date(event.GetStartTime().getTimeInMillis());
 		long pubIdKey = getPubIdKey(event.GetPubLocation());
 		statementEvent.setInt(1, event.GetEventId());
-		statementEvent.setInt(2, event.GetHost().getUserId());
+		statementEvent.setLong(2, event.GetHost().getUserId());
 		statementEvent.setDate(3, startTime);
 		statementEvent.setLong(4, pubIdKey);
 		statementEvent.execute();
@@ -150,7 +150,7 @@ public class DatabaseManager {
 		// Set the variables for the UserEvents table
 		Set<User> users = event.GetUsers();
 		for (User user : users) {
-			statementUserEvents.setInt(1, user.getUserId());
+			statementUserEvents.setLong(1, user.getUserId());
 			statementUserEvents.setInt(2, event.GetEventId());
 			statementUserEvents.execute();
 		}
@@ -175,10 +175,10 @@ public class DatabaseManager {
 		Date stime = rs.getDate("Events.startTime");
 		Calendar startTime = Calendar.getInstance();
 		startTime.setTimeInMillis(stime.getTime());
-		PubEvent event = new PubEvent(startTime, loc, getUser(rs.getInt("Events.hostId")));
-		event.AddUser(getUser(rs.getInt("UserEvents.userId")));
+		PubEvent event = new PubEvent(startTime, loc, getUser(rs.getLong("Events.hostId")));
+		event.AddUser(getUser(rs.getLong("UserEvents.userId")));
 		while (rs.next()) {
-			event.AddUser(getUser(rs.getInt("UserEvents.userId")));
+			event.AddUser(getUser(rs.getLong("UserEvents.userId")));
 		}
 		
 		return event;

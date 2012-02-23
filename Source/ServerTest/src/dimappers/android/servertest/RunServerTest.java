@@ -49,12 +49,12 @@ public class RunServerTest
 			
 			root.addContent(CreatePubEventWithGuest().writeXml());
 			
-			RefreshData rd = new RefreshData(new User(5325), true);
+			RefreshData rd = new RefreshData(new User(5325l), true);
 			root.addContent(rd.writeXml());
 			
 			Calendar freeFrom = Calendar.getInstance();
 			freeFrom.set(Calendar.HOUR_OF_DAY, 9);
-			ResponseData response = new ResponseData(new User(124),295, true, freeFrom, "Hello");
+			ResponseData response = new ResponseData(new User(124l),295, true, freeFrom, "Hello");
 			root.addContent(response.writeXml());
 			
 			UpdateData ud = new UpdateData(234, freeFrom, new PubLocation(12, 12, "Spoons"));
@@ -117,12 +117,12 @@ public class RunServerTest
 	
 	private static User CreateHost()
 	{
-		return new User(0);
+		return new User(0l);
 	}
 	
 	private static User CreateGuest()
 	{
-		return new User(1);
+		return new User(1l);
 	}
 	
 	private static PubEvent CreatePubEvent()
