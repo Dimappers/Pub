@@ -58,7 +58,7 @@ public class User implements Serializable {
 		 * If we have to add more information
 		 */
 		
-		Element user = new Element(getClass().getSimpleName());
+		Element user = new Element("User");
 		user.addContent(facebookUserId.toString());
 		
 		return user;
@@ -66,7 +66,6 @@ public class User implements Serializable {
 	
 	public void readXml(Element userXmlElement)
 	{
-	
 		facebookUserId = Long.parseLong(userXmlElement.getText());
 	}
 
@@ -75,5 +74,4 @@ public class User implements Serializable {
 	{
 		return facebookUserId.toString();
 	}
-	
 }

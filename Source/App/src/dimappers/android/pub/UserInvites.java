@@ -30,7 +30,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 {
 
 	PubEvent event;
-	User facebookUser;
+	AppUser facebookUser;
 	
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -44,7 +44,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     		setResult(Constants.MissingDataInBundle);
     		finish();
     	}
-    	facebookUser = (User)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
+    	facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
     	if(facebookUser == null)
     	{
     		Log.d(Constants.MsgError, "Host data missing for showing details about");
@@ -85,7 +85,15 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     			freeFromWhen = PubEvent.GetFormattedDate(userResponse.getValue().freeFrom);
     		}
     		map.put("Available From Time", freeFromWhen);
-    		map.put("Guest", AppUser.getFacebookName(userResponse.getKey()));
+    		//TODO: Should get AppUser is not an AppUser
+    		if(userResponse.getKey() instanceof AppUser)
+    		{
+    			map.put("Guest", userResponse.getKey().toString());
+    		}
+    		else
+    		{
+    			//TODO: Convert User in to AppUser
+    		}
     		
     		mylist.add(map);
     	}

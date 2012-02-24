@@ -38,7 +38,7 @@ import dimappers.android.PubData.UserStatus;
 public class HostEvents extends Activity implements OnClickListener, OnMenuItemClickListener{
 
 	private PubEvent event;
-	private User facebookUser;
+	private AppUser facebookUser;
 	private GuestListAdapter gadapter;
 	private ImageButton comment_made;
 	public static boolean sent;
@@ -69,7 +69,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			setResult(Constants.MissingDataInBundle);
 			finish();
 		}
-		facebookUser = (User)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
+		facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
 		if(facebookUser == null)
 		{
 			Log.d(Constants.MsgError, "Host data missing for showing details about");
@@ -340,7 +340,14 @@ class GuestListAdapter extends BaseAdapter
 			{
 				freeFromWhen = PubEvent.GetFormattedDate(userResponse.getValue().freeFrom);
 			}
-			mData.add(new GuestList(AppUser.getFacebookName(userResponse.getKey()), freeFromWhen));  
+			if(userResponse.getKey() instanceof AppUser)
+			{
+				mData.add(new GuestList(((AppUser)userResponse.getKey()).toString(), freeFromWhen));  
+			}
+			else
+			{
+				//TODO: Convert in to an AppUser - requires getting facebook in to the service
+			}
 		}
 	}
 

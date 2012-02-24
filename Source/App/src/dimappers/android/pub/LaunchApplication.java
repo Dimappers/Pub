@@ -38,9 +38,7 @@ import com.facebook.android.AsyncFacebookRunner.*;
 
 public class LaunchApplication extends Activity implements OnClickListener{
     /** Called when the activity is first created. */
-	User facebookUser;
-	
-	
+	AppUser facebookUser;
 	
 	Facebook facebook = new Facebook("153926784723826");
 	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
@@ -104,7 +102,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	}
     	else
     	{
-    		facebookUser = new User(12387L);
+    		facebookUser = new AppUser(12387L, "Made Up");
     		//Don't start the service until we are logged in to facebook
         	Intent startServiceIntent = new Intent(this, PubService.class);
         	Bundle b = new Bundle();
@@ -146,10 +144,12 @@ public class LaunchApplication extends Activity implements OnClickListener{
 			return;
 		}
     	String id = null;
+    	String name = null;
 		try {
 			Log.d(Constants.MsgError, Integer.toString(me.length()));
 			Log.d(Constants.MsgError, me.toString(4));
 			id = me.getString("id");
+			name = me.getString("name");
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			Log.d(Constants.MsgError, "JSON");
@@ -158,10 +158,10 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	
     	TextView text_userid = (TextView)findViewById(R.id.userid_text);
     	if (id != null){
-    	text_userid.setText(id);
+    		text_userid.setText(id);
     	}
     	
-    	facebookUser = new User(Long.parseLong(id));
+    	facebookUser = new AppUser(Long.parseLong(id));
     	
     	//Don't start the service until we are logged in to facebook
     	Intent startServiceIntent = new Intent(this, PubService.class);

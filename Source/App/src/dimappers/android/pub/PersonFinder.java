@@ -16,9 +16,9 @@ public class PersonFinder extends AsyncTask<Pending, Integer, Integer> {
 		publishProgress(Constants.PickingGuests);
 		
     	//TODO: implement picking guests
-    	activity.event.AddUser(new User(143L));
+    	/*activity.event.AddUser(new User(143L));
     	activity.event.AddUser(new User(12341L));
-    	activity.event.AddUser(new User(237016L));
+    	activity.event.AddUser(new User(237016L));*/
 		
 		return null;
 	}

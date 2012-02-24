@@ -25,8 +25,8 @@ import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
 
 public class Guests extends ListActivity implements OnClickListener{
-	ArrayList<User> listItems=new ArrayList<User>();
-	ArrayAdapter<User> adapter;
+	ArrayList<AppUser> listItems=new ArrayList<AppUser>();
+	ArrayAdapter<AppUser> adapter;
 	ListView guest_list;
 	PubEvent event;
 	
@@ -41,7 +41,6 @@ public class Guests extends ListActivity implements OnClickListener{
     	if(!Constants.emulator)
 	    {
     		facebook = new Facebook("153926784723826");
-	    	Log.d(Constants.MsgError, bundle.getString(Constants.AuthToken));
 	    	facebook.setAccessToken(bundle.getString(Constants.AuthToken));
 	    	facebook.setAccessExpires(bundle.getLong(Constants.Expires));
 	    	
@@ -59,7 +58,7 @@ public class Guests extends ListActivity implements OnClickListener{
     	guest_list = (ListView)findViewById(android.R.id.list);
     	guest_list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		
-		adapter = new ArrayAdapter<User>(this, android.R.layout.simple_list_item_multiple_choice, listItems);
+		adapter = new ArrayAdapter<AppUser>(this, android.R.layout.simple_list_item_multiple_choice, listItems);
 		setListAdapter(adapter);
 		
 		//Tick already selected guests
@@ -126,12 +125,12 @@ public class Guests extends ListActivity implements OnClickListener{
 	{
 		listItems.clear();
     	
-		for(User user : GetSortedUsers()) {
+		for(AppUser user : GetSortedUsers()) {
     		listItems.add(user);
     	}
 	}
 	
-	private User[] GetUsers()
+	private AppUser[] GetUsers()
 	{
 		if(!Constants.emulator)
 		{
@@ -149,14 +148,14 @@ public class Guests extends ListActivity implements OnClickListener{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-	    	User[] friends;
+	    	AppUser[] friends;
 	    	try {
 				JSONArray jasonsFriends = mefriends.getJSONArray("data");
-				friends = new User[jasonsFriends.length()];
+				friends = new AppUser[jasonsFriends.length()];
 				for (int i=0; i < jasonsFriends.length(); i++)
 				{
 					JSONObject jason = (JSONObject) jasonsFriends.get(i);
-					friends[i] = new User(Long.parseLong(jason.getString("id")));
+					friends[i] = new AppUser(Long.parseLong(jason.getString("id")), jason.getString("name"));
 				
 				}
 			} catch (JSONException e) {
@@ -169,11 +168,11 @@ public class Guests extends ListActivity implements OnClickListener{
 		}
 		else
 		{
-			return new User[]{new User(123L), new User(242L)};
+			return new AppUser[]{new AppUser(123L, "Made1"), new AppUser(242L, "Made2")};
 		}
 	}
 	
-	private User[] GetSortedUsers()
+	private AppUser[] GetSortedUsers()
 	{
 		//TODO: Hook up PersonRanker
 		return GetUsers();
