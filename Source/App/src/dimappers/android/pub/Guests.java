@@ -31,7 +31,6 @@ public class Guests extends ListActivity implements OnClickListener{
 	PubEvent event;
 	
 	Facebook facebook;
-	private boolean useFacebook = false;
 	@Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
@@ -39,7 +38,7 @@ public class Guests extends ListActivity implements OnClickListener{
     	
     	Bundle bundle = getIntent().getExtras();
     	event = (PubEvent) bundle.getSerializable(Constants.CurrentWorkingEvent);
-    	if(useFacebook)
+    	if(!Constants.emulator)
 	    {
     		facebook = new Facebook("153926784723826");
 	    	Log.d(Constants.MsgError, bundle.getString(Constants.AuthToken));
@@ -134,7 +133,7 @@ public class Guests extends ListActivity implements OnClickListener{
 	
 	private User[] GetUsers()
 	{
-		if(useFacebook)
+		if(!Constants.emulator)
 		{
 			JSONObject mefriends = null;
 	    	try {
