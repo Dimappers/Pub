@@ -17,7 +17,7 @@ public class LocationFinder {
 	LocationFinder(Pending p) {
 		this.p=p;
 		locationManager = (LocationManager)p.getSystemService(Context.LOCATION_SERVICE);
-		locationListener = new MyLocationListener(this);
+		locationListener = new MyLocationListener(p);
 	}	
 	public Location findLocation() {
 		if(Constants.emulator)
@@ -32,20 +32,16 @@ public class LocationFinder {
 			Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			if(location != null) {return location;}
 			else{locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);}
-			return l;
+			return null;
 		}
 	}
-	public void locationFound(Location l) {this.l=l;}
 }
 
 class MyLocationListener implements LocationListener{
-	LocationFinder lf;
-	MyLocationListener(LocationFinder lf) {this.lf = lf;}
-	public void onLocationChanged(Location location) {makeUseOfNewLocation(location);}
+	Pending p;
+	MyLocationListener(Pending p) {this.p = p;}
+	public void onLocationChanged(Location location) {p.continueGoing(location);}
 	public void onStatusChanged(String provider, int status, Bundle extras) {}
 	public void onProviderEnabled(String provider) {}
 	public void onProviderDisabled(String provider) {}
-	
-	//This method should find the current town from the latitude/longitude of the location
-	public void makeUseOfNewLocation(Location location) {lf.locationFound(location);}
 }
