@@ -44,7 +44,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
 	
 	Facebook facebook = new Facebook("153926784723826");
 	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
-	private boolean useFacebook = false;
 	String FILENAME = "AndroidSSO_data";
 	private SharedPreferences mPrefs;
 	
@@ -66,7 +65,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
         
     	AppGardenAgent.startSchoolYear(this, "e8428bc2-8ce9-4dec-b5c3-20b5e42738c9");
     	
-    	if(useFacebook)
+    	if(!Constants.emulator)
     	{
 	    	/* Get existing access_token if any */
 	    	mPrefs = getPreferences(MODE_PRIVATE);
@@ -102,6 +101,16 @@ public class LaunchApplication extends Activity implements OnClickListener{
 	        {
 	        	getPerson();
 	        }
+    	}
+    	else
+    	{
+    		facebookUser = new User(12387L);
+    		//Don't start the service until we are logged in to facebook
+        	Intent startServiceIntent = new Intent(this, PubService.class);
+        	Bundle b = new Bundle();
+        	b.putSerializable(Constants.CurrentFacebookUser, facebookUser);
+        	startServiceIntent.putExtras(b);
+        	startService(startServiceIntent);
     	}
     	Button button_organise = (Button)findViewById(R.id.organise_button);
     	button_organise.setOnClickListener(this);
