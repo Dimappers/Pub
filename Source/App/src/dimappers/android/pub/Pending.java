@@ -57,7 +57,6 @@ public class Pending extends Activity implements OnClickListener {
 		updateText("Finding current location");
 		LocationFinder lc = new LocationFinder(this);
 		currentLocation = lc.findLocation();
-		//FIXME: if location is not immediately available - this breaks
 		if(currentLocation!=null) {continueGoing(currentLocation);}
 	}
 	public void continueGoing(Location l) {

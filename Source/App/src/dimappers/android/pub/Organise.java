@@ -234,7 +234,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	           .setCancelable(true)  
 	           .setPositiveButton("Save", new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
-	        	   //TODO: turn off location listener
 	        	   Geocoder geocoder = new Geocoder(getApplicationContext());
 	        	   try {
 	        		   List<Address> addresses = geocoder.getFromLocationName(loc.getText().toString(), 5);
