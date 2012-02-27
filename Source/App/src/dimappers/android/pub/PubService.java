@@ -98,12 +98,10 @@ public class PubService extends IntentService
 			return false;
 		}
 
-		@Override
 		public Facebook GetFacebook() {
 			return PubService.this.authenticatedFacebook;
 		}
 
-		@Override
 		public void Logout() {
 			//TODO: Implement facebook logout
 			
