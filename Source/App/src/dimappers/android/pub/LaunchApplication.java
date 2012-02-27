@@ -156,10 +156,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
 			e.printStackTrace();
 		}
     	
-    	TextView text_userid = (TextView)findViewById(R.id.userid_text);
-    	if (id != null){
-    		text_userid.setText(id);
-    	}
     	
     	facebookUser = new AppUser(Long.parseLong(id));
     	
