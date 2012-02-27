@@ -20,6 +20,7 @@ public class PubLocation implements Serializable
 	public float 			latitudeCoordinate;
 	public float 			longitudeCoordinate;
 	public String			pubName;
+	private int				rank;
 
 	public PubLocation()
 	{
@@ -45,6 +46,9 @@ public class PubLocation implements Serializable
 	{
 		return pubName + ": (" + latitudeCoordinate + ", " + longitudeCoordinate +")";
 	}
+	
+	public void setRank(int rank) {this.rank = rank;}
+	public int getRank() {return rank;}
 	
 	public boolean equals(PubLocation other)
 	{

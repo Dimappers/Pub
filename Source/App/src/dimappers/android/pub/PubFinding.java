@@ -12,6 +12,7 @@ import android.util.Log;
 public class PubFinding extends AsyncTask<Object, Integer, Boolean> {
 	Location location;
 	Pending activity;
+	List<Place> places;
 	
 	@Override
 	protected Boolean doInBackground(Object... params) { 
@@ -34,6 +35,7 @@ public class PubFinding extends AsyncTask<Object, Integer, Boolean> {
 	{
 		if(!result) {activity.errorOccurred();}
 		else {
+			activity.setLocations(places);
 			if(activity.personFinished) {activity.onFinish();}
 			else {activity.pubFinished=true;}
 		}
@@ -45,9 +47,9 @@ public class PubFinding extends AsyncTask<Object, Integer, Boolean> {
 	
 	private Boolean findPub() {
 		try {
-			PubLocation best = new PubRanker(new PubFinder(location.getLatitude(),location.getLongitude()).performSearch()).returnBest(this);
-			if(best==null) {return false;}
-			activity.event.SetPubLocation(best);
+			places = new PubFinder(location.getLatitude(),location.getLongitude()).performSearch();
+			updateProgress(Constants.ChoosingPub);
+			if(places==null) {return false;}
 			return true;
 		} catch (Exception e) {
 			Log.d(Constants.MsgError,"Error while finding pubs.");
