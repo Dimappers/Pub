@@ -11,8 +11,11 @@ import org.json.JSONObject;
 import com.facebook.android.Facebook;
 
 import android.app.ListActivity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -38,21 +41,15 @@ public class Guests extends ListActivity implements OnClickListener{
     	
     	Bundle bundle = getIntent().getExtras();
     	event = (PubEvent) bundle.getSerializable(Constants.CurrentWorkingEvent);
-    	if(!Constants.emulator)
-	    {
-    		facebook = new Facebook("153926784723826");
-	    	facebook.setAccessToken(bundle.getString(Constants.AuthToken));
-	    	facebook.setAccessExpires(bundle.getLong(Constants.Expires));
-	    	
-    	}
+    	
     	if(event == null)
     	{
-    		Toast.makeText(getApplicationContext(), "Error finding pub data - please restart", 100).show();
+    		Log.d(Constants.MsgError, "Error finding pub data in Guests");
     		setResult(Constants.MissingDataInBundle);
     		finish();
     	}
     	
-    	UpdateListView();
+		bindService(new Intent(this, PubService.class), connection, 0);
     	
     	
     	guest_list = (ListView)findViewById(android.R.id.list);
@@ -60,26 +57,18 @@ public class Guests extends ListActivity implements OnClickListener{
 		
 		adapter = new ArrayAdapter<AppUser>(this, android.R.layout.simple_list_item_multiple_choice, listItems);
 		setListAdapter(adapter);
-		
-		//Tick already selected guests
-		for(int i  = 0; i < guest_list.getCount(); ++i)
-		{
-			User listUser = listItems.get(i);
-			guest_list.setItemChecked(i, event.DoesContainUser(listUser));
-		}
-		
-    	
+
     	Button button_add_guest = (Button)findViewById(R.id.add_guest);
     	button_add_guest.setOnClickListener(this);
     	Button save = (Button)findViewById(R.id.save);
     	save.setOnClickListener(this);
-    	
-    	
 	}
+	
 	public void onResume(View v){
 		super.onResume();
 		adapter.notifyDataSetChanged();
 	}
+	
 	public void onClick(View v){
 		Intent i;
 		switch(v.getId())
@@ -121,6 +110,13 @@ public class Guests extends ListActivity implements OnClickListener{
 		}
 	}
 	
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		unbindService(connection);
+	}
+	
 	private void UpdateListView()
 	{
 		listItems.clear();
@@ -128,6 +124,13 @@ public class Guests extends ListActivity implements OnClickListener{
 		for(AppUser user : GetSortedUsers()) {
     		listItems.add(user);
     	}
+		
+		//Tick already selected guests
+		for(int i  = 0; i < guest_list.getCount(); ++i)
+		{
+			User listUser = listItems.get(i);
+			guest_list.setItemChecked(i, event.DoesContainUser(listUser));
+		}
 	}
 	
 	private AppUser[] GetUsers()
@@ -177,4 +180,22 @@ public class Guests extends ListActivity implements OnClickListener{
 		//TODO: Hook up PersonRanker
 		return GetUsers();
 	}
+	
+	private ServiceConnection connection = new ServiceConnection()
+	{
+
+		public void onServiceConnected(ComponentName className, IBinder service)
+		{
+			//Give the interface to the app
+			IPubService serviceInterface = (IPubService)service;
+			facebook = serviceInterface.GetFacebook();
+			UpdateListView();
+		}
+
+		public void onServiceDisconnected(ComponentName className)
+		{
+		}
+		
+	};
+
 }

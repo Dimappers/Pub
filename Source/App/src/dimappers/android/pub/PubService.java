@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.TimerTask;
 
+import com.facebook.android.Facebook;
+
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
@@ -26,6 +28,7 @@ import android.util.Log;
 public class PubService extends IntentService
 {
 	User user;
+	
 	public PubService() {
 		super("PubService");
 		hasStarted = false;
@@ -94,6 +97,17 @@ public class PubService extends IntentService
 			//TODO: Should check to see if a new event has been created but hasn't yet been sent
 			return false;
 		}
+
+		@Override
+		public Facebook GetFacebook() {
+			return PubService.this.authenticatedFacebook;
+		}
+
+		@Override
+		public void Logout() {
+			//TODO: Implement facebook logout
+			
+		}
 		
     }
 
@@ -104,6 +118,7 @@ public class PubService extends IntentService
 	private boolean hasStarted;
 	private DataReceiver receiver;
 	private	DataSender sender;
+	private Facebook authenticatedFacebook;
  
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
@@ -113,6 +128,14 @@ public class PubService extends IntentService
 		user = (User)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
 		receiver = new DataReceiver(this);
 		sender = new DataSender(this);
+		
+		if(!Constants.emulator)
+		{
+			authenticatedFacebook = new Facebook("153926784723826");
+			authenticatedFacebook.setAccessToken(intent.getExtras().getString(Constants.AuthToken));
+			authenticatedFacebook.setAccessExpires(intent.getExtras().getLong(Constants.Expires));
+		}
+		
 	    return START_STICKY;
 	}
 	

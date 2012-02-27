@@ -95,14 +95,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		    	setResult(Constants.MissingDataInBundle);
 		    	finish();
 	    	} 
-	    	
-	    	if(!Constants.emulator)
-		    {
-	    		facebook = new Facebook("153926784723826");
-		    	facebook.setAccessToken(b.getString(Constants.AuthToken));
-		    	facebook.setAccessExpires(b.getLong(Constants.Expires));
-		    	
-	    	}
 
 	    	cur_pub = (Button)findViewById(R.id.pub_button);
 	    	cur_pub.setText(event.GetPubLocation().toString());
@@ -356,6 +348,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		{
 			//Give the interface to the app
 			serviceInterface = (IPubService)service;
+			facebook = serviceInterface.GetFacebook();
 			
 		}
 

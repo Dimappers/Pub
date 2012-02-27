@@ -48,10 +48,14 @@ public class LaunchApplication extends Activity implements OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-      	if(!isNetworkAvailable()) {
+      	
+    	//Check for internet
+    	if(!isNetworkAvailable()) {
        		Intent i = new Intent(this, NoInternet.class); 
        		startActivityForResult(i,Constants.NoInternet);
        	}
+    	
+    	//Orientate the screen
         if(getWindowManager().getDefaultDisplay().getRotation()==Surface.ROTATION_90||getWindowManager().getDefaultDisplay().getRotation()==Surface.ROTATION_270)
         {
       	  setContentView(R.layout.main_hor);
@@ -70,10 +74,11 @@ public class LaunchApplication extends Activity implements OnClickListener{
 	        String access_token = mPrefs.getString("access_token", null);
 	        long expires = mPrefs.getLong("access_expires", 0);
 	        if(access_token != null) {
-	        	Log.d(Constants.MsgError, "Token found: " + access_token);
+	        	Log.d(Constants.MsgInfo, "Facebook token found: " + access_token);
 	            facebook.setAccessToken(access_token);
 	        }
 	        if(expires != 0) {
+	        	Log.d(Constants.MsgInfo, "Expirery date loaded: " + expires);
 	            facebook.setAccessExpires(expires);
 	        }
 	        /* Only call authorize if the access_token has expired */
@@ -122,51 +127,46 @@ public class LaunchApplication extends Activity implements OnClickListener{
     {
     	JSONObject me;
 		try {
-			Log.d(Constants.MsgError, "Performing request");
+			Log.d(Constants.MsgInfo, "Getting information about current user");
 			me = new JSONObject(facebook.request("me"));
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
-			Log.d(Constants.MsgError, "Malformed");
-			e.printStackTrace();
+			Log.d(Constants.MsgError, "Malformed url when requesting info about current facebook user: " + e.getMessage());
 			finish();
 			return;
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
-			Log.d(Constants.MsgError, "Jason");
-			e.printStackTrace();
+			Log.d(Constants.MsgError, "Jason: " + e.getMessage());
 			finish();
 			return;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			Log.d(Constants.MsgError, "IO");
-			e.printStackTrace();
+			Log.d(Constants.MsgError, "IO when retrieving current user: " + e.getMessage());
 			finish();
 			return;
 		}
     	String id = null;
     	String name = null;
 		try {
-			Log.d(Constants.MsgError, Integer.toString(me.length()));
-			Log.d(Constants.MsgError, me.toString(4));
+			Log.d(Constants.MsgInfo, "Got info about person: " + me.toString(4));
 			id = me.getString("id");
 			name = me.getString("name");
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
-			Log.d(Constants.MsgError, "JSON");
-			e.printStackTrace();
+			Log.d(Constants.MsgError, "Jason error in reading info about current user: " + e.getMessage());
 		}
     	
-    	TextView text_userid = (TextView)findViewById(R.id.userid_text);
-    	if (id != null){
-    		text_userid.setText(id);
-    	}
-    	
+		Log.d(Constants.MsgInfo, "Logged in as user: " + name + " with ID: " + id);
+		
     	facebookUser = new AppUser(Long.parseLong(id));
     	
     	//Don't start the service until we are logged in to facebook
     	Intent startServiceIntent = new Intent(this, PubService.class);
     	Bundle b = new Bundle();
     	b.putSerializable(Constants.CurrentFacebookUser, facebookUser);
+    	b.putString(Constants.AuthToken, facebook.getAccessToken());
+    	b.putLong(Constants.Expires, facebook.getAccessExpires());
+    	
     	startServiceIntent.putExtras(b);
     	startService(startServiceIntent);
     }
