@@ -35,6 +35,7 @@ public class Pending extends Activity implements OnClickListener {
 
 	boolean personFinished;
 	boolean pubFinished;
+	private List<Place> pubPlaces;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -110,6 +111,8 @@ public class Pending extends Activity implements OnClickListener {
 	}
 
 	public void onFinish() {
+		event = new PersonRanker(event).getEvent();
+		event.SetPubLocation(new PubRanker(pubPlaces, event).returnBest());
 		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle()));
 		finish();
 	}
@@ -137,5 +140,9 @@ public class Pending extends Activity implements OnClickListener {
 						finish();
 					}
 				}).show();
+	}
+
+	public void setLocations(List<Place> pubPlaces) {
+		this.pubPlaces = pubPlaces;		
 	}
 }

@@ -16,6 +16,9 @@ public class User implements Serializable {
 	
 	//Properties
 	private Long facebookUserId;
+	private float latitude = 1000.0f;
+	private float longitude = 1000.0f;
+	private int rank = 0;
 	
 	//Constructor
 	public User(Long facebookUserId) {
@@ -42,6 +45,21 @@ public class User implements Serializable {
 			return false;
 		}
 	}
+	
+	public double[] getLocation()
+	{
+		if(longitude!=1000.0f&&latitude!=1000.0f)
+		{
+			double[] returnValue = new double[2];
+			returnValue[0] = longitude;
+			returnValue[1] = latitude;
+			return returnValue;
+		}
+		else return null;
+	}
+	
+	public void setRank(int rank) {this.rank = rank;}
+	public int getRank() {return rank;}
 	
 	@Override
 	public int hashCode()
