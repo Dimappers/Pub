@@ -111,7 +111,7 @@ public class DataReceiver
 			//Not working or maybe is cound't debug
 			ArrayList<PubEvent> newEvents; 
 			newEvents = new ArrayList<PubEvent>();
-			newEvents.add(new PubEvent(Calendar.getInstance(), new User(124)));
+			newEvents.add(new PubEvent(Calendar.getInstance(), new User(124L)));
 			
 			if(newEvents.size() > 0)
 			{

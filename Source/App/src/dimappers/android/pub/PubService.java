@@ -1,9 +1,16 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Queue;
 import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
 
+import com.facebook.android.AsyncFacebookRunner.RequestListener;
 import com.facebook.android.Facebook;
 
 import dimappers.android.PubData.Constants;
@@ -119,6 +126,9 @@ public class PubService extends IntentService
 	private DataReceiver receiver;
 	private	DataSender sender;
 	private Facebook authenticatedFacebook;
+	
+	private Queue<IDataRequest<?, IRequestListener<?>>> dataRequestQueue;
+	private Dictionary<Class<?>, GenericDataStore<Class<?>>> dataStores;
  
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
@@ -126,8 +136,8 @@ public class PubService extends IntentService
 		Log.d(Constants.MsgInfo, "Service started");
 		storedData = new StoredData();
 		user = (User)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
-		receiver = new DataReceiver(this);
-		sender = new DataSender(this);
+		//receiver = new DataReceiver(this);
+		//sender = new DataSender(this);
 		
 		if(!Constants.emulator)
 		{
@@ -135,6 +145,12 @@ public class PubService extends IntentService
 			authenticatedFacebook.setAccessToken(intent.getExtras().getString(Constants.AuthToken));
 			authenticatedFacebook.setAccessExpires(intent.getExtras().getLong(Constants.Expires));
 		}
+	
+		dataRequestQueue = new ArrayBlockingQueue<IDataRequest<?, IRequestListener<?>>>(100);
+		dataStores = new Hashtable<Class<?>, GenericDataStore<Class<?>>>();
+		
+		ArrayList<Integer> a = new ArrayList<Integer>();
+		addDataRequest(null, a.getClass());
 		
 	    return START_STICKY;
 	}
@@ -155,7 +171,22 @@ public class PubService extends IntentService
 		return storedData;
 	}
 
-
+	public <DataType> void addDataRequest(final IRequestListener<DataType> listener, Class<DataType> dataType)
+	{
+		if(dataStores.get(dataType) == null)
+		{
+			GenericDataStore<DataType> dataStore = new GenericDataStore<DataType>();
+			dataStores.put(dataType, (GenericDataStore<Class<?>>) dataStore);
+			ArrayList<Integer>someData = new ArrayList<Integer>();
+			someData.add(4);
+			dataStore.setStore((DataType) someData);
+		}
+		GenericDataStore<Class<?>> myDataStore = dataStores.get(dataType);
+		DataType castedDataStore = (DataType)myDataStore.getStore();
+		System.out.println(myDataStore.toString());
+		
+	}
+	
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		if(hasStarted)
