@@ -56,7 +56,7 @@ public class PubService extends IntentService
 
 		public int GiveNewSentEvent(PubEvent event) {
 			event.SetEventId(Constants.EventIdBeingSent);
-			PubService.this.sender.sendEvent(event);
+			//TODO: Write an IDataRequest for sending data
 			PubService.this.storedData.AddNewSentEvent(event);
 			return event.GetEventId();
 		}
@@ -134,7 +134,7 @@ public class PubService extends IntentService
 	private Facebook authenticatedFacebook;
 	
 	private Queue<IDataRequest<?,?>> dataRequestQueue;
-	private Dictionary<Class<?>, HashMap<?,?>> dataStores;
+	private Dictionary<String, HashMap<?,?>> dataStores;
  
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
@@ -143,7 +143,7 @@ public class PubService extends IntentService
 		storedData = new StoredData();
 		user = (User)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
 		//receiver = new DataReceiver(this);
-		//sender = new DataSender(this);
+		sender = new DataSender();
 		
 		if(!Constants.emulator)
 		{
@@ -153,7 +153,7 @@ public class PubService extends IntentService
 		}
 	
 		dataRequestQueue = new ArrayBlockingQueue<IDataRequest<?,?>>(100);
-		dataStores = new Hashtable<Class<?>, HashMap<?,?>>();
+		dataStores = new Hashtable<String, HashMap<?,?>>();
 		
 		ArrayList<Integer> a = new ArrayList<Integer>();
 		
@@ -178,15 +178,15 @@ public class PubService extends IntentService
 
 	public <K, T> void addDataRequest(IDataRequest<K, T> request, final IRequestListener<T> listener)
 	{
-		HashMap<K, T> currentDataStore = (HashMap<K, T>) dataStores.get(request.getClass()); 
+		HashMap<K, T> currentDataStore = (HashMap<K, T>) dataStores.get(request.getStoredDataId()); 
 		if(currentDataStore == null)
 		{
 			currentDataStore = new HashMap<K, T>();
-			dataStores.put(request.getClass(), currentDataStore);
+			dataStores.put(request.getStoredDataId(), currentDataStore);
 		}
 		request.giveConnection(binder);
 		
-		request.performRequest(listener, currentDataStore);		
+		sender.addRequest(request, listener, currentDataStore);		
 	}
 	
 	@Override

@@ -36,5 +36,9 @@ public class GetFacebookUserDataRequest implements
 		AppUser appUser = AppUser.AppUserFromUser(new User(facebookIdToGet), facebook);
 		listener.onRequestComplete(appUser);
 		storedData.put(facebookIdToGet, appUser);		
+	}
+
+	public String getStoredDataId() {
+		return "AppUser";
 	}	
 }

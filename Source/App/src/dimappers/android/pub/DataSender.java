@@ -2,6 +2,7 @@ package dimappers.android.pub;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -24,72 +25,38 @@ import dimappers.android.PubData.User;
 
 public class DataSender {
 	
-	private Queue<Document> queue;
+	private Queue<Request<?, ?>> queue;
 	private SenderThread senderThread;
-	private PubService service;
 	
-	DataSender(PubService service){
-		queue = new ArrayBlockingQueue<Document>(100);
+	DataSender(){
+		queue = new ArrayBlockingQueue<Request<?, ?>>(100);
 		senderThread = new SenderThread();
 		senderThread.execute(new Object[]{});
-		this.service = service;
 	}
 	
-	public void sendEvent(PubEvent event) {
-		
-		Element root = new Element("Message");
-		Document xmlDoc = new Document(root);
-		
-		
-		Element messageTypeElement = new Element("MessageType");
-		messageTypeElement.addContent(MessageType.newPubEventMessage.toString());
-		root.addContent(messageTypeElement);
-		root.addContent(event.writeXml());
-		addToSendQueue(xmlDoc);
-	}
-	
-	public void requestUpdate(User u) throws IOException { updates(u,false); }
-	
-	public void requestAllUpdates(User u) throws IOException { updates(u,true); }
-	
-	private void updates(User u, boolean full) throws IOException {
-	
-		Element root = new Element("RequestUpdate");
-		Document xmlDoc = new Document(root);
-		
-		RefreshData rd = new RefreshData(u, full);
-		root.addContent(rd.writeXml());
-		
-		addToSendQueue(xmlDoc);
-	}
-	
-	public void sendResponse(User u, int event, boolean going, Calendar freefrom, String msg) throws IOException {
-	
-		Element root = new Element("RequestUpdate");
-		Document xmlDoc = new Document(root);
-
-		ResponseData response = new ResponseData(u,event,going,freefrom,msg);
-		root.addContent(response.writeXml());
-		
-		addToSendQueue(xmlDoc);
-
-	}
-	
-	public void sendEventUpdates(int event, Calendar start, PubLocation pub) throws IOException {
-		
-		Element root = new Element("UpdateEvent");
-		Document xmlDoc = new Document(root);
-		
-		UpdateData ud = new UpdateData(event, start, pub);
-		root.addContent(ud.writeXml());
-		
-		addToSendQueue(xmlDoc);
-		
-	}
-	
-	private void addToSendQueue(Document xmlDoc)
+	public <K, T> void addRequest(IDataRequest<K, T> request, final IRequestListener<T> listener, HashMap<K, T> store)
 	{
-		queue.add(xmlDoc);
+		Request<K, T> r = new Request<K, T>(request, listener, store);
+		queue.add(r);
+	}
+	
+	class Request<K, T>
+	{
+		public IDataRequest<K, T> request;
+		public final IRequestListener<T> listener;
+		public HashMap<K, T> store;
+		
+		public Request(IDataRequest<K, T> request, final IRequestListener<T> listener, HashMap<K, T> store)
+		{
+			this.request =request;
+			this.listener = listener;
+			this.store = store;
+		}
+		
+		public void performRequest()
+		{
+			request.performRequest(listener, store);
+		}
 	}
 	
 	class SenderThread extends AsyncTask<Object, Object, Object>
@@ -98,25 +65,17 @@ public class DataSender {
 		@Override
 		protected Object doInBackground(Object... params) {
 			while(running || DataSender.this.queue.size() > 0 )
-			{
-				Document xmlDoc;
+			{				
+				Request<?, ?> r;
 				try {
-					xmlDoc = ((ArrayBlockingQueue<Document>) DataSender.this.queue).take();
-				} catch (InterruptedException e1) {
-					Log.d(Constants.MsgError, "Sender thread was interupted");
+					r  = ((ArrayBlockingQueue<Request<?, ?>>)DataSender.this.queue).take();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					Log.d(Constants.MsgError, "Queue interrupted");
 					continue;
 				}
 				
-				XMLOutputter outputter = new XMLOutputter();
-				try {
-					outputter.output(xmlDoc, System.out);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				//Receive id back from host
-				service.getDataStore().notifySentEventHasId((int)(Math.random() * 1000));
+				r.performRequest();	
 			}
 			return null;
 		}
