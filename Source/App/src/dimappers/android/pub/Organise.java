@@ -106,8 +106,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	    	
 	    	setListAdapter(adapter);
 	    	
-	    	UpdateFromEvent();
-	    	
 	    	cur_pub.setOnClickListener(this);
 	    	
 	    	guest_list.setOnItemClickListener(new OnItemClickListener() {
@@ -349,6 +347,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			//Give the interface to the app
 			serviceInterface = (IPubService)service;
 			facebook = serviceInterface.GetFacebook();
+			UpdateFromEvent();
 			
 		}
 
