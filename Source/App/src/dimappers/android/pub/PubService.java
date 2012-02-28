@@ -178,11 +178,15 @@ public class PubService extends IntentService
 
 	public <K, T> void addDataRequest(IDataRequest<K, T> request, final IRequestListener<T> listener)
 	{
-		HashMap<K, T> currentDataStore = (HashMap<K, T>) dataStores.get(request.getStoredDataId()); 
-		if(currentDataStore == null)
+		HashMap<K, T> currentDataStore = null;
+		if(request.getStoredDataId() != null)
 		{
-			currentDataStore = new HashMap<K, T>();
-			dataStores.put(request.getStoredDataId(), currentDataStore);
+			currentDataStore = (HashMap<K, T>) dataStores.get(request.getStoredDataId()); 
+			if(currentDataStore == null )
+			{
+				currentDataStore = new HashMap<K, T>();
+				dataStores.put(request.getStoredDataId(), currentDataStore);
+			}
 		}
 		request.giveConnection(binder);
 		
