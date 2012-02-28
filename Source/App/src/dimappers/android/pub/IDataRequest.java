@@ -1,6 +1,9 @@
 package dimappers.android.pub;
 
-public interface IDataRequest<DataType, RequestListener extends IRequestListener<DataType>> {
-	public void performRequest(RequestListener listener);
-	public void performRequest(RequestListener listener, GenericDataStore<DataType> storedData);
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public interface IDataRequest<K, T> {
+	public void giveConnection(IPubService connectionInterface);
+	public void performRequest(final IRequestListener<T> listener, HashMap<K, T> storedData);
 }

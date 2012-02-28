@@ -1,21 +1,28 @@
 package dimappers.android.pub;
 
-public class GenericDataStore<T> {
+import java.util.HashMap;
+
+public class GenericDataStore<K, V> {
 	
-	T store;
+	HashMap<K, V> store;
 	public GenericDataStore()
 	{
-		store = null;
+		store = new HashMap<K, V>();
 	}
 	
-	public T getStore()
+	public HashMap<K, V> getStore()
 	{
 		return store;
 	}
 	
-	public void setStore(T t)
+	public void setStore(HashMap<K, V> t)
 	{
 		store = t;
+	}
+	
+	public void addEntry(K key, V value)
+	{
+		
 	}
 
 }

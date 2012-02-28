@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Queue;
 import java.util.TimerTask;
@@ -105,21 +106,26 @@ public class PubService extends IntentService
 			return false;
 		}
 
-		@Override
 		public Facebook GetFacebook() {
 			return PubService.this.authenticatedFacebook;
 		}
 
-		@Override
 		public void Logout() {
 			//TODO: Implement facebook logout
+			
+		}
+
+		public <K, T> void addDataRequest(IDataRequest<K, T> request,
+				IRequestListener<T> listener)
+		{
+			PubService.this.addDataRequest(request, listener);
 			
 		}
 		
     }
 
 	
-	private final IBinder binder = new ServiceBinder();
+	private final IPubService binder = new ServiceBinder();
 	
 	private StoredData storedData;
 	private boolean hasStarted;
@@ -127,8 +133,8 @@ public class PubService extends IntentService
 	private	DataSender sender;
 	private Facebook authenticatedFacebook;
 	
-	private Queue<IDataRequest<?, IRequestListener<?>>> dataRequestQueue;
-	private Dictionary<Class<?>, GenericDataStore<Class<?>>> dataStores;
+	private Queue<IDataRequest<?,?>> dataRequestQueue;
+	private Dictionary<Class<?>, HashMap<?,?>> dataStores;
  
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
@@ -141,16 +147,15 @@ public class PubService extends IntentService
 		
 		if(!Constants.emulator)
 		{
-			authenticatedFacebook = new Facebook("153926784723826");
+			authenticatedFacebook = new Facebook(Constants.FacebookAppId);
 			authenticatedFacebook.setAccessToken(intent.getExtras().getString(Constants.AuthToken));
 			authenticatedFacebook.setAccessExpires(intent.getExtras().getLong(Constants.Expires));
 		}
 	
-		dataRequestQueue = new ArrayBlockingQueue<IDataRequest<?, IRequestListener<?>>>(100);
-		dataStores = new Hashtable<Class<?>, GenericDataStore<Class<?>>>();
+		dataRequestQueue = new ArrayBlockingQueue<IDataRequest<?,?>>(100);
+		dataStores = new Hashtable<Class<?>, HashMap<?,?>>();
 		
 		ArrayList<Integer> a = new ArrayList<Integer>();
-		addDataRequest(null, a.getClass());
 		
 	    return START_STICKY;
 	}
@@ -171,20 +176,17 @@ public class PubService extends IntentService
 		return storedData;
 	}
 
-	public <DataType> void addDataRequest(final IRequestListener<DataType> listener, Class<DataType> dataType)
+	public <K, T> void addDataRequest(IDataRequest<K, T> request, final IRequestListener<T> listener)
 	{
-		if(dataStores.get(dataType) == null)
+		HashMap<K, T> currentDataStore = (HashMap<K, T>) dataStores.get(request.getClass()); 
+		if(currentDataStore == null)
 		{
-			GenericDataStore<DataType> dataStore = new GenericDataStore<DataType>();
-			dataStores.put(dataType, (GenericDataStore<Class<?>>) dataStore);
-			ArrayList<Integer>someData = new ArrayList<Integer>();
-			someData.add(4);
-			dataStore.setStore((DataType) someData);
+			currentDataStore = new HashMap<K, T>();
+			dataStores.put(request.getClass(), currentDataStore);
 		}
-		GenericDataStore<Class<?>> myDataStore = dataStores.get(dataType);
-		DataType castedDataStore = (DataType)myDataStore.getStore();
-		System.out.println(myDataStore.toString());
+		request.giveConnection(binder);
 		
+		request.performRequest(listener, currentDataStore);		
 	}
 	
 	@Override

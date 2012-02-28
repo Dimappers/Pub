@@ -13,6 +13,7 @@ public final class Constants {
 	public static final String CurrentLongitude = "long";
 	public static final String AuthToken = "authtoken";
 	public static final String Expires = "expires";
+	public static final String FacebookAppId = "153926784723826";
 	
 	//Error constants
 	public static final int MissingDataInBundle = -12;

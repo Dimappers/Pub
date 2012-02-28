@@ -40,7 +40,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     /** Called when the activity is first created. */
 	AppUser facebookUser;
 	
-	Facebook facebook = new Facebook("153926784723826");
+	Facebook facebook = new Facebook(Constants.FacebookAppId);
 	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
 	String FILENAME = "AndroidSSO_data";
 	private SharedPreferences mPrefs;
@@ -169,6 +169,8 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	
     	startServiceIntent.putExtras(b);
     	startService(startServiceIntent);
+    	
+    	
     }
     
     public void onClick(View v)
