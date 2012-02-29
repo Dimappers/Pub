@@ -57,33 +57,40 @@ public class AppUser extends User
 	*/
 	public static AppUser AppUserFromUser(User user, Facebook facebook)
 	{
-		JSONObject them;
-		try {
-			Log.d(Constants.MsgError, "Performing request");
-			them = new JSONObject(facebook.request(Long.toString(user.getUserId())));
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			Log.d(Constants.MsgError, "Malformed");
-			e.printStackTrace();
-			return null;
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			Log.d(Constants.MsgError, "Jason");
-			e.printStackTrace();
-			return null;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			Log.d(Constants.MsgError, "IO");
-			e.printStackTrace();
-			return null;
-		}	
-		try {
-			return new AppUser(user.getUserId(), them.getString("name"));
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Log.d(Constants.MsgError, "Error getting name for this user - " + e.getMessage());
-			return null;
+		if(!Constants.emulator)
+		{
+			JSONObject them;
+			try {
+				Log.d(Constants.MsgError, "Performing request");
+				them = new JSONObject(facebook.request(Long.toString(user.getUserId())));
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				Log.d(Constants.MsgError, "Malformed");
+				e.printStackTrace();
+				return null;
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				Log.d(Constants.MsgError, "Jason");
+				e.printStackTrace();
+				return null;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				Log.d(Constants.MsgError, "IO");
+				e.printStackTrace();
+				return null;
+			}	
+			try {
+				return new AppUser(user.getUserId(), them.getString("name"));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Log.d(Constants.MsgError, "Error getting name for this user - " + e.getMessage());
+				return null;
+			}
+		}
+		else
+		{
+			return new AppUser(13L, "Blank");
 		}
 	}
 }
