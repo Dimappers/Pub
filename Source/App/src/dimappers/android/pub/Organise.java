@@ -1,16 +1,9 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facebook.android.Facebook;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ComponentName;
@@ -21,7 +14,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.location.Address;
 import android.location.Geocoder;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -40,9 +32,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import dimappers.android.PubData.AcknoledgementData;
+
+import com.facebook.android.Facebook;
+
 import dimappers.android.PubData.Constants;
-import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.User;
@@ -54,7 +47,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	private TextView cur_loc;
 
 	private PubEvent event;
-
+	
 	private ArrayList<String> listItems=new ArrayList<String>();
 	private ArrayAdapter<String> adapter;
 	private ListView guest_list;
@@ -195,12 +188,33 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				break;
 			}
 			case R.id.send_invites_event : {
-				serviceInterface.GiveNewSentEvent(event);
-				Intent intent = new Intent();
-				b.putBoolean(Constants.IsSavedEventFlag, false);
-				intent.putExtras(b);
-				setResult(RESULT_OK, intent);
-				finish();
+				serviceInterface.GiveNewSentEvent(event, new IRequestListener<PubEvent>() {
+					
+					public void onRequestFail(Exception e) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					public void onRequestComplete(PubEvent data) {
+						Log.d(Constants.MsgInfo, "PubEvent sent, event id: " + data.GetEventId());
+						Intent intent = new Intent();
+						Bundle b = new Bundle();
+						b.putAll(getIntent().getExtras()); 
+						b.putSerializable(Constants.CurrentWorkingEvent, data);
+						b.putBoolean(Constants.IsSavedEventFlag, false);
+						intent.putExtras(b);
+						setResult(RESULT_OK, intent);
+						finish();						
+					}
+				});
+				
+				
+				// Inflating the loading bar
+				LayoutInflater inflater = (LayoutInflater) getLayoutInflater();
+				ViewGroup parent = (ViewGroup) findViewById(R.id.organise_screen);
+
+				View pBar = inflater.inflate(R.layout.loading_bar, parent, false);
+				parent.addView(pBar);
 				break;
 			}
 		}
@@ -302,11 +316,31 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			}
 			else
 			{
-				//listItems.add(AppUser.AppUserFromUser(user, facebook).toString());
+				//TODO: This should be a data request
+				GetFacebookUserDataRequest request = new GetFacebookUserDataRequest(user.getUserId());
+				serviceInterface.addDataRequest(request, new IRequestListener<AppUser>() {
+
+					public void onRequestComplete(AppUser data) {
+						listItems.add(data.toString());
+						Organise.this.runOnUiThread(new Runnable() {
+
+							public void run() {
+								adapter.notifyDataSetChanged();
+								
+							}
+							
+						});
+						
+					}
+
+					public void onRequestFail(Exception e) {
+						// TODO Auto-generated method stub
+						Log.d(Constants.MsgError, e.getMessage());
+					}
+					
+				} );
 			}
 		}
-
-		adapter.notifyDataSetChanged();
 	}
 	private boolean findNewNearestPub(double lat, double lng) {
 		PubFinder finder = new PubFinder(lat,lng);
@@ -348,22 +382,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			serviceInterface = (IPubService)service;
 			facebook = serviceInterface.GetFacebook();
 			UpdateFromEvent();
-
-			GetFacebookUserDataRequest dataRequest = new GetFacebookUserDataRequest(704560009);
-			serviceInterface.addDataRequest(dataRequest, new IRequestListener<AppUser>()
-					{
-
-				public void onRequestComplete(AppUser data)
-				{
-					Log.d(Constants.MsgInfo, data.toString());					
-				}
-
-				public void onRequestFail(Exception e)
-				{
-
-				}
-
-					});
 		}
 
 		public void onServiceDisconnected(ComponentName className)

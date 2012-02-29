@@ -47,8 +47,8 @@ public class GetFacebookUserDataRequest implements
 			return;
 		}
 		
-		listener.onRequestComplete(appUser);
-		storedData.put(facebookIdToGet, appUser);		
+		storedData.put(facebookIdToGet, appUser);
+		listener.onRequestComplete(appUser);		
 	}
 
 	public String getStoredDataId() {

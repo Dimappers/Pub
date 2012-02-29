@@ -49,8 +49,11 @@ public class NewEventDataRequest implements IDataRequest<Integer, PubEvent>
 			return;
 		}
 		
+		eventToSend.SetEventId(41);
+		listener.onRequestComplete(eventToSend);
+		
 		//TODO: Replace with input stream 
-		SAXBuilder xmlBuilder = new SAXBuilder();
+		/*SAXBuilder xmlBuilder = new SAXBuilder();
 		Document returnDocument;
 		try
 		{
@@ -68,7 +71,7 @@ public class NewEventDataRequest implements IDataRequest<Integer, PubEvent>
 		eventToSend.SetEventId(ackData.globalEventId);
 		storedData.put(ackData.globalEventId, eventToSend);
 		
-		listener.onRequestComplete(eventToSend);
+		listener.onRequestComplete(eventToSend);*/
 	}
 
 	public String getStoredDataId()

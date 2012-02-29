@@ -1,37 +1,24 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Queue;
-import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import com.facebook.android.AsyncFacebookRunner.RequestListener;
+import android.app.IntentService;
+import android.content.Intent;
+import android.os.Binder;
+import android.os.IBinder;
+import android.util.Log;
+
 import com.facebook.android.Facebook;
 
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
-
-import android.app.Activity;
-import android.app.IntentService;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.os.Binder;
-import android.os.IBinder;
-import android.util.Log;
 
 public class PubService extends IntentService
 {
