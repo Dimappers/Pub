@@ -27,9 +27,10 @@ import dimappers.android.PubData.PubEvent;
 
 public class StoredData implements Serializable
 {	
-	private final String hostSavedTag = "HostSaved";
-	private final String hostSentTag = "HostSent";
-	private final String invitedTag = "Invited";
+	//Names of hash maps
+	public static final String hostSavedTag = "HostSaved";
+	public static final String hostSentTag = "HostSent";
+	public static final String invitedTag = "Invited";
 	//private final int HistoryDepth = 15;
 	
 	private HashMap<Integer, PubEvent> savedEvents; //Events the users has created and saved

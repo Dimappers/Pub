@@ -12,7 +12,7 @@ import android.os.IBinder;
 public interface IPubService extends IBinder {
 
 	int 					GiveNewSavedEvent(PubEvent event);
-	int 					GiveNewSentEvent(PubEvent event);
+	void 					GiveNewSentEvent(PubEvent event, final IRequestListener<PubEvent> listener);
 	
 	Collection<PubEvent> 	GetSavedEvents();
 	Collection<PubEvent> 	GetSentEvents();

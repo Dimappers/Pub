@@ -1,7 +1,11 @@
 package dimappers.android.pub;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import org.json.JSONException;
 
 import com.facebook.android.Facebook;
 
@@ -33,7 +37,16 @@ public class GetFacebookUserDataRequest implements
 		
 		Facebook facebook = service.GetFacebook();
 		
-		AppUser appUser = AppUser.AppUserFromUser(new User(facebookIdToGet), facebook);
+		AppUser appUser;
+		try
+		{
+			appUser = AppUser.AppUserFromUser(new User(facebookIdToGet), facebook);
+		} catch (Exception e)
+		{
+			listener.onRequestFail(e);
+			return;
+		}
+		
 		listener.onRequestComplete(appUser);
 		storedData.put(facebookIdToGet, appUser);		
 	}

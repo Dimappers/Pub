@@ -54,11 +54,9 @@ public class PubService extends IntentService
 			return event.GetEventId();
 		}
 
-		public int GiveNewSentEvent(PubEvent event) {
-			event.SetEventId(Constants.EventIdBeingSent);
-			//TODO: Write an IDataRequest for sending data
-			PubService.this.storedData.AddNewSentEvent(event);
-			return event.GetEventId();
+		public void GiveNewSentEvent(PubEvent event, final IRequestListener<PubEvent> listener) {
+			NewEventDataRequest r = new NewEventDataRequest(event);
+			PubService.this.addDataRequest(r, listener);
 		}
 
 		public Collection<PubEvent> GetSavedEvents() {
@@ -66,7 +64,7 @@ public class PubService extends IntentService
 		}
 
 		public Collection<PubEvent> GetSentEvents() {
-			return PubService.this.storedData.GetSentEvents();
+			return (Collection<PubEvent>) PubService.this.dataStores.get("PubEvent").values();
 		}
 		
 		public Collection<PubEvent> GetInvitedEvents() {
@@ -120,8 +118,7 @@ public class PubService extends IntentService
 		{
 			PubService.this.addDataRequest(request, listener);
 			
-		}
-		
+		}		
     }
 
 	
