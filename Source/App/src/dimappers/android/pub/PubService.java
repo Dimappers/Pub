@@ -22,7 +22,7 @@ import dimappers.android.PubData.User;
 
 public class PubService extends IntentService
 {
-	User user;
+	AppUser user;
 	
 	public PubService() {
 		super("PubService");
@@ -125,7 +125,8 @@ public class PubService extends IntentService
 	{
 		Log.d(Constants.MsgInfo, "Service started");
 		storedData = new StoredData();
-		user = (User)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
+		user = (AppUser)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
+		//data.put(facebookIdToGet, appUser);
 		//receiver = new DataReceiver(this);
 		sender = new DataSender();
 		

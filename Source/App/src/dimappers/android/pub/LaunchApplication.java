@@ -158,7 +158,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	
 		Log.d(Constants.MsgInfo, "Logged in as user: " + name + " with ID: " + id);
 		
-    	facebookUser = new AppUser(Long.parseLong(id));
+    	facebookUser = new AppUser(Long.parseLong(id), name);
     	
     	//Don't start the service until we are logged in to facebook
     	Intent startServiceIntent = new Intent(this, PubService.class);

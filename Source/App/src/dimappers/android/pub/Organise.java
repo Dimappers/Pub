@@ -316,21 +316,16 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			}
 			else
 			{
-				//TODO: This should be a data request
 				GetFacebookUserDataRequest request = new GetFacebookUserDataRequest(user.getUserId());
 				serviceInterface.addDataRequest(request, new IRequestListener<AppUser>() {
 
 					public void onRequestComplete(AppUser data) {
 						listItems.add(data.toString());
 						Organise.this.runOnUiThread(new Runnable() {
-
 							public void run() {
-								adapter.notifyDataSetChanged();
-								
+								adapter.notifyDataSetChanged();					
 							}
-							
 						});
-						
 					}
 
 					public void onRequestFail(Exception e) {
