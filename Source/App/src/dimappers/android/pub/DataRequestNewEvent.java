@@ -13,11 +13,11 @@ import dimappers.android.PubData.AcknoledgementData;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 
-public class NewEventDataRequest implements IDataRequest<Integer, PubEvent>
+public class DataRequestNewEvent implements IDataRequest<Integer, PubEvent>
 {
 	PubEvent eventToSend;
 	IPubService service;
-	public NewEventDataRequest(PubEvent event)
+	public DataRequestNewEvent(PubEvent event)
 	{
 		eventToSend = event;
 	}
@@ -50,6 +50,7 @@ public class NewEventDataRequest implements IDataRequest<Integer, PubEvent>
 		}
 		
 		eventToSend.SetEventId(41);
+		storedData.put(eventToSend.GetEventId(), eventToSend);
 		listener.onRequestComplete(eventToSend);
 		
 		//TODO: Replace with input stream 

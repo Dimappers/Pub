@@ -9,7 +9,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.jdom.Document;
@@ -34,7 +37,7 @@ public class StoredData implements Serializable
 	//private final int HistoryDepth = 15;
 	
 	private HashMap<Integer, PubEvent> savedEvents; //Events the users has created and saved
-	private HashMap<Integer, PubEvent> sentEvents;
+	//private HashMap<Integer, PubEvent> sentEvents;
 	private HashMap<Integer, PubEvent> invitedEvents;
 	//private PubEvent[] recentHistory; //Stores the events most recently acted upon (ie went ahead);
 	
@@ -42,17 +45,39 @@ public class StoredData implements Serializable
 	private int nextSavedEventId;
 	private boolean needsSaving;
 	
+	private Dictionary<String, HashMap<?,?>> dataStores;
+	
 	public StoredData()
 	{
 		//nextHistorySlot = 0;
 		//recentHistory = new PubEvent[HistoryDepth];
 		savedEvents = new HashMap<Integer, PubEvent>();
-		sentEvents = new HashMap<Integer, PubEvent>();
+		//sentEvents = new HashMap<Integer, PubEvent>();
 		invitedEvents = new HashMap<Integer, PubEvent>();
 		
 		nextSavedEventId = -2;
 		
 		needsSaving = false;
+		
+		dataStores = new Hashtable<String, HashMap<?,?>>();
+		
+	}
+	
+	public <K, V> HashMap<K, V> GetGenericStore(IDataRequest<K, V> dataRequest)
+	{
+		return GetGenericStore(dataRequest.getStoredDataId());
+	}
+	
+	public <K, V> HashMap<K, V> GetGenericStore(String storeId)
+	{
+		HashMap<K, V> genericStore = (HashMap<K, V>)dataStores.get(storeId);
+		if(genericStore == null)
+		{
+			genericStore = new HashMap<K, V>();
+			dataStores.put(storeId, genericStore);
+		}
+		
+		return genericStore;
 	}
 	
 	public Collection<PubEvent> GetSavedEvents()
@@ -60,10 +85,10 @@ public class StoredData implements Serializable
 		return savedEvents.values();
 	}
 
-	public Collection<PubEvent> GetSentEvents()
+	/*public Collection<PubEvent> GetSentEvents()
 	{
 		return sentEvents.values();
-	}
+	}*/
 	
 	public Collection<PubEvent> GetInvitedEvents()
 	{
@@ -74,7 +99,7 @@ public class StoredData implements Serializable
 	{
 		ArrayList<PubEvent> allEvents = new ArrayList<PubEvent>();
 		allEvents.addAll(savedEvents.values());
-		allEvents.addAll(sentEvents.values());
+		//allEvents.addAll(sentEvents.values());
 		allEvents.addAll(invitedEvents.values());
 		return allEvents;
 	}
@@ -105,7 +130,7 @@ public class StoredData implements Serializable
 		}
 	}
 	
-	public void AddNewSentEvent(PubEvent sentEvent)
+	/*public void AddNewSentEvent(PubEvent sentEvent)
 	{
 		if(sentEvent.GetEventId() < 0)
 		{
@@ -114,7 +139,7 @@ public class StoredData implements Serializable
 		
 		sentEvents.put(sentEvent.GetEventId(), sentEvent);
 		
-	}
+	}*/
 	
 	public void AddNewInvitedEvent(PubEvent invitedEvent)
 	{
@@ -134,13 +159,13 @@ public class StoredData implements Serializable
 		savedEvents.remove(event.GetEventId());
 	}
 	
-	public void notifySentEventHasId(int eventId)
+	/*public void notifySentEventHasId(int eventId)
 	{
 		PubEvent event = sentEvents.get(Constants.EventIdBeingSent);
 		event.SetEventId(eventId);
 		sentEvents.remove(Constants.EventIdBeingSent);
 		sentEvents.put(eventId, event);
-	}
+	}*/
 	
 	public String save() {
 		//needsSaving = true;
@@ -155,11 +180,11 @@ public class StoredData implements Serializable
 		root.addContent(rootSaved);
 		
 		Element rootSent = new Element("HostSent");
-		for(PubEvent event : sentEvents.values())
+		/*for(PubEvent event : sentEvents.values())
 		{
 			rootSent.addContent(event.writeXml());
 		}
-		root.addContent(rootSent);
+		root.addContent(rootSent);*/
 		
 		Element rootInvited = new Element("Invited");
 		for(PubEvent event : invitedEvents.values())

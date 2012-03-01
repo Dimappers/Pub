@@ -31,6 +31,8 @@ public interface IPubService extends IBinder {
 	Facebook 				GetFacebook();
 	void					Logout();
 	
+	AppUser					GetActiveUser();
+	
 	<K, T> void 			addDataRequest(IDataRequest<K, T> request, final IRequestListener<T> listener);	
 	
 }

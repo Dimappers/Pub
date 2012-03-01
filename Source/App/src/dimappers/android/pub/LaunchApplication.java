@@ -169,8 +169,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	
     	startServiceIntent.putExtras(b);
     	startService(startServiceIntent);
-    	
-    	
     }
     
     public void onClick(View v)

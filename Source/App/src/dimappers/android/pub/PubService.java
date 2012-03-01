@@ -42,7 +42,7 @@ public class PubService extends IntentService
 		}
 
 		public void GiveNewSentEvent(PubEvent event, final IRequestListener<PubEvent> listener) {
-			NewEventDataRequest r = new NewEventDataRequest(event);
+			DataRequestNewEvent r = new DataRequestNewEvent(event);
 			PubService.this.addDataRequest(r, listener);
 		}
 
@@ -51,7 +51,15 @@ public class PubService extends IntentService
 		}
 
 		public Collection<PubEvent> GetSentEvents() {
-			return (Collection<PubEvent>) PubService.this.dataStores.get("PubEvent").values();
+			HashMap<Object, Object> events = PubService.this.storedData.GetGenericStore("PubEvent");
+			Collection<PubEvent> eventsArray = new ArrayList<PubEvent>();
+			for(Object event : events.values())
+			{
+				eventsArray.add((PubEvent)event);
+			}
+			
+			return eventsArray;
+			
 		}
 		
 		public Collection<PubEvent> GetInvitedEvents() {
@@ -103,8 +111,12 @@ public class PubService extends IntentService
 		public <K, T> void addDataRequest(IDataRequest<K, T> request,
 				IRequestListener<T> listener)
 		{
-			PubService.this.addDataRequest(request, listener);
-			
+			PubService.this.addDataRequest(request, listener);			
+		}
+
+		@Override
+		public AppUser GetActiveUser() {
+			return user;
 		}		
     }
 
@@ -118,30 +130,37 @@ public class PubService extends IntentService
 	private Facebook authenticatedFacebook;
 	
 	private Queue<IDataRequest<?,?>> dataRequestQueue;
-	private Dictionary<String, HashMap<?,?>> dataStores;
  
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
-		Log.d(Constants.MsgInfo, "Service started");
-		storedData = new StoredData();
-		user = (AppUser)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
-		//data.put(facebookIdToGet, appUser);
-		//receiver = new DataReceiver(this);
-		sender = new DataSender();
-		
-		if(!Constants.emulator)
+		if(!hasStarted)
 		{
-			authenticatedFacebook = new Facebook(Constants.FacebookAppId);
-			authenticatedFacebook.setAccessToken(intent.getExtras().getString(Constants.AuthToken));
-			authenticatedFacebook.setAccessExpires(intent.getExtras().getLong(Constants.Expires));
+			Log.d(Constants.MsgInfo, "Service started");
+			storedData = new StoredData();
+			user = (AppUser)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
+			storedData.GetGenericStore("AppUser").put(user.getUserId(), user);
+			
+			//Begin retrieving friends
+			//TOOD: Request to retrieve friends
+			
+			//data.put(facebookIdToGet, appUser);
+			//receiver = new DataReceiver(this);
+			sender = new DataSender();
+			
+			if(!Constants.emulator)
+			{
+				authenticatedFacebook = new Facebook(Constants.FacebookAppId);
+				authenticatedFacebook.setAccessToken(intent.getExtras().getString(Constants.AuthToken));
+				authenticatedFacebook.setAccessExpires(intent.getExtras().getLong(Constants.Expires));
+			}
+		
+			dataRequestQueue = new ArrayBlockingQueue<IDataRequest<?,?>>(100);
+			//dataStores = new Hashtable<String, HashMap<?,?>>();
+			
+			ArrayList<Integer> a = new ArrayList<Integer>();
+			hasStarted = true;
 		}
-	
-		dataRequestQueue = new ArrayBlockingQueue<IDataRequest<?,?>>(100);
-		dataStores = new Hashtable<String, HashMap<?,?>>();
-		
-		ArrayList<Integer> a = new ArrayList<Integer>();
-		
 	    return START_STICKY;
 	}
 	
@@ -163,16 +182,7 @@ public class PubService extends IntentService
 
 	public <K, T> void addDataRequest(IDataRequest<K, T> request, final IRequestListener<T> listener)
 	{
-		HashMap<K, T> currentDataStore = null;
-		if(request.getStoredDataId() != null)
-		{
-			currentDataStore = (HashMap<K, T>) dataStores.get(request.getStoredDataId()); 
-			if(currentDataStore == null )
-			{
-				currentDataStore = new HashMap<K, T>();
-				dataStores.put(request.getStoredDataId(), currentDataStore);
-			}
-		}
+		HashMap<K, T> currentDataStore = storedData.GetGenericStore(request);
 		request.giveConnection(binder);
 		
 		sender.addRequest(request, listener, currentDataStore);		
