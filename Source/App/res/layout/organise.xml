@@ -74,14 +74,14 @@
         android:layout_height="wrap_content"
         android:text="@string/guest_title"
         android:textAppearance="?android:attr/textAppearanceSmall" />
-   
+   
     <ListView
         android:id="@+id/@android:id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="275dp"
         android:layout_gravity="center"
-        android:layout_marginRight="22dp"
         android:layout_marginLeft="22dp"
+        android:layout_marginRight="22dp"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <LinearLayout

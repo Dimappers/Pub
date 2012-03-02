@@ -129,6 +129,13 @@ public class Pending extends Activity implements OnClickListener {
 		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle()));
 		finish();
 	}
+	
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		unbindService(connection);
+	}
 
 	private Bundle fillBundle() {
 		Bundle eventBundle = new Bundle();

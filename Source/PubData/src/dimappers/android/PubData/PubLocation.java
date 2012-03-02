@@ -47,6 +47,11 @@ public class PubLocation implements Serializable
 		return pubName + ": (" + latitudeCoordinate + ", " + longitudeCoordinate +")";
 	}
 	
+	public String getName()
+	{
+		return pubName;
+	}
+	
 	public void setRank(int rank) {this.rank = rank;}
 	public int getRank() {return rank;}
 	

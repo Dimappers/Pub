@@ -224,7 +224,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	private void UpdateDataFromEvent()
 	{
 		TextView pubNameText = (TextView)findViewById(R.id.hostEventsPubName);
-		pubNameText.setText(event.GetPubLocation().toString());
+		pubNameText.setText(event.GetPubLocation().getName());
 
 
 		TextView startTimeText = (TextView)findViewById(R.id.hostEventsCurrentStartTime);

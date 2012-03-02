@@ -14,25 +14,30 @@ import dimappers.android.PubData.User;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class PersonFinder extends AsyncTask<Object, Integer, Integer> {
+public class PersonFinder extends AsyncTask<Object, Integer, Boolean> {
 	Pending activity;
 	IPubService service;
 	Facebook facebook;
 	
 	@Override
-	protected Integer doInBackground(Object... params) {
+	protected Boolean doInBackground(Object... params) {
 		
 		try {
 			activity = (Pending) params[0];
 			service = (IPubService) params[1];
 		}
-		catch(Exception e) {Log.d(Constants.MsgError, "Wrong input entered.");}
+		catch(Exception e) {Log.d(Constants.MsgError, "Wrong input entered."); return false;}
 		
-		facebook = service.GetFacebook();
-		doFacebookCall();
+		if(!Constants.emulator) {
+			facebook = service.GetFacebook();
+			doFacebookCall();
+		}
+		else {
+			activity.event.AddUser(new AppUser(555L, "Test AppUser"));
+		}
 		publishProgress(Constants.PickingGuests);
 		
-		return null;
+		return true;
 	}
 	
 	@Override
@@ -41,9 +46,12 @@ public class PersonFinder extends AsyncTask<Object, Integer, Integer> {
 	}
 	
 	@Override
-	protected void onPostExecute(Integer result) {
-		if(activity.pubFinished) {activity.onFinish();}
-		else {activity.personFinished=true;}
+	protected void onPostExecute(Boolean result) {
+		if(!result) {}
+		else {
+			if(activity.pubFinished) {activity.onFinish();}
+			else {activity.personFinished=true;}
+		}
 	}
 
 	private void doFacebookCall() {
