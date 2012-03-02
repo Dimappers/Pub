@@ -1,24 +1,36 @@
 package dimappers.android.pub;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.facebook.android.Facebook;
+
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.User;
 import android.os.AsyncTask;
+import android.util.Log;
 
-public class PersonFinder extends AsyncTask<Pending, Integer, Integer> {
+public class PersonFinder extends AsyncTask<Object, Integer, Integer> {
 	Pending activity;
+	IPubService service;
+	Facebook facebook;
 	
 	@Override
-	protected Integer doInBackground(Pending... params) {
+	protected Integer doInBackground(Object... params) {
 		
-		activity = (Pending) params[0];
+		try {
+			activity = (Pending) params[0];
+			service = (IPubService) params[1];
+		}
+		catch(Exception e) {Log.d(Constants.MsgError, "Wrong input entered.");}
 		
+		facebook = service.GetFacebook();
 		doFacebookCall();
 		publishProgress(Constants.PickingGuests);
-		
-    	//TODO: implement picking guests
-    	/*activity.event.AddUser(new User(143L));
-    	activity.event.AddUser(new User(12341L));
-    	activity.event.AddUser(new User(237016L));*/
 		
 		return null;
 	}
@@ -35,6 +47,24 @@ public class PersonFinder extends AsyncTask<Pending, Integer, Integer> {
 	}
 
 	private void doFacebookCall() {
-		//TODO: Write method
+		JSONObject friends = null;
+		try {
+			friends = new JSONObject(facebook.request("me/friends"));
+			JSONArray jasonsFriends = friends.getJSONArray("data");
+			for (int i=0; i < jasonsFriends.length(); i++)
+			{
+				JSONObject jason = (JSONObject) jasonsFriends.get(i);
+				activity.event.AddUser(new AppUser(Long.parseLong(jason.getString("id")), jason.getString("name")));
+			}
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

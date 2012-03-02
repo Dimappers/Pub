@@ -2,6 +2,7 @@ package dimappers.android.pub;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import android.location.Location;
 
@@ -27,9 +28,12 @@ public class PersonRanker {
 	{
 		//TODO: get required things from service: 
 			historyStore = new HistoryStore(); 
-		    friends = new User[1];//(all facebook friends)
-		    friends[0]=(new AppUser((long) 10));
 		    facebook = new Facebook("0");
+			
+		    friends = new User[currentEvent.GetUsers().size()];//(all facebook friends)
+		    Set<User> guests = currentEvent.GetUsers();
+		    for(int i = 0; i<friends.length; i++) {friends[i] = guests.iterator().next();}
+		    
 		    currentLocation = new Location("location");
 		    
 		this.currentEvent = currentEvent;

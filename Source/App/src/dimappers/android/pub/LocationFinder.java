@@ -40,7 +40,7 @@ public class LocationFinder {
 class MyLocationListener implements LocationListener{
 	Pending p;
 	MyLocationListener(Pending p) {this.p = p;}
-	public void onLocationChanged(Location location) {p.continueGoing(location);}
+	public void onLocationChanged(Location location) {p.continueGoing();}
 	public void onStatusChanged(String provider, int status, Bundle extras) {}
 	public void onProviderEnabled(String provider) {}
 	public void onProviderDisabled(String provider) {}

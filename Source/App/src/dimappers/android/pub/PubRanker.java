@@ -27,12 +27,6 @@ public class PubRanker {
 		this.event = event;
 	}
 	
-	//Use when calling from PubFinding (i.e. during the Pending screen)
-	public PubLocation returnBest(PubFinding pubFinding) {
-    	pubFinding.updateProgress(Constants.ChoosingPub);
-		return returnBest();
-	}
-	
 	//Use at other times
 	public PubLocation returnBest() {
 		//TODO: Implement this

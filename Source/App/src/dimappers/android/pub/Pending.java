@@ -5,15 +5,18 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Debug;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,9 +39,16 @@ public class Pending extends Activity implements OnClickListener {
 	boolean personFinished;
 	boolean pubFinished;
 	private List<Place> pubPlaces;
+	
+	boolean locationFound = false;
+	boolean serviceConnected = false;
+	IPubService service;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+    	//Bind to service
+    	bindService(new Intent(this, PubService.class), connection, 0);
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pending_guests);
 		text = (TextView) findViewById(R.id.location_error);
@@ -58,10 +68,11 @@ public class Pending extends Activity implements OnClickListener {
 		updateText("Finding current location");
 		LocationFinder lc = new LocationFinder(this);
 		currentLocation = lc.findLocation();
-		if(currentLocation!=null) {continueGoing(currentLocation);}
+		if(currentLocation!=null) {continueGoing();}
 	}
-	public void continueGoing(Location l) {
-		startTasks();
+	public void continueGoing() {
+		if(serviceConnected) {startTasks();}
+		locationFound = true;
 	}
 	public void updateText(String s) {
 		text.setText(s);
@@ -87,7 +98,11 @@ public class Pending extends Activity implements OnClickListener {
 
 		new PubFinding().execute(info);
 
-		new PersonFinder().execute(this);
+		Object[] info2 = new Object[2];
+		info2[0] = this;
+		info2[1] = service;
+		
+		new PersonFinder().execute(info2);
 	}
 
 	public void createEvent() {
@@ -105,9 +120,7 @@ public class Pending extends Activity implements OnClickListener {
 	}
 
 	public void onClick(View v) {
-		if (v.getId() == R.id.cancelbutton) {
-			finish();
-		}
+		if (v.getId() == R.id.cancelbutton) {finish();}
 	}
 
 	public void onFinish() {
@@ -145,4 +158,21 @@ public class Pending extends Activity implements OnClickListener {
 	public void setLocations(List<Place> pubPlaces) {
 		this.pubPlaces = pubPlaces;		
 	}
+	
+	private ServiceConnection connection = new ServiceConnection()
+	{
+
+		public void onServiceConnected(ComponentName className, IBinder pubService)
+		{
+			//Give the interface to the app
+			service = (IPubService)pubService;
+			if(locationFound) {startTasks();}
+			serviceConnected = true;
+		}
+
+		public void onServiceDisconnected(ComponentName className)
+		{
+		}
+		
+	};
 }
