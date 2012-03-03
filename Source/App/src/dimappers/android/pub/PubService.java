@@ -106,6 +106,11 @@ public class PubService extends IntentService
 			//TODO: Implement facebook logout
 			
 		}
+
+		public User GetUser() {
+			// TODO Auto-generated method stub
+			return user;
+		}
 		
     }
 
@@ -143,7 +148,7 @@ public class PubService extends IntentService
 		return binder;
 	}
 	
-	public User getUser()
+	public User GetUser()
 	{
 		return user;
 	}

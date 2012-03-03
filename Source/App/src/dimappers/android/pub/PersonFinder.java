@@ -47,7 +47,7 @@ public class PersonFinder extends AsyncTask<Object, Integer, Boolean> {
 	
 	@Override
 	protected void onPostExecute(Boolean result) {
-		if(!result) {}
+		if(!result) {activity.errorOccurred();}
 		else {
 			if(activity.pubFinished) {activity.onFinish();}
 			else {activity.personFinished=true;}

@@ -83,7 +83,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 	        }
 	        /* Only call authorize if the access_token has expired */
 	        if(!facebook.isSessionValid()) {  	
-	        	facebook.authorize(this, new String[] { "email", "publish_checkins", "user_location", "friends_location" }, Constants.FromFacebookLogin, new DialogListener() {
+	        	facebook.authorize(this, new String[] { "email", "publish_checkins", "user_location", "friends_location", "user_photos" }, Constants.FromFacebookLogin, new DialogListener() {
 	        		public void onComplete(Bundle values) {
 	        			SharedPreferences.Editor editor = mPrefs.edit();
 	                    editor.putString("access_token", facebook.getAccessToken());

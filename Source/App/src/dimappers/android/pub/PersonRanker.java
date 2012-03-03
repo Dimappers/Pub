@@ -1,10 +1,17 @@
 package dimappers.android.pub;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.location.Location;
+import android.util.Log;
 
 import com.facebook.android.Facebook;
 
@@ -16,6 +23,7 @@ public class PersonRanker {
 	
 	final int maxDist = 2;
 	
+	IPubService service;
 	HistoryStore historyStore;
 	User[] friends;
 	Facebook facebook;
@@ -24,34 +32,45 @@ public class PersonRanker {
 	
 	PubEvent currentEvent;
 	
-	PersonRanker(PubEvent currentEvent)
+	PersonRanker(PubEvent currentEvent, IPubService service)
 	{
 		//TODO: get required things from service: 
-			historyStore = new HistoryStore(); 
-		    facebook = new Facebook("0");
-			
-		    friends = new User[currentEvent.GetUsers().size()];//(all facebook friends)
-		    Set<User> guests = currentEvent.GetUsers();
-		    for(int i = 0; i<friends.length; i++) {friends[i] = guests.iterator().next();}
-		    
-		    currentLocation = new Location("location");
-		    
-		this.currentEvent = currentEvent;
-		trips = historyStore.getPubTrips();
-		removeTooFarAwayFriends();
-		User friend;
-		for(int i = 0; i<friends.length; i++)
+			 historyStore = new HistoryStore(); 
+			 currentLocation = new Location("location");
+		   
+		this.service = service;
+		if (!Constants.emulator)
 		{
-			friend = friends[i];
-			friend.setRank(findFacebookClosenessRank(friend) + findPreviousPubTrips(friend));
-		}
-		if(friends.length>0) {
-			friends = MergeSort(friends);
-			int n = Math.min(historyStore.getAverageNumberOfFriends(), friends.length);
-			currentEvent.GetUsers().clear();
-			for(int i = 0; i<n; i++)
+			this.facebook = service.GetFacebook();
+			
+			friends = currentEvent.GetUsers();//(all facebook friends)    
+			    
+			this.currentEvent = currentEvent;
+			trips = historyStore.getPubTrips();
+			removeTooFarAwayFriends();
+			
+			JSONObject myPhotos = null;
+			JSONObject myPosts = null;
+			try {
+				myPhotos = new JSONObject(facebook.request("me/photos"));
+				myPosts = new JSONObject(facebook.request("me/feed"));
+			}
+			catch(Exception e) {Log.d(Constants.MsgError, "Exception thrown while retrieving Facebook photos.");}
+			
+			User friend;
+			for(int i = 0; i<friends.length; i++)
 			{
-				currentEvent.AddUser(friends[i]);
+				friend = friends[i];
+				friend.setRank(findFacebookClosenessRank(friend, myPhotos, myPosts) + findPreviousPubTrips(friend));
+			}
+			if(friends.length>0) {
+				friends = MergeSort(friends);
+				int n = Math.min(historyStore.getAverageNumberOfFriends(), friends.length);
+				currentEvent.emptyGuestList();
+				for(int i = 0; i<n; i++)
+				{
+					currentEvent.AddUser(friends[i]);
+				}
 			}
 		}
 	}
@@ -111,20 +130,70 @@ public class PersonRanker {
 		return 0;
 	}
 
-	private int findFacebookClosenessRank(User friend) {
-		int photoNumber = findMutuallyTaggedPhotos(friend.getUserId());
-		int postNumber = findMutuallyTaggedPosts(friend.getUserId());
-		return photoNumber + postNumber;
+	private int findFacebookClosenessRank(User friend, JSONObject myPhotos, JSONObject myPosts) {
+		return findMutuallyTaggedPhotos(friend.getUserId(), myPhotos) + findMutuallyTaggedPosts(friend.getUserId(), myPosts);
 	}
 
-	private int findMutuallyTaggedPosts(Long userId) {
-		// TODO: Make a call to facebook that finds out this information
-		return 0;
+	private int findMutuallyTaggedPhotos(Long userId, JSONObject myPhotos) {
+		int photoNumber = 0;
+		try
+		{
+			JSONArray photos = myPhotos.getJSONArray("data");
+			for (int i = 0; i<photos.length(); i++)
+			{
+				JSONObject photo = (JSONObject) photos.get(i);
+				if(Long.parseLong(photo.getJSONObject("from").getString("id"))==userId) {photoNumber++;}
+				JSONArray tags = photo.getJSONObject("tags").getJSONArray("data");
+				for (int j = 0; j<tags.length(); j++)
+				{
+					if(userId==Long.parseLong(((JSONObject)tags.get(j)).getString("id"))) {photoNumber++;};
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+			Log.d(Constants.MsgError, "Error finding photo information.");
+		}	
+		return photoNumber;
 	}
 
-	private int findMutuallyTaggedPhotos(Long userId) {
-		// TODO: Make a call to facebook that finds out this information
-		return 0;
+	private int findMutuallyTaggedPosts(Long userId, JSONObject myPosts) {
+		int postNumber = 0;
+		try
+		{
+			JSONArray posts = myPosts.getJSONArray("data");
+			for (int i = 0; i<posts.length(); i++)
+			{
+				JSONObject post = (JSONObject) posts.get(i);
+				if(Long.parseLong(post.getJSONObject("from").getString("id"))==userId) {postNumber++;}
+				JSONArray to = post.getJSONObject("to").getJSONArray("data");
+				for(int j = 0; j<to.length(); j++)
+				{
+					if(Long.parseLong(((JSONObject)to.get(j)).getString("id"))==userId) {postNumber++;}
+				}
+				try
+				{
+					JSONArray likes = post.getJSONObject("likes").getJSONArray("data");
+					for(int j = 0; j<to.length(); j++)
+					{
+						if(Long.parseLong(((JSONObject)likes.get(j)).getString("id"))==userId) {postNumber++;}
+					}
+				}
+				catch(JSONException e) {Log.d(Constants.MsgError, "There are no likes for this item.");}
+				try
+				{
+					JSONArray comments = post.getJSONObject("comments").getJSONArray("data");
+					for(int j = 0; j<to.length(); j++)
+					{
+						if(Long.parseLong(((JSONObject)comments.get(j)).getJSONObject("from").getString("id"))==userId) {postNumber++;}
+					}
+				}
+				catch(JSONException e) {Log.d(Constants.MsgError, "There are no comments for this item.");}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+			Log.d(Constants.MsgError, "Error finding post information.");
+		}	
+		return postNumber;
 	}
 
 	private void removeTooFarAwayFriends()
@@ -132,7 +201,10 @@ public class PersonRanker {
 		int removedFriends = 0;
 		for(int i = 0; i<friends.length; i++)
 		{
-			if(isTooFarAway(friends[i].getLocation())) {friends[i]=null; removedFriends++;}
+			if(isTooFarAway(friends[i].getLocation())) {
+				friends[i]=null; 
+				removedFriends++;
+			}
 		}
 		int j = 0;
 		User[] tmp = new User[friends.length-removedFriends];
@@ -140,12 +212,16 @@ public class PersonRanker {
 		{
 			while(friends[j]==null) {j++;}
 			tmp[i] = friends[j];
+			j++;
 		}
 		friends = tmp;
 	}
 
 	private boolean isTooFarAway(double[] location) {
-		if(location==null) {return false;}
+		if(location==null) 
+		{
+			return false;
+		}
 		double latitude = location[0];
 		double longitude = location[1];
 		
@@ -164,6 +240,6 @@ public class PersonRanker {
 	}
 	private double toRad(double angle)
 	{
-		return (angle*2.0*Math.PI)/360.0;
+		return (angle*Math.PI)/180.0;
 	}
 }

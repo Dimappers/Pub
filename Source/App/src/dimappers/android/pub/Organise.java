@@ -295,7 +295,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		cur_time.setText(event.GetFormattedStartTime());
 		
 		listItems.clear();
-		listItems.add(AppUser.AppUserFromUser(event.GetHost(), facebook) + " (hosting)");
     	for(User user : event.GetUsers()) {
     		if(user instanceof AppUser)
     		{

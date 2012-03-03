@@ -124,7 +124,7 @@ public class Pending extends Activity implements OnClickListener {
 	}
 
 	public void onFinish() {
-		event = new PersonRanker(event).getEvent();
+		event = new PersonRanker(event, service).getEvent();
 		event.SetPubLocation(new PubRanker(pubPlaces, event).returnBest());
 		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle()));
 		finish();

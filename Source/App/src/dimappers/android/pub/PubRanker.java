@@ -27,10 +27,9 @@ public class PubRanker {
 		this.event = event;
 	}
 	
-	//Use at other times
 	public PubLocation returnBest() {
 		//TODO: Implement this
-		Set<User> guests = event.GetUsers();
+		User[] guests = event.GetUsers();
 		for(PubLocation pub : pubList) {
 			int rank = 0;
 			for(User guest : guests)
@@ -52,7 +51,7 @@ public class PubRanker {
 			if(event.GetHost().equals(guest)) {rank+=2;}
 			else 
 				{
-					Set<User> guests = event.GetUsers();
+					User[] guests = event.GetUsers();
 					for (User user : guests)
 					{
 						if(guest.equals(user)) {rank+=1;}

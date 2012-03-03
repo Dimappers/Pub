@@ -58,9 +58,9 @@ public class PubEvent implements Serializable
 	}
 	
 	//Getter/setter methods
-	public Set<User> GetUsers()
+	public User[] GetUsers()
 	{
-		return users.keySet();
+		return users.keySet().toArray(new User[users.size()]);
 	}
 	
 	public HashMap<User, UserStatus> GetGoingStatusMap()
@@ -245,6 +245,11 @@ public class PubEvent implements Serializable
 			
 			users.put(user, status);
 		}
+	}
+
+	public void emptyGuestList() {
+		users = new HashMap<User, UserStatus>();
+		users.put(host, new UserStatus(GoingStatus.going, startTime, null));
 	}
 }
 
