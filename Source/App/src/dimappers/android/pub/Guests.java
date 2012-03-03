@@ -33,6 +33,10 @@ public class Guests extends ListActivity implements OnClickListener{
 	ListView guest_list;
 	PubEvent event;
 	
+	User[] allFriends;
+	
+	IPubService service;
+	
 	Facebook facebook;
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,8 +53,17 @@ public class Guests extends ListActivity implements OnClickListener{
     		finish();
     	}
     	
+    	ArrayList<User> facebookFriends = (ArrayList<User>)getIntent().getExtras().getSerializable("facebookFriends");
+    	allFriends = new User[facebookFriends.size()];
+    	for(int i = 0; i<allFriends.length; i++)
+    	{
+    		allFriends[i] = facebookFriends.get(i);
+    	}
+    	
 		bindService(new Intent(this, PubService.class), connection, 0);
     	
+		//until search is implemented
+		findViewById(R.id.search_friends).setVisibility(View.INVISIBLE);
     	
     	guest_list = (ListView)findViewById(android.R.id.list);
     	guest_list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -58,8 +71,6 @@ public class Guests extends ListActivity implements OnClickListener{
 		adapter = new ArrayAdapter<AppUser>(this, android.R.layout.simple_list_item_multiple_choice, listItems);
 		setListAdapter(adapter);
 
-    	Button button_add_guest = (Button)findViewById(R.id.add_guest);
-    	button_add_guest.setOnClickListener(this);
     	Button save = (Button)findViewById(R.id.save);
     	save.setOnClickListener(this);
 	}
@@ -81,11 +92,6 @@ public class Guests extends ListActivity implements OnClickListener{
 			this.setResult(RESULT_OK,returnIntent);
 			
 			finish();
-			break;
-		}
-		case R.id.add_guest : {
-			i = new Intent(this, ChooseGuest.class);
-			startActivity(i);
 			break;
 		}
 		}
@@ -131,6 +137,8 @@ public class Guests extends ListActivity implements OnClickListener{
 			User listUser = listItems.get(i);
 			guest_list.setItemChecked(i, event.DoesContainUser(listUser));
 		}
+		
+		adapter.notifyDataSetChanged();
 	}
 	
 	private AppUser[] GetUsers()
@@ -177,18 +185,24 @@ public class Guests extends ListActivity implements OnClickListener{
 	
 	private AppUser[] GetSortedUsers()
 	{
-		//TODO: Hook up PersonRanker
-		return GetUsers();
+		PubEvent currentEvent = event;
+		allFriends = new PersonRanker(currentEvent, service, allFriends).getArrayOfRankedFriends();
+		AppUser[] appFriends = new AppUser[allFriends.length];
+		for(int i = 0; i<appFriends.length; i++)
+		{
+			appFriends[i] = AppUser.AppUserFromUser(allFriends[i], facebook);
+		}
+		return appFriends;
 	}
 	
 	private ServiceConnection connection = new ServiceConnection()
 	{
 
-		public void onServiceConnected(ComponentName className, IBinder service)
+		public void onServiceConnected(ComponentName className, IBinder bService)
 		{
 			//Give the interface to the app
-			IPubService serviceInterface = (IPubService)service;
-			facebook = serviceInterface.GetFacebook();
+			service = (IPubService)bService;
+			facebook = service.GetFacebook();
 			UpdateListView();
 		}
 
@@ -197,5 +211,28 @@ public class Guests extends ListActivity implements OnClickListener{
 		}
 		
 	};
+	
+	private void doFacebookCall() {
+		JSONObject friends = null;
+		try {
+			friends = new JSONObject(facebook.request("me/friends"));
+			JSONArray jasonsFriends = friends.getJSONArray("data");
+			allFriends = new User[jasonsFriends.length()];
+			for (int i=0; i < jasonsFriends.length(); i++)
+			{
+				JSONObject jason = (JSONObject) jasonsFriends.get(i);
+				allFriends[i] = new AppUser(Long.parseLong(jason.getString("id")), jason.getString("name"));
+			}
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 }

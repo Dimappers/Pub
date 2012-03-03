@@ -1,5 +1,6 @@
 package dimappers.android.pub;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -30,6 +31,8 @@ public class Pending extends Activity implements OnClickListener {
 
 	private TextView text;
 	private User facebookUser;
+	public ArrayList<User> facebookFriends = new ArrayList<User>();
+	User[] allFriends;
 	private Location currentLocation;
 
 	private boolean firstTime = true;
@@ -124,7 +127,12 @@ public class Pending extends Activity implements OnClickListener {
 	}
 
 	public void onFinish() {
-		event = new PersonRanker(event, service).getEvent();
+		allFriends = new User[facebookFriends.size()];
+		for(int i = 0 ; i<facebookFriends.size(); i++)
+		{
+			allFriends[i] = facebookFriends.get(i);
+		}
+		event = new PersonRanker(event, service, allFriends).getEvent();
 		event.SetPubLocation(new PubRanker(pubPlaces, event).returnBest());
 		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle()));
 		finish();
@@ -146,6 +154,7 @@ public class Pending extends Activity implements OnClickListener {
 				currentLocation.getLatitude());
 		eventBundle.putDouble(Constants.CurrentLongitude,
 				currentLocation.getLongitude());
+		eventBundle.putSerializable("facebookFriends", facebookFriends);
 		return eventBundle;
 	}
 

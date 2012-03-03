@@ -5,28 +5,32 @@
        	    android:layout_height="wrap_content"
        	    android:orientation="vertical" >
        	    
-    		<RelativeLayout 
+    		<LinearLayout 
        		 android:id="@+id/guests"
         	 android:layout_width="match_parent"
-        	 android:layout_height="wrap_content">
+        	 android:layout_height="wrap_content"
+        	 android:orientation="horizontal">
 
+    		    <EditText
+	       		    android:id="@+id/search_friends"
+	       		    android:layout_width="fill_parent"
+	       		    android:layout_height="wrap_content"
+	       		    android:layout_weight="1"
+	       		    android:layout_alignParentLeft="true"
+	       		    android:layout_alignParentTop="true"
+	       		    android:hint="Search friends" />
+    		    
        			<Button
 	       		    android:id="@+id/save"
-	       		    android:layout_width="wrap_content"
+	       		    android:layout_width="fill_parent"
 	       		    android:layout_height="wrap_content"
+	       		    android:layout_weight="3"
 	       		    android:layout_alignParentRight="true"
 	       		    android:layout_alignParentTop="true"
 	       		    android:text="@string/save" />
 	
-	       		<Button
-	       		    android:id="@+id/add_guest"
-	       		    android:layout_width="wrap_content"
-	       		    android:layout_height="wrap_content"
-	       		    android:layout_alignParentLeft="true"
-	       		    android:layout_alignParentTop="true"
-	       		    android:text="@string/add_guest" />
 	       		
-        	</RelativeLayout>
+        	</LinearLayout>
 
     		<ListView
     		    android:id= "@android:id/list"

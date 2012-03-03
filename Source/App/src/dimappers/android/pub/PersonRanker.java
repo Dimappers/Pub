@@ -26,13 +26,14 @@ public class PersonRanker {
 	IPubService service;
 	HistoryStore historyStore;
 	User[] friends;
+	User[] allFriends;
 	Facebook facebook;
 	Location currentLocation;
 	List<PubEvent> trips;
 	
 	PubEvent currentEvent;
 	
-	PersonRanker(PubEvent currentEvent, IPubService service)
+	PersonRanker(PubEvent currentEvent, IPubService service, User[] facebookFriends)
 	{
 		//TODO: get required things from service: 
 			 historyStore = new HistoryStore(); 
@@ -43,7 +44,7 @@ public class PersonRanker {
 		{
 			this.facebook = service.GetFacebook();
 			
-			friends = currentEvent.GetUsers();//(all facebook friends)    
+			friends = facebookFriends;//(all facebook friends)    
 			    
 			this.currentEvent = currentEvent;
 			trips = historyStore.getPubTrips();
@@ -55,7 +56,7 @@ public class PersonRanker {
 				myPhotos = new JSONObject(facebook.request("me/photos"));
 				myPosts = new JSONObject(facebook.request("me/feed"));
 			}
-			catch(Exception e) {Log.d(Constants.MsgError, "Exception thrown while retrieving Facebook photos.");}
+			catch(Exception e) {Log.d(Constants.MsgError, "Exception thrown while retrieving Facebook photos & posts.");}
 			
 			User friend;
 			for(int i = 0; i<friends.length; i++)
@@ -65,6 +66,11 @@ public class PersonRanker {
 			}
 			if(friends.length>0) {
 				friends = MergeSort(friends);
+				allFriends = new User[friends.length];
+				for(int i = 0; i < friends.length; i++)
+				{
+					allFriends[i] = friends[i];
+				}
 				int n = Math.min(historyStore.getAverageNumberOfFriends(), friends.length);
 				currentEvent.emptyGuestList();
 				for(int i = 0; i<n; i++)
@@ -75,6 +81,8 @@ public class PersonRanker {
 		}
 	}
 
+	public User[] getArrayOfRankedFriends() {return allFriends;}
+	
 	public PubEvent getEvent() {return currentEvent;}
 	
 	private User[] MergeSort(User[] list)
@@ -103,7 +111,7 @@ public class PersonRanker {
 			else if(listb.length==b) {temp[c] = lista[a]; a++;}
 			else
 			{
-				if(lista[a].getRank()<listb[b].getRank()) {temp[c] = lista[a]; a++;}
+				if(lista[a].getRank()>listb[b].getRank()) {temp[c] = lista[a]; a++;}
 				else {temp[c] = listb[b]; b++;}
 			}
 			c++;

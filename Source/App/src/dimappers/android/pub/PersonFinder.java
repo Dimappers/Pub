@@ -62,7 +62,7 @@ public class PersonFinder extends AsyncTask<Object, Integer, Boolean> {
 			for (int i=0; i < jasonsFriends.length(); i++)
 			{
 				JSONObject jason = (JSONObject) jasonsFriends.get(i);
-				activity.event.AddUser(new AppUser(Long.parseLong(jason.getString("id")), jason.getString("name")));
+				activity.facebookFriends.add(new AppUser(Long.parseLong(jason.getString("id")), jason.getString("name")));
 			}
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block

@@ -64,6 +64,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	private double lngSet;
 	
 	private Facebook facebook;
+	private User[] facebookFriends;
 	
 	IPubService serviceInterface;
 	
@@ -97,7 +98,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	    	} 
 
 	    	cur_pub = (Button)findViewById(R.id.pub_button);
-	    	cur_pub.setText(event.GetPubLocation().toString());
+	    	cur_pub.setText(event.GetPubLocation().getName());
 	    	cur_time = (Button)findViewById(R.id.time_button);
 	    	cur_time.setText(event.GetFormattedStartTime());
 	    	
@@ -291,7 +292,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	
 	private void UpdateFromEvent()
 	{
-		cur_pub.setText(event.GetPubLocation().pubName);
+		cur_pub.setText(event.GetPubLocation().getName());
 		cur_time.setText(event.GetFormattedStartTime());
 		
 		listItems.clear();
