@@ -46,14 +46,7 @@ public class Guests extends ListActivity implements OnClickListener{
     		setResult(Constants.MissingDataInBundle);
     		finish();
     	}
-    	
-    	ArrayList<User> facebookFriends = (ArrayList<User>)getIntent().getExtras().getSerializable("facebookFriends");
-    	allFriends = new User[facebookFriends.size()];
-    	for(int i = 0; i<allFriends.length; i++)
-    	{
-    		allFriends[i] = facebookFriends.get(i);
-    	}
-    	
+
 		bindService(new Intent(this, PubService.class), connection, 0);
     	
 		//until search is implemented

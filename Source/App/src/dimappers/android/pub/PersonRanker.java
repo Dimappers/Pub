@@ -23,11 +23,10 @@ public class PersonRanker {
 	
 	IPubService service;
 	HistoryStore historyStore;
-	User[] friends;
-	User[] allFriends;
-	Facebook facebook;
+	User[] facebookFriends;
 	Location currentLocation;
 	List<PubEvent> trips;
+	Facebook facebook;
 	
 	//Constants for ranking people
 	private final int photoValue = 1;
@@ -50,13 +49,13 @@ public class PersonRanker {
 		//TODO: get required things from service: 
 			 historyStore = new HistoryStore(); 
 			 currentLocation = new Location("location");
-		   
+			 
 		this.service = service;
 		if (!Constants.emulator)
 		{
 			this.facebook = service.GetFacebook();
 			
-			friends = facebookFriends;//(all facebook friends)    
+			this.facebookFriends = facebookFriends;  
 			    
 			this.currentEvent = currentEvent;
 			trips = historyStore.getPubTrips();
@@ -73,33 +72,31 @@ public class PersonRanker {
 			catch(Exception e) {Log.d(Constants.MsgError, "Exception thrown while retrieving Facebook photos & posts.");}
 			
 			User friend;
-			for(int i = 0; i<friends.length; i++)
+			for(int i = 0; i<facebookFriends.length; i++)
 			{
-				friend = friends[i];
+				friend = facebookFriends[i];
 				friend.setRank(findFacebookClosenessRank(friend, myPhotos, myPosts) + findPreviousPubTrips(friend));
 			}
-			if(friends.length>0) {
-				friends = MergeSort(friends);
-				allFriends = new User[friends.length];
-				for(int i = 0; i < friends.length; i++)
+			if(facebookFriends.length>0) {
+				User[] tempFriends = MergeSort(facebookFriends);
+				for(int i = 0; i<tempFriends.length; i++)
 				{
-					allFriends[i] = friends[i];
+					facebookFriends[i] = tempFriends[i];
 				}
-				int n = Math.min(historyStore.getAverageNumberOfFriends(), friends.length);
+				
+				int n = Math.min(historyStore.getAverageNumberOfFriends(), facebookFriends.length);
 				currentEvent.emptyGuestList();
 				for(int i = 0; i<n; i++)
 				{
-					currentEvent.AddUser(friends[i]);
+					currentEvent.AddUser(facebookFriends[i]);
 				}
 			}
 		}
 	}
-
-	public User[] getArrayOfRankedFriends() {return allFriends;}
 	
 	public PubEvent getEvent() {return currentEvent;}
 	
-	private User[] MergeSort(User[] list)
+	public User[] MergeSort(User[] list)
 	{
 		if (list.length<=1) return list;
 		User[] lista = new User[(int) list.length/2];
@@ -226,22 +223,22 @@ public class PersonRanker {
 	private void removeTooFarAwayFriends()
 	{
 		int removedFriends = 0;
-		for(int i = 0; i<friends.length; i++)
+		for(int i = 0; i<facebookFriends.length; i++)
 		{
-			if(isTooFarAway(friends[i].getLocation())) {
-				friends[i]=null; 
+			if(isTooFarAway(facebookFriends[i].getLocation())) {
+				facebookFriends[i]=null; 
 				removedFriends++;
 			}
 		}
 		int j = 0;
-		User[] tmp = new User[friends.length-removedFriends];
+		User[] tmp = new User[facebookFriends.length-removedFriends];
 		for(int i = 0; i<tmp.length; i++)
 		{
-			while(friends[j]==null) {j++;}
-			tmp[i] = friends[j];
+			while(facebookFriends[j]==null) {j++;}
+			tmp[i] = facebookFriends[j];
 			j++;
 		}
-		friends = tmp;
+		facebookFriends = tmp;
 	}
 
 	private boolean isTooFarAway(double[] location) {

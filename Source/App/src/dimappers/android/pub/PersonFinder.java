@@ -14,65 +14,44 @@ import dimappers.android.PubData.User;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class PersonFinder extends AsyncTask<Object, Integer, Boolean> {
+public class PersonFinder {
 	Pending activity;
 	IPubService service;
-	Facebook facebook;
 	
-	@Override
-	protected Boolean doInBackground(Object... params) {
-		
-		try {
-			activity = (Pending) params[0];
-			service = (IPubService) params[1];
-		}
-		catch(Exception e) {Log.d(Constants.MsgError, "Wrong input entered."); return false;}
-		
+	PersonFinder(Pending activity, IPubService service)
+	{
+		this.activity = activity;
+		this.service = service;
+	}
+	
+	public void getFriends()
+	{	
 		if(!Constants.emulator) {
-			facebook = service.GetFacebook();
 			doFacebookCall();
 		}
-		else {
-			activity.event.AddUser(new AppUser(555L, "Test AppUser"));
+		else 
+		{
+			activity.allFriends = new AppUser[1];
+			activity.allFriends[0] = new AppUser(555L, "Test AppUser");
 		}
-		publishProgress(Constants.PickingGuests);
-		
-		return true;
-	}
-	
-	@Override
-	protected void onProgressUpdate(Integer... progress) {
-		if(progress[0].equals(Constants.PickingGuests)) {activity.updateText("Picking guests");}
-	}
-	
-	@Override
-	protected void onPostExecute(Boolean result) {
-		if(!result) {activity.errorOccurred();}
-		else {
-			if(activity.pubFinished) {activity.onFinish();}
-			else {activity.personFinished=true;}
-		}
+
+		activity.updateText("Picking guests");
 	}
 
 	private void doFacebookCall() {
-		JSONObject friends = null;
-		try {
-			friends = new JSONObject(facebook.request("me/friends"));
-			JSONArray jasonsFriends = friends.getJSONArray("data");
-			for (int i=0; i < jasonsFriends.length(); i++)
-			{
-				JSONObject jason = (JSONObject) jasonsFriends.get(i);
-				activity.facebookFriends.add(new AppUser(Long.parseLong(jason.getString("id")), jason.getString("name")));
+		
+		DataRequestGetFriends friends = new DataRequestGetFriends();
+		service.addDataRequest(friends, new IRequestListener<AppUserArray>(){
+
+			public void onRequestComplete(AppUserArray data) {
+				activity.allFriends = data.getArray();
+				if(activity.pubFinished) {activity.onFinish();}
+				else {activity.personFinished=true;}
 			}
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+			public void onRequestFail(Exception e) {
+				activity.errorOccurred();
+			}});
+		
 	}
 }

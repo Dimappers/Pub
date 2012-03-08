@@ -101,12 +101,8 @@ public class Pending extends Activity implements OnClickListener {
 		info[1] = this;
 
 		new PubFinding().execute(info);
-
-		Object[] info2 = new Object[2];
-		info2[0] = this;
-		info2[1] = service;
 		
-		new PersonFinder().execute(info2);
+		new PersonFinder(this, service).getFriends();
 	}
 
 	public void createEvent() {
@@ -127,11 +123,6 @@ public class Pending extends Activity implements OnClickListener {
 	}
 
 	public void onFinish() {
-		allFriends = new User[facebookFriends.size()];
-		for(int i = 0 ; i<facebookFriends.size(); i++)
-		{
-			allFriends[i] = facebookFriends.get(i);
-		}
 		event = new PersonRanker(event, service, allFriends).getEvent();
 		event.SetPubLocation(new PubRanker(pubPlaces, event).returnBest());
 		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle()));
@@ -154,7 +145,6 @@ public class Pending extends Activity implements OnClickListener {
 				currentLocation.getLatitude());
 		eventBundle.putDouble(Constants.CurrentLongitude,
 				currentLocation.getLongitude());
-		eventBundle.putSerializable("facebookFriends", facebookFriends);
 		return eventBundle;
 	}
 
