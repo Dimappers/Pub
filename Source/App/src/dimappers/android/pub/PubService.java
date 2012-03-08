@@ -10,6 +10,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.util.Log;
 import com.facebook.android.Facebook;
 
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
 
@@ -51,7 +53,7 @@ public class PubService extends IntentService
 		}
 
 		public Collection<PubEvent> GetSentEvents() {
-			HashMap<Object, Object> events = PubService.this.storedData.GetGenericStore("PubEvent");
+			HashMap<?, ? extends IXmlable> events = PubService.this.storedData.GetGenericStore("PubEvent");
 			Collection<PubEvent> eventsArray = new ArrayList<PubEvent>();
 			for(Object event : events.values())
 			{
@@ -83,16 +85,6 @@ public class PubService extends IntentService
 		public void PerformUpdate(boolean fullUpdate) {
 			PubService.this.receiver.forceUpdate(fullUpdate);
 		}
-		
-		public String Save()
-		{
-			return PubService.this.storedData.save();
-		}
-		
-		public void Load(String loadedData)
-		{
-			PubService.this.storedData.Load(loadedData);
-		}
 
 		public boolean SendingMessage() {
 			//TODO: Should check to see if a new event has been created but hasn't yet been sent
@@ -108,7 +100,7 @@ public class PubService extends IntentService
 			
 		}
 
-		public <K, T> void addDataRequest(IDataRequest<K, T> request,
+		public <K, T extends IXmlable> void addDataRequest(IDataRequest<K, T> request,
 				IRequestListener<T> listener)
 		{
 			PubService.this.addDataRequest(request, listener);			
@@ -128,8 +120,6 @@ public class PubService extends IntentService
 	private DataReceiver receiver;
 	private	DataSender sender;
 	private Facebook authenticatedFacebook;
-	
-	private Queue<IDataRequest<?,?>> dataRequestQueue;
  
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
@@ -138,13 +128,19 @@ public class PubService extends IntentService
 		{
 			Log.d(Constants.MsgInfo, "Service started");
 			storedData = new StoredData();
+			
+			//Load previously stored data
+			
+			String storedDataString = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).getString(Constants.SaveDataName, "");
+			if(storedDataString != "")
+			{
+				Log.d(Constants.MsgInfo, "Loading data for store: " + storedDataString);
+				storedData.Load(storedDataString);
+			}
+			
 			user = (AppUser)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
 			storedData.GetGenericStore("AppUser").put(user.getUserId(), user);
 			
-			//Begin retrieving friends
-			//TOOD: Request to retrieve friends
-			
-			//data.put(facebookIdToGet, appUser);
 			//receiver = new DataReceiver(this);
 			sender = new DataSender();
 			
@@ -154,21 +150,52 @@ public class PubService extends IntentService
 				authenticatedFacebook.setAccessToken(intent.getExtras().getString(Constants.AuthToken));
 				authenticatedFacebook.setAccessExpires(intent.getExtras().getLong(Constants.Expires));
 			}
-		
-			dataRequestQueue = new ArrayBlockingQueue<IDataRequest<?,?>>(100);
-			//dataStores = new Hashtable<String, HashMap<?,?>>();
 			
-			ArrayList<Integer> a = new ArrayList<Integer>();
 			hasStarted = true;
+			
+			// Begin retrieving friends
+			DataRequestGetFriends getFriends = new DataRequestGetFriends();
+			addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
+
+				public void onRequestComplete(AppUserArray data) {
+					for(AppUser user : data.getArray())
+					{
+						storedData.GetGenericStore("AppUser").put(user.getUserId(), user);
+					}
+				}
+
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, "Error getting friends: " + e.getMessage());
+				}
+			});
+		}
+		else
+		{
+			Log.d(Constants.MsgInfo, "Service already running");
 		}
 	    return START_STICKY;
 	}
 	
 	@Override
 	public IBinder onBind(Intent intent) {
+		super.onBind(intent);
 		Log.d(Constants.MsgInfo, "Service bound too");
 		return binder;
 	}
+	
+	@Override
+	public boolean onUnbind(Intent intent)
+	{
+		super.onUnbind(intent);
+		String xmlString = storedData.save();
+		Editor editor = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).edit();
+		editor.putString(Constants.SaveDataName, xmlString);
+		Log.d(Constants.MsgInfo, "Saving: " + xmlString);
+		editor.commit();
+		
+		return false;
+	}
+	
 	
 	public User getUser()
 	{
@@ -180,7 +207,7 @@ public class PubService extends IntentService
 		return storedData;
 	}
 
-	public <K, T> void addDataRequest(IDataRequest<K, T> request, final IRequestListener<T> listener)
+	public <K, T extends IXmlable> void addDataRequest(IDataRequest<K, T> request, final IRequestListener<T> listener)
 	{
 		HashMap<K, T> currentDataStore = storedData.GetGenericStore(request);
 		request.giveConnection(binder);
@@ -188,7 +215,6 @@ public class PubService extends IntentService
 		sender.addRequest(request, listener, currentDataStore);		
 	}
 	
-	@Override
 	protected void onHandleIntent(Intent intent) {
 		if(hasStarted)
 		{

@@ -1,14 +1,6 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.facebook.android.Facebook;
 
 import android.app.ListActivity;
 import android.content.ComponentName;
@@ -22,7 +14,9 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import com.facebook.android.Facebook;
+
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
@@ -117,11 +111,11 @@ public class Guests extends ListActivity implements OnClickListener{
 		unbindService(connection);
 	}
 	
-	private void UpdateListView()
+	private void UpdateListView(AppUser[] sortedUsers)
 	{
 		listItems.clear();
     	
-		for(AppUser user : GetSortedUsers()) {
+		for(AppUser user : sortedUsers) {
     		listItems.add(user);
     	}
 		
@@ -133,14 +127,13 @@ public class Guests extends ListActivity implements OnClickListener{
 		}
 	}
 	
-	private AppUser[] GetUsers()
+	/*private void GetUsers()
 	{
 		if(!Constants.emulator)
 		{
-			JSONObject mefriends = null;
+			/*JSONObject mefriends = null;
 	    	try {
 				mefriends = new JSONObject(facebook.request("me/friends"));
-				Log.d(Constants.MsgError, mefriends.toString());
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -168,18 +161,20 @@ public class Guests extends ListActivity implements OnClickListener{
 				return null;
 			}
 			return friends;
+			
+			
 		}
 		else
 		{
 			return new AppUser[]{new AppUser(123L, "Made1"), new AppUser(242L, "Made2")};
 		}
-	}
+	}*/
 	
-	private AppUser[] GetSortedUsers()
+	/*private AppUser[] GetSortedUsers()
 	{
 		//TODO: Hook up PersonRanker
 		return GetUsers();
-	}
+	}*/
 	
 	private ServiceConnection connection = new ServiceConnection()
 	{
@@ -188,8 +183,27 @@ public class Guests extends ListActivity implements OnClickListener{
 		{
 			//Give the interface to the app
 			IPubService serviceInterface = (IPubService)service;
-			facebook = serviceInterface.GetFacebook();
-			UpdateListView();
+			if(!Constants.emulator)
+			{
+				facebook = serviceInterface.GetFacebook();
+				
+				DataRequestGetFriends getFriends = new DataRequestGetFriends();
+				serviceInterface.addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
+	
+					public void onRequestComplete(AppUserArray data) {
+						UpdateListView(data.getArray());
+					}
+	
+					public void onRequestFail(Exception e) {
+						Log.d(Constants.MsgError, "Error getting friends: " + e.getMessage());
+						finish();
+					}
+				});
+			}
+			else
+			{
+				UpdateListView(new AppUser[] { new AppUser(12L, "Test1"), new AppUser(41L, "Test2") } );
+			}
 		}
 
 		public void onServiceDisconnected(ComponentName className)

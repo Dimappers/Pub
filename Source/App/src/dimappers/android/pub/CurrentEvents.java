@@ -137,14 +137,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 		{
 			//Give the interface to the app
 			IPubService serviceInterface = (IPubService)service;
-			String loadData = CurrentEvents.this.getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).getString(Constants.SaveDataName, "NoSave");
-			if(loadData != "NoSave")
-			{
-				serviceInterface.Load(loadData);
-			}
-			
 			adapter.setData(serviceInterface);
-			//adapter.notifyDataSetChanged();
 		}
 
 		public void onServiceDisconnected(ComponentName className)

@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.jdom.Element;
 
-public class UpdateData implements Serializable{
+public class UpdateData implements Serializable, IXmlable {
 
 	private static final String StartTimeTag = "StartTime";
 	private static final String UsersTag = "Users";
@@ -56,7 +56,7 @@ public class UpdateData implements Serializable{
 		Element usersElement = new Element(UsersTag);
 		for(User user : users)
 		{
-			usersElement.addContent(user.writeXml());
+			usersElement.addContent(user.writeXmlForTransmission());
 		}
 		updateElement.addContent(usersElement);
 		

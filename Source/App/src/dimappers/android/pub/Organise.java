@@ -144,9 +144,10 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		}
 	}
 
-	public void onDestroy()
+	@Override
+	public void onStop()
 	{
-		super.onDestroy();
+		super.onStop();
 		unbindService(connection);
 	}
 
@@ -176,11 +177,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			case R.id.save_event : {
 				i = new Intent();
 				serviceInterface.GiveNewSavedEvent(event);
-				String saveData = serviceInterface.Save();
-				SharedPreferences sp = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE);
-				Editor spe = sp.edit();
-				spe.putString(Constants.SaveDataName, saveData);
-				spe.commit();
 				b.putBoolean(Constants.IsSavedEventFlag, true);
 				i.putExtras(b);
 				setResult(RESULT_OK, i);
