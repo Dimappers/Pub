@@ -27,6 +27,10 @@ public class PersonRanker {
 	Location currentLocation;
 	List<PubEvent> trips;
 	Facebook facebook;
+	JSONObject myPosts = null;
+	JSONObject myPhotos = null;
+	boolean gotPosts = false;
+	boolean gotPhotos = false;
 	
 	//Constants for ranking people
 	private final int photoValue = 1;
@@ -61,35 +65,57 @@ public class PersonRanker {
 			trips = historyStore.getPubTrips();
 			removeTooFarAwayFriends();
 			
-			JSONObject myPhotos = null;
-			JSONObject myPosts = null;
-			try {
-				//gets most recent photos (both uploaded & tagged in)
-				myPhotos = new JSONObject(facebook.request("me/photos"));
-				//gets most recent posts on your wall
-				myPosts = new JSONObject(facebook.request("me/feed"));
-			}
-			catch(Exception e) {Log.d(Constants.MsgError, "Exception thrown while retrieving Facebook photos & posts.");}
+			DataRequestGetFacebookPosts posts = new DataRequestGetFacebookPosts();
+			service.addDataRequest(posts, new IRequestListener<XmlJasonObject>(){
+
+				public void onRequestComplete(XmlJasonObject data) {
+					myPosts = data;
+					gotPosts = true;
+					if(gotPhotos) {doRanking();}
+				}
+
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, "Error getting posts from Facebook.");
+				}
+			});
 			
-			User friend;
-			for(int i = 0; i<facebookFriends.length; i++)
-			{
-				friend = facebookFriends[i];
-				friend.setRank(findFacebookClosenessRank(friend, myPhotos, myPosts) + findPreviousPubTrips(friend));
-			}
-			if(facebookFriends.length>0) {
-				User[] tempFriends = MergeSort(facebookFriends);
-				for(int i = 0; i<tempFriends.length; i++)
-				{
-					facebookFriends[i] = tempFriends[i];
+			DataRequestGetPhotos photos = new DataRequestGetPhotos();
+			service.addDataRequest(photos, new IRequestListener<XmlJasonObject>() {
+
+				public void onRequestComplete(XmlJasonObject data) {
+					myPhotos = data;
+					gotPhotos = true;
+					if(gotPosts) {doRanking();}
+				}
+
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, "Error getting photos from Facebook.");
 				}
 				
-				int n = Math.min(historyStore.getAverageNumberOfFriends(), facebookFriends.length);
-				currentEvent.emptyGuestList();
-				for(int i = 0; i<n; i++)
-				{
-					currentEvent.AddUser(facebookFriends[i]);
-				}
+			});
+			
+		}
+	}
+	
+	private void doRanking() {
+		User friend;
+		for(int i = 0; i<facebookFriends.length; i++)
+		{
+			friend = facebookFriends[i];
+			friend.setRank(findFacebookClosenessRank(friend) + findPreviousPubTrips(friend));
+		}
+		if(facebookFriends.length>0) {
+			User[] tempFriends = MergeSort(facebookFriends);
+			for(int i = 0; i<tempFriends.length; i++)
+			{
+				facebookFriends[i] = tempFriends[i];
+			}
+			
+			int n = Math.min(historyStore.getAverageNumberOfFriends(), facebookFriends.length);
+			currentEvent.emptyGuestList();
+			for(int i = 0; i<n; i++)
+			{
+				currentEvent.AddUser(facebookFriends[i]);
 			}
 		}
 	}
@@ -149,11 +175,11 @@ public class PersonRanker {
 		return 0;
 	}
 
-	private int findFacebookClosenessRank(User friend, JSONObject myPhotos, JSONObject myPosts) {
-		return findMutuallyTaggedPhotos(friend.getUserId(), myPhotos) + findMutuallyTaggedPosts(friend.getUserId(), myPosts);
+	private int findFacebookClosenessRank(User friend) {
+		return findMutuallyTaggedPhotos(friend.getUserId()) + findMutuallyTaggedPosts(friend.getUserId());
 	}
 
-	private int findMutuallyTaggedPhotos(Long userId, JSONObject myPhotos) {
+	private int findMutuallyTaggedPhotos(Long userId) {
 		int photoNumber = 0;
 		try
 		{
@@ -179,7 +205,7 @@ public class PersonRanker {
 		return photoNumber;
 	}
 
-	private int findMutuallyTaggedPosts(Long userId, JSONObject myPosts) {
+	private int findMutuallyTaggedPosts(Long userId) {
 		//This bit appears to not be working anymore - potentially to do with Facebook changes...
 		int postNumber = 0;
 		try
