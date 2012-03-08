@@ -15,6 +15,9 @@ public class XmlJasonObject extends JSONObject implements IXmlable {
 	{
 		super(e.getText());
 	}
+	public XmlJasonObject(String request) throws JSONException {
+		super(request);
+	}
 	@Override
 	public Element writeXml() {
 		Element e = new Element(getClass().getSimpleName());
@@ -26,6 +29,11 @@ public class XmlJasonObject extends JSONObject implements IXmlable {
 	public void readXml(Element element) {
 		// TODO Auto-generated method stub
 		Log.d(Constants.MsgError, "Don't use me!");
+	}
+	
+	public boolean isOutOfDate()
+	{
+		return false;
 	}
 
 }
