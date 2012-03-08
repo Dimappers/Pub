@@ -196,6 +196,17 @@ public class PubService extends IntentService
 		return false;
 	}
 	
+	@Override
+	public void onDestroy()
+	{
+		String xmlString = storedData.save();
+		Editor editor = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).edit();
+		editor.putString(Constants.SaveDataName, xmlString);
+		Log.d(Constants.MsgInfo, "Saving: " + xmlString);
+		editor.commit();
+		
+		super.onDestroy();
+	}
 	
 	public User getUser()
 	{
