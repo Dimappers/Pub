@@ -71,11 +71,12 @@ public class Pending extends Activity implements OnClickListener {
 		updateText("Finding current location");
 		LocationFinder lc = new LocationFinder(this);
 		currentLocation = lc.findLocation();
-		if(currentLocation!=null) {continueGoing();}
+		if(currentLocation!=null) {continueGoing(currentLocation);}
 	}
-	public void continueGoing() {
-		if(serviceConnected) {startTasks();}
+	public void continueGoing(Location location) {
+		currentLocation = location;
 		locationFound = true;
+		if(serviceConnected) {startTasks();}
 	}
 	public void updateText(String s) {
 		text.setText(s);

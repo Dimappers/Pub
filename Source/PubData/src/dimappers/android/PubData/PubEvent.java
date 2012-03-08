@@ -58,7 +58,12 @@ public class PubEvent implements Serializable
 	}
 	
 	//Getter/setter methods
-	public User[] GetUsers()
+	public Set<User> GetUsers()
+	{
+		return users.keySet();
+	}
+	
+	public User[] GetUserArray()
 	{
 		return users.keySet().toArray(new User[users.size()]);
 	}

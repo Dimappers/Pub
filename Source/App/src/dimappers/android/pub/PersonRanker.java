@@ -21,8 +21,6 @@ import dimappers.android.PubData.User;
 
 public class PersonRanker {
 	
-	final int maxDist = 2;
-	
 	IPubService service;
 	HistoryStore historyStore;
 	User[] friends;
@@ -30,6 +28,20 @@ public class PersonRanker {
 	Facebook facebook;
 	Location currentLocation;
 	List<PubEvent> trips;
+	
+	//Constants for ranking people
+	private final int photoValue = 1;
+	private final int photoFromValue = 0;
+	
+	private final int postValue = 1;
+	private final int postCommentValue = 1;
+	private final int postLikeValue = 1;
+	private final int postTagValue = 1;
+	
+	private final int guestValue = 1;
+	private final int hostValue = 2;
+	
+	private final int maxDist = 2;
 	
 	PubEvent currentEvent;
 	
@@ -132,10 +144,10 @@ public class PersonRanker {
 	}
 
 	private int isInGuestList(PubEvent trip, User friend) {
-		if(friend.equals(trip.GetHost())) {return 2;}
+		if(friend.equals(trip.GetHost())) {return hostValue;}
 		for (User guest : trip.GetUsers())
 		{
-			if(friend.equals(guest)) {return 1;}
+			if(friend.equals(guest)) {return guestValue;}
 		}
 		return 0;
 	}
@@ -153,13 +165,13 @@ public class PersonRanker {
 			{
 				JSONObject photo = (JSONObject) photos.get(i);
 				
-				/*Next line adds one to the rank for the person whose photo it is - we might not want to do this because it can massively skew the results!*/
-				//if(Long.parseLong(photo.getJSONObject("from").getString("id"))==userId) {photoNumber++;}
+				/*Next line changes the rank of the person whose photo it is - we might not want to do this because it can massively skew the results!*/
+				if(Long.parseLong(photo.getJSONObject("from").getString("id"))==userId) {photoNumber+=photoFromValue;}
 				
 				JSONArray tags = photo.getJSONObject("tags").getJSONArray("data");
 				for (int j = 0; j<tags.length(); j++)
 				{
-					if(userId==Long.parseLong(((JSONObject)tags.get(j)).getString("id"))) {photoNumber++;};
+					if(userId==Long.parseLong(((JSONObject)tags.get(j)).getString("id"))) {photoNumber+=photoValue;};
 				}
 			}
 		} catch (JSONException e) {
@@ -178,18 +190,18 @@ public class PersonRanker {
 			for (int i = 0; i<posts.length(); i++)
 			{
 				JSONObject post = (JSONObject) posts.get(i);
-				if(Long.parseLong(post.getJSONObject("from").getString("id"))==userId) {postNumber++;}
+				if(Long.parseLong(post.getJSONObject("from").getString("id"))==userId) {postNumber+=postValue;}
 				JSONArray to = post.getJSONObject("to").getJSONArray("data");
 				for(int j = 0; j<to.length(); j++)
 				{
-					if(Long.parseLong(((JSONObject)to.get(j)).getString("id"))==userId) {postNumber++;}
+					if(Long.parseLong(((JSONObject)to.get(j)).getString("id"))==userId) {postNumber+=postTagValue;}
 				}
 				try
 				{
 					JSONArray likes = post.getJSONObject("likes").getJSONArray("data");
 					for(int j = 0; j<to.length(); j++)
 					{
-						if(Long.parseLong(((JSONObject)likes.get(j)).getString("id"))==userId) {postNumber++;}
+						if(Long.parseLong(((JSONObject)likes.get(j)).getString("id"))==userId) {postNumber+=postLikeValue;}
 					}
 				}
 				catch(JSONException e) {Log.d(Constants.MsgError, "There are no likes for this item.");}
@@ -198,13 +210,12 @@ public class PersonRanker {
 					JSONArray comments = post.getJSONObject("comments").getJSONArray("data");
 					for(int j = 0; j<to.length(); j++)
 					{
-						if(Long.parseLong(((JSONObject)comments.get(j)).getJSONObject("from").getString("id"))==userId) {postNumber++;}
+						if(Long.parseLong(((JSONObject)comments.get(j)).getJSONObject("from").getString("id"))==userId) {postNumber+=postCommentValue;}
 					}
 				}
 				catch(JSONException e) {Log.d(Constants.MsgError, "There are no comments for this item.");}
 			}
 		} catch (JSONException e) {
-			e.printStackTrace();
 			Log.d(Constants.MsgError, "Error finding post information.");
 		}	
 		return postNumber;
