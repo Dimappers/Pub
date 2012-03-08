@@ -51,8 +51,8 @@ public class PersonRanker {
 	PersonRanker(PubEvent currentEvent, IPubService service, User[] facebookFriends)
 	{
 		//TODO: get required things from service: 
-			 historyStore = new HistoryStore(); 
-			 currentLocation = new Location("location");
+		 historyStore = new HistoryStore(); 
+		 currentLocation = new Location("location");
 			 
 		this.service = service;
 		if (!Constants.emulator)
@@ -75,7 +75,7 @@ public class PersonRanker {
 				}
 
 				public void onRequestFail(Exception e) {
-					Log.d(Constants.MsgError, "Error getting posts from Facebook.");
+					Log.d(Constants.MsgError, "Error getting posts from Facebook: " + e.getMessage());
 				}
 			});
 			
@@ -89,7 +89,7 @@ public class PersonRanker {
 				}
 
 				public void onRequestFail(Exception e) {
-					Log.d(Constants.MsgError, "Error getting photos from Facebook.");
+					Log.d(Constants.MsgError, "Error getting photos from Facebook: " + e.getMessage());
 				}
 				
 			});
@@ -211,7 +211,6 @@ public class PersonRanker {
 		try
 		{
 			JSONArray posts = myPosts.getJSONArray("data");
-			Log.d(Constants.MsgInfo, posts.toString(2));
 			for (int i = 0; i<posts.length(); i++)
 			{
 				JSONObject post = (JSONObject) posts.get(i);

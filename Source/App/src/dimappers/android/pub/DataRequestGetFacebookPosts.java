@@ -31,6 +31,7 @@ public class DataRequestGetFacebookPosts implements IDataRequest<String, XmlJaso
 		Facebook facebook = service.GetFacebook();
 		XmlJasonObject xmlPosts = null;
 		
+		//TODO: Check if out of date
 		if(storedData.containsKey("posts"))
 		{
 			listener.onRequestComplete(storedData.get("posts"));
@@ -39,7 +40,7 @@ public class DataRequestGetFacebookPosts implements IDataRequest<String, XmlJaso
 					
 		try
 		{
-			xmlPosts = (XmlJasonObject) new JSONObject(facebook.request("me/feed"));
+			xmlPosts =  new XmlJasonObject(facebook.request("me/feed"));
 		} 
 		catch (Exception e)
 		{
