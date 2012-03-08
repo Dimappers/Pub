@@ -183,10 +183,12 @@ public class PersonRanker {
 	}
 
 	private int findMutuallyTaggedPosts(Long userId, JSONObject myPosts) {
+		//This bit appears to not be working anymore - potentially to do with Facebook changes...
 		int postNumber = 0;
 		try
 		{
 			JSONArray posts = myPosts.getJSONArray("data");
+			Log.d(Constants.MsgInfo, posts.toString(2));
 			for (int i = 0; i<posts.length(); i++)
 			{
 				JSONObject post = (JSONObject) posts.get(i);
