@@ -188,7 +188,7 @@ public class Guests extends ListActivity implements OnClickListener{
 			appFriends[i] = AppUser.AppUserFromUser(allFriends[i], facebook);
 		}
 		return appFriends;
-	}
+	}*/
 	
 	private ServiceConnection connection = new ServiceConnection()
 	{
@@ -199,10 +199,10 @@ public class Guests extends ListActivity implements OnClickListener{
 			service = (IPubService)bService;
 			if(!Constants.emulator)
 			{
-				facebook = serviceInterface.GetFacebook();
+				facebook = service.GetFacebook();
 				
 				DataRequestGetFriends getFriends = new DataRequestGetFriends();
-				serviceInterface.addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
+				service.addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
 	
 					public void onRequestComplete(AppUserArray data) {
 						UpdateListView(data.getArray());
@@ -225,7 +225,7 @@ public class Guests extends ListActivity implements OnClickListener{
 		}
 		
 	};
-	
+	/*
 	private void doFacebookCall() {
 		JSONObject friends = null;
 		try {
@@ -248,5 +248,5 @@ public class Guests extends ListActivity implements OnClickListener{
 			e.printStackTrace();
 		}
 	}
-
+*/
 }

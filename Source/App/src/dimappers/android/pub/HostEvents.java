@@ -140,13 +140,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		return false;
 
 	} 
-
-	@Override
-	public void onDestroy()
-	{
-		super.onDestroy();
-		unbindService(connection);
-	}
 	
 	public void onClick(View v)
 	{

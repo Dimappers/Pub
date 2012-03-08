@@ -106,7 +106,6 @@ public class PubService extends IntentService
 			PubService.this.addDataRequest(request, listener);			
 		}
 
-		@Override
 		public AppUser GetActiveUser() {
 			return user;
 		}		

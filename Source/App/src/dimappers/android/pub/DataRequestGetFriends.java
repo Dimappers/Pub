@@ -60,7 +60,6 @@ public class DataRequestGetFriends implements IDataRequest<Long, AppUserArray> {
 		}
 	}
 
-	@Override
 	public String getStoredDataId() {
 		return "AppUsers";
 	}
