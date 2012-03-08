@@ -23,7 +23,6 @@
         <activity android:name="ChooseTime" android:label="@string/app_name" android:screenOrientation="portrait"/>
         <activity android:name="ChoosePub" android:label="@string/app_name" android:screenOrientation="portrait"/>
         <activity android:label="@string/app_name" android:name="Pending" android:screenOrientation="portrait"/>
-        <activity android:label="@string/app_name" android:name="ChooseGuest" android:screenOrientation="portrait"/>
         <activity android:name="Making_Comment" android:label="@string/app_name" android:screenOrientation="portrait"/>
         <activity android:name="HostEvents" android:label="@string/app_name" android:screenOrientation="portrait"/>
         <activity android:name="UserInvites" android:label="@string/app_name" android:screenOrientation="portrait"/>

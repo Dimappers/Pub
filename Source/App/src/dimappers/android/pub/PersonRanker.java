@@ -53,7 +53,9 @@ public class PersonRanker {
 			JSONObject myPhotos = null;
 			JSONObject myPosts = null;
 			try {
+				//gets most recent photos (both uploaded & tagged in)
 				myPhotos = new JSONObject(facebook.request("me/photos"));
+				//gets most recent posts on your wall
 				myPosts = new JSONObject(facebook.request("me/feed"));
 			}
 			catch(Exception e) {Log.d(Constants.MsgError, "Exception thrown while retrieving Facebook photos & posts.");}
@@ -150,7 +152,10 @@ public class PersonRanker {
 			for (int i = 0; i<photos.length(); i++)
 			{
 				JSONObject photo = (JSONObject) photos.get(i);
-				if(Long.parseLong(photo.getJSONObject("from").getString("id"))==userId) {photoNumber++;}
+				
+				/*Next line adds one to the rank for the person whose photo it is - we might not want to do this because it can massively skew the results!*/
+				//if(Long.parseLong(photo.getJSONObject("from").getString("id"))==userId) {photoNumber++;}
+				
 				JSONArray tags = photo.getJSONObject("tags").getJSONArray("data");
 				for (int j = 0; j<tags.length(); j++)
 				{
@@ -161,6 +166,7 @@ public class PersonRanker {
 			e.printStackTrace();
 			Log.d(Constants.MsgError, "Error finding photo information.");
 		}	
+		
 		return photoNumber;
 	}
 
