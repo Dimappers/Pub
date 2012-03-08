@@ -15,7 +15,7 @@ import org.jdom.Element;
 public class User implements Serializable {
 	
 	//Properties
-	private Long facebookUserId;
+	protected Long facebookUserId;
 	private float latitude = 1000.0f;
 	private float longitude = 1000.0f;
 	private int rank = 0;
@@ -27,8 +27,9 @@ public class User implements Serializable {
 	
 	public User(Element userXmlElement)
 	{
-		readXml(userXmlElement);
+		readXmlForTransmission(userXmlElement);
 	}
+	
 	
 	//Encapsulation
 	public Long getUserId() 	{ return facebookUserId; }	
@@ -67,7 +68,7 @@ public class User implements Serializable {
 		return facebookUserId.hashCode();
 	}
 	
-	public Element writeXml()
+	public Element writeXmlForTransmission()
 	{
 		/*At the moment just adds a <User>123</User> tag to reduce space - could be 
 		 * <User>
@@ -82,7 +83,7 @@ public class User implements Serializable {
 		return user;
 	}
 	
-	public void readXml(Element userXmlElement)
+	public void readXmlForTransmission(Element userXmlElement)
 	{
 		facebookUserId = Long.parseLong(userXmlElement.getText());
 	}

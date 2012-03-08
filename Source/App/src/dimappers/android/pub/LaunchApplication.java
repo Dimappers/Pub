@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -40,7 +41,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     /** Called when the activity is first created. */
 	AppUser facebookUser;
 	
-	Facebook facebook = new Facebook("153926784723826");
+	Facebook facebook = new Facebook(Constants.FacebookAppId);
 	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
 	String FILENAME = "AndroidSSO_data";
 	private SharedPreferences mPrefs;
@@ -48,7 +49,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-      	
+    	
     	//Check for internet
     	if(!isNetworkAvailable()) {
        		Intent i = new Intent(this, NoInternet.class); 
@@ -69,41 +70,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	
     	if(!Constants.emulator)
     	{
-	    	/* Get existing access_token if any */
-	    	mPrefs = getPreferences(MODE_PRIVATE);
-	        String access_token = mPrefs.getString("access_token", null);
-	        long expires = mPrefs.getLong("access_expires", 0);
-	        if(access_token != null) {
-	        	Log.d(Constants.MsgInfo, "Facebook token found: " + access_token);
-	            facebook.setAccessToken(access_token);
-	        }
-	        if(expires != 0) {
-	        	Log.d(Constants.MsgInfo, "Expirery date loaded: " + expires);
-	            facebook.setAccessExpires(expires);
-	        }
-	        /* Only call authorize if the access_token has expired */
-	        if(!facebook.isSessionValid()) {  	
-	        	facebook.authorize(this, new String[] { "email", "publish_checkins", "user_location", "friends_location", "user_photos" }, Constants.FromFacebookLogin, new DialogListener() {
-	        		public void onComplete(Bundle values) {
-	        			SharedPreferences.Editor editor = mPrefs.edit();
-	                    editor.putString("access_token", facebook.getAccessToken());
-	                    editor.putLong("access_expires", facebook.getAccessExpires());
-	                    editor.commit();
-	                    
-	        		}
-	
-	        		public void onFacebookError(FacebookError error) {}
-	        		
-	        		public void onError(DialogError e) {}
-	
-	        		public void onCancel() {}
-	        	});
-	        	
-	        }
-	        else 
-	        {
-	        	getPerson();
-	        }
+    		authoiseFacebook();
     	}
     	else
     	{
@@ -120,7 +87,46 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	
     	Button button_invites = (Button)findViewById(R.id.invites_button);
     	button_invites.setOnClickListener(this);
+    }
     
+    private void authoiseFacebook()
+    {
+		/* Get existing access_token if any */
+		mPrefs = getPreferences(MODE_PRIVATE);
+		String access_token = mPrefs.getString("access_token", null);
+		long expires = mPrefs.getLong("access_expires", 0);
+		if(access_token != null) {
+			Log.d(Constants.MsgInfo, "Facebook token found: " + access_token);
+			facebook.setAccessToken(access_token);
+		}
+		if(expires != 0) {
+			Log.d(Constants.MsgInfo, "Expirery date loaded: " + expires);
+			facebook.setAccessExpires(expires);
+		}
+		/* Only call authorise if the access_token has expired */
+		if(!facebook.isSessionValid()) {  	
+			Log.d(Constants.MsgInfo, "No valid token found - authorising with Facebook");
+			facebook.authorize(this, new String[] { "email", "publish_checkins", "user_location", "friends_location" }, Constants.FromFacebookLogin, new DialogListener() {
+				public void onComplete(Bundle values) {
+					SharedPreferences.Editor editor = mPrefs.edit();
+					editor.putString("access_token", facebook.getAccessToken());
+					editor.putLong("access_expires", facebook.getAccessExpires());
+					editor.commit();
+					//Should getPerson() be called here?
+				}
+
+				public void onFacebookError(FacebookError error) { Log.d(Constants.MsgError, "Error authenticating Facebook: " + error.getMessage());}
+
+				public void onError(DialogError e) { Log.d(Constants.MsgError, "Error from dialog: " + e.getMessage()); }
+
+				public void onCancel() {}
+			});
+
+		}
+        else 
+        {
+        	getPerson();
+        }	
     }
     
     private void getPerson()
@@ -158,7 +164,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	
 		Log.d(Constants.MsgInfo, "Logged in as user: " + name + " with ID: " + id);
 		
-    	facebookUser = new AppUser(Long.parseLong(id));
+    	facebookUser = new AppUser(Long.parseLong(id), name);
     	
     	//Don't start the service until we are logged in to facebook
     	Intent startServiceIntent = new Intent(this, PubService.class);
@@ -170,6 +176,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	startServiceIntent.putExtras(b);
     	startService(startServiceIntent);
     }
+    
     
     public void onClick(View v)
     {

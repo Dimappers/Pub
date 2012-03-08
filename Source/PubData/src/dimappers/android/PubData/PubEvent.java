@@ -17,7 +17,7 @@ import org.jdom.Element;
  * 
  * Author: TK
  */
-public class PubEvent implements Serializable
+public class PubEvent implements Serializable, IXmlable
 {
 	private final String eventIdTag = "EventId";
 	private final String usersTag = "Users";
@@ -212,7 +212,7 @@ public class PubEvent implements Serializable
 		pubEventElement.addContent(pubLocation.writeXml());
 		
 		Element hostElement = new Element(hostTag);
-		hostElement.addContent(host.writeXml());
+		hostElement.addContent(host.writeXmlForTransmission());
 		pubEventElement.addContent(hostElement);
 		
 		Element usersElement = new Element(usersTag);
@@ -220,7 +220,7 @@ public class PubEvent implements Serializable
 		{
 			Element invitedUserElement = new Element(invitedUserTag);
 			
-			invitedUserElement.addContent(userEntry.getKey().writeXml());
+			invitedUserElement.addContent(userEntry.getKey().writeXmlForTransmission());
 			invitedUserElement.addContent(userEntry.getValue().writeXml());
 			
 			usersElement.addContent(invitedUserElement);

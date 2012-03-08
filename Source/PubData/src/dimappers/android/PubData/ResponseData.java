@@ -5,7 +5,7 @@ import java.util.Calendar;
 
 import org.jdom.Element;
 
-public class ResponseData implements Serializable
+public class ResponseData implements Serializable, IXmlable
 {
 	private static final String eventIdTag = "EventId";
 	private static final String isGoingTag = "IsGoing";
@@ -82,7 +82,7 @@ public class ResponseData implements Serializable
 	{
 		Element responseElement = new Element(getClass().getSimpleName());
 		
-		responseElement.addContent(user.writeXml());
+		responseElement.addContent(user.writeXmlForTransmission());
 		Element eventIdElement = new Element(eventIdTag);
 		eventIdElement.addContent(Integer.toString(eventId));
 		responseElement.addContent(eventIdElement);

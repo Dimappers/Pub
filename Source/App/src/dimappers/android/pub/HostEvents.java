@@ -186,6 +186,13 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
     	}
     }
 
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		unbindService(connection);
+	}
+	
 	public  void displayAlert()
 	{
 		new AlertDialog.Builder(this).setMessage("Are you sure you want to delete this event?")  

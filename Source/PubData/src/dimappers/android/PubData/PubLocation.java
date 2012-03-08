@@ -9,7 +9,7 @@ import org.jdom.Element;
  * 
  * Author: TK */
  
-public class PubLocation implements Serializable
+public class PubLocation implements Serializable, IXmlable
 {
 	//Xml tags
 	private static final String latTag = "Latitude";
