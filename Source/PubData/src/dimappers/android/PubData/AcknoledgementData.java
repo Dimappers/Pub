@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.jdom.Document;
 import org.jdom.Element;
 
-public class AcknoledgementData implements Serializable{
+public class AcknoledgementData implements Serializable, IXmlable {
 	
 	private static final String EventIdTag = "GlobalEventId";
 	

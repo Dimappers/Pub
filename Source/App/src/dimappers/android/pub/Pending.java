@@ -113,10 +113,9 @@ public class Pending extends Activity implements OnClickListener {
 			Debug.waitForDebugger();
 		}
 
-		facebookUser = (User) b
+		facebookUser = (AppUser) b
 				.getSerializable(Constants.CurrentFacebookUser);
-		event = new PubEvent(new TimeFinder().chooseTime(), new User(
-				facebookUser.getUserId()));
+		event = new PubEvent(new TimeFinder().chooseTime(), facebookUser);
 	}
 
 	public void onClick(View v) {

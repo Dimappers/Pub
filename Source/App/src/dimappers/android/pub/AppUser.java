@@ -3,18 +3,22 @@ package dimappers.android.pub;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import org.jdom.Element;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import com.facebook.android.Facebook;
 
-import android.provider.MediaStore.Images;
-import android.util.Log;
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.User;
 
-public class AppUser extends User
+public class AppUser extends User implements IXmlable
 {
+	private final String usernameTag = "UserName";
+	
 	//Properties
 	private String facebookName;
 
@@ -30,10 +34,39 @@ public class AppUser extends User
 		facebookName = name;
 	}
 	
+	public AppUser(Element element)
+	{
+		super(element.getChild("User"));
+		readXml(element);
+	}
+	
 	public String toString()
 	{
 		return facebookName;
 	}
+	
+	public Element writeXml()
+	{	
+		Element userElement = new Element("AppUser");
+		userElement.addContent(super.writeXmlForTransmission()); //we write the user id in this part of the xml
+		Element userNameElement = new Element(usernameTag);
+		userNameElement.setText(facebookName);
+		userElement.addContent(userNameElement);
+		
+		return userElement;
+	}
+	
+	public void readXml(Element userXmlElement)
+	{
+		//facebookUserId = Long.parseLong(userXmlElement.getText());
+		if(facebookUserId == null || facebookUserId == 0)
+		{
+			Log.d(Constants.MsgError, "Must call parent read first! - use the constructor for AppUser");
+		}
+		
+		facebookName = userXmlElement.getChildText(usernameTag);
+	}
+
 	
 	//Public methods
 	
@@ -55,38 +88,13 @@ public class AppUser extends User
 		return "Id: " + GetRealFacebookName();		
 	}
 	*/
-	public static AppUser AppUserFromUser(User user, Facebook facebook)
+	public static AppUser AppUserFromUser(User user, Facebook facebook) throws MalformedURLException, JSONException, IOException
 	{
 		if(!Constants.emulator)
 		{
 			JSONObject them;
-			try {
-				Log.d(Constants.MsgError, "Performing request");
-				them = new JSONObject(facebook.request(Long.toString(user.getUserId())));
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				Log.d(Constants.MsgError, "Malformed");
-				e.printStackTrace();
-				return null;
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				Log.d(Constants.MsgError, "Jason");
-				e.printStackTrace();
-				return null;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				Log.d(Constants.MsgError, "IO");
-				e.printStackTrace();
-				return null;
-			}	
-			try {
-				return new AppUser(user.getUserId(), them.getString("name"));
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				Log.d(Constants.MsgError, "Error getting name for this user - " + e.getMessage());
-				return null;
-			}
+			them = new JSONObject(facebook.request(Long.toString(user.getUserId())));
+			return new AppUser(user.getUserId(), them.getString("name"));
 		}
 		else
 		{

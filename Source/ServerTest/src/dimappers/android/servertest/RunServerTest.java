@@ -41,7 +41,7 @@ public class RunServerTest
 			//SAXBuilder builder = new SAXBuilder();
 			
 			
-			root.addContent(CreateHost().writeXml());
+			root.addContent(CreateHost().writeXmlForTransmission());
 			AcknoledgementData ack = new AcknoledgementData(12434);
 			root.addContent(ack.writeXml());
 			PubLocation loc = new PubLocation(123, 12, "Spoons");

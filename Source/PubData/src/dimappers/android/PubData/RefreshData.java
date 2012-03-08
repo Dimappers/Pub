@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import org.jdom.Element;
 
-public class RefreshData implements Serializable {
+public class RefreshData implements Serializable, IXmlable {
 
 	private static final String fullupdateTag = "FullUpdate";
 	
@@ -31,7 +31,7 @@ public class RefreshData implements Serializable {
 	{
 		Element refreshElement = new Element(getClass().getSimpleName());
 		
-		refreshElement.addContent(user.writeXml());
+		refreshElement.addContent(user.writeXmlForTransmission());
 		Element fullUpdateElement = new Element(fullupdateTag);
 		fullUpdateElement.addContent(Boolean.toString(fullUpdate));
 		refreshElement.addContent(fullUpdateElement);

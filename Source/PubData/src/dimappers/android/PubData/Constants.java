@@ -3,7 +3,7 @@ package dimappers.android.PubData;
 public final class Constants {
 	// Debugging mode for server
 	public static final boolean debug = true;
-	public static final boolean emulator = true;
+	public static final boolean emulator = false;
 	
 	//Common bundle tags
 	public static final String CurrentWorkingEvent = "event";
@@ -13,6 +13,7 @@ public final class Constants {
 	public static final String CurrentLongitude = "long";
 	public static final String AuthToken = "authtoken";
 	public static final String Expires = "expires";
+	public static final String FacebookAppId = "153926784723826";
 	
 	//Error constants
 	public static final int MissingDataInBundle = -12;

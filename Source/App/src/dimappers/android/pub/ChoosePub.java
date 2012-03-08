@@ -75,7 +75,7 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 			try {
 				pd = finder.performDetails(listItems.get(pos).reference).result;
 			} catch (Exception e) {
-				Log.d(Constants.MsgInfo,"Exception thrown from performDetails(...)");
+				Log.d(Constants.MsgError,"Exception thrown from performDetails(...)");
 				e.printStackTrace();
 			}
 			 Log.d(Constants.MsgInfo, pd.name + " has a rating of " + pd.rating);
@@ -96,16 +96,16 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 				}
 				adapter.notifyDataSetChanged();
 			} catch (InvalidKeyException e) {
-				Log.d(Constants.MsgInfo,"InvalidKeyException");
+				Log.d(Constants.MsgError,"InvalidKeyException");
 				e.printStackTrace();
 			} catch (NoSuchAlgorithmException e) {
-				Log.d(Constants.MsgInfo,"NoSuchAlgorithmException");
+				Log.d(Constants.MsgError,"NoSuchAlgorithmException");
 				e.printStackTrace();
 			} catch (URISyntaxException e) {
-				Log.d(Constants.MsgInfo,"URISyntaxException");
+				Log.d(Constants.MsgError,"URISyntaxException");
 				e.printStackTrace();
 			} catch (Exception e) {
-				Log.d(Constants.MsgInfo,"Exception");
+				Log.d(Constants.MsgError,"Exception");
 				e.printStackTrace();
 			}
 		 }

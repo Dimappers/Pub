@@ -1,33 +1,30 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.TimerTask;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
-import com.facebook.android.Facebook;
-
-import dimappers.android.PubData.Constants;
-import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.User;
-
-import android.app.Activity;
 import android.app.IntentService;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.facebook.android.Facebook;
+
+import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.IXmlable;
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.User;
+
 public class PubService extends IntentService
 {
-	User user;
+	AppUser user;
 	
 	public PubService() {
 		super("PubService");
@@ -46,11 +43,9 @@ public class PubService extends IntentService
 			return event.GetEventId();
 		}
 
-		public int GiveNewSentEvent(PubEvent event) {
-			event.SetEventId(Constants.EventIdBeingSent);
-			PubService.this.sender.sendEvent(event);
-			PubService.this.storedData.AddNewSentEvent(event);
-			return event.GetEventId();
+		public void GiveNewSentEvent(PubEvent event, final IRequestListener<PubEvent> listener) {
+			DataRequestNewEvent r = new DataRequestNewEvent(event);
+			PubService.this.addDataRequest(r, listener);
 		}
 
 		public Collection<PubEvent> GetSavedEvents() {
@@ -58,7 +53,15 @@ public class PubService extends IntentService
 		}
 
 		public Collection<PubEvent> GetSentEvents() {
-			return PubService.this.storedData.GetSentEvents();
+			HashMap<?, ? extends IXmlable> events = PubService.this.storedData.GetGenericStore("PubEvent");
+			Collection<PubEvent> eventsArray = new ArrayList<PubEvent>();
+			for(Object event : events.values())
+			{
+				eventsArray.add((PubEvent)event);
+			}
+			
+			return eventsArray;
+			
 		}
 		
 		public Collection<PubEvent> GetInvitedEvents() {
@@ -82,16 +85,6 @@ public class PubService extends IntentService
 		public void PerformUpdate(boolean fullUpdate) {
 			PubService.this.receiver.forceUpdate(fullUpdate);
 		}
-		
-		public String Save()
-		{
-			return PubService.this.storedData.save();
-		}
-		
-		public void Load(String loadedData)
-		{
-			PubService.this.storedData.Load(loadedData);
-		}
 
 		public boolean SendingMessage() {
 			//TODO: Should check to see if a new event has been created but hasn't yet been sent
@@ -106,11 +99,21 @@ public class PubService extends IntentService
 			//TODO: Implement facebook logout
 			
 		}
-		
+
+		public <K, T extends IXmlable> void addDataRequest(IDataRequest<K, T> request,
+				IRequestListener<T> listener)
+		{
+			PubService.this.addDataRequest(request, listener);			
+		}
+
+		@Override
+		public AppUser GetActiveUser() {
+			return user;
+		}		
     }
 
 	
-	private final IBinder binder = new ServiceBinder();
+	private final IPubService binder = new ServiceBinder();
 	
 	private StoredData storedData;
 	private boolean hasStarted;
@@ -121,27 +124,78 @@ public class PubService extends IntentService
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
-		Log.d(Constants.MsgInfo, "Service started");
-		storedData = new StoredData();
-		user = (User)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
-		receiver = new DataReceiver(this);
-		sender = new DataSender(this);
-		
-		if(!Constants.emulator)
+		if(!hasStarted)
 		{
-			authenticatedFacebook = new Facebook("153926784723826");
-			authenticatedFacebook.setAccessToken(intent.getExtras().getString(Constants.AuthToken));
-			authenticatedFacebook.setAccessExpires(intent.getExtras().getLong(Constants.Expires));
+			Log.d(Constants.MsgInfo, "Service started");
+			storedData = new StoredData();
+			
+			//Load previously stored data
+			
+			String storedDataString = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).getString(Constants.SaveDataName, "");
+			if(storedDataString != "")
+			{
+				Log.d(Constants.MsgInfo, "Loading data for store: " + storedDataString);
+				storedData.Load(storedDataString);
+			}
+			
+			user = (AppUser)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
+			storedData.GetGenericStore("AppUser").put(user.getUserId(), user);
+			
+			//receiver = new DataReceiver(this);
+			sender = new DataSender();
+			
+			if(!Constants.emulator)
+			{
+				authenticatedFacebook = new Facebook(Constants.FacebookAppId);
+				authenticatedFacebook.setAccessToken(intent.getExtras().getString(Constants.AuthToken));
+				authenticatedFacebook.setAccessExpires(intent.getExtras().getLong(Constants.Expires));
+			}
+			
+			hasStarted = true;
+			
+			// Begin retrieving friends
+			DataRequestGetFriends getFriends = new DataRequestGetFriends();
+			addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
+
+				public void onRequestComplete(AppUserArray data) {
+					for(AppUser user : data.getArray())
+					{
+						storedData.GetGenericStore("AppUser").put(user.getUserId(), user);
+					}
+				}
+
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, "Error getting friends: " + e.getMessage());
+				}
+			});
 		}
-		
+		else
+		{
+			Log.d(Constants.MsgInfo, "Service already running");
+		}
 	    return START_STICKY;
 	}
 	
 	@Override
 	public IBinder onBind(Intent intent) {
+		super.onBind(intent);
 		Log.d(Constants.MsgInfo, "Service bound too");
 		return binder;
 	}
+	
+	@Override
+	public boolean onUnbind(Intent intent)
+	{
+		super.onUnbind(intent);
+		String xmlString = storedData.save();
+		Editor editor = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).edit();
+		editor.putString(Constants.SaveDataName, xmlString);
+		Log.d(Constants.MsgInfo, "Saving: " + xmlString);
+		editor.commit();
+		
+		return false;
+	}
+	
 	
 	public User getUser()
 	{
@@ -153,8 +207,14 @@ public class PubService extends IntentService
 		return storedData;
 	}
 
-
-	@Override
+	public <K, T extends IXmlable> void addDataRequest(IDataRequest<K, T> request, final IRequestListener<T> listener)
+	{
+		HashMap<K, T> currentDataStore = storedData.GetGenericStore(request);
+		request.giveConnection(binder);
+		
+		sender.addRequest(request, listener, currentDataStore);		
+	}
+	
 	protected void onHandleIntent(Intent intent) {
 		if(hasStarted)
 		{
