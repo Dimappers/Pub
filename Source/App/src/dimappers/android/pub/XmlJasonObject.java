@@ -18,14 +18,12 @@ public class XmlJasonObject extends JSONObject implements IXmlable {
 	public XmlJasonObject(String request) throws JSONException {
 		super(request);
 	}
-	@Override
 	public Element writeXml() {
 		Element e = new Element(getClass().getSimpleName());
 		e.setText(super.toString());
 		return e;
 	}
 
-	@Override
 	public void readXml(Element element) {
 		// TODO Auto-generated method stub
 		Log.d(Constants.MsgError, "Don't use me!");

@@ -10,12 +10,11 @@ import org.json.JSONObject;
 public class DataRequestGetPhotos implements IDataRequest<Long, XmlJasonObject> {
 
 	IPubService service;
-	@Override
+
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
-	@Override
 	public void performRequest(IRequestListener<XmlJasonObject> listener,
 			HashMap<Long, XmlJasonObject> storedData) {
 			
@@ -40,7 +39,6 @@ public class DataRequestGetPhotos implements IDataRequest<Long, XmlJasonObject> 
 		} 
 	}
 
-	@Override
 	public String getStoredDataId() {
 		return "Photos";
 	}
