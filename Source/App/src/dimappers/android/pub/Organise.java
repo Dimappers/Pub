@@ -145,9 +145,9 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	}
 
 	@Override
-	public void onStop()
+	public void onDestroy()
 	{
-		super.onStop();
+		super.onDestroy();
 		unbindService(connection);
 	}
 

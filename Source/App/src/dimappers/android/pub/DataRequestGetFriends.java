@@ -27,6 +27,7 @@ public class DataRequestGetFriends implements IDataRequest<Long, AppUserArray> {
 		{
 			if(!storedData.get(0L).isOutOfDate())
 			{
+				Log.d(Constants.MsgInfo, "Friends cached, not need to ask facebook");
 				listener.onRequestComplete(storedData.get(0L)); //Friends last got one week ago so we are done - TODO: Test me!!
 				return;
 			}
@@ -50,6 +51,7 @@ public class DataRequestGetFriends implements IDataRequest<Long, AppUserArray> {
 			}
 			AppUserArray friendsArray = new AppUserArray(friends);
 			storedData.put(0L, friendsArray);
+			Log.d(Constants.MsgInfo, "Friends fetched from Facebook");
 			listener.onRequestComplete(friendsArray);
 			return;
 		} catch (JSONException e) {
