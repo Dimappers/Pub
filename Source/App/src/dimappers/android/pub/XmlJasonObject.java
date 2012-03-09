@@ -1,5 +1,7 @@
 package dimappers.android.pub;
 
+import java.util.Calendar;
+
 import org.jdom.Element;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,16 +13,33 @@ import dimappers.android.PubData.IXmlable;
 
 public class XmlJasonObject extends JSONObject implements IXmlable {
 
+	public static final String jsonTag = "JSON";
+	public static final String calendarTag = "Calendar";
+	
+	Calendar lastUpdated;
 	public XmlJasonObject(Element e) throws JSONException
 	{
-		super(e.getText());
+		super(e.getChildText(jsonTag));
+		lastUpdated = Calendar.getInstance();
+		lastUpdated.setTimeInMillis(Long.parseLong(e.getChildText(calendarTag)));
 	}
+	
 	public XmlJasonObject(String request) throws JSONException {
 		super(request);
+		lastUpdated = Calendar.getInstance();
 	}
+	
 	public Element writeXml() {
 		Element e = new Element(getClass().getSimpleName());
-		e.setText(super.toString());
+		
+		Element jsonElement = new Element(jsonTag);
+		jsonElement.setText(super.toString());
+		e.addContent(jsonElement);
+		
+		Element calendarElement = new Element(calendarTag);
+		calendarElement.setText(Long.toString(lastUpdated.getTimeInMillis()));
+		e.addContent(calendarElement);
+		
 		return e;
 	}
 
@@ -31,7 +50,9 @@ public class XmlJasonObject extends JSONObject implements IXmlable {
 	
 	public boolean isOutOfDate()
 	{
-		return false;
+		Calendar weekAfterUpdate = lastUpdated;
+		weekAfterUpdate.add(Calendar.DAY_OF_MONTH, 7);
+		return weekAfterUpdate.compareTo(Calendar.getInstance()) > 0;
+		
 	}
-
 }
