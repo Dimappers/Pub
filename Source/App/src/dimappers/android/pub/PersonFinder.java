@@ -15,43 +15,23 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 public class PersonFinder {
-	Pending activity;
 	IPubService service;
 	
-	PersonFinder(Pending activity, IPubService service)
+	PersonFinder(IPubService service)
 	{
-		this.activity = activity;
 		this.service = service;
 	}
 	
-	public void getFriends()
+	public void getFriends(final IRequestListener<AppUserArray> listener)
 	{	
 		if(!Constants.emulator) {
-			doFacebookCall();
+			DataRequestGetFriends friends = new DataRequestGetFriends();
+			service.addDataRequest(friends, listener);
 		}
 		else 
 		{
-			activity.allFriends = new AppUser[1];
-			activity.allFriends[0] = new AppUser(555L, "Test AppUser");
+			AppUser[] users = new AppUser[] { new AppUser(555L, "Test AppUser") };
+			listener.onRequestComplete(new AppUserArray(users));
 		}
-
-		activity.updateText("Picking guests");
-	}
-
-	private void doFacebookCall() {
-		
-		DataRequestGetFriends friends = new DataRequestGetFriends();
-		service.addDataRequest(friends, new IRequestListener<AppUserArray>(){
-
-			public void onRequestComplete(AppUserArray data) {
-				activity.allFriends = data.getArray();
-				if(activity.pubFinished) {activity.onFinish();}
-				else {activity.personFinished=true;}
-			}
-
-			public void onRequestFail(Exception e) {
-				activity.errorOccurred();
-			}});
-		
 	}
 }

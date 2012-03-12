@@ -7,7 +7,7 @@ import java.util.HashMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class DataRequestGetPhotos implements IDataRequest<Long, XmlJasonObject> {
+public class DataRequestGetPhotos implements IDataRequest<String, XmlJasonObject> {
 
 	IPubService service;
 
@@ -16,10 +16,10 @@ public class DataRequestGetPhotos implements IDataRequest<Long, XmlJasonObject> 
 	}
 
 	public void performRequest(IRequestListener<XmlJasonObject> listener,
-			HashMap<Long, XmlJasonObject> storedData) {
+			HashMap<String, XmlJasonObject> storedData) {
 			
 		long userId = service.GetActiveUser().getUserId();
-		if(storedData.containsKey(userId))
+		if(storedData.containsKey("Photos"))
 		{
 			if(!storedData.get(userId).isOutOfDate())
 			{
@@ -28,19 +28,20 @@ public class DataRequestGetPhotos implements IDataRequest<Long, XmlJasonObject> 
 			}
 		}
 		
+		XmlJasonObject myPhotos;
 		try {
-			XmlJasonObject myPhotos = new XmlJasonObject(service.GetFacebook().request("me/photos"));
-			storedData.put(userId, myPhotos);
-			listener.onRequestComplete(myPhotos);
-			return;
+			myPhotos = new XmlJasonObject(service.GetFacebook().request("me/photos"));
+			storedData.put("Photos", myPhotos);
 		} catch (Exception e) {
 			listener.onRequestFail(e);
 			return;
 		} 
+		
+		listener.onRequestComplete(myPhotos);
 	}
 
 	public String getStoredDataId() {
-		return "Photos";
+		return "JSONObject";
 	}
 
 }

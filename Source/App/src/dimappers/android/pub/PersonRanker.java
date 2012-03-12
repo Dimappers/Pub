@@ -3,6 +3,7 @@ package dimappers.android.pub;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -48,11 +49,14 @@ public class PersonRanker {
 	
 	PubEvent currentEvent;
 	
-	PersonRanker(PubEvent currentEvent, IPubService service, User[] facebookFriends)
+	IRequestListener<PubEvent> listener;
+	
+	PersonRanker(PubEvent currentEvent, IPubService service, User[] facebookFriends, final IRequestListener<PubEvent> listener)
 	{
 		//TODO: get required things from service: 
-			 historyStore = new HistoryStore(); 
-			 currentLocation = new Location("location");
+		 historyStore = new HistoryStore(); 
+		 currentLocation = new Location("location");
+		 this.listener = listener;
 			 
 		this.service = service;
 		if (!Constants.emulator)
@@ -75,7 +79,7 @@ public class PersonRanker {
 				}
 
 				public void onRequestFail(Exception e) {
-					Log.d(Constants.MsgError, "Error getting posts from Facebook.");
+					Log.d(Constants.MsgError, "Error getting posts from Facebook: " + e.getMessage());
 				}
 			});
 			
@@ -89,15 +93,15 @@ public class PersonRanker {
 				}
 
 				public void onRequestFail(Exception e) {
-					Log.d(Constants.MsgError, "Error getting photos from Facebook.");
+					Log.d(Constants.MsgError, "Error getting photos from Facebook: " + e.getMessage());
 				}
-				
 			});
-			
 		}
 	}
 	
 	private void doRanking() {
+		Log.d(Constants.MsgInfo, "Starting at: " + Calendar.getInstance().getTime().toString());
+		Log.d(Constants.MsgInfo, "Friend count: " + facebookFriends.length);
 		User friend;
 		for(int i = 0; i<facebookFriends.length; i++)
 		{
@@ -118,6 +122,8 @@ public class PersonRanker {
 				currentEvent.AddUser(facebookFriends[i]);
 			}
 		}
+		Log.d(Constants.MsgInfo, "Finished at: " + Calendar.getInstance().getTime().toString());
+		listener.onRequestComplete(currentEvent);
 	}
 	
 	public PubEvent getEvent() {return currentEvent;}
@@ -211,7 +217,6 @@ public class PersonRanker {
 		try
 		{
 			JSONArray posts = myPosts.getJSONArray("data");
-			Log.d(Constants.MsgInfo, posts.toString(2));
 			for (int i = 0; i<posts.length(); i++)
 			{
 				JSONObject post = (JSONObject) posts.get(i);

@@ -58,31 +58,27 @@ public class Pending extends Activity implements OnClickListener {
 		((TextView) findViewById(R.id.cancelbutton)).setOnClickListener(this);
 	}
 
-	@Override
-	public void onStart() {
-		super.onStart();
-		if (firstTime) {
-			firstTime = false;
-			findLocation();
-		}
-	}
-
+	
 	private void findLocation() {
 		updateText("Finding current location");
-		LocationFinder lc = new LocationFinder(this);
-		currentLocation = lc.findLocation();
-		if(currentLocation!=null) {continueGoing(currentLocation);}
+		
+		LocationFinder lc = new LocationFinder((LocationManager)getSystemService(Context.LOCATION_SERVICE));
+		
+		//Find the users current location - required for all other tasks
+		lc.findLocation(locationListener);
 	}
-	public void continueGoing(Location location) {
+	
+	/*public void continueGoing(Location location) {
 		currentLocation = location;
 		locationFound = true;
 		if(serviceConnected) {startTasks();}
-	}
+	}*/
+	
 	public void updateText(String s) {
 		text.setText(s);
 	}
 
-	public void startTasks() {
+	/*public void startTasks() {
 
 		if (currentLocation == null) {
 			Log.d(Constants.MsgError, "Need to set location first.");
@@ -103,7 +99,7 @@ public class Pending extends Activity implements OnClickListener {
 		new PubFinding().execute(info);
 		
 		new PersonFinder(this, service).getFriends();
-	}
+	}*/
 
 	public void createEvent() {
 		updateText("Creating Event");
@@ -122,8 +118,9 @@ public class Pending extends Activity implements OnClickListener {
 		if (v.getId() == R.id.cancelbutton) {finish();}
 	}
 
+	//TODO: remove me
 	public void onFinish() {
-		event = new PersonRanker(event, service, allFriends).getEvent();
+		//event = new PersonRanker(event, service, allFriends).getEvent();
 		event.SetPubLocation(new PubRanker(pubPlaces, event).returnBest());
 		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle()));
 		finish();
@@ -172,13 +169,92 @@ public class Pending extends Activity implements OnClickListener {
 		{
 			//Give the interface to the app
 			service = (IPubService)pubService;
-			if(locationFound) {startTasks();}
-			serviceConnected = true;
+			
+			//Find the location of the pub
+			findLocation();
 		}
 
 		public void onServiceDisconnected(ComponentName className)
 		{
 		}
 		
+	};
+	
+	private LocationListener locationListener = new LocationListener()
+	{
+		private boolean locationSet = false;
+		private boolean peopleFound = false;
+		private boolean pubFound = false;
+		
+		public void onLocationChanged(Location location) //we get the location
+		{
+			locationSet = true;
+			
+			//Start tasks: Get people & get pubs
+			PersonFinder personFinder = new PersonFinder(service);
+			Pending.this.updateText("Finding friends");
+			pubFound = true;
+			
+			personFinder.getFriends(new IRequestListener<AppUserArray>() {
+				@Override
+				public void onRequestComplete(AppUserArray data) {
+					peopleFound = true;
+					allFriends = data.getArray();
+					if(pubFound)
+					{
+						//Start next batch of requests
+						createEvent();
+						PersonRanker p = new PersonRanker(event, service, allFriends, new IRequestListener<PubEvent>() {
+
+							@Override
+							public void onRequestComplete(PubEvent data) {
+								Pending.this.finish();
+							}
+
+							@Override
+							public void onRequestFail(Exception e) {
+								// TODO Auto-generated method stub
+								
+							}
+							
+						});
+					}
+					else
+					{
+						Pending.this.updateText("Finding pubs");
+					}
+				}
+
+				@Override
+				public void onRequestFail(Exception e) {
+					Pending.this.errorOccurred();
+				}
+				
+			});
+			
+			//TODO: Call PubFinder 
+			//PubFinding pubFinding = new PubFinding(serivce);
+			/*
+			 * 
+			 */
+		}
+
+		@Override
+		public void onProviderDisabled(String provider) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProviderEnabled(String provider) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onStatusChanged(String provider, int status, Bundle extras) {
+			// TODO Auto-generated method stub
+			
+		}
 	};
 }
