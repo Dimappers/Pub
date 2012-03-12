@@ -28,15 +28,16 @@ public class DataRequestGetPhotos implements IDataRequest<String, XmlJasonObject
 			}
 		}
 		
+		XmlJasonObject myPhotos;
 		try {
-			XmlJasonObject myPhotos = new XmlJasonObject(service.GetFacebook().request("me/photos"));
+			myPhotos = new XmlJasonObject(service.GetFacebook().request("me/photos"));
 			storedData.put("Photos", myPhotos);
-			listener.onRequestComplete(myPhotos);
-			return;
 		} catch (Exception e) {
 			listener.onRequestFail(e);
 			return;
 		} 
+		
+		listener.onRequestComplete(myPhotos);
 	}
 
 	public String getStoredDataId() {

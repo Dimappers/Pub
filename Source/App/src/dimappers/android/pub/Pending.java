@@ -118,8 +118,9 @@ public class Pending extends Activity implements OnClickListener {
 		if (v.getId() == R.id.cancelbutton) {finish();}
 	}
 
+	//TODO: remove me
 	public void onFinish() {
-		event = new PersonRanker(event, service, allFriends).getEvent();
+		//event = new PersonRanker(event, service, allFriends).getEvent();
 		event.SetPubLocation(new PubRanker(pubPlaces, event).returnBest());
 		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle()));
 		finish();
@@ -185,11 +186,15 @@ public class Pending extends Activity implements OnClickListener {
 		private boolean peopleFound = false;
 		private boolean pubFound = false;
 		
-		public void onLocationChanged(Location location)
+		public void onLocationChanged(Location location) //we get the location
 		{
 			locationSet = true;
+			
+			//Start tasks: Get people & get pubs
 			PersonFinder personFinder = new PersonFinder(service);
 			Pending.this.updateText("Finding friends");
+			pubFound = true;
+			
 			personFinder.getFriends(new IRequestListener<AppUserArray>() {
 				@Override
 				public void onRequestComplete(AppUserArray data) {
@@ -198,6 +203,21 @@ public class Pending extends Activity implements OnClickListener {
 					if(pubFound)
 					{
 						//Start next batch of requests
+						createEvent();
+						PersonRanker p = new PersonRanker(event, service, allFriends, new IRequestListener<PubEvent>() {
+
+							@Override
+							public void onRequestComplete(PubEvent data) {
+								Pending.this.finish();
+							}
+
+							@Override
+							public void onRequestFail(Exception e) {
+								// TODO Auto-generated method stub
+								
+							}
+							
+						});
 					}
 					else
 					{
@@ -211,6 +231,12 @@ public class Pending extends Activity implements OnClickListener {
 				}
 				
 			});
+			
+			//TODO: Call PubFinder 
+			//PubFinding pubFinding = new PubFinding(serivce);
+			/*
+			 * 
+			 */
 		}
 
 		@Override
