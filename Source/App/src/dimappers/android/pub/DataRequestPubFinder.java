@@ -20,14 +20,14 @@ import dimappers.android.PubData.Constants;
 
 public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 
-	IPubService service;
+	 IPubService service;
 	 private double latitude;
 	 private double longitude;
 	 private String keyword;
 	 
 	 private static final HttpTransport transport = new ApacheHttpTransport();
 	 
-	 private int radiusForSearch = 1000;
+	 private final static int radiusForSearch = 1000;
 	
 	 DataRequestPubFinder(double latitude, double longitude, String keyword) {
 		 this.latitude = latitude;
@@ -92,7 +92,7 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 		return Double.valueOf(twoDForm.format(value));
 	}
 	private Integer getKey() {
-		return new Double(Math.pow(2.0, get2DP(latitude))*Math.pow(3.0, get2DP(longitude))).hashCode();
+		return new Double(Math.pow(2.0, get2DP(latitude))*Math.pow(3.0, get2DP(longitude))*Math.pow(5.0, keyword.hashCode())).hashCode();
 	}
 
 }

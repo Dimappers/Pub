@@ -13,12 +13,14 @@ public class PubFinding extends AsyncTask<Object, Integer, Boolean> {
 	Location location;
 	Pending activity;
 	List<Place> places;
+	IPubService service;
 	
 	@Override
 	protected Boolean doInBackground(Object... params) { 
 		try {
 			location = (Location) params[0];
 			activity = (Pending) params[1];
+			service = (IPubService) params[2];
 		}
 		catch(Exception e) {Log.d(Constants.MsgError,"Wrong input entered when creating PubFinding."); return false;}
 		
@@ -47,7 +49,16 @@ public class PubFinding extends AsyncTask<Object, Integer, Boolean> {
 	
 	private Boolean findPub() {
 		try {
-			places = new PubFinder(location.getLatitude(),location.getLongitude()).performSearch();
+			 DataRequestPubFinder pubFinder = new DataRequestPubFinder (location.getLatitude(),location.getLongitude());
+			 service.addDataRequest(pubFinder, new IRequestListener(){
+
+				public void onRequestComplete(Object data) {
+					places = ((PlacesList)data).results;
+				}
+
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, e.getMessage());
+				}});
 			updateProgress(Constants.ChoosingPub);
 			if(places==null) {return false;}
 			return true;

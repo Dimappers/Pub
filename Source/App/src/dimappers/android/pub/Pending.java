@@ -75,7 +75,21 @@ public class Pending extends Activity implements OnClickListener {
 	}*/
 	
 	public void updateText(String s) {
-		text.setText(s);
+		runOnUiThread(new TextUpdater(s));
+	}
+	
+	class TextUpdater implements Runnable
+	{
+		String s;
+
+		public void run() {
+			text.setText(s);
+		}
+		
+		TextUpdater(String s)
+		{
+			this.s = s;
+		}
 	}
 
 	/*public void startTasks() {
@@ -121,7 +135,7 @@ public class Pending extends Activity implements OnClickListener {
 	//TODO: remove me
 	public void onFinish() {
 		//event = new PersonRanker(event, service, allFriends).getEvent();
-		event.SetPubLocation(new PubRanker(pubPlaces, event).returnBest());
+		//event.SetPubLocation(new PubRanker(pubPlaces, event).returnBest());
 		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle()));
 		finish();
 	}
@@ -186,38 +200,45 @@ public class Pending extends Activity implements OnClickListener {
 		private boolean peopleFound = false;
 		private boolean pubFound = false;
 		
+		final List<Place> pubs = null;
+		
 		public void onLocationChanged(Location location) //we get the location
 		{
 			locationSet = true;
-			
+			currentLocation = location;
 			//Start tasks: Get people & get pubs
 			PersonFinder personFinder = new PersonFinder(service);
 			Pending.this.updateText("Finding friends");
-			pubFound = true;
+			
+			DataRequestPubFinder pubFinder = new DataRequestPubFinder(currentLocation.getLatitude(), currentLocation.getLongitude());
+			service.addDataRequest(pubFinder, new IRequestListener<PlacesList>(){
+
+				public void onRequestComplete(PlacesList data) {
+					pubFound = true;
+					pubs = data.results;
+					if(peopleFound)
+					{
+						rankThings();
+					}
+					else
+					{
+						Pending.this.updateText("Finding people");
+					}
+				}
+
+				public void onRequestFail(Exception e) {
+					// TODO Auto-generated method stub
+					errorOccurred();
+				}});
+			
 			
 			personFinder.getFriends(new IRequestListener<AppUserArray>() {
-				@Override
 				public void onRequestComplete(AppUserArray data) {
 					peopleFound = true;
 					allFriends = data.getArray();
 					if(pubFound)
 					{
-						//Start next batch of requests
-						createEvent();
-						PersonRanker p = new PersonRanker(event, service, allFriends, new IRequestListener<PubEvent>() {
-
-							@Override
-							public void onRequestComplete(PubEvent data) {
-								Pending.this.finish();
-							}
-
-							@Override
-							public void onRequestFail(Exception e) {
-								// TODO Auto-generated method stub
-								
-							}
-							
-						});
+						rankThings();
 					}
 					else
 					{
@@ -225,7 +246,6 @@ public class Pending extends Activity implements OnClickListener {
 					}
 				}
 
-				@Override
 				public void onRequestFail(Exception e) {
 					Pending.this.errorOccurred();
 				}
@@ -238,20 +258,37 @@ public class Pending extends Activity implements OnClickListener {
 			 * 
 			 */
 		}
+		
+		private void rankThings()
+		{
+			//Start next batch of requests
+			createEvent();
+			PersonRanker p = new PersonRanker(event, service, allFriends, new IRequestListener<PubEvent>() {
 
-		@Override
+				public void onRequestComplete(PubEvent data) {
+					//this bit is broken!!
+					event.SetPubLocation(new PubLocation((float)pubs.get(0).geometry.location.lat, (float)pubs.get(0).geometry.location.lng, pubs.get(0).name));
+					Pending.this.onFinish();
+				}
+
+				public void onRequestFail(Exception e) {
+					// TODO Auto-generated method stub
+					errorOccurred();
+				}
+				
+			});
+		}
+
 		public void onProviderDisabled(String provider) {
 			// TODO Auto-generated method stub
 			
 		}
 
-		@Override
 		public void onProviderEnabled(String provider) {
 			// TODO Auto-generated method stub
 			
 		}
 
-		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
 			// TODO Auto-generated method stub
 			
