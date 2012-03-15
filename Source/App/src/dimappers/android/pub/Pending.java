@@ -68,12 +68,6 @@ public class Pending extends Activity implements OnClickListener {
 		lc.findLocation(locationListener);
 	}
 	
-	/*public void continueGoing(Location location) {
-		currentLocation = location;
-		locationFound = true;
-		if(serviceConnected) {startTasks();}
-	}*/
-	
 	public void updateText(String s) {
 		runOnUiThread(new TextUpdater(s));
 	}
@@ -91,29 +85,6 @@ public class Pending extends Activity implements OnClickListener {
 			this.s = s;
 		}
 	}
-
-	/*public void startTasks() {
-
-		if (currentLocation == null) {
-			Log.d(Constants.MsgError, "Need to set location first.");
-			updateText("An error has occurred, please try again.");
-			return;
-		} else {
-			Log.d(Constants.MsgInfo,
-					"Using location: " + currentLocation.getLatitude() + ", "
-							+ currentLocation.getLongitude());
-		}
-
-		createEvent();
-
-		Object[] info = new Object[2];
-		info[0] = currentLocation;
-		info[1] = this;
-
-		new PubFinding().execute(info);
-		
-		new PersonFinder(this, service).getFriends();
-	}*/
 
 	public void createEvent() {
 		updateText("Creating Event");
@@ -200,7 +171,7 @@ public class Pending extends Activity implements OnClickListener {
 		private boolean peopleFound = false;
 		private boolean pubFound = false;
 		
-		final List<Place> pubs = null;
+		private List<Place> pubs = null;
 		
 		public void onLocationChanged(Location location) //we get the location
 		{
@@ -218,7 +189,7 @@ public class Pending extends Activity implements OnClickListener {
 					pubs = data.results;
 					if(peopleFound)
 					{
-						rankThings();
+						rankThings(pubs);
 					}
 					else
 					{
@@ -227,7 +198,6 @@ public class Pending extends Activity implements OnClickListener {
 				}
 
 				public void onRequestFail(Exception e) {
-					// TODO Auto-generated method stub
 					errorOccurred();
 				}});
 			
@@ -238,7 +208,7 @@ public class Pending extends Activity implements OnClickListener {
 					allFriends = data.getArray();
 					if(pubFound)
 					{
-						rankThings();
+						rankThings(pubs);
 					}
 					else
 					{
@@ -251,15 +221,9 @@ public class Pending extends Activity implements OnClickListener {
 				}
 				
 			});
-			
-			//TODO: Call PubFinder 
-			//PubFinding pubFinding = new PubFinding(serivce);
-			/*
-			 * 
-			 */
 		}
 		
-		private void rankThings()
+		private void rankThings(final List<Place> pubs)
 		{
 			//Start next batch of requests
 			createEvent();
