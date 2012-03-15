@@ -131,16 +131,23 @@ public class Pending extends Activity implements OnClickListener {
 	}
 
 	public void errorOccurred() {
-		new AlertDialog.Builder(this)
-				.setMessage(
-						"An unexpected error has occurred. Please try again.")
-				.setTitle("Error").setCancelable(false)
-				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-						finish();
-					}
-				}).show();
+		runOnUiThread(new ErrorDialog());
+	}
+	
+	class ErrorDialog implements Runnable
+	{
+		public void run() {
+			new AlertDialog.Builder(Pending.this)
+			.setMessage(
+					"An unexpected error has occurred. Please try again.")
+			.setTitle("Error").setCancelable(false)
+			.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+					finish();
+				}
+			}).show();
+		}
 	}
 
 	public void setLocations(List<Place> pubPlaces) {
@@ -198,6 +205,7 @@ public class Pending extends Activity implements OnClickListener {
 				}
 
 				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, e.getMessage());
 					errorOccurred();
 				}});
 			
