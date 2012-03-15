@@ -11,6 +11,7 @@ import android.util.Log;
 import com.facebook.android.Facebook;
 
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.User;
 
 public class DataRequestGetFriends implements IDataRequest<Long, AppUserArray> {
 
@@ -28,7 +29,9 @@ public class DataRequestGetFriends implements IDataRequest<Long, AppUserArray> {
 			if(!storedData.get(0L).isOutOfDate())
 			{
 				Log.d(Constants.MsgInfo, "Friends cached, not need to ask facebook");
-				listener.onRequestComplete(storedData.get(0L)); //Friends last got one week ago so we are done - TODO: Test me!!
+				AppUserArray friendsArray = storedData.get(0L);
+				friendsArray.setArray(MergeSort(friendsArray.getArray()));
+				listener.onRequestComplete(friendsArray); //Friends last got one week ago so we are done - TODO: Test me!!
 				return;
 			}
 		}
@@ -58,6 +61,40 @@ public class DataRequestGetFriends implements IDataRequest<Long, AppUserArray> {
 			listener.onRequestFail(e);
 			return;
 		}
+	}
+	
+	private AppUser[] MergeSort(AppUser[] list)
+	{
+		if (list.length<=1) return list;
+		AppUser[] lista = new AppUser[(int) list.length/2];
+		AppUser[] listb = new AppUser[list.length-lista.length];
+		for(int i = 0; i<list.length; i++)
+		{
+			if(i<lista.length){lista[i] = list[i];}
+			else {listb[i-lista.length] = list[i];}
+		}
+		lista = MergeSort(lista);
+		listb = MergeSort(listb);
+		return Merge(lista, listb);
+	}
+	private AppUser[] Merge(AppUser[] lista, AppUser[] listb)
+	{
+		int a = 0;
+		int b = 0;
+		int c = 0;
+		AppUser[] temp = new AppUser[lista.length + listb.length];
+		while(c!=temp.length)
+		{
+			if(lista.length==a) {temp[c] = listb[b]; b++;}
+			else if(listb.length==b) {temp[c] = lista[a]; a++;}
+			else
+			{
+				if(lista[a].getRank()>listb[b].getRank()) {temp[c] = lista[a]; a++;}
+				else {temp[c] = listb[b]; b++;}
+			}
+			c++;
+		}
+		return temp;
 	}
 
 	public String getStoredDataId() {
