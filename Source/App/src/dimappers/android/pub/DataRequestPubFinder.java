@@ -75,12 +75,15 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 		     
 		    PlacesList places = request.execute().parseAs(PlacesList.class);	
 		    
-		    if(places.status!="OK") {listener.onRequestFail(new Exception(places.status));}
-		    //TODO: deal with no results separately because this isn't an error
-		    else
+		    if(places.status.equals("OK")) 
 		    {
 		    	storedData.put(getKey(), places);
 		    	listener.onRequestComplete(places);
+		    }
+		    //TODO: deal with no results separately because this isn't an error
+		    else
+		    {
+		    	listener.onRequestFail(new Exception(places.status));	
 		    }
 	   }
 	   catch (Exception e) {
