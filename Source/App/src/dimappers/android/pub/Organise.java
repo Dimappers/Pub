@@ -188,8 +188,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				serviceInterface.GiveNewSentEvent(event, new IRequestListener<PubEvent>() {
 					
 					public void onRequestFail(Exception e) {
-						// TODO Auto-generated method stub
-						
+						Log.d(Constants.MsgError, "Could not send event");
 					}
 					
 					public void onRequestComplete(PubEvent data) {
