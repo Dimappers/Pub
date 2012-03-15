@@ -83,10 +83,6 @@ public class Guests extends ListActivity implements OnClickListener{
 		}
 		}
 	}
-	public void onContentChange() 
-	{
-		super.onContentChanged();
-	}
 	
 	public void onListItemClick(ListView l, View v, int pos, long id) 
 	{
@@ -112,20 +108,7 @@ public class Guests extends ListActivity implements OnClickListener{
 	
 	private void UpdateListView(AppUser[] sortedUsers)
 	{
-		listItems.clear();
-    	
-		for(AppUser user : sortedUsers) {
-    		listItems.add(user);
-    	}
-		
-		//Tick already selected guests
-		for(int i  = 0; i < guest_list.getCount(); ++i)
-		{
-			User listUser = listItems.get(i);
-			guest_list.setItemChecked(i, event.DoesContainUser(listUser));
-		}
-		
-		adapter.notifyDataSetChanged();
+		runOnUiThread(new UpdateList(sortedUsers));
 	}
 	
 	/*private void GetUsers()
@@ -185,7 +168,6 @@ public class Guests extends ListActivity implements OnClickListener{
 	
 	private ServiceConnection connection = new ServiceConnection()
 	{
-
 		public void onServiceConnected(ComponentName className, IBinder bService)
 		{
 			//Give the interface to the app
@@ -218,6 +200,32 @@ public class Guests extends ListActivity implements OnClickListener{
 		}
 		
 	};
+	
+	class UpdateList implements Runnable
+	{
+		AppUser[] sortedArray; 
+		public UpdateList(AppUser[] sortedArray)
+		{
+			this.sortedArray = sortedArray;
+		}
+
+		public void run() {
+			listItems.clear();
+	    	
+			for(AppUser user : sortedArray) {
+	    		listItems.add(user);
+	    	}
+			
+			//Tick already selected guests
+			for(int i  = 0; i < guest_list.getCount(); ++i)
+			{
+				User listUser = listItems.get(i);
+				guest_list.setItemChecked(i, event.DoesContainUser(listUser));
+			}
+			
+			adapter.notifyDataSetChanged();			
+		}
+	}
 	/*
 	private void doFacebookCall() {
 		JSONObject friends = null;
