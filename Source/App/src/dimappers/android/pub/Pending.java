@@ -15,6 +15,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -107,16 +108,23 @@ public class Pending extends Activity implements OnClickListener {
 	}
 
 	public void errorOccurred() {
-		new AlertDialog.Builder(this)
-				.setMessage(
-						"An unexpected error has occurred. Please try again.")
-				.setTitle("Error").setCancelable(false)
-				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-						finish();
-					}
-				}).show();
+		runOnUiThread(new ErrorDialog());
+	}
+	
+	class ErrorDialog implements Runnable
+	{
+		public void run() {
+			new AlertDialog.Builder(Pending.this)
+			.setMessage(
+					"An unexpected error has occurred. Please try again.")
+			.setTitle("Error").setCancelable(false)
+			.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+					finish();
+				}
+			}).show();
+		}
 	}
 	
 	private ServiceConnection connection = new ServiceConnection()
@@ -170,6 +178,7 @@ public class Pending extends Activity implements OnClickListener {
 				}
 
 				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, e.getMessage());
 					errorOccurred();
 				}});
 			
@@ -202,7 +211,7 @@ public class Pending extends Activity implements OnClickListener {
 			PersonRanker p = new PersonRanker(event, service, allFriends, new IRequestListener<PubEvent>() {
 
 				public void onRequestComplete(PubEvent data) {
-					data.SetPubLocation(new PubLocation((float)pubs.get(0).geometry.location.lat, (float)pubs.get(0).geometry.location.lng, pubs.get(0).name));
+					data.SetPubLocation(new PubRanker(pubs, data).returnBest());
 					Pending.this.onFinish(data, currentLocation);
 				}
 
