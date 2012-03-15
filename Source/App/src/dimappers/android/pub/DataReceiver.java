@@ -123,7 +123,6 @@ public class DataReceiver
 					Intent notificationIntent = new Intent(context, UserInvites.class);
 					Bundle b = new Bundle();
 					b.putSerializable(Constants.CurrentWorkingEvent, newEvents.get(0));
-					b.putSerializable(Constants.CurrentFacebookUser, service.user);
 					notificationIntent.putExtras(b);
 					PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 					

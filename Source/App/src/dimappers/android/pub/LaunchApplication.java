@@ -78,7 +78,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     		//Don't start the service until we are logged in to facebook
         	Intent startServiceIntent = new Intent(this, PubService.class);
         	Bundle b = new Bundle();
-        	b.putSerializable(Constants.CurrentFacebookUser, facebookUser);
+        	//b.putSerializable(Constants.CurrentFacebookUser, facebookUser);
         	startServiceIntent.putExtras(b);
         	startService(startServiceIntent);
     	}
@@ -182,9 +182,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
     {
     	Intent i;
     	Bundle b = new Bundle();
-    	b.putSerializable(Constants.CurrentFacebookUser, facebookUser);
-    	b.putString(Constants.AuthToken, facebook.getAccessToken());
-    	b.putLong(Constants.Expires, facebook.getAccessExpires());
     	switch (v.getId()) {
     		case R.id.organise_button : 
     		{

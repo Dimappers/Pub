@@ -69,13 +69,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			setResult(Constants.MissingDataInBundle);
 			finish();
 		}
-		facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
-		if(facebookUser == null)
-		{
-			Log.d(Constants.MsgError, "Host data missing for showing details about");
-			setResult(Constants.MissingDataInBundle);
-			finish();
-		}
 
 		sent = !getIntent().getExtras().getBoolean(Constants.IsSavedEventFlag); //if we have saved the event, it has not been sent
 		if(sent)
@@ -245,7 +238,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
 		{
 			serviceInterface = (IPubService)serviceBinder;
-			
+			facebookUser = serviceInterface.GetActiveUser();
 		}
 
 		public void onServiceDisconnected(ComponentName arg0)

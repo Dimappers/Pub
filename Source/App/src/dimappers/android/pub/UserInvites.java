@@ -8,10 +8,13 @@ import java.util.Map.Entry;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,6 +35,8 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	PubEvent event;
 	AppUser facebookUser;
 	
+	IPubService service;
+	
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
@@ -41,13 +46,6 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     	if(event == null)
     	{
     		Log.d(Constants.MsgError, "Event missing for showing details about");
-    		setResult(Constants.MissingDataInBundle);
-    		finish();
-    	}
-    	facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
-    	if(facebookUser == null)
-    	{
-    		Log.d(Constants.MsgError, "Host data missing for showing details about");
     		setResult(Constants.MissingDataInBundle);
     		finish();
     	}
@@ -169,5 +167,19 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		
 		commentDialog.show();
 	}
+	
+	private ServiceConnection connection = new ServiceConnection()
+	{
+		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
+		{
+			service = (IPubService)serviceBinder;
+			facebookUser = service.GetActiveUser();
+		}
+
+		public void onServiceDisconnected(ComponentName arg0)
+		{			
+		}
+		
+	};
 
 }

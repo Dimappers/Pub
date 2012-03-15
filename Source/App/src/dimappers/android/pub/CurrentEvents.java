@@ -39,42 +39,15 @@ import dimappers.android.PubData.User;
 public class CurrentEvents extends ListActivity implements OnItemClickListener 
 {
 	SeperatedListAdapter adapter;
+	IPubService service;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.current_events);
-
-		AppUser facebookUser = (AppUser)getIntent().getExtras().getSerializable(Constants.CurrentFacebookUser);
-		
-		
-		PubEvent createdEvent = (PubEvent) getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent); 
-		if(createdEvent != null) {
-			//Then skip straight in to the relevant next screen
-			Intent i;
-			Bundle b = new Bundle();
-			b.putAll(getIntent().getExtras());
-			
-			if(createdEvent.GetHost().equals(facebookUser))
-			{
-				i = new Intent(this, HostEvents.class);					
-			}
-			else
-			{
-				i = new Intent(this, UserInvites.class);
-			}
-			
-			i.putExtras(b);
-			startActivity(i);
-		}
-		
 		
 		bindService(new Intent(this, PubService.class), connection, 0);
-
-		// Create the ListView Adapter
-		adapter = new SeperatedListAdapter(this,facebookUser);
-		setListAdapter(adapter);
 
 		((ListView)findViewById(android.R.id.list)).setOnItemClickListener(this);
 	}
@@ -136,8 +109,33 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 		public void onServiceConnected(ComponentName className, IBinder service)
 		{
 			//Give the interface to the app
-			IPubService serviceInterface = (IPubService)service;
-			adapter.setData(serviceInterface);
+			CurrentEvents.this.service = (IPubService)service;
+			AppUser facebookUser = CurrentEvents.this.service.GetActiveUser();
+			
+			PubEvent createdEvent = (PubEvent) getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent); 
+			if(createdEvent != null) {
+				//Then skip straight in to the relevant next screen
+				Intent i;
+				Bundle b = new Bundle();
+				b.putAll(getIntent().getExtras());
+				
+				if(createdEvent.GetHost().equals(facebookUser))
+				{
+					i = new Intent(CurrentEvents.this, HostEvents.class);					
+				}
+				else
+				{
+					i = new Intent(CurrentEvents.this, UserInvites.class);
+				}
+				
+				i.putExtras(b);
+				startActivity(i);
+			}
+			
+			adapter = new SeperatedListAdapter(CurrentEvents.this,facebookUser);
+			setListAdapter(adapter);
+			
+			adapter.setData(CurrentEvents.this.service);
 		}
 
 		public void onServiceDisconnected(ComponentName className)
