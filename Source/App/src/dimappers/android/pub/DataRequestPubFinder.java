@@ -46,49 +46,56 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 	}
 
 	public void performRequest(IRequestListener<PlacesList> listener,HashMap<Integer, PlacesList> storedData) {
-		try {
-			HttpRequestFactory httpRequestFactory = transport.createRequestFactory(new HttpRequestInitializer() {
-				  public void initialize(HttpRequest request) {
-					  GoogleHeaders headers = new GoogleHeaders();
-					  headers.setApplicationName("Pub");
-					  request.setHeaders(headers);
-					  JsonHttpParser parser = new JsonHttpParser(new JacksonFactory());
-					  request.addParser(parser);
-				  }
-				  });
-			HttpRequest request = httpRequestFactory.buildGetRequest(new GenericUrl(Constants.PLACES_SEARCH_URL));
-			request.getUrl().put("key", Constants.API_KEY);
-			request.getUrl().put("sensor", "true");	
-		    
-		    request.getUrl().put("location", latitude + "," + longitude);
-		    request.getUrl().put("types", "bar");
-		    
-		    if(keyword.length()==0)
-		    {
-		    	request.getUrl().put("radius", radiusForSearch);
-		    }
-		    else
-		    {
-		    	request.getUrl().put("radius", radiusForSearch*2);
-		    	request.getUrl().put("keyword",keyword);
-		    }
-		     
-		    PlacesList places = request.execute().parseAs(PlacesList.class);	
-		    
-		    if(places.status.equals("OK")) 
-		    {
-		    	storedData.put(getKey(), places);
-		    	listener.onRequestComplete(places);
-		    }
-		    //TODO: deal with no results separately because this isn't an error
-		    else
-		    {
-		    	listener.onRequestFail(new Exception(places.status));	
-		    }
-	   }
-	   catch (Exception e) {
-		    listener.onRequestFail(e);
-	   }
+		if(storedData.containsKey(getKey()))
+		{
+			listener.onRequestComplete(storedData.get(getKey()));
+		}
+		else{
+
+			try {
+				HttpRequestFactory httpRequestFactory = transport.createRequestFactory(new HttpRequestInitializer() {
+					  public void initialize(HttpRequest request) {
+						  GoogleHeaders headers = new GoogleHeaders();
+						  headers.setApplicationName("Pub");
+						  request.setHeaders(headers);
+						  JsonHttpParser parser = new JsonHttpParser(new JacksonFactory());
+						  request.addParser(parser);
+					  }
+					  });
+				HttpRequest request = httpRequestFactory.buildGetRequest(new GenericUrl(Constants.PLACES_SEARCH_URL));
+				request.getUrl().put("key", Constants.API_KEY);
+				request.getUrl().put("sensor", "true");	
+			    
+			    request.getUrl().put("location", latitude + "," + longitude);
+			    request.getUrl().put("types", "bar");
+			    
+			    if(keyword.length()==0)
+			    {
+			    	request.getUrl().put("radius", radiusForSearch);
+			    }
+			    else
+			    {
+			    	request.getUrl().put("radius", radiusForSearch*2);
+			    	request.getUrl().put("keyword",keyword);
+			    }
+			     
+			    PlacesList places = request.execute().parseAs(PlacesList.class);	
+			    
+			    if(places.status.equals("OK")) 
+			    {
+			    	storedData.put(getKey(), places);
+			    	listener.onRequestComplete(places);
+			    }
+			    //TODO: deal with no results separately because this isn't an error
+			    else
+			    {
+			    	listener.onRequestFail(new Exception(places.status));	
+			    }
+			}
+		   catch (Exception e) {
+			    listener.onRequestFail(e);
+		   }
+		}
 	}
 
 	public String getStoredDataId() {
