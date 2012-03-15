@@ -1,7 +1,5 @@
 package dimappers.android.pub;
 
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import android.app.Activity;
@@ -14,47 +12,30 @@ import android.content.ServiceConnection;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
-import dimappers.android.PubData.User;
 
 public class Pending extends Activity implements OnClickListener {
 
-	private TextView text;
-	private User facebookUser;
-	public ArrayList<User> facebookFriends = new ArrayList<User>();
-	User[] allFriends;
-	private Location currentLocation;
-
-	private boolean firstTime = true;
-
-	PubEvent event;
-
-	boolean personFinished;
-	boolean pubFinished;
-	private List<Place> pubPlaces;
-	
-	boolean locationFound = false;
-	boolean serviceConnected = false;
+	private TextView progressText;
 	IPubService service;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-    	//Bind to service
-    	bindService(new Intent(this, PubService.class), connection, 0);
-		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pending_guests);
-		text = (TextView) findViewById(R.id.location_error);
+		
+		//Bind to service
+    	bindService(new Intent(this, PubService.class), connection, 0);
+		
+		progressText = (TextView) findViewById(R.id.location_error);
 		((TextView) findViewById(R.id.cancelbutton)).setOnClickListener(this);
 	}
 
@@ -77,7 +58,7 @@ public class Pending extends Activity implements OnClickListener {
 		String s;
 
 		public void run() {
-			text.setText(s);
+			progressText.setText(s);
 		}
 		
 		TextUpdater(String s)
@@ -86,7 +67,7 @@ public class Pending extends Activity implements OnClickListener {
 		}
 	}
 
-	public void createEvent() {
+	public PubEvent createEvent() {
 		updateText("Creating Event");
 
 		Bundle b = getIntent().getExtras();
@@ -94,20 +75,15 @@ public class Pending extends Activity implements OnClickListener {
 			Debug.waitForDebugger();
 		}
 
-		facebookUser = (AppUser) b
-				.getSerializable(Constants.CurrentFacebookUser);
-		event = new PubEvent(new TimeFinder().chooseTime(), facebookUser);
+		return new PubEvent(new TimeFinder().chooseTime(), service.GetActiveUser());
 	}
 
 	public void onClick(View v) {
 		if (v.getId() == R.id.cancelbutton) {finish();}
 	}
 
-	//TODO: remove me
-	public void onFinish() {
-		//event = new PersonRanker(event, service, allFriends).getEvent();
-		//event.SetPubLocation(new PubRanker(pubPlaces, event).returnBest());
-		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle()));
+	public void onFinish(PubEvent createdEvent, Location currentLocation) {
+		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle(createdEvent, currentLocation)));
 		finish();
 	}
 	
@@ -118,10 +94,10 @@ public class Pending extends Activity implements OnClickListener {
 		unbindService(connection);
 	}
 
-	private Bundle fillBundle() {
+	private Bundle fillBundle(PubEvent createdEvent, Location currentLocation) {
 		Bundle eventBundle = new Bundle();
 		eventBundle.putAll(getIntent().getExtras());
-		eventBundle.putSerializable(Constants.CurrentWorkingEvent, event);
+		eventBundle.putSerializable(Constants.CurrentWorkingEvent, createdEvent);
 		eventBundle.putBoolean(Constants.IsSavedEventFlag, true);
 		eventBundle.putDouble(Constants.CurrentLatitude,
 				currentLocation.getLatitude());
@@ -142,14 +118,9 @@ public class Pending extends Activity implements OnClickListener {
 					}
 				}).show();
 	}
-
-	public void setLocations(List<Place> pubPlaces) {
-		this.pubPlaces = pubPlaces;		
-	}
 	
 	private ServiceConnection connection = new ServiceConnection()
 	{
-
 		public void onServiceConnected(ComponentName className, IBinder pubService)
 		{
 			//Give the interface to the app
@@ -167,15 +138,16 @@ public class Pending extends Activity implements OnClickListener {
 	
 	private LocationListener locationListener = new LocationListener()
 	{
-		private boolean locationSet = false;
 		private boolean peopleFound = false;
 		private boolean pubFound = false;
 		
 		private List<Place> pubs = null;
+		private AppUser[] allFriends = null;
+		
+		Location currentLocation;
 		
 		public void onLocationChanged(Location location) //we get the location
 		{
-			locationSet = true;
 			currentLocation = location;
 			//Start tasks: Get people & get pubs
 			PersonFinder personFinder = new PersonFinder(service);
@@ -226,17 +198,15 @@ public class Pending extends Activity implements OnClickListener {
 		private void rankThings(final List<Place> pubs)
 		{
 			//Start next batch of requests
-			createEvent();
+			PubEvent event = createEvent();
 			PersonRanker p = new PersonRanker(event, service, allFriends, new IRequestListener<PubEvent>() {
 
 				public void onRequestComplete(PubEvent data) {
-					//this bit is broken!!
-					event.SetPubLocation(new PubLocation((float)pubs.get(0).geometry.location.lat, (float)pubs.get(0).geometry.location.lng, pubs.get(0).name));
-					Pending.this.onFinish();
+					data.SetPubLocation(new PubLocation((float)pubs.get(0).geometry.location.lat, (float)pubs.get(0).geometry.location.lng, pubs.get(0).name));
+					Pending.this.onFinish(data, currentLocation);
 				}
 
 				public void onRequestFail(Exception e) {
-					// TODO Auto-generated method stub
 					errorOccurred();
 				}
 				
