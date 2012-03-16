@@ -21,7 +21,7 @@ public class DataRequestGetPhotos implements IDataRequest<String, XmlJasonObject
 		long userId = service.GetActiveUser().getUserId();
 		if(storedData.containsKey("Photos"))
 		{
-			if(!storedData.get(userId).isOutOfDate())
+			if(!storedData.get("Photos").isOutOfDate())
 			{
 				listener.onRequestComplete(storedData.get(userId));
 				return;
