@@ -137,7 +137,9 @@ public class PubService extends IntentService
 				storedData.Load(storedDataString);
 			}
 			
+			//TODO: this causes null pointers
 			user = (AppUser)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
+			
 			storedData.GetGenericStore("AppUser").put(user.getUserId(), user);
 			
 			//receiver = new DataReceiver(this);

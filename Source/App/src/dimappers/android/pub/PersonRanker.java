@@ -39,6 +39,7 @@ public class PersonRanker {
 	
 	private final int postValue = 1;
 	private final int postCommentValue = 1;
+	private final int postCommentTagValue = 1;
 	private final int postLikeValue = 1;
 	private final int postTagValue = 1;
 	
@@ -56,6 +57,7 @@ public class PersonRanker {
 		//TODO: get required things from service: 
 		 historyStore = new HistoryStore(); 
 		 currentLocation = new Location("location");
+		 
 		 this.listener = listener;
 			 
 		this.service = service;
@@ -187,7 +189,7 @@ public class PersonRanker {
 			JSONArray photos = myPhotos.getJSONArray("data");
 			for (int i = 0; i<photos.length(); i++)
 			{
-				JSONObject photo = (JSONObject) photos.get(i);
+				JSONObject photo = photos.getJSONObject(i);
 				
 				/*Next line changes the rank of the person whose photo it is - we might not want to do this because it can massively skew the results!*/
 				if(Long.parseLong(photo.getJSONObject("from").getString("id"))==userId) {photoNumber+=photoFromValue;}
@@ -195,7 +197,7 @@ public class PersonRanker {
 				JSONArray tags = photo.getJSONObject("tags").getJSONArray("data");
 				for (int j = 0; j<tags.length(); j++)
 				{
-					if(userId==Long.parseLong(((JSONObject)tags.get(j)).getString("id"))) {photoNumber+=photoValue;};
+					if(userId==Long.parseLong((tags.getJSONObject(j)).getString("id"))) {photoNumber+=photoValue;};
 				}
 			}
 		} catch (JSONException e) {
@@ -215,30 +217,59 @@ public class PersonRanker {
 			for (int i = 0; i<posts.length(); i++)
 			{
 				JSONObject post = (JSONObject) posts.get(i);
+				
+				//Person the post is from
 				if(Long.parseLong(post.getJSONObject("from").getString("id"))==userId) {postNumber+=postValue;}
+				
+				//People tagged in the post
+				if(post.has("message_tags"))
+				{
+					JSONArray tags = post.getJSONObject("message_tags").getJSONArray("0");
+					for(int j = 0 ; j<tags.length(); j++)
+					{
+						JSONObject tag = tags.getJSONObject(j);
+						if(Long.parseLong(tag.getString("id"))==userId) {postNumber+=postValue;}
+					}
+				}
+				
+				//Person the post is from & all people tagged as being "with you" in the post
 				JSONArray to = post.getJSONObject("to").getJSONArray("data");
 				for(int j = 0; j<to.length(); j++)
 				{
-					if(Long.parseLong(((JSONObject)to.get(j)).getString("id"))==userId) {postNumber+=postTagValue;}
+					if(Long.parseLong((to.getJSONObject(j)).getString("id"))==userId) {postNumber+=postTagValue;}
 				}
-				try
+				
+				//People who have liked the post
+				if(post.has("likes"))
 				{
 					JSONArray likes = post.getJSONObject("likes").getJSONArray("data");
-					for(int j = 0; j<to.length(); j++)
+					for(int j = 0; j<likes.length(); j++)
 					{
-						if(Long.parseLong(((JSONObject)likes.get(j)).getString("id"))==userId) {postNumber+=postLikeValue;}
+						if(Long.parseLong((likes.getJSONObject(j)).getString("id"))==userId) {postNumber+=postLikeValue;}
 					}
 				}
-				catch(JSONException e) {Log.d(Constants.MsgError, "There are no likes for this item.");}
-				try
+				
+				//People who have commented on the post
+				if(post.getJSONObject("comments").has("data"))
 				{
 					JSONArray comments = post.getJSONObject("comments").getJSONArray("data");
-					for(int j = 0; j<to.length(); j++)
+					for(int j = 0; j<comments.length(); j++)
 					{
-						if(Long.parseLong(((JSONObject)comments.get(j)).getJSONObject("from").getString("id"))==userId) {postNumber+=postCommentValue;}
+						JSONObject comment = comments.getJSONObject(j);
+						if(Long.parseLong(comment.getJSONObject("from").getString("id"))==userId) {postNumber+=postCommentValue;}
+						
+						//People who are tagged in comments
+						if(comment.has("message_tags"))
+						{
+							JSONArray message_tags = comment.getJSONArray("message_tags");
+							for(int k = 0; k<message_tags.length(); k++)
+							{
+								if(Long.parseLong(message_tags.getJSONObject(k).getString("id"))==userId) {postNumber+=postCommentTagValue;}
+							}
+						}
 					}
 				}
-				catch(JSONException e) {Log.d(Constants.MsgError, "There are no comments for this item.");}
+
 			}
 		} catch (JSONException e) {
 			Log.d(Constants.MsgError, "Error finding post information.");
