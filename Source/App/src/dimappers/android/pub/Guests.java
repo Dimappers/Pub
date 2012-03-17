@@ -111,61 +111,6 @@ public class Guests extends ListActivity implements OnClickListener{
 		runOnUiThread(new UpdateList(sortedUsers));
 	}
 	
-	/*private void GetUsers()
-	{
-		if(!Constants.emulator)
-		{
-			/*JSONObject mefriends = null;
-	    	try {
-				mefriends = new JSONObject(facebook.request("me/friends"));
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    	AppUser[] friends;
-	    	try {
-				JSONArray jasonsFriends = mefriends.getJSONArray("data");
-				friends = new AppUser[jasonsFriends.length()];
-				for (int i=0; i < jasonsFriends.length(); i++)
-				{
-					JSONObject jason = (JSONObject) jasonsFriends.get(i);
-					friends[i] = new AppUser(Long.parseLong(jason.getString("id")), jason.getString("name"));
-				
-				}
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				Log.d(Constants.MsgError, "JASON: " + e.getMessage());
-				e.printStackTrace();
-				return null;
-			}
-			return friends;
-			
-			
-		}
-		else
-		{
-			return new AppUser[]{new AppUser(123L, "Made1"), new AppUser(242L, "Made2")};
-		}
-	}*/
-	
-	/*private AppUser[] GetSortedUsers()
-	{
-		PubEvent currentEvent = event;
-		allFriends = new PersonRanker(currentEvent, service, allFriends).getArrayOfRankedFriends();
-		AppUser[] appFriends = new AppUser[allFriends.length];
-		for(int i = 0; i<appFriends.length; i++)
-		{
-			appFriends[i] = AppUser.AppUserFromUser(allFriends[i], facebook);
-		}
-		return appFriends;
-	}*/
-	
 	private ServiceConnection connection = new ServiceConnection()
 	{
 		public void onServiceConnected(ComponentName className, IBinder bService)
@@ -216,7 +161,6 @@ public class Guests extends ListActivity implements OnClickListener{
 	    		listItems.add(user);
 	    	}
 			
-			//Tick already selected guests
 			for(int i  = 0; i < guest_list.getCount(); ++i)
 			{
 				User listUser = listItems.get(i);
@@ -226,28 +170,4 @@ public class Guests extends ListActivity implements OnClickListener{
 			adapter.notifyDataSetChanged();			
 		}
 	}
-	/*
-	private void doFacebookCall() {
-		JSONObject friends = null;
-		try {
-			friends = new JSONObject(facebook.request("me/friends"));
-			JSONArray jasonsFriends = friends.getJSONArray("data");
-			allFriends = new User[jasonsFriends.length()];
-			for (int i=0; i < jasonsFriends.length(); i++)
-			{
-				JSONObject jason = (JSONObject) jasonsFriends.get(i);
-				allFriends[i] = new AppUser(Long.parseLong(jason.getString("id")), jason.getString("name"));
-			}
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-*/
 }

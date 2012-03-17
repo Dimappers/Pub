@@ -109,12 +109,7 @@ public class PersonRanker {
 			friend.setRank(findFacebookClosenessRank(friend) + findPreviousPubTrips(friend));
 		}
 		if(facebookFriends.length>0) {
-			User[] tempFriends = MergeSort(facebookFriends);
-			for(int i = 0; i<tempFriends.length; i++)
-			{
-				facebookFriends[i] = tempFriends[i];
-			}
-			
+			facebookFriends = MergeSort(facebookFriends);
 			int n = Math.min(historyStore.getAverageNumberOfFriends(), facebookFriends.length);
 			currentEvent.emptyGuestList();
 			for(int i = 0; i<n; i++)
@@ -128,7 +123,7 @@ public class PersonRanker {
 	
 	public PubEvent getEvent() {return currentEvent;}
 	
-	public User[] MergeSort(User[] list)
+	private User[] MergeSort(User[] list)
 	{
 		if (list.length<=1) return list;
 		User[] lista = new User[(int) list.length/2];

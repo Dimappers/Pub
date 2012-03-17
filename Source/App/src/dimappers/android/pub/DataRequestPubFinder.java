@@ -5,6 +5,8 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 
+import android.util.Log;
+
 import com.google.api.client.googleapis.GoogleHeaders;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
@@ -48,10 +50,11 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 	public void performRequest(IRequestListener<PlacesList> listener,HashMap<Integer, PlacesList> storedData) {
 		if(storedData.containsKey(getKey()))
 		{
+			Log.d(Constants.MsgInfo, "Already have pubs.");
 			listener.onRequestComplete(storedData.get(getKey()));
 		}
 		else{
-
+			Log.d(Constants.MsgInfo, "Getting pubs from Google.");
 			try {
 				HttpRequestFactory httpRequestFactory = transport.createRequestFactory(new HttpRequestInitializer() {
 					  public void initialize(HttpRequest request) {
