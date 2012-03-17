@@ -6,6 +6,8 @@ import com.facebook.android.Facebook;
 
 import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.PubEvent;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.IBinder;
@@ -14,6 +16,8 @@ public interface IPubService extends IBinder {
 
 	int 									GiveNewSavedEvent(PubEvent event);
 	void 									GiveNewSentEvent(PubEvent event, final IRequestListener<PubEvent> listener);
+	
+	void 									NewEventsRecieved(PubEvent[] events);
 		
 	Collection<PubEvent> 					GetSavedEvents();
 	Collection<PubEvent> 					GetSentEvents();
@@ -32,5 +36,4 @@ public interface IPubService extends IBinder {
 	AppUser									GetActiveUser();
 	
 	<K, T extends IXmlable> void 			addDataRequest(IDataRequest<K, T> request, final IRequestListener<T> listener);	
-	
 }

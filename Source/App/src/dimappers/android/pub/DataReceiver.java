@@ -29,12 +29,12 @@ import dimappers.android.PubData.User;
 
 public class DataReceiver
 {
-	private PubService service;
+	private IPubService service;
 	private PerformRefresh refresher;
 	private final long UpdateFrequency = 900000; //Check every 15 minutes
 	
 	
-	public DataReceiver(PubService service)
+	public DataReceiver(IPubService service)
 	{
 		this.service = service;
 		Timer updateScheduler = new Timer();
@@ -59,84 +59,23 @@ public class DataReceiver
 		//TODO: Test me once we can get xmls from the server
 		public void doUpdate(boolean fullUpdate)
 		{
-			/*RefreshData refreshRequest = new RefreshData(DataReceiver.this.service.getUser(), fullUpdate);
-			
-			Document document = new Document();
-			Element root = new Element("Message");
-			Element messageType = new Element("MessageType");
-			messageType.addContent(MessageType.refreshMessage.toString());
-			root.addContent(messageType);
-			root.addContent(refreshRequest.writeXml());
-			document.setRootElement(root);
-			
-			XMLOutputter outputter = new XMLOutputter();
-			try
-			{
-				//Replace System.out with a out stream for the port
-				outputter.output(document, System.out);
-			} catch (IOException e)
-			{
-				Log.d(Constants.MsgError, "IO Exception writing xml to stream");
-			}
-			
-			
-			SAXBuilder xmlBuilder = new SAXBuilder();
-			Document returnDocument;
-			try
-			{
-				returnDocument = xmlBuilder.build(System.in);
-			} catch (JDOMException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return;
-			} catch (IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return;
-			} //TODO: Replace with input stream 
-			
-			Element eventsRoot = returnDocument.getRootElement().getChild("PubEvents");
-			
-			List<Element> eventsElements = eventsRoot.getChildren(PubEvent.class.getSimpleName());
-			ArrayList<PubEvent> newEvents = new ArrayList<PubEvent>();
-			for(Element eventElement : eventsElements)
-			{
-				PubEvent newEvent = new PubEvent(eventElement);
-				service.getDataStore().AddNewInvitedEvent(newEvent);
-				newEvents.add(newEvent);
-			}*/
-			
-			//Not working or maybe is cound't debug
-			ArrayList<PubEvent> newEvents; 
-			newEvents = new ArrayList<PubEvent>();
-			newEvents.add(new PubEvent(Calendar.getInstance(), new User(124L)));
-			
-			if(newEvents.size() > 0)
-			{
-				NotificationManager nManager = (NotificationManager)service.getSystemService(Context.NOTIFICATION_SERVICE);
-				if(newEvents.size() == 1)
-				{
-					Notification newNotification = new Notification(R.drawable.icon, "New pub event", System.currentTimeMillis());
-					Context context = service.getApplicationContext();
-					Intent notificationIntent = new Intent(context, UserInvites.class);
-					Bundle b = new Bundle();
-					b.putSerializable(Constants.CurrentWorkingEvent, newEvents.get(0));
-					notificationIntent.putExtras(b);
-					PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-					
-					newNotification.setLatestEventInfo(context, "New Pub Event", newEvents.get(0).toString(), contentIntent);
-					
-					nManager.notify(1, newNotification);
+			DataRequestRefresh refresh = new DataRequestRefresh(fullUpdate);
+			DataReceiver.this.service.addDataRequest(refresh, new IRequestListener<PubEventArray>() {
+
+				@Override
+				public void onRequestComplete(PubEventArray data) {
+					if(data.getEvents().length > 0)
+					{
+						service.NewEventsRecieved(data.getEvents());
+					}
 				}
-				else
-				{
-					
+
+				@Override
+				public void onRequestFail(Exception e) {
+					//Don't know?					
 				}
-			}
-			
-			
+				
+			});
 		}
 		
 	}

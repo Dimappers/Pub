@@ -66,4 +66,6 @@ public final class Constants {
 	public final static String PLACES_SEARCH_URL =  "https://maps.googleapis.com/maps/api/place/search/json?";
 	public final static String PLACES_DETAILS_URL = "https://maps.googleapis.com/maps/api/place/details/json?";
 	public static final String PLACES_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/json?";
+	
+	public static final String NoDictionaryForGenericDataStore = "NoDictionary";
 }
