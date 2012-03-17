@@ -13,9 +13,9 @@ public enum MessageType {
 	/* 						refreshMessage
 	 * Use: 							Gets new events and updates information about events 
 	 * 									this user has already retrieved
-	 * Class to send to the server: 	Guest
-	 * Class the server will send back: RefreshData which contains an array of events that 
-	 * 									are either new or need updating
+	 * Class to send to the server: 	RefreshData which contains the user & whether to do a full refresh
+	 * Class the server will send back: RefreshResponse which contains an array of PubEvents which are  
+	 * 									either new or need updating 
 	 */
 	refreshMessage, 
 	/* 						respondMessage
