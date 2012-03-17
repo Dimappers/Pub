@@ -69,6 +69,11 @@ public class StoredData implements Serializable
 	
 	public <K, V  extends IXmlable> HashMap<K, V> GetGenericStore(IDataRequest<K, V> dataRequest)
 	{
+		if(dataRequest.getStoredDataId() == Constants.NoDictionaryForGenericDataStore)
+		{
+			return null;
+		}
+		
 		return GetGenericStore(dataRequest.getStoredDataId());
 	}
 	
