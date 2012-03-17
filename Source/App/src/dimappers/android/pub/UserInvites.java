@@ -181,5 +181,23 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		}
 		
 	};
+	
+	//TODO: Connect this method to button presses
+	private void sendResponse(boolean going, Calendar freeFromWhen, String msgToHost)
+	{
+		DataRequestSendResponse response = new DataRequestSendResponse(going, event.GetEventId(), freeFromWhen, msgToHost);
+		service.addDataRequest(response, new IRequestListener<PubEvent>() {
+					public void onRequestComplete(PubEvent data) {
+						if(data != null)
+						{
+							event = data;
+							//TODO: Update screen as we have received new information
+						}
+					}
 
+					public void onRequestFail(Exception e) {
+						Log.d(Constants.MsgError, e.getMessage());						
+					}
+				});
+	}
 }
