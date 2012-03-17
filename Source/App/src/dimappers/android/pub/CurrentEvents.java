@@ -39,7 +39,7 @@ import dimappers.android.PubData.User;
 public class CurrentEvents extends ListActivity implements OnItemClickListener 
 {
 	SeperatedListAdapter adapter;
-	IPubService service;
+	IPubService service = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -52,11 +52,28 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 		((ListView)findViewById(android.R.id.list)).setOnItemClickListener(this);
 	}
 	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		//This is a bit hacky, recreate the entire list adapter just to update the data, however, calling notifyDatasetInvalid seems to break things 0 making headers items etc.
+		//Ideally, we would resolve this, this is a work around
+		if(service != null)
+		{
+			adapter = new SeperatedListAdapter(this,service.GetActiveUser());
+			setListAdapter(adapter);
+			
+			adapter.setData(service);
+		}
+	}
+	
 	@Override 
 	public void onDestroy()
 	{
 		super.onDestroy();
 		unbindService(connection);
+		service = null;
 	}
 
 	public void onItemClick(AdapterView<?> parent, View convertView, int position, long location) 
@@ -148,6 +165,10 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 	class SeperatedListAdapter extends BaseAdapter
 	{
 
+		private static final String	hostingSavedString	= "Saved Invites";
+		private static final String	respondedToString	= "Responded to";
+		private static final String	hostSentString	= "Sent invites";
+		private static final String	waitingForResponseString	= "Waiting for response";
 		public final Map<String,Adapter> sections = new LinkedHashMap<String,Adapter>();  
 		public final ArrayAdapter<String> headers;  
 		public final static int TYPE_SECTION_HEADER = 0;
@@ -192,10 +213,11 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 			}
 			
 			//Keep in this order unless you want it to break!!! 
-			addSection("Waiting for response", waitingForResponses);		
-			addSection("Sent invites", hostingSent);
-			addSection("Responded to", respondedto);
-			addSection("Saved Invites", hostingSaved);
+			addSection(waitingForResponseString, waitingForResponses);		
+			addSection(hostSentString, hostingSent);
+			addSection(respondedToString, respondedto);
+			addSection(hostingSavedString, hostingSaved);
+	
 		}
 		
 		public void addSection(String section, Adapter adapter) 

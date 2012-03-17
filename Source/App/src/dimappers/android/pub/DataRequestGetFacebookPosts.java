@@ -34,9 +34,13 @@ public class DataRequestGetFacebookPosts implements IDataRequest<String, XmlJaso
 		//TODO: Check if out of date
 		if(storedData.containsKey("posts"))
 		{
-			Log.d(Constants.MsgInfo, "Already have posts.");
-			listener.onRequestComplete(storedData.get("posts"));
-			return;
+			if(!storedData.get("posts").isOutOfDate())
+			{
+				listener.onRequestComplete(storedData.get("posts"));
+				Log.d(Constants.MsgInfo, "Already have posts.");
+
+				return;
+			}
 		}
 		
 		Log.d(Constants.MsgInfo, "Getting posts from Facebook.");
