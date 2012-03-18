@@ -12,6 +12,7 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
@@ -126,8 +127,8 @@ public class PubService extends IntentService
 			if(newEvents.length == 1)
 			{
 				Notification newNotification = new Notification(R.drawable.icon, "New pub event", System.currentTimeMillis());
-				
-				Intent notificationIntent = new Intent(context, UserInvites.class);
+				newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+				Intent notificationIntent = new Intent(context, LaunchApplication.class);
 				Bundle b = new Bundle();
 				b.putSerializable(Constants.CurrentWorkingEvent, newEvents[0]);
 				notificationIntent.putExtras(b);
@@ -140,6 +141,7 @@ public class PubService extends IntentService
 			else
 			{
 				Notification newNotification = new Notification(R.drawable.icon, newEvents.length + " new events", System.currentTimeMillis());
+				newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
 				Intent notificationIntent = new Intent(context, CurrentEvents.class);
 				PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 				
@@ -267,8 +269,14 @@ public class PubService extends IntentService
 	{
 		HashMap<K, T> currentDataStore = storedData.GetGenericStore(request);
 		request.giveConnection(binder);
-		
-		sender.addRequest(request, listener, currentDataStore);		
+		if(sender != null)
+		{
+			sender.addRequest(request, listener, currentDataStore);		
+		}
+		else
+		{
+			Log.d(Constants.MsgWarning, "err... isn't a active sender...");
+		}
 	}
 	
 

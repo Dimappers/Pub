@@ -50,6 +50,16 @@ public class LaunchApplication extends Activity implements OnClickListener{
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	
+    	if(getIntent().getExtras() != null)
+    	{
+	    	if(getIntent().getExtras().containsKey(Constants.CurrentWorkingEvent))
+	    	{
+	    		Intent i = new Intent(this, CurrentEvents.class);	
+				i.putExtras(getIntent().getExtras());
+				startActivity(i);
+	    	}
+    	}
+    	
     	//Check for internet
     	if(!isNetworkAvailable()) {
        		Intent i = new Intent(this, NoInternet.class); 

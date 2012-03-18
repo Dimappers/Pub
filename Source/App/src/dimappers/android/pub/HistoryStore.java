@@ -24,14 +24,14 @@ public class HistoryStore implements IXmlable {
 	
 	public HistoryStore() 
 	{
-		events = new ArrayBlockingQueue<PubEvent>(averagePeople);
+		events = new ArrayBlockingQueue<PubEvent>(MaxEvents);
 		averagePubEvent = null;
 		averagePeople = 10;
 	}
 	
 	public HistoryStore(Element element)
 	{
-		events = new ArrayBlockingQueue<PubEvent>(averagePeople);
+		events = new ArrayBlockingQueue<PubEvent>(MaxEvents);
 		readXml(element);
 	}
 	
