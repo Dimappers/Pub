@@ -53,13 +53,14 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	private ListView guest_list;
 
 	private boolean locSet = false;
+	private boolean eventSavedAlready;
 	private double latSet;
 	private double lngSet;
 
 	private Facebook facebook;
 	private User[] facebookFriends;
 
-	IPubService serviceInterface;
+	IPubService service;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -76,6 +77,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			event=(PubEvent)b.getSerializable(Constants.CurrentWorkingEvent);
 			Log.d(Constants.MsgInfo, "Event received - host: " + event.GetHost().getUserId());
 
+			eventSavedAlready = b.getBoolean(Constants.IsSavedEventFlag);
 			if(b.getBoolean(Constants.IsSavedEventFlag))
 			{
 				Log.d(Constants.MsgInfo, "Event has been created before");	    			
@@ -176,8 +178,31 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				break;
 			}
 			case R.id.save_event : {
+				if(!eventSavedAlready)
+				{
+					//TODO: This may not be in the correct position, kind of needs issue 120
+					DataRequestUpdateEvent updateRequest = new DataRequestUpdateEvent(event);
+					service.addDataRequest(updateRequest, new IRequestListener<PubEvent>(){
+
+						@Override
+						public void onRequestComplete(PubEvent data) {
+							if(data != null)
+							{
+								event = data;
+								UpdateFromEvent();
+							}
+						}
+
+						@Override
+						public void onRequestFail(Exception e) {
+							// TODO Auto-generated method stub
+							
+						}
+						
+					});
+				}
 				i = new Intent();
-				serviceInterface.GiveNewSavedEvent(event);
+				service.GiveNewSavedEvent(event);
 				b.putBoolean(Constants.IsSavedEventFlag, true);
 				i.putExtras(b);
 				setResult(RESULT_OK, i);
@@ -185,7 +210,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				break;
 			}
 			case R.id.send_invites_event : {
-				serviceInterface.GiveNewSentEvent(event, new IRequestListener<PubEvent>() {
+				service.GiveNewSentEvent(event, new IRequestListener<PubEvent>() {
 					
 					public void onRequestFail(Exception e) {
 						Log.d(Constants.MsgError, "Could not send event");
@@ -314,7 +339,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			else
 			{
 				DataRequestGetFacebookUser request = new DataRequestGetFacebookUser(user.getUserId());
-				serviceInterface.addDataRequest(request, new IRequestListener<AppUser>() {
+				service.addDataRequest(request, new IRequestListener<AppUser>() {
 
 					public void onRequestComplete(AppUser data) {
 						listItems.add(data.toString());
@@ -371,8 +396,8 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		public void onServiceConnected(ComponentName className, IBinder service)
 		{
 			//Give the interface to the app
-			serviceInterface = (IPubService)service;
-			facebook = serviceInterface.GetFacebook();
+			Organise.this.service = (IPubService)service;
+			facebook = Organise.this.service.GetFacebook();
 			UpdateFromEvent();
 		}
 
