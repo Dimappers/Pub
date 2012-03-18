@@ -149,6 +149,10 @@ public class PubService extends IntentService
 				nManager.notify(1, newNotification);
 			}
 		}
+
+		public HistoryStore getHistoryStore() {
+			return storedData.getHistoryStore();
+		}
     }
 
 	
@@ -159,6 +163,7 @@ public class PubService extends IntentService
 	private DataReceiver receiver;
 	private	DataSender sender;
 	private Facebook authenticatedFacebook;
+	//private HistoryStore historyStore;
  
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)

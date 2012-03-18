@@ -76,7 +76,7 @@ public class Pending extends Activity implements OnClickListener {
 			Debug.waitForDebugger();
 		}
 
-		return new PubEvent(new TimeFinder().chooseTime(), service.GetActiveUser());
+		return new PubEvent(new TimeFinder(service.getHistoryStore()).chooseTime(), service.GetActiveUser());
 	}
 
 	public void onClick(View v) {
@@ -211,7 +211,7 @@ public class Pending extends Activity implements OnClickListener {
 			PersonRanker p = new PersonRanker(event, service, allFriends, new IRequestListener<PubEvent>() {
 
 				public void onRequestComplete(PubEvent data) {
-					data.SetPubLocation(new PubRanker(pubs, data).returnBest());
+					data.SetPubLocation(new PubRanker(pubs, data, service.getHistoryStore()).returnBest());
 					Pending.this.onFinish(data, currentLocation);
 				}
 

@@ -55,7 +55,7 @@ public class PersonRanker {
 	PersonRanker(PubEvent currentEvent, IPubService service, User[] facebookFriends, final IRequestListener<PubEvent> listener)
 	{
 		//TODO: get required things from service: 
-		 historyStore = new HistoryStore(); 
+		 historyStore = service.getHistoryStore();
 		 currentLocation = new Location("location");
 		 
 		 this.listener = listener;

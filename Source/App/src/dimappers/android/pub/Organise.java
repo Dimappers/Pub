@@ -363,7 +363,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		PubFinder finder = new PubFinder(lat,lng);
 		try {
 			List<Place> list = finder.performSearch();
-			PubLocation best = new PubRanker(list, event).returnBest();
+			PubLocation best = new PubRanker(list, event, service.getHistoryStore()).returnBest();
 			if(best==null) {return false;}
 			event.SetPubLocation(best);
 			return true;
