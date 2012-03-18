@@ -76,7 +76,8 @@ public class Pending extends Activity implements OnClickListener {
 			Debug.waitForDebugger();
 		}
 
-		return new PubEvent(new TimeFinder().chooseTime(), service.GetActiveUser());
+			//TODO: TimeFinder needs the HistoryStore passing in when we write it
+		return new PubEvent(new TimeFinder(new HistoryStore()).chooseTime(), service.GetActiveUser());
 	}
 
 	public void onClick(View v) {

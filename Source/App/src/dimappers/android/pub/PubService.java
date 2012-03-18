@@ -115,7 +115,6 @@ public class PubService extends IntentService
 			return user;
 		}
 
-		@Override
 		public void NewEventsRecieved(PubEvent[] newEvents) {
 			for(PubEvent event : newEvents)
 			{

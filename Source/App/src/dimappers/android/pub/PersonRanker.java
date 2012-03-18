@@ -82,6 +82,7 @@ public class PersonRanker {
 
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, "Error getting posts from Facebook: " + e.getMessage());
+					//TODO: write this properly
 				}
 			});
 			
@@ -96,6 +97,7 @@ public class PersonRanker {
 
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, "Error getting photos from Facebook: " + e.getMessage());
+					//TODO: write this properly
 				}
 			});
 		}
