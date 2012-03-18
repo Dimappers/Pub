@@ -56,7 +56,10 @@ public class HistoryStore implements IXmlable {
 		{
 			oldEvents.add(event);
 		}
-		oldEvents.add(averagePubEvent);
+		if(averagePubEvent != null)
+		{
+			oldEvents.add(averagePubEvent);
+		}
 		
 		return oldEvents;
 	}
