@@ -38,6 +38,7 @@ public class StoredData implements Serializable
 	public static final String hostSentTag = "HostSent";
 	public static final String invitedTag = "Invited";
 	public static final String genericStoresTag = "GenericStores";
+	private static final String historyStoreTag = "HistoryStore";
 	//private final int HistoryDepth = 15;
 	
 	private HashMap<Integer, PubEvent> savedEvents; //Events the users has created and saved
@@ -50,6 +51,7 @@ public class StoredData implements Serializable
 	private boolean needsSaving;
 	
 	private Dictionary<String, HashMap<?,? extends IXmlable>> dataStores;
+	private HistoryStore historyStore;
 	
 	public StoredData()
 	{
@@ -64,6 +66,7 @@ public class StoredData implements Serializable
 		needsSaving = false;
 		
 		dataStores = new Hashtable<String, HashMap<?,? extends IXmlable>>();
+		historyStore = new HistoryStore();
 		
 	}
 	
@@ -176,6 +179,11 @@ public class StoredData implements Serializable
 		sentEvents.put(eventId, event);
 	}*/
 	
+	public HistoryStore getHistoryStore()
+	{
+		return historyStore;
+	}
+	
 	public String save() {
 		Document saveDoc = new Document();
 		Element root = new Element("PubSaveData");
@@ -231,6 +239,11 @@ public class StoredData implements Serializable
 		}
 		root.addContent(genericStoresElement);
 		*/
+		
+		Element historyStoreElement = new Element(historyStoreTag);
+		historyStoreElement.addContent(historyStore.writeXml());
+		root.addContent(historyStoreElement);
+		
 		saveDoc.setRootElement(root);
 		
 		StringWriter writer = new StringWriter();
@@ -304,5 +317,8 @@ public class StoredData implements Serializable
 			
 			Log.d(Constants.MsgInfo, "Have loaded dictionary of type: " + newDictionary.getClass().getSimpleName());			
 		}*/
+		
+		Element historyStoreElement = root.getChild(historyStoreTag);
+		historyStore = new HistoryStore(historyStoreElement.getChild(HistoryStore.class.getSimpleName()));
 	}
  }
