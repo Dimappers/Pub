@@ -246,6 +246,7 @@ public class PubService extends IntentService
 	@Override
 	public void onDestroy()
 	{
+		Log.d(Constants.MsgError, "onDestroy() in PubService called");
 		String xmlString = storedData.save();
 		Editor editor = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).edit();
 		editor.putString(Constants.SaveDataName, xmlString);

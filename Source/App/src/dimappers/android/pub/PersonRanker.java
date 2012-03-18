@@ -234,11 +234,16 @@ public class PersonRanker {
 					}
 				}
 				
+				//TODO: deal with story_tags
+				
 				//Person the post is from & all people tagged as being "with you" in the post
-				JSONArray to = post.getJSONObject("to").getJSONArray("data");
-				for(int j = 0; j<to.length(); j++)
+				if(post.has("to"))
 				{
-					if(Long.parseLong((to.getJSONObject(j)).getString("id"))==userId) {postNumber+=postTagValue;}
+					JSONArray to = post.getJSONObject("to").getJSONArray("data");
+					for(int j = 0; j<to.length(); j++)
+					{
+						if(Long.parseLong((to.getJSONObject(j)).getString("id"))==userId) {postNumber+=postTagValue;}
+					}
 				}
 				
 				//People who have liked the post

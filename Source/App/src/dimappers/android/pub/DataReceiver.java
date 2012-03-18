@@ -39,7 +39,7 @@ public class DataReceiver
 		this.service = service;
 		Timer updateScheduler = new Timer();
 		refresher = new PerformRefresh();
-		updateScheduler.schedule(refresher, 90000, UpdateFrequency);
+		updateScheduler.schedule(refresher, 0, UpdateFrequency);
 	}
 	
 	public void forceUpdate(boolean fullUpdate)
