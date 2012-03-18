@@ -184,7 +184,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 					DataRequestUpdateEvent updateRequest = new DataRequestUpdateEvent(event);
 					service.addDataRequest(updateRequest, new IRequestListener<PubEvent>(){
 
-						@Override
+						
 						public void onRequestComplete(PubEvent data) {
 							if(data != null)
 							{
@@ -193,7 +193,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 							}
 						}
 
-						@Override
+						
 						public void onRequestFail(Exception e) {
 							// TODO Auto-generated method stub
 							

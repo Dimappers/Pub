@@ -100,6 +100,27 @@ public class ChooseTime extends Activity implements OnClickListener{
     			Calendar previousTime = event.GetStartTime();
     			Date date = previousTime.getTime();
     			
+    			if(date.getHours()<12) {
+    				date.setHours(date.getHours()+1);
+    				currenthour.setText(""+date.getHours());
+    			}
+    			else if(date.getHours()==12){
+    				date.setHours(13);
+    				currenthour.setText("1");
+    				ampm.setText("PM");
+    			}
+    			else if(date.getHours()<23)
+    			{
+    				date.setHours(date.getHours()+1);
+    				currenthour.setText(""+(date.getHours()-12));
+    			}
+    			else if(date.getHours()==23)
+    			{
+    				date.setHours(0);
+    				currenthour.setText("12");
+    				ampm.setText("AM");
+    			}
+    			
     			previousTime.setTime(date);
     			event.SetStartTime(previousTime);
     			break;
@@ -108,7 +129,40 @@ public class ChooseTime extends Activity implements OnClickListener{
     		{
     			break;
     		}
-    		case R.id.hour_take : {}
+    		case R.id.hour_take : {
+    			Calendar previousTime = event.GetStartTime();
+				Date date = previousTime.getTime();
+				
+				if(date.getHours()==0) {
+					date.setHours(23);
+					currenthour.setText("11");
+					ampm.setText("PM");
+				}
+				else if(date.getHours()==1){
+					date.setHours(0);
+					currenthour.setText("12");
+				}
+				else if(date.getHours()<=12)
+				{
+					date.setHours(date.getHours()-1);
+					currenthour.setText(""+date.getHours());
+				}
+				else if(date.getHours()==13)
+				{
+					date.setHours(12);
+					currenthour.setText("12");
+					ampm.setText("AM");
+				}
+				else if(date.getHours()<=23)
+				{
+					date.setHours(date.getHours()-1);
+					currenthour.setText(""+(date.getHours()-12));
+				}
+				
+				previousTime.setTime(date);
+				event.SetStartTime(previousTime);
+				break;
+			}
     		case R.id.minute_add :
     		{
     			Calendar previousTime = event.GetStartTime();
