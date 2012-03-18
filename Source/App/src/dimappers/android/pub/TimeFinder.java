@@ -13,7 +13,7 @@ public class TimeFinder {
 	
 	TimeFinder(HistoryStore historyStore) {this.historyStore = historyStore;}
 	
-	private Calendar chooseTime() {
+	public Calendar chooseTime() {
 		findHour();
 		Calendar time = Calendar.getInstance();
 		time.set(time.get(Calendar.YEAR), time.get(Calendar.MONTH), time.get(Calendar.DATE), //Using current date 

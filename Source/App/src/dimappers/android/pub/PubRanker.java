@@ -16,9 +16,8 @@ public class PubRanker {
 	HistoryStore historyStore;
 	PubLocation bestSoFar;
 	
-	PubRanker(List<Place> list, PubEvent event) {
-		//TODO: get from service
-			historyStore = new HistoryStore();
+	PubRanker(List<Place> list, PubEvent event, HistoryStore historyStore) {
+		this.historyStore = historyStore;
 		
 		pubList = new ArrayList<PubLocation>();
 		for(Place place : list) {

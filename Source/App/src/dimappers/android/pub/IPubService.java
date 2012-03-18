@@ -36,4 +36,6 @@ public interface IPubService extends IBinder {
 	AppUser									GetActiveUser();
 	
 	<K, T extends IXmlable> void 			addDataRequest(IDataRequest<K, T> request, final IRequestListener<T> listener);	
+	
+	HistoryStore							getHistoryStore();
 }
