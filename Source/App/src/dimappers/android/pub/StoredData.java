@@ -319,6 +319,13 @@ public class StoredData implements Serializable
 		}*/
 		
 		Element historyStoreElement = root.getChild(historyStoreTag);
-		historyStore = new HistoryStore(historyStoreElement.getChild(HistoryStore.class.getSimpleName()));
+		if(historyStoreElement != null)
+		{
+			historyStore = new HistoryStore(historyStoreElement.getChild(HistoryStore.class.getSimpleName()));
+		}
+		else
+		{
+			historyStore = new HistoryStore();
+		}
 	}
  }
