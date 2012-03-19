@@ -64,7 +64,7 @@ public class HistoryStore implements IXmlable {
 		return oldEvents;
 	}
 
-	@Override
+	
 	public Element writeXml() {
 		Element rootElement = new Element(getClass().getSimpleName());
 		
@@ -85,7 +85,7 @@ public class HistoryStore implements IXmlable {
 		return rootElement;
 	}
 
-	@Override
+	
 	public void readXml(Element element) {
 		Element oldEventsElement = element.getChild(oldEventsTag);
 		List<Element> oldEventsElements = oldEventsElement.getChildren(PubEvent.class.getSimpleName());

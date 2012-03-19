@@ -28,12 +28,10 @@ public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
 		this.fullRefresh = fullRefresh;
 	}
 	
-	@Override
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
-	@Override
 	public void performRequest(IRequestListener<PubEventArray> listener, HashMap<Long, PubEventArray> storedData) {
 		Log.d(Constants.MsgInfo, "Running refresh");
 		
@@ -78,7 +76,6 @@ public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
 		listener.onRequestComplete(new PubEventArray(response.getEvents()));*/				
 	}
 
-	@Override
 	public String getStoredDataId() {
 		return Constants.NoDictionaryForGenericDataStore;
 	}

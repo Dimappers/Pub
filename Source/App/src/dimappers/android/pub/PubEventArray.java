@@ -19,13 +19,11 @@ public class PubEventArray implements IXmlable {
 		return pubEvents;
 	}
 	
-	@Override
 	public Element writeXml() {
 		// TODO Auto-generated method stub
 		return new Element("PubEventArray");
 	}
 
-	@Override
 	public void readXml(Element element) {
 		//Do nothing since we won't be saving these arrays - they are used for DataRequestRefresh
 	}

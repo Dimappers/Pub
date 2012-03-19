@@ -23,12 +23,12 @@ public class DataRequestUpdateEvent implements IDataRequest<Long, PubEvent> {
 		data = new UpdateData(updatedEvent.GetEventId(), updatedEvent.GetStartTime(), updatedEvent.GetPubLocation());
 	}
 	
-	@Override
+	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
-	@Override
+	
 	public void performRequest(IRequestListener<PubEvent> listener,
 			HashMap<Long, PubEvent> storedData) {
 		Document xmlDoc = new Document();
@@ -73,7 +73,7 @@ public class DataRequestUpdateEvent implements IDataRequest<Long, PubEvent> {
 		listener.onRequestComplete(null);		*/
 	}
 
-	@Override
+	
 	public String getStoredDataId() {
 		// TODO Auto-generated method stub
 		return null;

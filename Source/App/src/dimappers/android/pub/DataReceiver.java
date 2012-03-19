@@ -62,7 +62,7 @@ public class DataReceiver
 			DataRequestRefresh refresh = new DataRequestRefresh(fullUpdate);
 			DataReceiver.this.service.addDataRequest(refresh, new IRequestListener<PubEventArray>() {
 
-				@Override
+
 				public void onRequestComplete(PubEventArray data) {
 					if(data.getEvents().length > 0)
 					{
@@ -70,7 +70,7 @@ public class DataReceiver
 					}
 				}
 
-				@Override
+
 				public void onRequestFail(Exception e) {
 					//Don't know?					
 				}
