@@ -56,6 +56,9 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	private boolean eventSavedAlready;
 	private double latSet;
 	private double lngSet;
+	
+	double latitude;
+	double longitude;
 
 	private Facebook facebook;
 	private User[] facebookFriends;
@@ -125,26 +128,20 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		cur_loc=(TextView)findViewById(R.id.current_location);
 		cur_loc.setOnClickListener(this);
 
-		double latitude = getIntent().getExtras().getDouble(Constants.CurrentLatitude);
-		double longitude = getIntent().getExtras().getDouble(Constants.CurrentLongitude);
-		String place = null;
-		Geocoder gc = new Geocoder(getApplicationContext());
-		try {
-			List<Address> list = gc.getFromLocation(latitude, longitude, 5);
-			int i = 0;
-			while (i<list.size()) 
-			{
-				String temp = list.get(i).getLocality();
-				if(temp!=null) {place = temp;}
-				i++;
-			}
-			if(place!=null) {cur_loc.setText(place);}
-			else {cur_loc.setText("Unknown");}
+		latitude = getIntent().getExtras().getDouble(Constants.CurrentLatitude);
+		longitude = getIntent().getExtras().getDouble(Constants.CurrentLongitude);
+	}
+	
+	class TextUpdater implements Runnable {
+
+		String s;
+		
+		TextUpdater(String s) {this.s = s;}
+		
+		public void run() {
+			cur_loc.setText(s);
 		}
-		//This is thrown if the phone has no Internet connection.
-		catch (IOException e) {
-			cur_loc.setText("No location avaliable");
-		}
+		
 	}
 
 	@Override
@@ -397,8 +394,24 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		{
 			//Give the interface to the app
 			Organise.this.service = (IPubService)service;
+			
 			facebook = Organise.this.service.GetFacebook();
+			
 			UpdateFromEvent();
+			
+			DataRequestGeocoder geoCoder = new DataRequestGeocoder(latitude, longitude, getApplicationContext());
+			Organise.this.service.addDataRequest(geoCoder, new IRequestListener<XmlableString>(){
+
+				public void onRequestComplete(XmlableString data) {
+					if(data!=null) {runOnUiThread(new TextUpdater(data.getContents()));}
+					else {runOnUiThread(new TextUpdater("Unknown"));}
+				}
+
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError,"Exception thrown by Geocoder in Organise.");
+					e.printStackTrace();
+					runOnUiThread(new TextUpdater("Unknown"));
+				}});
 		}
 
 		public void onServiceDisconnected(ComponentName className)
@@ -407,67 +420,3 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 
 	};
 }
-
-/*class SendData extends AsyncTask<Organise, Integer, Boolean> {
-	Organise activity;
-	PubEvent event;
-
-	protected Boolean doInBackground(Organise... organise) {
-
-		// Saves the activity to the class
-		activity = organise[0];
-		event = (PubEvent) activity.getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent);
-
-		//TODO: Open a socket
-
-		Socket socket = null; 
-		try {
-			socket = new Socket(Constants.ServerIp, Constants.Port);
-		} catch (IOException e) {
-			//TODO: Handle exception indicating that connection can't be established
-			return false;
-		}
-
-		ObjectOutputStream serializer = null;
-		ObjectInputStream deserializer = null;
-
-		try {
-			serializer = new ObjectOutputStream(socket.getOutputStream());
-			deserializer = new ObjectInputStream(socket.getInputStream());
-		} catch (IOException e) {
-			//TODO: Handle Exception When the network is buggered
-			return false;
-		}
-
-		MessageType t = MessageType.newPubEventMessage;
-		try {
-			serializer.writeObject(t);
-			serializer.writeObject(event);
-			serializer.flush();
-		} catch (IOException e) {
-			//TODO: Handle an exception when we cannae send the data
-			return false;
-		}
-
-		try {
-			AcknoledgementData a = (AcknoledgementData)deserializer.readObject();
-			event.SetEventId(a.globalEventId);
-		} catch (IOException e) {
-			//TODO: Handle when we don't receive a Acknowledgement properly
-			return false;
-		} catch (ClassNotFoundException e) {
-			//TODO: Handle when what we receive aint what we want
-		}
-
-		return true;
-	}
-
-	protected void onPostExecute(Boolean... b) {
-		Intent i = new Intent();
-
-
-		i.putExtras(activity.getIntent().getExtras());
-		activity.setResult(Activity.RESULT_OK, i);
-		activity.finish();
-	}
-}*/
