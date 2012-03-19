@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -224,11 +225,16 @@ public class PersonRanker {
 				//People tagged in the post
 				if(post.has("message_tags"))
 				{
-					JSONArray tags = post.getJSONObject("message_tags").getJSONArray("0");
-					for(int j = 0 ; j<tags.length(); j++)
+					JSONObject messageTagsJObj = post.getJSONObject("message_tags"); 
+					Iterator<String> it = messageTagsJObj.keys();
+					while(it.hasNext())
 					{
-						JSONObject tag = tags.getJSONObject(j);
-						if(Long.parseLong(tag.getString("id"))==userId) {postNumber+=postValue;}
+						JSONArray tags = messageTagsJObj.getJSONArray(it.next());
+						for(int j = 0 ; j<tags.length(); j++)
+						{
+							JSONObject tag = tags.getJSONObject(j);
+							if(Long.parseLong(tag.getString("id"))==userId) {postNumber+=postValue;}
+						}
 					}
 				}
 				
