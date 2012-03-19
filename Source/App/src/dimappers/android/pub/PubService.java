@@ -189,8 +189,8 @@ public class PubService extends IntentService
 			
 			storedData.GetGenericStore("AppUser").put(user.getUserId(), user);
 			
-			receiver = new DataReceiver(binder);
 			sender = new DataSender();
+			receiver = new DataReceiver(binder);
 			
 			if(!Constants.emulator)
 			{
@@ -223,6 +223,7 @@ public class PubService extends IntentService
 		}
 	    return START_STICKY;
 	}
+
 	
 	@Override
 	public IBinder onBind(Intent intent) {
