@@ -36,17 +36,6 @@ public class Guests extends ListActivity implements OnClickListener{
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.guests);
-    	
-    	Bundle bundle = getIntent().getExtras();
-    	event = (PubEvent) bundle.getSerializable(Constants.CurrentWorkingEvent);
-    	
-    	if(event == null)
-    	{
-    		Log.d(Constants.MsgError, "Error finding pub data in Guests");
-    		setResult(Constants.MissingDataInBundle);
-    		finish();
-    	}
-
 		bindService(new Intent(this, PubService.class), connection, 0);
     	
 		//until search is implemented
@@ -73,7 +62,7 @@ public class Guests extends ListActivity implements OnClickListener{
 		{
 		case R.id.save : {
 			Bundle b = new Bundle();
-			b.putSerializable(Constants.CurrentWorkingEvent,event);
+			b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 			Intent returnIntent = new Intent();
 			returnIntent.putExtras(b);
 			this.setResult(RESULT_OK,returnIntent);
@@ -117,6 +106,7 @@ public class Guests extends ListActivity implements OnClickListener{
 		{
 			//Give the interface to the app
 			service = (IPubService)bService;
+			event =  service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
 			if(!Constants.emulator)
 			{
 				facebook = service.GetFacebook();

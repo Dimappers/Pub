@@ -54,22 +54,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		bindService(new Intent(this, PubService.class), connection, 0);
 		
 		setContentView(R.layout.user_invites);
-		
-		event = (PubEvent)getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent);
-    	if(event == null)
-    	{
-    		Log.d(Constants.MsgError, "Event missing for showing details about");
-    		setResult(Constants.MissingDataInBundle);
-    		finish();
-    	}
-		
-    	TextView pubNameText = (TextView) findViewById(R.id.userInvitesPubNameText);
-    	pubNameText.setText(event.GetPubLocation().toString());
-    	
-    	TextView startTime = (TextView) findViewById(R.id.userInviteStartTimeText);
-    	startTime.setText(event.GetFormattedStartTime());
-
-    	
+		    	
     	Button button_going = (Button)findViewById(R.id.going);
     	button_going.setOnClickListener(this);
     	
@@ -149,6 +134,15 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
 		{
 			service = (IPubService)serviceBinder;
+			
+			event = service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			
+			TextView pubNameText = (TextView) findViewById(R.id.userInvitesPubNameText);
+	    	pubNameText.setText(event.GetPubLocation().toString());
+	    	
+	    	TextView startTime = (TextView) findViewById(R.id.userInviteStartTimeText);
+	    	startTime.setText(event.GetFormattedStartTime());
+			
 			facebookUser = service.GetActiveUser();
 			
 			ListView list = (ListView) findViewById(R.id.listView2);   

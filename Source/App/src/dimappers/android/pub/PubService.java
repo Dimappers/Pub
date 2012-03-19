@@ -131,7 +131,7 @@ public class PubService extends IntentService
 				newNotification.defaults |= Notification.DEFAULT_VIBRATE;
 				Intent notificationIntent = new Intent(context, LaunchApplication.class);
 				Bundle b = new Bundle();
-				b.putSerializable(Constants.CurrentWorkingEvent, newEvents[0]);
+				b.putSerializable(Constants.CurrentWorkingEvent, newEvents[0].GetEventId());
 				notificationIntent.putExtras(b);
 				PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 				
@@ -155,6 +155,11 @@ public class PubService extends IntentService
 
 		public HistoryStore getHistoryStore() {
 			return storedData.getHistoryStore();
+		}
+
+		@Override
+		public PubEvent getEvent(int eventId) {
+			return storedData.getEvent(eventId);
 		}
     }
 

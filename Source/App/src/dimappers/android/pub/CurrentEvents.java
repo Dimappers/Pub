@@ -82,9 +82,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 		int sectionnum = adapter.getItemCategory(position);
 
 		Bundle bundle = new Bundle();
-		bundle.putSerializable(Constants.CurrentWorkingEvent, (PubEvent)adapter.getItem(position));
-		bundle.putAll(getIntent().getExtras());		
-
+		bundle.putInt(Constants.CurrentWorkingEvent, ((PubEvent) adapter.getItem(position)).GetEventId());
 		switch(sectionnum)
 		{
 		case Constants.ProposedEventNoResponse: 
@@ -129,12 +127,13 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 			CurrentEvents.this.service = (IPubService)service;
 			AppUser facebookUser = CurrentEvents.this.service.GetActiveUser();
 			
-			PubEvent createdEvent = (PubEvent) getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent); 
-			if(createdEvent != null) {
+			if(getIntent().getExtras().containsKey(Constants.CurrentWorkingEvent)) {
 				//Then skip straight in to the relevant next screen
+				PubEvent createdEvent = CurrentEvents.this.service.getEvent(
+						getIntent().getExtras().getInt(Constants.CurrentWorkingEvent)); 
 				Intent i;
 				Bundle b = new Bundle();
-				b.putAll(getIntent().getExtras());
+				b.putInt(Constants.CurrentWorkingEvent, createdEvent.GetEventId());
 				
 				if(createdEvent.GetHost().equals(facebookUser))
 				{

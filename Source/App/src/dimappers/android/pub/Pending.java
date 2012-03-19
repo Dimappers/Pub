@@ -96,8 +96,9 @@ public class Pending extends Activity implements OnClickListener {
 	}
 
 	private Bundle fillBundle(PubEvent createdEvent, Location currentLocation) {
+		service.GiveNewSavedEvent(createdEvent);
 		Bundle eventBundle = new Bundle();
-		eventBundle.putSerializable(Constants.CurrentWorkingEvent, createdEvent);
+		eventBundle.putInt(Constants.CurrentWorkingEvent, createdEvent.GetEventId());
 		eventBundle.putBoolean(Constants.IsSavedEventFlag, true);
 		eventBundle.putDouble(Constants.CurrentLatitude,
 				currentLocation.getLatitude());

@@ -61,15 +61,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 
 		ListView list = (ListView) findViewById(R.id.listView1);
 
-
-		event = (PubEvent)getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent);
-		if(event == null)
-		{
-			Log.d(Constants.MsgError, "Event missing for showing details about");
-			setResult(Constants.MissingDataInBundle);
-			finish();
-		}
-
 		sent = !getIntent().getExtras().getBoolean(Constants.IsSavedEventFlag); //if we have saved the event, it has not been sent
 		if(sent)
 		{
@@ -84,8 +75,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		
 		gadapter = new GuestListAdapter(this);
 		list.setAdapter(gadapter);
-		
-		UpdateDataFromEvent();
 	}
 
 	@Override
@@ -110,7 +99,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		{
 			Bundle bundle = new Bundle();
 			bundle.putAll(getIntent().getExtras());
-			bundle.putSerializable(Constants.CurrentWorkingEvent, event);
+			bundle.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 			bundle.putBoolean(Constants.IsSavedEventFlag, true);
 
 			i = new Intent(this, Organise.class);
@@ -149,7 +138,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		{
 			Bundle bundle = new Bundle();
 			bundle.putAll(getIntent().getExtras());
-			bundle.putSerializable(Constants.CurrentWorkingEvent, event);
+			bundle.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 			bundle.putBoolean(Constants.IsSavedEventFlag, true);
 
 			i = new Intent(this, Organise.class);
@@ -163,9 +152,9 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
     	if(resultCode==RESULT_OK)
     	{
-    		event = (PubEvent)data.getExtras().getSerializable(Constants.CurrentWorkingEvent);
     		if(requestCode == Constants.FromEdit)
     		{
+    			event = serviceInterface.getEvent(data.getExtras().getInt(Constants.CurrentWorkingEvent));
     			super.onActivityResult(requestCode, resultCode, data);
     			UpdateDataFromEvent();
     		}
@@ -238,7 +227,10 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
 		{
 			serviceInterface = (IPubService)serviceBinder;
+			event = serviceInterface.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
 			facebookUser = serviceInterface.GetActiveUser();
+			
+			UpdateDataFromEvent();
 		}
 
 		public void onServiceDisconnected(ComponentName arg0)

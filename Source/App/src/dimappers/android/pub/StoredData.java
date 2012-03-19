@@ -142,6 +142,30 @@ public class StoredData implements Serializable
 		}
 	}
 	
+	public PubEvent getEvent(int eventId)
+	{
+		if(eventId < -1)
+		{
+			return savedEvents.get(eventId);
+		}
+		else if(eventId >= 0)
+		{
+			if(invitedEvents.containsKey(eventId))
+			{
+				return invitedEvents.get(eventId);
+			}
+			else
+			{
+				return (PubEvent)dataStores.get("PubEvent").get(eventId);
+			}
+		}
+		else
+		{
+			Log.d(Constants.MsgError, "Should not get message with id -1 - this is like the one we're working on");
+			return null;
+		}
+	}
+	
 	/*public void AddNewSentEvent(PubEvent sentEvent)
 	{
 		if(sentEvent.GetEventId() < 0)

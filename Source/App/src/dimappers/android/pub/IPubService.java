@@ -38,4 +38,6 @@ public interface IPubService extends IBinder {
 	<K, T extends IXmlable> void 			addDataRequest(IDataRequest<K, T> request, final IRequestListener<T> listener);	
 	
 	HistoryStore							getHistoryStore();
+	
+	PubEvent								getEvent(int eventId);
 }
