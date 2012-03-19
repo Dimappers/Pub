@@ -8,6 +8,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
+import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
@@ -75,8 +76,7 @@ public class DataRequestUpdateEvent implements IDataRequest<Long, PubEvent> {
 
 	
 	public String getStoredDataId() {
-		// TODO Auto-generated method stub
-		return null;
+		return Constants.NoDictionaryForGenericDataStore;
 	}
 
 }
