@@ -44,7 +44,6 @@ public class XmlJasonObject extends JSONObject implements IXmlable {
 	}
 
 	public void readXml(Element element) {
-		// TODO Auto-generated method stub
 		Log.d(Constants.MsgError, "Don't use me!");
 	}
 	

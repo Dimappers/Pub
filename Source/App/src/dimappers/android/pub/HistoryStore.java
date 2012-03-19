@@ -13,8 +13,8 @@ import dimappers.android.PubData.PubEvent;
 public class HistoryStore implements IXmlable {
 	
 	private static final String averageElementTag = "AverageElement";
-
 	private static final String oldEventsTag = "OldEvents";
+	private static final String averagePeopleTag = "AveragePeople";
 
 	private static final int MaxEvents = 30;
 	
@@ -68,6 +68,11 @@ public class HistoryStore implements IXmlable {
 	public Element writeXml() {
 		Element rootElement = new Element(getClass().getSimpleName());
 		
+		rootElement.addContent(
+				new Element(averagePeopleTag)
+				.setText(new Integer(averagePeople).toString())
+				);
+		
 		Element oldEventsElement = new Element(oldEventsTag);
 		for(PubEvent event : events)
 		{
@@ -89,6 +94,8 @@ public class HistoryStore implements IXmlable {
 	public void readXml(Element element) {
 		Element oldEventsElement = element.getChild(oldEventsTag);
 		List<Element> oldEventsElements = oldEventsElement.getChildren(PubEvent.class.getSimpleName());
+		
+		averagePeople = Integer.parseInt(element.getChild(averagePeopleTag).getText());
 		
 		for(Element oldEventElement : oldEventsElements)
 		{

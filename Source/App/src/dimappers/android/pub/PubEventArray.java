@@ -20,7 +20,6 @@ public class PubEventArray implements IXmlable {
 	}
 	
 	public Element writeXml() {
-		// TODO Auto-generated method stub
 		return new Element("PubEventArray");
 	}
 

@@ -52,13 +52,11 @@ public class PersonRanker {
 	
 	IRequestListener<PubEvent> listener;
 	
-	PersonRanker(PubEvent currentEvent, IPubService service, User[] facebookFriends, final IRequestListener<PubEvent> listener)
+	PersonRanker(PubEvent currentEvent, IPubService service, Location currentLocation, User[] facebookFriends, final IRequestListener<PubEvent> listener)
 	{
-		//TODO: get required things from service: 
-		 historyStore = service.getHistoryStore();
-		 currentLocation = new Location("location");
-		 
-		 this.listener = listener;
+		historyStore = service.getHistoryStore();
+		this.currentLocation = currentLocation;
+		this.listener = listener;
 			 
 		this.service = service;
 		if (!Constants.emulator)

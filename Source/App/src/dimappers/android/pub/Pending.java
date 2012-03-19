@@ -208,7 +208,7 @@ public class Pending extends Activity implements OnClickListener {
 		{
 			//Start next batch of requests
 			PubEvent event = createEvent();
-			PersonRanker p = new PersonRanker(event, service, allFriends, new IRequestListener<PubEvent>() {
+			PersonRanker p = new PersonRanker(event, service, currentLocation, allFriends, new IRequestListener<PubEvent>() {
 
 				public void onRequestComplete(PubEvent data) {
 					data.SetPubLocation(new PubRanker(pubs, data, service.getHistoryStore()).returnBest());
