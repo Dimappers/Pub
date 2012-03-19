@@ -157,7 +157,6 @@ public class PubService extends IntentService
 			return storedData.getHistoryStore();
 		}
 
-		@Override
 		public PubEvent getEvent(int eventId) {
 			return storedData.getEvent(eventId);
 		}

@@ -127,7 +127,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 			CurrentEvents.this.service = (IPubService)service;
 			AppUser facebookUser = CurrentEvents.this.service.GetActiveUser();
 			
-			if(getIntent().getExtras().containsKey(Constants.CurrentWorkingEvent)) {
+			if(getIntent().getExtras()!=null&&getIntent().getExtras().containsKey(Constants.CurrentWorkingEvent)) {
 				//Then skip straight in to the relevant next screen
 				PubEvent createdEvent = CurrentEvents.this.service.getEvent(
 						getIntent().getExtras().getInt(Constants.CurrentWorkingEvent)); 
