@@ -202,13 +202,11 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	    			DataRequestGetFacebookUser getUser = new DataRequestGetFacebookUser(userResponse.getKey().getUserId());
 	    			service.addDataRequest(getUser, new IRequestListener<AppUser>() {
 
-						@Override
 						public void onRequestComplete(AppUser data) {
 							UpdateList updater = new UpdateList(new UserUserStatus(data, userResponse.getValue()));
 							UserInvites.this.runOnUiThread(updater);
 						}
 
-						@Override
 						public void onRequestFail(Exception e) {
 							// TODO Auto-generated method stub
 							
@@ -219,23 +217,19 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	    	}
 		}
 		
-		@Override
 		public int getCount() {
 			return mylist.size();
 		}
 
-		@Override
 		public Object getItem(int position) {
 			return mylist.get(position);
 		}
 
-		@Override
 		public long getItemId(int position) {
 			// TODO Auto-generated method stub
 			return 0;
 		}
 
-		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
 			ViewGroup p = parent;            
@@ -262,7 +256,6 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 				this.data = data;
 			}
 			
-			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				mylist.add(data);

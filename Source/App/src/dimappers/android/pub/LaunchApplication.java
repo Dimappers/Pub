@@ -117,7 +117,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 			facebook.setAccessExpires(expires);
 		}
 		/* Only call authorise if the access_token has expired */
-		if(!facebook.isSessionValid()) {  	
+		if(!facebook.isSessionValid()) {
 			Log.d(Constants.MsgInfo, "No valid token found - authorising with Facebook");
 			facebook.authorize(this, new String[] { "email", "publish_checkins", "user_location", "friends_location", "user_photos", "read_stream" }, Constants.FromFacebookLogin, new DialogListener() {
 				public void onComplete(Bundle values) {
@@ -144,49 +144,29 @@ public class LaunchApplication extends Activity implements OnClickListener{
     
     private void getPerson()
     {
-    	JSONObject me;
-		try {
-			Log.d(Constants.MsgInfo, "Getting information about current user");
-			me = new JSONObject(facebook.request("me"));
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			Log.d(Constants.MsgError, "Malformed url when requesting info about current facebook user: " + e.getMessage());
-			finish();
-			return;
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			Log.d(Constants.MsgError, "Jason: " + e.getMessage());
-			finish();
-			return;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			Log.d(Constants.MsgError, "IO when retrieving current user: " + e.getMessage());
-			finish();
-			return;
-		}
-    	String id = null;
-    	String name = null;
-		try {
-			id = me.getString("id");
-			name = me.getString("name");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			Log.d(Constants.MsgError, "Jason error in reading info about current user: " + e.getMessage());
-		}
-    	
-		Log.d(Constants.MsgInfo, "Logged in as user: " + name + " with ID: " + id);
-		
-    	facebookUser = new AppUser(Long.parseLong(id), name);
-    	
-    	//Don't start the service until we are logged in to facebook
-    	Intent startServiceIntent = new Intent(this, PubService.class);
-    	Bundle b = new Bundle();
-    	b.putSerializable(Constants.CurrentFacebookUser, facebookUser);
-    	b.putString(Constants.AuthToken, facebook.getAccessToken());
-    	b.putLong(Constants.Expires, facebook.getAccessExpires());
-    	
-    	startServiceIntent.putExtras(b);
-    	startService(startServiceIntent);
+    	Object[] array = new Object[2];
+    	array[0] = new IRequestListener<AppUser>(){
+
+			public void onRequestComplete(AppUser appUser) {
+		    	
+				facebookUser = appUser;
+		    	//Don't start the service until we are logged in to facebook
+		    	Intent startServiceIntent = new Intent(LaunchApplication.this, PubService.class);
+		    	Bundle b = new Bundle();
+		    	b.putSerializable(Constants.CurrentFacebookUser, facebookUser);
+		    	b.putString(Constants.AuthToken, facebook.getAccessToken());
+		    	b.putLong(Constants.Expires, facebook.getAccessExpires());
+		    	
+		    	startServiceIntent.putExtras(b);
+		    	startService(startServiceIntent);
+		    	
+			}
+
+			public void onRequestFail(Exception e) {
+				finish();
+			}};
+	    array[1] = facebook;
+    	new GetPerson().execute(array);
     }
     
     
@@ -199,14 +179,12 @@ public class LaunchApplication extends Activity implements OnClickListener{
     		{
     			
     			i = new Intent(this, Pending.class);
-    			i.putExtras(b);
     			startActivityForResult(i,Constants.FromPending);
     			break;
     		}
     		case R.id.invites_button : {
 
     			i = new Intent(this, CurrentEvents.class);
-    			i.putExtras(b);
     			startActivity(i);
     			break;
     		}
