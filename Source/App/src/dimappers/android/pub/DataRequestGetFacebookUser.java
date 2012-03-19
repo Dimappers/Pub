@@ -42,25 +42,28 @@ public class DataRequestGetFacebookUser implements
 	{
 		Facebook facebook = service.GetFacebook();
 		AppUser appUser = null;
-		if(!isMe)
+		if(!isMe) //not me
 		{
-			if(storedData.containsKey(facebookIdToGet))
+			if(storedData.containsKey(facebookIdToGet)) //am I stored
 			{
-				listener.onRequestComplete(storedData.get(facebookIdToGet));
+				appUser = storedData.get(facebookIdToGet);
 			}
-						
-			try
+			else
 			{
-				appUser = AppUser.AppUserFromUser(new User(facebookIdToGet), facebook);
-			} catch (Exception e)
-			{
-				listener.onRequestFail(e);
-				return;
+				//Not stored
+				try
+				{
+					appUser = AppUser.AppUserFromUser(new User(facebookIdToGet), facebook);
+				} catch (Exception e)
+				{
+					listener.onRequestFail(e);
+					return;
+				}
 			}
 		}
-		else
+		else //is me
 		{
-			if(service.GetActiveUser() != null)
+			if(service.GetActiveUser() != null) //not in the service
 			{
 				JSONObject me;
 				try
@@ -75,6 +78,10 @@ public class DataRequestGetFacebookUser implements
 					listener.onRequestFail(e);
 					return;
 				}
+			}
+			else //Are in the service
+			{
+				appUser = service.GetActiveUser();
 			}
 		}
 		storedData.put(facebookIdToGet, appUser);

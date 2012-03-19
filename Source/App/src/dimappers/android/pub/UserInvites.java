@@ -3,29 +3,39 @@ package dimappers.android.pub;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.UpdateData;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
 
@@ -40,6 +50,9 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
+		
+		bindService(new Intent(this, PubService.class), connection, 0);
+		
 		setContentView(R.layout.user_invites);
 		
 		event = (PubEvent)getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent);
@@ -65,44 +78,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     	
     	Button button_decline = (Button) findViewById(R.id.decline);
     	button_decline.setOnClickListener(this);
-    
-    	
-    	/*	TODO: Passing values to determine which page loaded this one: going or waiting for response to know the status.*/
-
-    	ListView list = (ListView) findViewById(R.id.listView2);   	
-    	
-    	ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
-    	
-    	for(Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
-    	{
-    		HashMap<String, String> map = new HashMap<String, String>();
-    
-    		String freeFromWhen = event.GetFormattedStartTime();
-    		if(userResponse.getValue().freeFrom != null)
-    		{
-    			freeFromWhen = PubEvent.GetFormattedDate(userResponse.getValue().freeFrom);
-    		}
-    		map.put("Available From Time", freeFromWhen);
-    		//TODO: Should get AppUser is not an AppUser
-    		if(userResponse.getKey() instanceof AppUser)
-    		{
-    			map.put("Guest", userResponse.getKey().toString());
-    		}
-    		else
-    		{
-    			//TODO: Convert User in to AppUser
-    		}
-    		
-    		mylist.add(map);
-    	}
- 
-    	//TODO: The SDK says all the things in the last parameter should be text views, ours are not (R.id.envelope) do we need to write our own SimpleAdapter
-    	SimpleAdapter mSchedule = new SimpleAdapter(this, mylist, R.layout.user_row,
-    	            new String[] {"Guest", "Available From Time"}, new int[] {R.id.user_guest, R.id.user_time});
-    	list.setAdapter(mSchedule);
 	}
-	
-	
 	
 	public void onClick(View v)
 	{	
@@ -174,6 +150,9 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		{
 			service = (IPubService)serviceBinder;
 			facebookUser = service.GetActiveUser();
+			
+			ListView list = (ListView) findViewById(R.id.listView2);   
+			list.setAdapter(new GuestAdapter(event, service));
 		}
 
 		public void onServiceDisconnected(ComponentName arg0)
@@ -199,5 +178,116 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 						Log.d(Constants.MsgError, e.getMessage());						
 					}
 				});
+	}
+	
+	class GuestAdapter extends BaseAdapter
+	{
+		final ArrayList<UserUserStatus> mylist;
+		final PubEvent event;
+		
+		public GuestAdapter(final PubEvent event, IPubService service)
+		{
+			this.event = event;
+			mylist = new ArrayList<UserUserStatus>();
+			
+			Set<Entry<User, UserStatus>> asd = event.GetGoingStatusMap().entrySet();
+			for(final Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
+	    	{	    
+	    		if(userResponse.getKey() instanceof AppUser)
+	    		{
+	    			mylist.add(new UserUserStatus((AppUser) userResponse.getKey(), userResponse.getValue()));
+	    		}
+	    		else
+	    		{
+	    			DataRequestGetFacebookUser getUser = new DataRequestGetFacebookUser(userResponse.getKey().getUserId());
+	    			service.addDataRequest(getUser, new IRequestListener<AppUser>() {
+
+						@Override
+						public void onRequestComplete(AppUser data) {
+							UpdateList updater = new UpdateList(new UserUserStatus(data, userResponse.getValue()));
+							UserInvites.this.runOnUiThread(updater);
+						}
+
+						@Override
+						public void onRequestFail(Exception e) {
+							// TODO Auto-generated method stub
+							
+						}
+	    				
+	    			});
+	    		}
+	    	}
+		}
+		
+		@Override
+		public int getCount() {
+			return mylist.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return mylist.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			View v = convertView;
+			ViewGroup p = parent;            
+			if (v == null) {
+				LayoutInflater vi = (LayoutInflater)getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				v = vi.inflate(R.layout.user_row, p, false);
+			}
+
+			
+			TextView userName = (TextView) v.findViewById(R.id.user_guest);
+			userName.setText(mylist.get(position).user.toString());
+			
+			TextView freeFromText = (TextView) v.findViewById(R.id.user_time);
+			freeFromText.setText(PubEvent.GetFormattedDate(mylist.get(position).status.freeFrom));
+			
+			return v;
+		}
+		
+		class UpdateList implements Runnable
+		{
+			private UserUserStatus data;
+			public UpdateList(UserUserStatus data)
+			{
+				this.data = data;
+			}
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				mylist.add(data);
+				GuestAdapter.this.notifyDataSetChanged();
+			}
+			
+		}
+		
+		class UserUserStatus
+		{
+			public AppUser user;
+			public UserStatus status;
+			
+			public UserUserStatus(AppUser user, UserStatus status)
+			{
+				this.user = user;
+				this.status = status;
+			}
+		}
+	}
+	
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		unbindService(connection);
 	}
 }
