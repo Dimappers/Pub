@@ -5,15 +5,18 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
-import android.widget.Toast;
+import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 
 public class ChooseTime extends Activity implements OnClickListener{
@@ -33,15 +36,11 @@ public class ChooseTime extends Activity implements OnClickListener{
     	Button button_save_date_time = (Button)findViewById(R.id.save_date_and_time);
     	button_save_date_time.setOnClickListener(this);
     	
-    	Bundle b = getIntent().getExtras();
-    	event = (PubEvent)b.getSerializable("event");
-    	Calendar startTime = event.GetStartTime();
+    	bindService(new Intent(getApplicationContext(), PubService.class), connection, 0);
         
     	// Date
         date_picker = (DatePicker)findViewById(R.id.datePicker);
         date_picker.setOnClickListener(this);
-        
-    	date_picker.init(startTime.get(Calendar.YEAR), startTime.get(Calendar.MONTH), startTime.get(Calendar.DAY_OF_MONTH), onDateChangedListener);
         
         // Time
         findViewById(R.id.hour_add).setOnClickListener(this);
@@ -56,10 +55,14 @@ public class ChooseTime extends Activity implements OnClickListener{
         
         ampm = (Button) findViewById(R.id.am_pm);
         ampm.setOnClickListener(this);
-        
-        currenthour.setText(""+startTime.get(Calendar.HOUR));
-        currentminute.setText(""+getMinute(startTime.get(Calendar.MINUTE)));
-        ampm.setText(""+getAmPm(startTime.get(Calendar.AM_PM)));
+	}
+	
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		
+		unbindService(connection);
 	}
 
 	private String getMinute(int minute) {
@@ -243,7 +246,7 @@ public class ChooseTime extends Activity implements OnClickListener{
     }
     private void returnTime() {
     	Bundle b = new Bundle();
-		b.putSerializable("event",event);
+		b.putInt(Constants.CurrentWorkingEvent,event.GetEventId());
 		Intent returnIntent = new Intent();
 		returnIntent.putExtras(b);
 		this.setResult(RESULT_OK,returnIntent);
@@ -290,4 +293,26 @@ public class ChooseTime extends Activity implements OnClickListener{
     		currentDate.set(Calendar.MINUTE, newMinute);
     	}
     };
+    
+    private ServiceConnection connection = new ServiceConnection()
+	{
+		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
+		{
+			IPubService serviceInterface = (IPubService)serviceBinder;
+			event = serviceInterface.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			
+			Calendar startTime = event.GetStartTime();
+			
+			date_picker.init(startTime.get(Calendar.YEAR), startTime.get(Calendar.MONTH), startTime.get(Calendar.DAY_OF_MONTH), onDateChangedListener);
+			
+			currenthour.setText(""+startTime.get(Calendar.HOUR));
+	        currentminute.setText(""+getMinute(startTime.get(Calendar.MINUTE)));
+	        ampm.setText(""+getAmPm(startTime.get(Calendar.AM_PM)));
+		}
+
+		public void onServiceDisconnected(ComponentName arg0)
+		{			
+		}
+		
+	};
 }

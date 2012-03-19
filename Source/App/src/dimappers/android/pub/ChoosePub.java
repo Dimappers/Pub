@@ -42,8 +42,7 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 		    	setContentView(R.layout.pub_choose);
 		    	
 		    	bindService(new Intent(this, PubService.class), connection, 0);
-		    	
-		    	event = (PubEvent) getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent);
+		  
 		    	latitude = getIntent().getExtras().getDouble(Constants.CurrentLatitude);
 		    	longitude = getIntent().getExtras().getDouble(Constants.CurrentLongitude);
 		    	
@@ -86,7 +85,7 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 			 Log.d(Constants.MsgInfo, pd.name + " has a rating of " + pd.rating);*/
 			 
 			 Intent i = new Intent();
-			 i.putExtra(Constants.CurrentWorkingEvent, event);
+			 i.putExtra(Constants.CurrentWorkingEvent, event.GetEventId());
 			 this.setResult(RESULT_OK,i);
 			 finish();
 		 }
@@ -150,6 +149,7 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 	    	public void onServiceConnected(ComponentName className, IBinder pubService)
 	    	{
 	    		service = (IPubService)pubService;
+	    		event = service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
 	    		getPubs();
     		}
 

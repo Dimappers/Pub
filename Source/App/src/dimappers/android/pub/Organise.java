@@ -74,31 +74,19 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		//Bind to service
 		bindService(new Intent(this, PubService.class), connection, 0);
 
-		Bundle b = getIntent().getExtras();
-		if(b.getSerializable(Constants.CurrentWorkingEvent)!=null)
+		//TODO: If we are editing may need to modify user interface
+		eventSavedAlready = getIntent().getExtras().getBoolean(Constants.IsSavedEventFlag);
+		if(eventSavedAlready)
 		{
-			event=(PubEvent)b.getSerializable(Constants.CurrentWorkingEvent);
-			Log.d(Constants.MsgInfo, "Event received - host: " + event.GetHost().getUserId());
-
-			eventSavedAlready = b.getBoolean(Constants.IsSavedEventFlag);
-			if(b.getBoolean(Constants.IsSavedEventFlag))
-			{
-				Log.d(Constants.MsgInfo, "Event has been created before");	    			
-			}
-			else
-			{
-				Log.d(Constants.MsgInfo, "Event has just been generated");
-			}
+			Log.d(Constants.MsgInfo, "Event has been created before");	    			
 		}
-		else{
-			setResult(Constants.MissingDataInBundle);
-			finish();
-		} 
+		else
+		{
+			Log.d(Constants.MsgInfo, "Event has just been generated");
+		}
 
 		cur_pub = (Button)findViewById(R.id.pub_button);
-	    	cur_pub.setText(event.GetPubLocation().getName());
 		cur_time = (Button)findViewById(R.id.time_button);
-		cur_time.setText(event.GetFormattedStartTime());
 
 		guest_list = (ListView)findViewById(android.R.id.list);
 		adapter = new ArrayAdapter<String>(this, android.R.layout.test_list_item, listItems);
@@ -112,7 +100,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				Intent i = new Intent(getBaseContext(), Guests.class);
 				Bundle b = new Bundle();
 				b.putAll(getIntent().getExtras());
-				b.putSerializable(Constants.CurrentWorkingEvent, event);
+				b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 				i.putExtras(b);
 				startActivityForResult(i, Constants.GuestReturn);
 			}
@@ -156,7 +144,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		Intent i;
 		Bundle b = new Bundle();
 		b.putAll(getIntent().getExtras()); 
-		b.putSerializable(Constants.CurrentWorkingEvent, event);
+		b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 		switch (v.getId()){
 			case R.id.pub_button : {
 				i = new Intent(this, ChoosePub.class);
@@ -243,7 +231,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		if(resultCode==RESULT_OK) //This line is so when the back button is pressed the data changed by an Activity isn't stored.
 		{ 
 			//We don't actually care what we are returning from, always get the latest event and update the screen
-			event = (PubEvent)data.getExtras().getSerializable(Constants.CurrentWorkingEvent);
+			event = service.getEvent(data.getExtras().getInt(Constants.CurrentWorkingEvent));
 			UpdateFromEvent();
 		}
 	}
@@ -394,7 +382,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		{
 			//Give the interface to the app
 			Organise.this.service = (IPubService)service;
-			
+			event=Organise.this.service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
 			facebook = Organise.this.service.GetFacebook();
 			
 			UpdateFromEvent();

@@ -57,7 +57,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 	    		Intent i = new Intent(this, CurrentEvents.class);	
 				//i.putExtras(getIntent().getExtras());
 	    		Bundle b = new Bundle();
-	    		b.putSerializable(Constants.CurrentWorkingEvent, getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent));
+	    		b.putInt(Constants.CurrentWorkingEvent, getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
 	    		i.putExtras(b);
 				startActivity(i);
 	    	}

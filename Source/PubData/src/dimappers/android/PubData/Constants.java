@@ -6,7 +6,7 @@ public final class Constants {
 	public static final boolean emulator = false;
 	
 	//Common bundle tags
-	public static final String CurrentWorkingEvent = "event";
+	public static final String CurrentWorkingEvent = "event"; //IMPORTANT: This should just pass the event id1
 	public static final String CurrentFacebookUser = "facebookId";
 	public static final String IsSavedEventFlag = "NewEvent";
 	public static final String CurrentLatitude = "lat";
