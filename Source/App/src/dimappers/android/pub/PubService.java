@@ -128,6 +128,7 @@ public class PubService extends IntentService
 			{
 				Notification newNotification = new Notification(R.drawable.icon, "New pub event", System.currentTimeMillis());
 				newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+				newNotification.defaults |= Notification.DEFAULT_VIBRATE;
 				Intent notificationIntent = new Intent(context, LaunchApplication.class);
 				Bundle b = new Bundle();
 				b.putSerializable(Constants.CurrentWorkingEvent, newEvents[0]);
@@ -142,6 +143,7 @@ public class PubService extends IntentService
 			{
 				Notification newNotification = new Notification(R.drawable.icon, newEvents.length + " new events", System.currentTimeMillis());
 				newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+				newNotification.defaults |= Notification.DEFAULT_VIBRATE;
 				Intent notificationIntent = new Intent(context, CurrentEvents.class);
 				PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 				
