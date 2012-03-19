@@ -9,17 +9,18 @@ public class XmlableString implements IXmlable {
 	String contents;
 	
 	XmlableString(String contents) {this.contents = contents;}
+	XmlableString(Element element) {readXml(element);}
 	
 	public String getContents() {return contents;}
 	
 	public Element writeXml() {
-		// TODO Auto-generated method stub
-		return null;
+		Element rootElement = new Element(getClass().getSimpleName());
+		rootElement.setText(contents);
+		return rootElement;
 	}
 
 	public void readXml(Element element) {
-		// TODO Auto-generated method stub
-
+		contents = element.getText();
 	}
 
 }
