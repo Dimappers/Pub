@@ -55,7 +55,10 @@ public class LaunchApplication extends Activity implements OnClickListener{
 	    	if(getIntent().getExtras().containsKey(Constants.CurrentWorkingEvent))
 	    	{
 	    		Intent i = new Intent(this, CurrentEvents.class);	
-				i.putExtras(getIntent().getExtras());
+				//i.putExtras(getIntent().getExtras());
+	    		Bundle b = new Bundle();
+	    		b.putSerializable(Constants.CurrentWorkingEvent, getIntent().getExtras().getSerializable(Constants.CurrentWorkingEvent));
+	    		i.putExtras(b);
 				startActivity(i);
 	    	}
     	}
@@ -164,7 +167,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	String id = null;
     	String name = null;
 		try {
-			Log.d(Constants.MsgInfo, "Got info about person: " + me.toString(4));
 			id = me.getString("id");
 			name = me.getString("name");
 		} catch (JSONException e) {

@@ -1,6 +1,7 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import org.jdom.Document;
@@ -13,6 +14,7 @@ import android.util.Log;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.RefreshData;
 import dimappers.android.PubData.RefreshResponse;
 
@@ -53,11 +55,15 @@ public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
 			listener.onRequestFail(e);
 			return;
 		}
-		
+		//This creates a test event every 15 min
+		/*PubEvent madeUpEvent = new PubEvent(Calendar.getInstance(), service.GetActiveUser());
+		madeUpEvent.SetEventId(1288);
+		madeUpEvent.SetPubLocation(new PubLocation(0.0f, 0.0f, "Spoons"));
+		listener.onRequestComplete(new PubEventArray(new PubEvent[]{madeUpEvent}));*/
 		listener.onRequestComplete(new PubEventArray(new PubEvent[]{}));
 		return;
 		//TODO: Replace with input stream 
-		/*SAXBuilder xmlBuilder = new SAXBuilder();
+		/*SAXBuilder xmlBuilder = new SAXBuilder(); 
 		Document returnDocument;
 		try
 		{
