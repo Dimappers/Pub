@@ -24,14 +24,7 @@ public class PersonFinder {
 	
 	public void getFriends(final IRequestListener<AppUserArray> listener)
 	{	
-		if(!Constants.emulator) {
-			DataRequestGetFriends friends = new DataRequestGetFriends();
-			service.addDataRequest(friends, listener);
-		}
-		else 
-		{
-			AppUser[] users = new AppUser[] { new AppUser(555L, "Test AppUser") };
-			listener.onRequestComplete(new AppUserArray(users));
-		}
+		DataRequestGetFriends friends = new DataRequestGetFriends();
+		service.addDataRequest(friends, listener);
 	}
 }

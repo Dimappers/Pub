@@ -197,12 +197,9 @@ public class PubService extends IntentService
 			sender = new DataSender();
 			receiver = new DataReceiver(binder);
 			
-			if(!Constants.emulator)
-			{
-				authenticatedFacebook = new Facebook(Constants.FacebookAppId);
-				authenticatedFacebook.setAccessToken(intent.getExtras().getString(Constants.AuthToken));
-				authenticatedFacebook.setAccessExpires(intent.getExtras().getLong(Constants.Expires));
-			}
+			authenticatedFacebook = new Facebook(Constants.FacebookAppId);
+			authenticatedFacebook.setAccessToken(intent.getExtras().getString(Constants.AuthToken));
+			authenticatedFacebook.setAccessExpires(intent.getExtras().getLong(Constants.Expires));
 			
 			hasStarted = true;
 			

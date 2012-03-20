@@ -135,7 +135,7 @@ public class Pending extends Activity implements OnClickListener {
 			service = (IPubService)pubService;
 			
 			//Find the location of the pub
-			findLocation();
+ 			findLocation();
 		}
 
 		public void onServiceDisconnected(ComponentName className)

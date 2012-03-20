@@ -107,27 +107,20 @@ public class Guests extends ListActivity implements OnClickListener{
 			//Give the interface to the app
 			service = (IPubService)bService;
 			event =  service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
-			if(!Constants.emulator)
-			{
-				facebook = service.GetFacebook();
-				
-				DataRequestGetFriends getFriends = new DataRequestGetFriends();
-				service.addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
-	
-					public void onRequestComplete(AppUserArray data) {
-						UpdateListView(data.getArray());
-					}
-	
-					public void onRequestFail(Exception e) {
-						Log.d(Constants.MsgError, "Error getting friends: " + e.getMessage());
-						finish();
-					}
-				});
-			}
-			else
-			{
-				UpdateListView(new AppUser[] { new AppUser(12L, "Test1"), new AppUser(41L, "Test2") } );
-			}
+			facebook = service.GetFacebook();
+			
+			DataRequestGetFriends getFriends = new DataRequestGetFriends();
+			service.addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
+
+				public void onRequestComplete(AppUserArray data) {
+					UpdateListView(data.getArray());
+				}
+
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, "Error getting friends: " + e.getMessage());
+					finish();
+				}
+			});
 		}
 
 		public void onServiceDisconnected(ComponentName className)

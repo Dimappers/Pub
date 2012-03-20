@@ -90,15 +90,8 @@ public class AppUser extends User implements IXmlable
 	*/
 	public static AppUser AppUserFromUser(User user, Facebook facebook) throws MalformedURLException, JSONException, IOException
 	{
-		if(!Constants.emulator)
-		{
-			JSONObject them;
-			them = new JSONObject(facebook.request(Long.toString(user.getUserId())));
-			return new AppUser(user.getUserId(), them.getString("name"));
-		}
-		else
-		{
-			return new AppUser(13L, "Blank");
-		}
+		JSONObject them;
+		them = new JSONObject(facebook.request(Long.toString(user.getUserId())));
+		return new AppUser(user.getUserId(), them.getString("name"));
 	}
 }

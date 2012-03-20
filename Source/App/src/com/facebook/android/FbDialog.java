@@ -16,6 +16,7 @@
 
 package com.facebook.android;
 
+import android.R;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -78,8 +79,7 @@ public class FbDialog extends Dialog {
          * at this point, we only need to know its drawable width and height 
          * to place the webview
          */
-        //Don't think we will be using this -tk
-        //createCrossImage();
+        createCrossImage();
         
         /* Now we know 'x' drawable width and height, 
          * layout the webivew and add it the mContent layout
@@ -94,10 +94,8 @@ public class FbDialog extends Dialog {
         addContentView(mContent, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
     }
     
-    //I don't think we need this -tk
     private void createCrossImage() {
-    	throw new UnsupportedOperationException("Not implemented");
-        /*mCrossImage = new ImageView(getContext());
+        mCrossImage = new ImageView(getContext());
         // Dismiss the dialog when user click on the 'x'
         mCrossImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,12 +104,12 @@ public class FbDialog extends Dialog {
                 FbDialog.this.dismiss();
             }
         });
-        Drawable crossDrawable = getContext().getResources().getDrawable(R.drawable.close);
+        Drawable crossDrawable = getContext().getResources().getDrawable(R.drawable.btn_minus);
         mCrossImage.setImageDrawable(crossDrawable);
         /* 'x' should not be visible while webview is loading
          * make it visible only after webview has fully loaded
-        *//*
-        mCrossImage.setVisibility(View.INVISIBLE);*/
+        */
+        mCrossImage.setVisibility(View.INVISIBLE);
     }
 
     private void setUpWebView(int margin) {

@@ -58,48 +58,46 @@ public class PersonRanker {
 		historyStore = service.getHistoryStore();
 		this.currentLocation = currentLocation;
 		this.listener = listener;
-			 
+
 		this.service = service;
-		if (!Constants.emulator)
-		{
-			this.facebook = service.GetFacebook();
-			
-			this.facebookFriends = facebookFriends;  
-			    
-			this.currentEvent = currentEvent;
-			trips = historyStore.getPubTrips();
-			removeTooFarAwayFriends();
-			
-			DataRequestGetFacebookPosts posts = new DataRequestGetFacebookPosts();
-			service.addDataRequest(posts, new IRequestListener<XmlJasonObject>(){
+		this.facebook = service.GetFacebook();
 
-				public void onRequestComplete(XmlJasonObject data) {
-					myPosts = data;
-					gotPosts = true;
-					if(gotPhotos) {doRanking();}
-				}
+		this.facebookFriends = facebookFriends;  
 
-				public void onRequestFail(Exception e) {
-					Log.d(Constants.MsgError, "Error getting posts from Facebook: " + e.getMessage());
-					//TODO: write this properly
-				}
-			});
-			
-			DataRequestGetPhotos photos = new DataRequestGetPhotos();
-			service.addDataRequest(photos, new IRequestListener<XmlJasonObject>() {
+		this.currentEvent = currentEvent;
+		trips = historyStore.getPubTrips();
+		removeTooFarAwayFriends();
 
-				public void onRequestComplete(XmlJasonObject data) {
-					myPhotos = data;
-					gotPhotos = true;
-					if(gotPosts) {doRanking();}
-				}
+		DataRequestGetFacebookPosts posts = new DataRequestGetFacebookPosts();
+		service.addDataRequest(posts, new IRequestListener<XmlJasonObject>(){
 
-				public void onRequestFail(Exception e) {
-					Log.d(Constants.MsgError, "Error getting photos from Facebook: " + e.getMessage());
-					//TODO: write this properly
-				}
-			});
-		}
+			public void onRequestComplete(XmlJasonObject data) {
+				myPosts = data;
+				gotPosts = true;
+				if(gotPhotos) {doRanking();}
+			}
+
+			public void onRequestFail(Exception e) {
+				Log.d(Constants.MsgError, "Error getting posts from Facebook: " + e.getMessage());
+				//TODO: write this properly
+			}
+		});
+
+		DataRequestGetPhotos photos = new DataRequestGetPhotos();
+		service.addDataRequest(photos, new IRequestListener<XmlJasonObject>() {
+
+			public void onRequestComplete(XmlJasonObject data) {
+				myPhotos = data;
+				gotPhotos = true;
+				if(gotPosts) {doRanking();}
+			}
+
+			public void onRequestFail(Exception e) {
+				Log.d(Constants.MsgError, "Error getting photos from Facebook: " + e.getMessage());
+				//TODO: write this properly
+			}
+		});
+		
 	}
 	
 	private void doRanking() {
