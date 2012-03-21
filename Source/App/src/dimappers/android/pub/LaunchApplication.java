@@ -84,9 +84,13 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	authoriseFacebook();
     	Button button_organise = (Button)findViewById(R.id.organise_button);
     	button_organise.setOnClickListener(this);
+    	button_organise.setVisibility(View.GONE);
     	
     	Button button_invites = (Button)findViewById(R.id.invites_button);
     	button_invites.setOnClickListener(this);
+    	button_invites.setVisibility(View.GONE);
+    	
+    	findViewById(android.R.id.list).setVisibility(View.GONE);
     }
     
     private void authoriseFacebook()
@@ -113,6 +117,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 					editor.putLong("access_expires", facebook.getAccessExpires());
 					editor.commit();
 					//Should getPerson() be called here?
+					runOnUiThread(new ShowButtonsHideProgBar());
 				}
 
 				public void onFacebookError(FacebookError error) { Log.d(Constants.MsgError, "Error authenticating Facebook: " + error.getMessage());}
@@ -147,6 +152,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		    	startServiceIntent.putExtras(b);
 		    	startService(startServiceIntent);
 		    	
+		    	runOnUiThread(new ShowButtonsHideProgBar());
 			}
 
 			public void onRequestFail(Exception e) {
@@ -156,6 +162,16 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	new GetPerson().execute(array);
     }
     
+    class ShowButtonsHideProgBar implements Runnable 
+    {
+		public void run() {
+			findViewById(R.id.progressbar).setVisibility(View.GONE);
+	    	findViewById(R.id.organise_button).setVisibility(View.VISIBLE);
+	    	findViewById(R.id.invites_button).setVisibility(View.VISIBLE);
+	    	findViewById(android.R.id.list).setVisibility(View.VISIBLE);
+		}
+    	
+    }
     
     public void onClick(View v)
     {
