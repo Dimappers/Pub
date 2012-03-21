@@ -1,5 +1,6 @@
 package dimappers.android.server;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,10 +12,16 @@ import java.net.Socket;
 import java.util.Calendar;
 import java.util.LinkedList;
 
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.XMLOutputter;
+
 import dimappers.android.PubData.AcknoledgementData;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.RefreshData;
+import dimappers.android.PubData.RefreshResponse;
 import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.UpdateData;
 import dimappers.android.PubData.User;
@@ -31,30 +38,25 @@ public class RequestHandlingThread extends Thread{
 
 	public void handleRequest(Socket clientSocket) {
 		//Deserialise data in to classes - in reality we will have to send some messages before explaining what is coming 
-		ObjectInputStream deserialiser = null;
-		ObjectOutputStream serialiser = null;
+		SAXBuilder docBuilder = new SAXBuilder();
+		Document doc = null;
+		
 		MessageType message = MessageType.unknownMessageType;
 		try
 		{
-			deserialiser = new ObjectInputStream(clientSocket.getInputStream());
-			serialiser = new ObjectOutputStream(clientSocket.getOutputStream());
-			message = (MessageType)deserialiser.readObject();
-
+			System.out.println("Test1");
+			doc = docBuilder.build(clientSocket.getInputStream());
+			System.out.println("Test2");
 		} 
 		catch (Exception e)
 		{
+			System.out.println("Error recieving the document");
 			ServerException sException = new ServerException(ExceptionType.MessageReceivedUnknownError, e);
-			if(e instanceof IOException) {
-				//Error reading object
-				sException = new ServerException(ExceptionType.MessageReceivedReadingObject, e);
-			} else if(e instanceof ClassNotFoundException) {
-				//Data in the wrong format
-				sException = new ServerException(ExceptionType.MessageReceivedCastingObject, e);
-			} else if(e instanceof StreamCorruptedException) {
-				sException = new ServerException(ExceptionType.MessageReceivedStreamCorrupted, e);
-			}
-			
 			HandleException(sException);
+		}
+		
+		if (doc != null) {
+			message = MessageType.valueOf(doc.getRootElement().getChild("MessageType").getText());
 		}
 		
 		
@@ -65,7 +67,8 @@ public class RequestHandlingThread extends Thread{
 			// TOMS JOB
 			try
 			{
-				NewEventMessageReceived(deserialiser, serialiser);
+				System.out.println("Creating new event");
+				NewEventMessageReceived(doc, clientSocket);
 			}
 			catch(ServerException e)
 			{
@@ -79,7 +82,8 @@ public class RequestHandlingThread extends Thread{
 			// MARKS JOB : Sent: RefreshData Returns Array of events
 			try
 			{
-				RefreshMessageReceived(deserialiser, serialiser);
+				System.out.println("Refreshing client");
+				RefreshMessageReceived(doc, clientSocket);
 			}
 			catch(ServerException e)
 			{
@@ -93,7 +97,8 @@ public class RequestHandlingThread extends Thread{
 			// TOMS JOB
 			try
 			{
-				RespondMessageReceived(deserialiser, serialiser);
+				System.out.println("Response recieved");
+				RespondMessageReceived(doc, clientSocket);
 			} catch (ServerException e)
 			{
 				HandleException(e);
@@ -106,7 +111,8 @@ public class RequestHandlingThread extends Thread{
 			// MARKS JOB : Gets UpdateRequest Returns nothin'
 			try
 			{
-				UpdateMessageReceived(deserialiser, serialiser);
+				System.out.println("Update recieved");
+				UpdateMessageReceived(doc, clientSocket);
 			} catch (ServerException e)
 			{
 				HandleException(e);
@@ -122,7 +128,7 @@ public class RequestHandlingThread extends Thread{
 	}
 
 	//Message handling functions
-	private static void NewEventMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut) throws ServerException
+	private static void NewEventMessageReceived(Document doc, Socket clientSocket) throws ServerException
 	{
 		if(IsDebug)
 		{
@@ -130,29 +136,7 @@ public class RequestHandlingThread extends Thread{
 		}
 		
 		PubEvent event;
-		try {
-			event = (PubEvent)connectionStreamIn.readObject();
-		} 
-		catch (Exception e) {
-			try {
-				System.out.println("Error!");
-				connectionStreamOut.writeObject(new AcknoledgementData(-1));
-			} catch (Exception e1) {
-
-				throw new ServerException(ExceptionType.NewEventSendingErrorBack, e1);
-			}
-			
-			if(e instanceof IOException) {
-				//Error reading object
-				throw new ServerException(ExceptionType.NewEventReadingObject, e);
-			} else if(e instanceof ClassNotFoundException) {
-				//Data in the wrong format
-				throw new ServerException(ExceptionType.NewEventCastingObject, e);
-			} else if(e instanceof StreamCorruptedException) {
-				throw new ServerException(ExceptionType.NewEventStreamCorrupted, e);
-			}
-			throw new ServerException(ExceptionType.NewEventUnknownError, e);
-		}
+		event = new PubEvent(doc.getRootElement().getChild(PubEvent.class.getSimpleName()));
 
 		if(IsDebug)
 		{
@@ -175,14 +159,24 @@ public class RequestHandlingThread extends Thread{
 		
 		UserManager.markAsUpToDate(event.GetHost(), pubEventId);
 		
+		AcknoledgementData ack = new AcknoledgementData(pubEventId);
+		
+		// Creates the XML Document tree that is being returned
+		Element root = new Element("root");
+		Document returnDocument = new Document(root);
+		root.addContent(ack.writeXml());
+		
+		XMLOutputter outputter = new XMLOutputter();
+		
 		try
 		{
-			connectionStreamOut.writeObject(new AcknoledgementData(pubEventId));
+			outputter.output(returnDocument, clientSocket.getOutputStream());
 		}
 		catch(Exception e)
 		{
 			try {
-				connectionStreamOut.writeObject(new AcknoledgementData(-1));
+				// Handle the change that is caused to this exception
+				outputter.output(new Document(), clientSocket.getOutputStream());
 			} catch (Exception e1) {
 				throw new ServerException(ExceptionType.NewEventSendingErrorBack, e1);
 			}
@@ -197,25 +191,11 @@ public class RequestHandlingThread extends Thread{
 		}
 	}
 
-	private static void RefreshMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut) throws ServerException
+	private static void RefreshMessageReceived(Document doc, Socket clientSocket) throws ServerException
 	{
 		RefreshData refresh;
-		try
-		{
-			refresh = (RefreshData)connectionStreamIn.readObject();
-		} catch (Exception e)
-		{
-			if(e instanceof IOException) {
-				//Error reading object
-				throw new ServerException(ExceptionType.RefreshReadingObject, e);
-			} else if(e instanceof ClassNotFoundException) {
-				//Data in the wrong format
-				throw new ServerException(ExceptionType.RefreshCastingObject, e);
-			} else if(e instanceof StreamCorruptedException) {
-				throw new ServerException(ExceptionType.RefreshStreamCorrupted, e);
-			}
-			throw new ServerException(ExceptionType.RefreshUnknownError, e);
-		} 
+		refresh = new RefreshData(doc.getRootElement().getChild(RefreshData.class.getSimpleName()));
+
 		LinkedList<Integer> refreshEventIds;
 		if (refresh.isFullUpdate()) {
 			// If true, returns all the events, otherwise just the events that need refreshing
@@ -237,41 +217,33 @@ public class RequestHandlingThread extends Thread{
 			refreshEvents[eventCounter++] = EventManager.GetPubEvent(event);
 		}
 
+		RefreshResponse response = new RefreshResponse(refreshEvents);
+		
+		// Creates the XML Document tree that is being returned
+		Element root = new Element("root");
+		Document returnDoc = new Document(root);
+		root.addContent(response.writeXml());
+		
+		XMLOutputter outputter = new XMLOutputter();
+		
 		// Return the array of events that need updating
 		try
 		{
-			connectionStreamOut.writeObject(refreshEvents);
+			outputter.output(returnDoc, clientSocket.getOutputStream());
 		} catch (Exception e)
 		{
 			if(e instanceof IOException) {
 				//Error reading object
 				throw new ServerException(ExceptionType.RefreshReadingObject, e);
-			} else if(e instanceof StreamCorruptedException) {
-				throw new ServerException(ExceptionType.RefreshStreamCorrupted, e);
 			}
 			throw new ServerException(ExceptionType.RefreshUnknownError, e);
 		}
 	}
 
-	private static void RespondMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut) throws ServerException
+	private static void RespondMessageReceived(Document doc, Socket clientSocket) throws ServerException
 	{
 		ResponseData response;
-		try
-		{
-			response = (ResponseData)connectionStreamIn.readObject();
-		} catch (Exception e)
-		{
-			if(e instanceof IOException) {
-				//Error reading object
-				throw new ServerException(ExceptionType.RespondReadingObject, e);
-			} else if(e instanceof ClassNotFoundException) {
-				//Data in the wrong format
-				throw new ServerException(ExceptionType.RespondCastingObject, e);
-			} else if(e instanceof StreamCorruptedException) {
-				throw new ServerException(ExceptionType.RespondStreamCorrupted, e);
-			}
-			throw new ServerException(ExceptionType.RespondUnknownError, e);
-		} 
+		response = new ResponseData(doc.getRootElement().getChild(ResponseData.class.getSimpleName()));
 
 		//Update the event file
 		PubEvent event = EventManager.GetPubEvent(response.GetEventId());
@@ -287,26 +259,12 @@ public class RequestHandlingThread extends Thread{
 		}
 	}
 
-	private static void UpdateMessageReceived(ObjectInputStream connectionStreamIn, ObjectOutputStream connectionStreamOut) throws ServerException
+	private static void UpdateMessageReceived(Document doc, Socket clientSocket) throws ServerException
 	{
 		// Gets the event given the update data
 		UpdateData update;
-		try
-		{
-			update = (UpdateData)connectionStreamIn.readObject();
-		} catch (Exception e)
-		{
-			if(e instanceof IOException) {
-				//Error reading object
-				throw new ServerException(ExceptionType.RespondReadingObject, e);
-			} else if(e instanceof ClassNotFoundException) {
-				//Data in the wrong format
-				throw new ServerException(ExceptionType.RespondCastingObject, e);
-			} else if(e instanceof StreamCorruptedException) {
-				throw new ServerException(ExceptionType.RespondStreamCorrupted, e);
-			}
-			throw new ServerException(ExceptionType.RespondUnknownError, e);
-		} 
+		update = new UpdateData(doc.getRootElement().getChild(UpdateData.class.getSimpleName()));
+
 		PubEvent event = EventManager.GetPubEvent(update.getEventId());
 
 		// Checks if the start time needs amending
