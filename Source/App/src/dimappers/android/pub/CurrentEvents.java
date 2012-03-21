@@ -134,7 +134,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 				Intent i;
 				Bundle b = new Bundle();
 				b.putInt(Constants.CurrentWorkingEvent, createdEvent.GetEventId());
-				
+				b.putBoolean(Constants.IsSavedEventFlag, getIntent().getExtras().getBoolean(Constants.IsSavedEventFlag));
 				if(createdEvent.GetHost().equals(facebookUser))
 				{
 					i = new Intent(CurrentEvents.this, HostEvents.class);					
