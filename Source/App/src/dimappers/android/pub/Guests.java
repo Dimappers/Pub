@@ -46,9 +46,11 @@ public class Guests extends ListActivity implements OnClickListener{
 		
 		adapter = new ArrayAdapter<AppUser>(this, android.R.layout.simple_list_item_multiple_choice, listItems);
 		setListAdapter(adapter);
-
+		
     	Button save = (Button)findViewById(R.id.save);
     	save.setOnClickListener(this);
+    	
+
 	}
 	
 	public void onResume(View v){
@@ -144,7 +146,7 @@ public class Guests extends ListActivity implements OnClickListener{
 	    		listItems.add(user);
 	    	}
 			
-			for(int i  = 0; i < guest_list.getCount(); ++i)
+			for(int i  = 0; i < listItems.size()/*guest_list.getCount()*/; ++i)
 			{
 				User listUser = listItems.get(i);
 				guest_list.setItemChecked(i, event.DoesContainUser(listUser));
