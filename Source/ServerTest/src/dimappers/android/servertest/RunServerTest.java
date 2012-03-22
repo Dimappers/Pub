@@ -3,6 +3,7 @@ package dimappers.android.servertest;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -410,7 +411,7 @@ public class RunServerTest
 		
 		//Serialise the object for transmission
 		XMLOutputter outputter = new XMLOutputter();
-		Element root = new Element("root");
+		Element root = new Element("Message");
 		Document doc = new Document(root);
 		
 		Element messageType = new Element("MessageType");
@@ -420,7 +421,9 @@ public class RunServerTest
 		try
 		{
 			System.out.println("Test1");
-			outputter.output(doc, sendSocket.getOutputStream());
+			OutputStream outStream = sendSocket.getOutputStream();
+			outputter.output(doc, outStream);
+			outStream.flush();
 			System.out.println("Test2");
 		}
 		catch (IOException e)
@@ -472,7 +475,7 @@ public class RunServerTest
 		//Serialise the object for transmission
 		XMLOutputter outputter = new XMLOutputter();
 		
-		Element root = new Element("root");
+		Element root = new Element("Message");
 		Element messageType = new Element("MessageType");
 		messageType.addContent(MessageType.refreshMessage.toString());
 		
@@ -536,7 +539,7 @@ public class RunServerTest
 		
 		//Serialise the object for transmission
 		XMLOutputter outputter = new XMLOutputter();
-		Element root = new Element("root");
+		Element root = new Element("Message");
 		Document doc = new Document(root);
 		
 		Element messageType = new Element("MessageType");
@@ -580,7 +583,7 @@ public class RunServerTest
 		
 		//Serialise the object for transmission
 		XMLOutputter outputter = new XMLOutputter();
-		Element root = new Element("root");
+		Element root = new Element("Message");
 		Document doc = new Document(root);
 		
 		Element messageType = new Element("MessageType");
