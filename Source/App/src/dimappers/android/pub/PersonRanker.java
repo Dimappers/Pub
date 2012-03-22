@@ -53,13 +53,13 @@ public class PersonRanker {
 	
 	IRequestListener<PubEvent> listener;
 	
-	PersonRanker(PubEvent currentEvent, IPubService service, Location currentLocation, User[] facebookFriends, final IRequestListener<PubEvent> listener)
+	PersonRanker(PubEvent currentEvent, final Pending pending, Location currentLocation, User[] facebookFriends, final IRequestListener<PubEvent> listener)
 	{
+		this.service = pending.service;
 		historyStore = service.getHistoryStore();
 		this.currentLocation = currentLocation;
 		this.listener = listener;
 
-		this.service = service;
 		this.facebook = service.GetFacebook();
 
 		this.facebookFriends = facebookFriends;  
@@ -79,7 +79,7 @@ public class PersonRanker {
 
 			public void onRequestFail(Exception e) {
 				Log.d(Constants.MsgError, "Error getting posts from Facebook: " + e.getMessage());
-				//TODO: write this properly
+				pending.errorOccurred();
 			}
 		});
 
@@ -94,7 +94,7 @@ public class PersonRanker {
 
 			public void onRequestFail(Exception e) {
 				Log.d(Constants.MsgError, "Error getting photos from Facebook: " + e.getMessage());
-				//TODO: write this properly
+				pending.errorOccurred();
 			}
 		});
 		

@@ -26,7 +26,7 @@ import dimappers.android.PubData.PubLocation;
 public class Pending extends Activity implements OnClickListener {
 
 	private TextView progressText;
-	IPubService service;
+	public IPubService service;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -208,10 +208,10 @@ public class Pending extends Activity implements OnClickListener {
 		{
 			//Start next batch of requests
 			PubEvent event = createEvent();
-			PersonRanker p = new PersonRanker(event, service, currentLocation, allFriends, new IRequestListener<PubEvent>() {
+			PersonRanker p = new PersonRanker(event, Pending.this, currentLocation, allFriends, new IRequestListener<PubEvent>() {
 
 				public void onRequestComplete(PubEvent data) {
-					data.SetPubLocation(new PubRanker(pubs, data, service.getHistoryStore()).returnBest());
+					data.SetPubLocation(new PubRanker(pubs, data, Pending.this.service.getHistoryStore()).returnBest());
 					Pending.this.onFinish(data, currentLocation);
 				}
 

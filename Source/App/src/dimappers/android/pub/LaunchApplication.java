@@ -69,14 +69,14 @@ public class LaunchApplication extends Activity implements OnClickListener{
        		startActivityForResult(i,Constants.NoInternet);
        	}
     	
-    	//Orientate the screen
-        if(getWindowManager().getDefaultDisplay().getRotation()==Surface.ROTATION_90||getWindowManager().getDefaultDisplay().getRotation()==Surface.ROTATION_270)
+    	//Orientate the screen - currently just using standard rotation for everything
+        /*if(getWindowManager().getDefaultDisplay().getRotation()==Surface.ROTATION_90||getWindowManager().getDefaultDisplay().getRotation()==Surface.ROTATION_270)
         {
       	  setContentView(R.layout.main_hor);
         }
-        else {
+        else {*/
       	  setContentView(R.layout.main);
-        }
+        //}
         
         
     	AppGardenAgent.startSchoolYear(this, "3c7b17c9-5ee0-4b3e-8edb-94a5ccaa7fe2");
