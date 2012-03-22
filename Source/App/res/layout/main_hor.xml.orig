@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/main_screen"
-    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+<<<<<<< HEAD
+    android:orientation="vertical" 
+    android:background="@drawable/background">
+=======
+    android:orientation="vertical" >
+	<RelativeLayout android:id = "@+id/relativelayoutmain"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/background"
     >
-    <RelativeLayout 
-    android:id = "@+id/relativelayoutmain"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
+
     <ProgressBar
         android:id="@+id/progressbar"
         style="?android:attr/progressBarStyleLarge"
@@ -19,13 +20,20 @@
         android:layout_centerInParent="true"
         android:layout_gravity="center"
         android:layout_weight="1" />
+>>>>>>> 3a5548bd461855ad4d5fba01f7af985936ce1dbf
+
     <LinearLayout
     android:id="@+id/main_screen_inner_linear"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-	<Button
+    <LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" 
+    android:layout_weight="1">
+    	<Button
 	    android:id="@+id/organise_button"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
@@ -37,38 +45,27 @@
 	    android:layout_alignParentLeft="true"
 	    android:layout_alignParentTop="true"
 	    android:background="@drawable/organise"/>
-	    
-	<Button
+    	
+    		<Button
 	    android:id="@+id/invites_button"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
+	    android:layout_weight="1"
 	    android:layout_marginTop="20sp"
 	    android:layout_marginBottom="20sp"
 	    android:layout_marginLeft="20sp"
 	    android:layout_marginRight="20sp"
-	    android:layout_weight="1"
 	    android:layout_alignParentLeft="true"
 	    android:layout_alignParentTop="true"
 	    android:background="@drawable/invites"/>
-    
-	<Button
-	    android:id="@+id/logoutfb_button"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:visibility = "gone"
-	    android:layout_marginTop="20sp"
-	    android:layout_marginBottom="20sp"
-	    android:layout_marginLeft="20sp"
-	    android:layout_marginRight="20sp"
-	    android:layout_weight="1"
-	    android:layout_alignParentLeft="true"
-	    android:layout_alignParentTop="true"
-	    android:text="@string/logoutfb"
-	    android:textAppearance="?android:attr/textAppearanceLarge" />
-     
-    <ListView
-		android:id= "@android:id/list"
-		android:layout_width="match_parent"
-		android:layout_height="fill_parent" 
-		android:layout_weight="1"
-		android:scrollbars="vertical"/></LinearLayout></RelativeLayout></LinearLayout>
+    		</LinearLayout>
+    		
+    		<ListView
+    		    android:id="@android:id/list"
+    		    android:layout_width="match_parent"
+    		    android:layout_height="fill_parent"
+    		    android:layout_weight="1"
+    		    android:scrollbars="vertical" />
+    		</LinearLayout>
+</RelativeLayout>
+</LinearLayout>

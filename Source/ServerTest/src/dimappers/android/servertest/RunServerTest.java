@@ -12,14 +12,18 @@ import java.util.Map.Entry;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
 import dimappers.android.PubData.AcknoledgementData;
+import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.GoingStatus;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.RefreshData;
+import dimappers.android.PubData.RefreshResponse;
 import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.UpdateData;
 import dimappers.android.PubData.User;
@@ -34,6 +38,8 @@ public class RunServerTest
 	public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException
 	{
 		//Checks for all the xml exporters - just wacks them in to the output and then reads them in 
+		/* What is all this?
+		 * 
 		Document xmlDoc;
 		{
 			Element root = new Element("PubMessage");
@@ -80,6 +86,8 @@ public class RunServerTest
 			
 			System.in.read();
 		}
+		
+		*/
 		
 		if(args.length < 1)
 		{
@@ -141,7 +149,7 @@ public class RunServerTest
 	
 	private static Socket GetSendSocket() throws UnknownHostException, IOException
 	{
-		return new Socket(InetAddress.getByName("localhost"), 2085);
+		return new Socket(InetAddress.getByName("localhost"), Constants.Port);
 	}
 	
 	private static HashMap<String, Boolean> RunTest(TestType testType) throws ClassNotFoundException
@@ -401,12 +409,19 @@ public class RunServerTest
 		}
 		
 		//Serialise the object for transmission
-		ObjectOutputStream serialiser = null;
-		ObjectInputStream deserialiser = null;
+		XMLOutputter outputter = new XMLOutputter();
+		Element root = new Element("root");
+		Document doc = new Document(root);
+		
+		Element messageType = new Element("MessageType");
+		messageType.addContent(MessageType.newPubEventMessage.toString());
+		root.addContent(messageType);
+		root.addContent(event.writeXml());
 		try
 		{
-			serialiser = new ObjectOutputStream(sendSocket.getOutputStream());
-			deserialiser = new ObjectInputStream(sendSocket.getInputStream());
+			System.out.println("Test1");
+			outputter.output(doc, sendSocket.getOutputStream());
+			System.out.println("Test2");
 		}
 		catch (IOException e)
 		{
@@ -414,24 +429,21 @@ public class RunServerTest
 			return -3;
 		}
 		
-		try
-		{
-			MessageType t = MessageType.newPubEventMessage;
-			serialiser.writeObject(t);
-			serialiser.writeObject(event);
-			serialiser.flush();
-			System.out.println("Data sent");
-			AcknoledgementData globalEventId = (AcknoledgementData)deserialiser.readObject();
-			
-			System.out.println("Event ID: " + globalEventId.globalEventId);
-			
-			return globalEventId.globalEventId;
-		}
-		catch (IOException e)
-		{
-			System.out.println("Error in serialising the object: " + e.getMessage());
+		SAXBuilder xmlBuilder = new SAXBuilder();
+		Document returnDoc;
+		
+		try {
+			returnDoc = xmlBuilder.build(sendSocket.getInputStream());
+		} catch (IOException e) {
+			System.out.println("Error in building the acknowledgement");
+			return -4;
+		} catch (JDOMException e) {
+			System.out.println("JDOM parsing error (balls)");
 			return -4;
 		}
+		
+		AcknoledgementData globalEventId = new AcknoledgementData(returnDoc.getRootElement().getChild(AcknoledgementData.class.getSimpleName()));
+		return globalEventId.globalEventId;
 	}
 	
 	private static PubEvent[] RunRefreshMessageTest(User user, boolean runFullRefresh) throws ClassNotFoundException
@@ -458,12 +470,19 @@ public class RunServerTest
 		}
 		
 		//Serialise the object for transmission
-		ObjectOutputStream serialiser = null;
-		ObjectInputStream deserialiser = null;
+		XMLOutputter outputter = new XMLOutputter();
+		
+		Element root = new Element("root");
+		Element messageType = new Element("MessageType");
+		messageType.addContent(MessageType.refreshMessage.toString());
+		
+		Document doc = new Document(root);
+		root.addContent(rData.writeXml());
+		root.addContent(messageType);
+		
 		try
 		{
-			serialiser = new ObjectOutputStream(sendSocket.getOutputStream());
-			deserialiser = new ObjectInputStream(sendSocket.getInputStream());
+			outputter.output(doc, sendSocket.getOutputStream());
 		}
 		catch (IOException e)
 		{
@@ -471,16 +490,13 @@ public class RunServerTest
 			return null;
 		}
 		
-		try
-		{
-			MessageType t = MessageType.refreshMessage;
-			serialiser.writeObject(t);
-			serialiser.writeObject(rData);
-			serialiser.flush();
-			System.out.println("Data sent");
-			PubEvent[] outOfDateEvents = (PubEvent[])deserialiser.readObject();
-			
-			System.out.println("Retrieved or updated " + outOfDateEvents.length + " events");
+		SAXBuilder xmlBuilder = new SAXBuilder();
+		Document returnDoc;
+		
+		try {
+			returnDoc = xmlBuilder.build(sendSocket.getInputStream());
+			RefreshResponse response = new RefreshResponse(returnDoc.getRootElement().getChild(RefreshResponse.class.getSimpleName()));
+			PubEvent[] outOfDateEvents = response.getEvents();
 			
 			for(int i = 0; i < outOfDateEvents.length; ++i)
 			{
@@ -488,12 +504,11 @@ public class RunServerTest
 			}
 			
 			return outOfDateEvents;
-		}
-		catch (IOException e)
-		{
+		} catch (Exception e) {
 			System.out.println("Error in serialising the object: " + e.getMessage());
 			return null;
 		}
+		
 	}
 
 	private static void RunRespondMessage(int eventId, boolean response)
@@ -520,30 +535,24 @@ public class RunServerTest
 		}
 		
 		//Serialise the object for transmission
-		ObjectOutputStream serialiser = null;
-		ObjectInputStream deserialiser = null;
-		try
-		{
-			serialiser = new ObjectOutputStream(sendSocket.getOutputStream());
-			deserialiser = new ObjectInputStream(sendSocket.getInputStream());
-		}
-		catch (IOException e)
-		{
-			System.out.println("Error in creating serialser: " + e.getMessage());
-			return;
-		}
+		XMLOutputter outputter = new XMLOutputter();
+		Element root = new Element("root");
+		Document doc = new Document(root);
+		
+		Element messageType = new Element("MessageType");
+		messageType.addContent(MessageType.respondMessage.toString());
+		
+		root.addContent(messageType);
+		root.addContent(rData.writeXml());
 		
 		try
 		{
-			MessageType t = MessageType.respondMessage;
-			serialiser.writeObject(t);
-			serialiser.writeObject(rData);
-			serialiser.flush();
+			outputter.output(doc, sendSocket.getOutputStream());
 			System.out.println("Data sent");
 		}
 		catch (IOException e)
 		{
-			System.out.println("Error in serialising the object: " + e.getMessage());
+			System.out.println("Error in creating serialser: " + e.getMessage());
 			return;
 		}
 	}
@@ -570,12 +579,19 @@ public class RunServerTest
 		}
 		
 		//Serialise the object for transmission
-		ObjectOutputStream serialiser = null;
-		ObjectInputStream deserialiser = null;
+		XMLOutputter outputter = new XMLOutputter();
+		Element root = new Element("root");
+		Document doc = new Document(root);
+		
+		Element messageType = new Element("MessageType");
+		messageType.addContent(MessageType.updateMessage.toString());
+		root.addContent(messageType);
+		root.addContent(newData.writeXml());
+		
 		try
 		{
-			serialiser = new ObjectOutputStream(sendSocket.getOutputStream());
-			deserialiser = new ObjectInputStream(sendSocket.getInputStream());
+			outputter.output(doc, sendSocket.getOutputStream());
+			System.out.println("Data sent");
 		}
 		catch (IOException e)
 		{
@@ -583,19 +599,6 @@ public class RunServerTest
 			return;
 		}
 		
-		try
-		{
-			MessageType t = MessageType.updateMessage;
-			serialiser.writeObject(t);
-			serialiser.writeObject(newData);
-			serialiser.flush();
-			System.out.println("Data sent");
-		}
-		catch (IOException e)
-		{
-			System.out.println("Error in serialising the object: " + e.getMessage());
-			return;
-		}
 	}
 }
 

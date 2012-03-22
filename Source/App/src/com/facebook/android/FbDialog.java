@@ -98,13 +98,12 @@ public class FbDialog extends Dialog {
         mCrossImage = new ImageView(getContext());
         // Dismiss the dialog when user click on the 'x'
         mCrossImage.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View v) {
                 mListener.onCancel();
                 FbDialog.this.dismiss();
             }
         });
-        Drawable crossDrawable = getContext().getResources().getDrawable(R.drawable.btn_minus);
+        Drawable crossDrawable = getContext().getResources().getDrawable(R.drawable.ic_input_delete);
         mCrossImage.setImageDrawable(crossDrawable);
         /* 'x' should not be visible while webview is loading
          * make it visible only after webview has fully loaded
