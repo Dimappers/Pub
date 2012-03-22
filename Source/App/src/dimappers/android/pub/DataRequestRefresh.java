@@ -17,6 +17,7 @@ import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.RefreshData;
 import dimappers.android.PubData.RefreshResponse;
+import dimappers.android.PubData.User;
 
 public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
 
@@ -54,11 +55,12 @@ public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
 			return;
 		}
 		//This creates a test event every 15 min
-		/*PubEvent madeUpEvent = new PubEvent(Calendar.getInstance(), service.GetActiveUser());
+		PubEvent madeUpEvent = new PubEvent(Calendar.getInstance(), new User(586668344L));
+		madeUpEvent.AddUser(service.GetActiveUser());
 		madeUpEvent.SetEventId(1288);
 		madeUpEvent.SetPubLocation(new PubLocation(0.0f, 0.0f, "Spoons"));
-		listener.onRequestComplete(new PubEventArray(new PubEvent[]{madeUpEvent}));*/
-		listener.onRequestComplete(new PubEventArray(new PubEvent[]{}));
+		listener.onRequestComplete(new PubEventArray(new PubEvent[]{madeUpEvent}));
+		//listener.onRequestComplete(new PubEventArray(new PubEvent[]{}));
 		return;
 		//TODO: Replace with input stream 
 		/*SAXBuilder xmlBuilder = new SAXBuilder(); 
