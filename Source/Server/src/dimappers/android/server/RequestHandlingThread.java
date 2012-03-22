@@ -4,16 +4,21 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StreamCorruptedException;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
 import java.net.Socket;
 import java.util.Calendar;
 import java.util.LinkedList;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
@@ -28,6 +33,7 @@ import dimappers.android.PubData.User;
 
 public class RequestHandlingThread extends Thread{
 
+	private final static String endString  = "</Message>";
 	public static final boolean IsDebug = true;
 
 	RequestHandlingThread(Socket clientSocket) {
@@ -38,15 +44,13 @@ public class RequestHandlingThread extends Thread{
 
 	public void handleRequest(Socket clientSocket) {
 		//Deserialise data in to classes - in reality we will have to send some messages before explaining what is coming 
-		SAXBuilder docBuilder = new SAXBuilder();
+		
 		Document doc = null;
 		
 		MessageType message = MessageType.unknownMessageType;
 		try
 		{
-			System.out.println("Test1");
-			doc = docBuilder.build(clientSocket.getInputStream());
-			System.out.println("Test2");
+			doc = readMessageToEnd(clientSocket.getInputStream());
 		} 
 		catch (Exception e)
 		{
@@ -176,7 +180,10 @@ public class RequestHandlingThread extends Thread{
 		{
 			try {
 				// Handle the change that is caused to this exception
-				outputter.output(new Document(), clientSocket.getOutputStream());
+				OutputStream outStream = clientSocket.getOutputStream();
+				outputter.output(new Document(), outStream);
+				outStream.flush();
+				outStream.close();
 			} catch (Exception e1) {
 				throw new ServerException(ExceptionType.NewEventSendingErrorBack, e1);
 			}
@@ -375,5 +382,27 @@ public class RequestHandlingThread extends Thread{
 			break;
 		
 		}
+	}
+
+	private static Document readMessageToEnd(InputStream inStream) throws IOException, JDOMException
+	{
+		SAXBuilder docBuilder = new SAXBuilder();
+		int nextByte = inStream.read();
+		StringBuilder sBuilder = new StringBuilder();
+		while(nextByte != -1)
+		{
+			sBuilder.append((char)nextByte);
+			if(sBuilder.length() >= endString.length() && sBuilder.toString().endsWith(endString))
+			{
+				break;
+			}
+			else
+			{
+				nextByte = inStream.read();
+			}
+		}
+		System.out.println(sBuilder.toString());
+		StringReader reader = new StringReader(sBuilder.toString());
+		return docBuilder.build(reader);
 	}
 }
