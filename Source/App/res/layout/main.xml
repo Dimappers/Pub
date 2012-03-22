@@ -4,6 +4,7 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@drawable/background"
     >
     
 	<Button
@@ -17,8 +18,7 @@
 	    android:layout_marginRight="20sp"
 	    android:layout_alignParentLeft="true"
 	    android:layout_alignParentTop="true"
-	    android:text="@string/organise" 
-	    android:textAppearance="?android:attr/textAppearanceLarge"/>
+	    android:background="@drawable/organise"/>
 	    
 	<Button
 	    android:id="@+id/invites_button"
@@ -31,8 +31,7 @@
 	    android:layout_weight="1"
 	    android:layout_alignParentLeft="true"
 	    android:layout_alignParentTop="true"
-	    android:text="@string/invites"
-	    android:textAppearance="?android:attr/textAppearanceLarge" />
+	    android:background="@drawable/invites"/>
     
 	<Button
 	    android:id="@+id/logoutfb_button"
