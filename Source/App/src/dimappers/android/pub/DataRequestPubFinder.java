@@ -2,6 +2,7 @@ package dimappers.android.pub;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -86,6 +87,9 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 			    
 			    if(places.status.equals("OK")) 
 			    {
+			    	Calendar current = Calendar.getInstance();
+			    	current.add(Calendar.DATE, Constants.PubOutOfDateTime);
+			    	places.setOutOfDate(current);
 			    	storedData.put(getKey(), places);
 			    	listener.onRequestComplete(places);
 			    }

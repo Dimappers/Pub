@@ -44,7 +44,7 @@ public class DataRequestGetFacebookUser implements
 		AppUser appUser = null;
 		if(!isMe) //not me
 		{
-			if(storedData.containsKey(facebookIdToGet)) //am I stored
+			if(storedData.containsKey(facebookIdToGet)&&!storedData.get(facebookIdToGet).isOutOfDate()) //am I stored
 			{
 				appUser = storedData.get(facebookIdToGet);
 			}

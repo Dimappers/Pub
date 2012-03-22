@@ -2,6 +2,8 @@ package dimappers.android.pub;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.jdom.Element;
 import org.json.JSONException;
@@ -18,6 +20,9 @@ import dimappers.android.PubData.User;
 public class AppUser extends User implements IXmlable
 {
 	private final String usernameTag = "UserName";
+	final static String outOfDateTag = "outOfDate";
+	
+	private Calendar outOfDate;
 	
 	//Properties
 	private String facebookName;
@@ -26,6 +31,9 @@ public class AppUser extends User implements IXmlable
 	public AppUser(Long facebookUserId)
 	{
 		super(facebookUserId);
+		Calendar current = Calendar.getInstance();
+		current.add(Calendar.DATE,Constants.AppUserOutOfDateTime);
+		outOfDate = current;
 	}
 	
 	public AppUser(Long facebookUserId, String name)
@@ -53,6 +61,8 @@ public class AppUser extends User implements IXmlable
 		userNameElement.setText(facebookName);
 		userElement.addContent(userNameElement);
 		
+		userElement.addContent(new Element(outOfDateTag).setText(new Long(outOfDate.getTimeInMillis()).toString()));
+		
 		return userElement;
 	}
 	
@@ -65,6 +75,9 @@ public class AppUser extends User implements IXmlable
 		}
 		
 		facebookName = userXmlElement.getChildText(usernameTag);
+		
+		outOfDate = Calendar.getInstance();
+		outOfDate.setTime(new Date(Long.parseLong(userXmlElement.getChildText(outOfDateTag))));
 	}
 
 	
@@ -88,10 +101,22 @@ public class AppUser extends User implements IXmlable
 		return "Id: " + GetRealFacebookName();		
 	}
 	*/
+	public void setOutOfDate(Calendar newTime)
+	{
+		outOfDate = newTime;
+	}
+	public boolean isOutOfDate()
+	{
+		return Calendar.getInstance().after(outOfDate);
+	}
 	public static AppUser AppUserFromUser(User user, Facebook facebook) throws MalformedURLException, JSONException, IOException
 	{
 		JSONObject them;
 		them = new JSONObject(facebook.request(Long.toString(user.getUserId())));
-		return new AppUser(user.getUserId(), them.getString("name"));
+		Calendar current = Calendar.getInstance();
+		current.add(Calendar.DATE,10);
+		AppUser createdAppUser = new AppUser(user.getUserId(), them.getString("name"));
+		createdAppUser.setOutOfDate(current);
+		return createdAppUser;
 	}
 }

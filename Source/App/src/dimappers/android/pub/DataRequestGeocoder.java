@@ -33,7 +33,10 @@ public class DataRequestGeocoder implements IDataRequest<long[], XmlableString> 
 		key[0] = get2DP(latitude);
 		key[1] = get2DP(longitude);
 		
-		if(storedData.containsKey(key)){listener.onRequestComplete(storedData.get(key));}
+		if(storedData.containsKey(key)&&!storedData.get(key).outOfDate())
+		{
+			listener.onRequestComplete(storedData.get(key));
+		}
 		else
 		{
 			Geocoder gc = new Geocoder(applicationContext);

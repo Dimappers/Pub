@@ -1,6 +1,8 @@
 package dimappers.android.pub;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.jdom.Element;
@@ -19,7 +21,12 @@ public class PlacesList implements IXmlable{
  @Key
  public List<Place> results;
  private static final String resultskey = "results";
+ 
+ static final String outOfDateTag = "outOfDate";
+ Calendar outOfDate;
 
+ public void setOutOfDate(Calendar newTime) {outOfDate = newTime;}
+ 
 public Element writeXml() {
 	Element rootElement = new Element(getClass().getSimpleName());
 	
@@ -34,6 +41,8 @@ public Element writeXml() {
 		placesElement.addContent(result.writeXml());
 	}
 	rootElement.addContent(placesElement);
+
+	rootElement.addContent(new Element(outOfDateTag).setText(new Long(outOfDate.getTimeInMillis()).toString()));
 	
 	return rootElement;
 }
@@ -47,6 +56,10 @@ public void readXml(Element element) {
 	{
 		results.add(new Place(resultElement));
 	}
+	
+	outOfDate = Calendar.getInstance();
+	outOfDate.setTime(new Date(Long.parseLong(element.getChildText(outOfDateTag))));
+	
 }
  
 }

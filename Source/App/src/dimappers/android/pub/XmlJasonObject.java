@@ -50,7 +50,7 @@ public class XmlJasonObject extends JSONObject implements IXmlable {
 	public boolean isOutOfDate()
 	{
 		Calendar weekAfterUpdate = lastUpdated;
-		weekAfterUpdate.add(Calendar.DAY_OF_MONTH, 7);
+		weekAfterUpdate.add(Calendar.DAY_OF_MONTH, Constants.XmlObjectOutOfDateTime);
 		return weekAfterUpdate.compareTo(Calendar.getInstance()) > 0;
 		
 	}

@@ -3,7 +3,7 @@ package dimappers.android.PubData;
 public final class Constants {
 	// Debugging mode for server
 	public static final boolean debug = true;
-	public static final boolean emulator = true;
+	public static final boolean emulator = false;
 	
 	//Common bundle tags
 	public static final String CurrentWorkingEvent = "event"; //IMPORTANT: This should just pass the event id1
@@ -68,4 +68,10 @@ public final class Constants {
 	public static final String PLACES_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/json?";
 	
 	public static final String NoDictionaryForGenericDataStore = "NoDictionary";
+	
+	//Amount of time until each element goes out of date
+	public static final int PubOutOfDateTime = 17;
+	public static final int AppUserOutOfDateTime = 10;
+	public static final int CurrentLocationOutOfDateTime = 15;
+	public static final int XmlObjectOutOfDateTime = 7; //TODO: May want to change this, so each different type of XMlJasonObject has a different outofdate time
 }
