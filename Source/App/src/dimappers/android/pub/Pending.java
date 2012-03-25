@@ -27,6 +27,7 @@ public class Pending extends Activity implements OnClickListener {
 
 	private TextView progressText;
 	public IPubService service;
+	private LocationManager locationManager;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +45,8 @@ public class Pending extends Activity implements OnClickListener {
 	private void findLocation() {
 		updateText("Finding current location");
 		
-		LocationFinder lc = new LocationFinder((LocationManager)getSystemService(Context.LOCATION_SERVICE));
+		locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+		LocationFinder lc = new LocationFinder(locationManager);
 		
 		//Find the users current location - required for all other tasks
 		lc.findLocation(locationListener);
@@ -156,6 +158,7 @@ public class Pending extends Activity implements OnClickListener {
 		
 		public void onLocationChanged(Location location) //we get the location
 		{
+			locationManager.removeUpdates(locationListener);
 			currentLocation = location;
 			//Start tasks: Get people & get pubs
 			PersonFinder personFinder = new PersonFinder(service);
@@ -179,7 +182,7 @@ public class Pending extends Activity implements OnClickListener {
 
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, e.getMessage());
-					errorOccurred();
+					Pending.this.errorOccurred();
 				}});
 			
 			

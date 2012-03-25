@@ -74,4 +74,5 @@ public final class Constants {
 	public static final int AppUserOutOfDateTime = 10;
 	public static final int CurrentLocationOutOfDateTime = 15;
 	public static final int XmlObjectOutOfDateTime = 7; //TODO: May want to change this, so each different type of XMlJasonObject has a different outofdate time
+	public static final int FriendsOutOfDateTime = 7;
 }

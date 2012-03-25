@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -35,17 +36,29 @@ public class PersonRanker {
 	boolean gotPhotos = false;
 	
 	//Constants for ranking people
-	private final int photoValue = 1;
-	private final int photoFromValue = 0;
+	private final static int photoValue = 1;
+	private final static int photoFromValue = 0;
 	
-	private final int postValue = 1;
-	private final int postCommentValue = 1;
-	private final int postCommentTagValue = 1;
-	private final int postLikeValue = 1;
-	private final int postTagValue = 1;
+	private final static int postValue = 1;
+	private final static int postCommentValue = 1;
+	private final static int postCommentTagValue = 1;
+	private final static int postLikeValue = 1;
+	private final static int postTagValue = 1;
 	
-	private final int guestValue = 1;
-	private final int hostValue = 2;
+	private final static int guestValue = 1;
+	private final static int hostValue = 2;
+	
+	private final static int rankFromPhotosFromWho = -1;
+	private final static int rankFromPhotosTagged = -2;
+	
+	private final static int rankFromPostsFromWho = 0;
+	private final static int rankFromPostsLiking = -3;
+	private final static int rankFromPostsWithYou = -4;
+	private final static int rankFromPostsTagged = -5;
+	private final static int rankFromPostsComment = -6;
+	private final static int rankFromPostsTaggedInComment = -7;
+
+	private final static int rankFromHistory = 1;
 	
 	private final int maxDist = 2;
 	
@@ -62,7 +75,7 @@ public class PersonRanker {
 
 		this.facebook = service.GetFacebook();
 
-		this.facebookFriends = facebookFriends;  
+		this.facebookFriends = facebookFriends;
 
 		this.currentEvent = currentEvent;
 		trips = historyStore.getPubTrips();
@@ -103,14 +116,15 @@ public class PersonRanker {
 	private void doRanking() {
 		Log.d(Constants.MsgInfo, "Starting at: " + Calendar.getInstance().getTime().toString());
 		Log.d(Constants.MsgInfo, "Friend count: " + facebookFriends.length);
-		User friend;
-		for(int i = 0; i<facebookFriends.length; i++)
+		
+		if(facebookFriends.length>0) 
 		{
-			friend = facebookFriends[i];
-			friend.setRank(findFacebookClosenessRank(friend) + findPreviousPubTrips(friend));
-		}
-		if(facebookFriends.length>0) {
+			rankFromPosts();
+			rankFromPhotos();
+			rankFromHistory();
+			
 			facebookFriends = MergeSort(facebookFriends);
+			
 			int n = Math.min(historyStore.getAverageNumberOfFriends(), facebookFriends.length);
 			currentEvent.emptyGuestList();
 			for(int i = 0; i<n; i++)
@@ -118,10 +132,143 @@ public class PersonRanker {
 				currentEvent.AddUser(facebookFriends[i]);
 			}
 		}
+		
 		Log.d(Constants.MsgInfo, "Finished at: " + Calendar.getInstance().getTime().toString());
 		listener.onRequestComplete(currentEvent);
 	}
 	
+	private void rankFromPosts() {
+		if(myPosts.has("data"))
+		{
+			try {
+				JSONArray myPostsDataArray = myPosts.getJSONArray("data");
+				for(int i = 0; i<myPostsDataArray.length(); i++)
+				{
+					JSONObject post = (JSONObject) myPostsDataArray.get(i);
+					
+					//Person the post is from
+					addToRankOf(Long.parseLong(post.getJSONObject("from").getString("id")), postValue, rankFromPostsFromWho);
+					
+					//People tagged in the post
+					if(post.has("message_tags"))
+					{
+						JSONObject messageTagsJObj = post.getJSONObject("message_tags"); 
+						Iterator<String> it = messageTagsJObj.keys();
+						while(it.hasNext())
+						{
+							JSONArray tags = messageTagsJObj.getJSONArray(it.next());
+							for(int j = 0 ; j<tags.length(); j++)
+							{
+								JSONObject tag = tags.getJSONObject(j);
+								addToRankOf(Long.parseLong(post.getJSONObject("from").getString("id")), postTagValue, rankFromPostsTagged);
+							}
+						}
+					}
+					
+					//TODO: deal with story_tags
+					
+					//Person the post is from & all people tagged as being "with you" in the post
+					if(post.has("to"))
+					{
+						JSONArray to = post.getJSONObject("to").getJSONArray("data");
+						for(int j = 0; j<to.length(); j++)
+						{
+							addToRankOf(Long.parseLong(post.getJSONObject("from").getString("id")), postTagValue, rankFromPostsWithYou);
+						}
+					}
+					
+					//People who have liked the post
+					if(post.has("likes"))
+					{
+						JSONArray likes = post.getJSONObject("likes").getJSONArray("data");
+						for(int j = 0; j<likes.length(); j++)
+						{
+							addToRankOf(Long.parseLong(post.getJSONObject("from").getString("id")), postLikeValue, rankFromPostsLiking);
+						}
+					}
+					
+					//People who have commented on the post
+					if(post.getJSONObject("comments").has("data"))
+					{
+						JSONArray comments = post.getJSONObject("comments").getJSONArray("data");
+						for(int j = 0; j<comments.length(); j++)
+						{
+							JSONObject comment = comments.getJSONObject(j);
+							addToRankOf(Long.parseLong(post.getJSONObject("from").getString("id")), postCommentValue, rankFromPostsComment);
+							
+							//People who are tagged in comments
+							if(comment.has("message_tags"))
+							{
+								JSONArray message_tags = comment.getJSONArray("message_tags");
+								for(int k = 0; k<message_tags.length(); k++)
+								{
+									addToRankOf(Long.parseLong(post.getJSONObject("from").getString("id")), postCommentTagValue, rankFromPostsComment);
+								}
+							}
+						}
+					}
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+				Log.d(Constants.MsgError, "Error finding post information.");
+			}
+		}
+		else {Log.d(Constants.MsgError, "No data array available in myPosts.");}
+	}
+	
+	private void rankFromPhotos() {
+		if(myPhotos.has("data"))
+		{
+			try {
+				JSONArray myPhotosDataArray = myPhotos.getJSONArray("data");
+				
+				for (int i = 0; i<myPhotosDataArray.length(); i++)
+				{
+					JSONObject photo = myPhotosDataArray.getJSONObject(i);
+					
+					/*Next line changes the rank of the person whose photo it is - we might not want to do this because it can massively skew the results!*/
+					addToRankOf(Long.parseLong(photo.getJSONObject("from").getString("id")), photoFromValue, rankFromPhotosFromWho);
+					
+					JSONArray tags = photo.getJSONObject("tags").getJSONArray("data");
+					for (int j = 0; j<tags.length(); j++)
+					{
+						addToRankOf(Long.parseLong(photo.getJSONObject("from").getString("id")), photoValue, rankFromPhotosTagged);
+					}
+				}
+			} 
+			catch (JSONException e) {
+				e.printStackTrace();
+				Log.d(Constants.MsgError, "Error finding photos information.");
+			}
+		}
+	}
+	
+	private void addToRankOf(long facebookId, int amount, int fromWhere) {
+		for(User person: facebookFriends)
+		{
+			if(person.getUserId()==facebookId)
+			{
+				person.setRank(
+						person.getRank()+amount);
+				if(Constants.debug)
+				{
+					switch(fromWhere)
+					{
+					case rankFromPhotosFromWho : {person.PhotosFromWho+=amount; break;}
+					case rankFromPhotosTagged : {person.PhotosTagged+=amount; break;}
+					case rankFromPostsComment : {person.PostsComments+=amount; break;}
+					case rankFromPostsFromWho : {person.PostsFromWho+=amount; break;}
+					case rankFromPostsLiking : {person.PostsLiked+=amount; break;}
+					case rankFromPostsTagged : {person.PostsTagged+=amount; break;}
+					case rankFromPostsTaggedInComment : {person.PostsTaggedInComment+=amount; break;}
+					case rankFromPostsWithYou : {person.PostsWithYou+=amount; break;}
+					}
+				}
+				return;
+			}
+		}
+	}
+
 	public PubEvent getEvent() {return currentEvent;}
 	
 	private User[] MergeSort(User[] list)
@@ -157,15 +304,16 @@ public class PersonRanker {
 		}
 		return temp;
 	}
-
-	private int findPreviousPubTrips(User friend) {
-		int rank = 0;
-
+	
+	private void rankFromHistory() {
 		for(PubEvent trip : trips)
 		{
-			rank += isInGuestList(trip,friend);
+			for(User friend : facebookFriends)
+			{
+				friend.setRank(friend.getRank()+isInGuestList(trip,friend));
+				friend.History+=isInGuestList(trip,friend);
+			}
 		}
-		return rank;
 	}
 
 	private int isInGuestList(PubEvent trip, User friend) {
@@ -175,115 +323,6 @@ public class PersonRanker {
 			if(friend.equals(guest)) {return guestValue;}
 		}
 		return 0;
-	}
-
-	private int findFacebookClosenessRank(User friend) {
-		return findMutuallyTaggedPhotos(friend.getUserId()) + findMutuallyTaggedPosts(friend.getUserId());
-	}
-
-	private int findMutuallyTaggedPhotos(Long userId) {
-		int photoNumber = 0;
-		try
-		{
-			JSONArray photos = myPhotos.getJSONArray("data");
-			for (int i = 0; i<photos.length(); i++)
-			{
-				JSONObject photo = photos.getJSONObject(i);
-				
-				/*Next line changes the rank of the person whose photo it is - we might not want to do this because it can massively skew the results!*/
-				if(Long.parseLong(photo.getJSONObject("from").getString("id"))==userId) {photoNumber+=photoFromValue;}
-				
-				JSONArray tags = photo.getJSONObject("tags").getJSONArray("data");
-				for (int j = 0; j<tags.length(); j++)
-				{
-					if(userId==Long.parseLong((tags.getJSONObject(j)).getString("id"))) {photoNumber+=photoValue;};
-				}
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-			Log.d(Constants.MsgError, "Error finding photo information.");
-		}	
-		
-		return photoNumber;
-	}
-
-	private int findMutuallyTaggedPosts(Long userId) {
-		//This bit appears to not be working anymore - potentially to do with Facebook changes...
-		int postNumber = 0;
-		try
-		{
-			JSONArray posts = myPosts.getJSONArray("data");
-			for (int i = 0; i<posts.length(); i++)
-			{
-				JSONObject post = (JSONObject) posts.get(i);
-				
-				//Person the post is from
-				if(Long.parseLong(post.getJSONObject("from").getString("id"))==userId) {postNumber+=postValue;}
-				
-				//People tagged in the post
-				if(post.has("message_tags"))
-				{
-					JSONObject messageTagsJObj = post.getJSONObject("message_tags"); 
-					Iterator<String> it = messageTagsJObj.keys();
-					while(it.hasNext())
-					{
-						JSONArray tags = messageTagsJObj.getJSONArray(it.next());
-						for(int j = 0 ; j<tags.length(); j++)
-						{
-							JSONObject tag = tags.getJSONObject(j);
-							if(Long.parseLong(tag.getString("id"))==userId) {postNumber+=postValue;}
-						}
-					}
-				}
-				
-				//TODO: deal with story_tags
-				
-				//Person the post is from & all people tagged as being "with you" in the post
-				if(post.has("to"))
-				{
-					JSONArray to = post.getJSONObject("to").getJSONArray("data");
-					for(int j = 0; j<to.length(); j++)
-					{
-						if(Long.parseLong((to.getJSONObject(j)).getString("id"))==userId) {postNumber+=postTagValue;}
-					}
-				}
-				
-				//People who have liked the post
-				if(post.has("likes"))
-				{
-					JSONArray likes = post.getJSONObject("likes").getJSONArray("data");
-					for(int j = 0; j<likes.length(); j++)
-					{
-						if(Long.parseLong((likes.getJSONObject(j)).getString("id"))==userId) {postNumber+=postLikeValue;}
-					}
-				}
-				
-				//People who have commented on the post
-				if(post.getJSONObject("comments").has("data"))
-				{
-					JSONArray comments = post.getJSONObject("comments").getJSONArray("data");
-					for(int j = 0; j<comments.length(); j++)
-					{
-						JSONObject comment = comments.getJSONObject(j);
-						if(Long.parseLong(comment.getJSONObject("from").getString("id"))==userId) {postNumber+=postCommentValue;}
-						
-						//People who are tagged in comments
-						if(comment.has("message_tags"))
-						{
-							JSONArray message_tags = comment.getJSONArray("message_tags");
-							for(int k = 0; k<message_tags.length(); k++)
-							{
-								if(Long.parseLong(message_tags.getJSONObject(k).getString("id"))==userId) {postNumber+=postCommentTagValue;}
-							}
-						}
-					}
-				}
-
-			}
-		} catch (JSONException e) {
-			Log.d(Constants.MsgError, "Error finding post information.");
-		}	
-		return postNumber;
 	}
 
 	private void removeTooFarAwayFriends()

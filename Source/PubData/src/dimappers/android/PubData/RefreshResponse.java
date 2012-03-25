@@ -23,7 +23,6 @@ public class RefreshResponse implements IXmlable {
 		return newEvents;
 	}
 	
-	@Override
 	public Element writeXml() {
 		Element rootElement = new Element(getClass().getSimpleName());
 		for(PubEvent event : newEvents)
@@ -33,7 +32,6 @@ public class RefreshResponse implements IXmlable {
 		return rootElement;
 	}
 
-	@Override
 	public void readXml(Element element) {
 		List<Element> eventElements = element.getChildren(PubEvent.class.getSimpleName()); 
 		newEvents = new PubEvent[eventElements.size()];

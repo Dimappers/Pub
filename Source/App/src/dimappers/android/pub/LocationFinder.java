@@ -26,14 +26,15 @@ public class LocationFinder {
 		}
 		else
 		{
-			Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			if(location==null) {location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);}
 			if(location != null) 
 			{
 				listener.onLocationChanged(location); 
 			}
 			else
 			{
-				locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
+				locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
 			}
 		}
 	}

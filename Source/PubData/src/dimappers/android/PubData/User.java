@@ -93,4 +93,16 @@ public class User implements Serializable {
 	{
 		return facebookUserId.toString();
 	}
+
+	//For breaking down how the rank is calculated
+	public int PostsFromWho = 0;
+	public int PostsTagged = 0;
+	public int PostsLiked = 0;
+	public int PostsWithYou = 0;
+	public int PostsComments = 0;
+	public int PostsTaggedInComment = 0;
+	public int PhotosFromWho = 0;
+	public int PhotosTagged = 0;
+	public int History = 0;
+
 }

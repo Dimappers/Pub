@@ -150,7 +150,7 @@ public class RunServerTest
 	
 	private static Socket GetSendSocket() throws UnknownHostException, IOException
 	{
-		return new Socket(InetAddress.getByName("localhost"), Constants.Port);
+		return new Socket(InetAddress.getByName("176.34.191.200"), Constants.Port);
 	}
 	
 	private static HashMap<String, Boolean> RunTest(TestType testType) throws ClassNotFoundException

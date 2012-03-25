@@ -36,7 +36,7 @@ public class PubEvent implements Serializable, IXmlable
 	public PubEvent(Calendar startTime, User host)
 	{
 		users = new HashMap<User, UserStatus>();
-		users.put(host, new UserStatus(GoingStatus.going, startTime, null));
+		//users.put(host, new UserStatus(GoingStatus.going, startTime, null));
 		this.host = host;
 		this.startTime = startTime;
 		globalEventId = Constants.EventIdNotAssigned;

@@ -27,6 +27,11 @@ public class PlacesList implements IXmlable{
 
  public void setOutOfDate(Calendar newTime) {outOfDate = newTime;}
  
+ public boolean isOutOfDate() {
+	 Calendar currentTime = Calendar.getInstance();
+	 return (currentTime.compareTo(outOfDate)<=0);
+ }
+ 
 public Element writeXml() {
 	Element rootElement = new Element(getClass().getSimpleName());
 	
