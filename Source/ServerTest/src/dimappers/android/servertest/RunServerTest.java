@@ -1,6 +1,7 @@
 package dimappers.android.servertest;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -93,6 +94,7 @@ public class RunServerTest
 		if(args.length < 1)
 		{
 			System.out.println("Error: no test specified, running default");
+			args = new String[]{"CreateGet"};
 		}
 		
 		int totalTests = 0;
@@ -100,7 +102,7 @@ public class RunServerTest
 		
 		for(int i = 0; i < args.length; ++i)
 		{
-			HashMap<String, Boolean> result = RunTest(Enum.valueOf(TestType.class, args[0]));
+			HashMap<String, Boolean> result = RunTest(Enum.valueOf(TestType.class, args[i]));
 			int testsPassed = 0;
 			for(Entry<String, Boolean> test : result.entrySet())
 			{
@@ -436,6 +438,7 @@ public class RunServerTest
 		Document returnDoc;
 		
 		try {
+			InputStream inStream = sendSocket.getInputStream();
 			returnDoc = xmlBuilder.build(sendSocket.getInputStream());
 		} catch (IOException e) {
 			System.out.println("Error in building the acknowledgement");
