@@ -26,6 +26,7 @@ public class PersonRanker {
 	
 	IPubService service;
 	HistoryStore historyStore;
+	long me;
 	User[] facebookFriends;
 	Location currentLocation;
 	List<PubEvent> trips;
@@ -80,6 +81,8 @@ public class PersonRanker {
 		this.facebook = service.GetFacebook();
 
 		this.facebookFriends = facebookFriends;
+		
+		me = service.GetActiveUser().getUserId();
 
 		this.currentEvent = currentEvent;
 		trips = historyStore.getPubTrips();
@@ -282,33 +285,34 @@ public class PersonRanker {
 		}
 	}
 	
-	private User addToRankOf(long facebookId, int amount, int fromWhere) {
-		for(User person: facebookFriends)
-		{
-			if(person.getUserId()==facebookId)
+	private void addToRankOf(long facebookId, int amount, int fromWhere) {
+		if(facebookId!=me){
+			for(User person: facebookFriends)
 			{
-				person.setRank(
-						person.getRank()+amount);
-				if(Constants.debug)
+				if(person.getUserId()==facebookId)
 				{
-					switch(fromWhere)
+					person.setRank(
+							person.getRank()+amount);
+					if(Constants.debug)
 					{
-					case rankFromPhotosFromWho : {person.PhotosFromWho++; break;}
-					case rankFromPhotosTagged : {person.PhotosTagged++; break;}
-					case rankFromPhotosLiked : {person.PhotosLiked++; break;}
-					case rankFromPhotosCommented : {person.PhotosComments++; break;}
-					case rankFromPostsComment : {person.PostsComments++; break;}
-					case rankFromPostsFromWho : {person.PostsFromWho++; break;}
-					case rankFromPostsLiking : {person.PostsLiked++; break;}
-					case rankFromPostsTagged : {person.PostsTagged++; break;}
-					case rankFromPostsTaggedInComment : {person.PostsTaggedInComment++; break;}
-					case rankFromPostsWithYou : {person.PostsWithYou++; break;}
+						switch(fromWhere)
+						{
+						case rankFromPhotosFromWho : {person.PhotosFromWho++; break;}
+						case rankFromPhotosTagged : {person.PhotosTagged++; break;}
+						case rankFromPhotosLiked : {person.PhotosLiked++; break;}
+						case rankFromPhotosCommented : {person.PhotosComments++; break;}
+						case rankFromPostsComment : {person.PostsComments++; break;}
+						case rankFromPostsFromWho : {person.PostsFromWho++; break;}
+						case rankFromPostsLiking : {person.PostsLiked++; break;}
+						case rankFromPostsTagged : {person.PostsTagged++; break;}
+						case rankFromPostsTaggedInComment : {person.PostsTaggedInComment++; break;}
+						case rankFromPostsWithYou : {person.PostsWithYou++; break;}
+						}
 					}
+				
 				}
-				return person;
 			}
 		}
-		return null;
 	}
 
 	public PubEvent getEvent() {return currentEvent;}
