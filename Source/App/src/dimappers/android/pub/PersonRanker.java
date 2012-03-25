@@ -38,6 +38,8 @@ public class PersonRanker {
 	//Constants for ranking people
 	private final static int photoValue = 1;
 	private final static int photoFromValue = 0;
+	private final static int photoLikeValue = 1;
+	private final static int photoCommentValue = 1;
 	
 	private final static int postValue = 1;
 	private final static int postCommentValue = 1;
@@ -50,6 +52,8 @@ public class PersonRanker {
 	
 	private final static int rankFromPhotosFromWho = -1;
 	private final static int rankFromPhotosTagged = -2;
+	private final static int rankFromPhotosLiked = 3;
+	private final static int rankFromPhotosCommented = 4;
 	
 	private final static int rankFromPostsFromWho = 0;
 	private final static int rankFromPostsLiking = -3;
@@ -147,7 +151,8 @@ public class PersonRanker {
 					JSONObject post = (JSONObject) myPostsDataArray.get(i);
 					
 					//Person the post is from
-					addToRankOf(Long.parseLong(post.getJSONObject("from").getString("id")), postValue, rankFromPostsFromWho);
+					long from = Long.parseLong(post.getJSONObject("from").getString("id"));
+					addToRankOf(from, postValue, rankFromPostsFromWho);
 					
 					//People tagged in the post
 					if(post.has("message_tags"))
@@ -160,20 +165,34 @@ public class PersonRanker {
 							for(int j = 0 ; j<tags.length(); j++)
 							{
 								JSONObject tag = tags.getJSONObject(j);
-								addToRankOf(Long.parseLong(post.getJSONObject("from").getString("id")), postTagValue, rankFromPostsTagged);
+								addToRankOf(Long.parseLong(tag.getString("id")), postTagValue, rankFromPostsTagged);
 							}
 						}
 					}
 					
-					//TODO: deal with story_tags
+					//Things you've done
+					if(post.has("story_tags"))
+					{
+						JSONObject storytags = post.getJSONObject("story_tags");
+						Iterator<String> keys = storytags.keys();
+						while(keys.hasNext())
+						{
+							JSONArray tag = storytags.getJSONArray(keys.next());
+							for(int j = 0 ; j<tag.length(); j++)
+							{
+								JSONObject person = tag.getJSONObject(j);
+								addToRankOf(Long.parseLong(person.getString("id")), postTagValue, rankFromPostsTagged);
+							}
+						}
+					}
 					
-					//Person the post is from & all people tagged as being "with you" in the post
+					//Person the post is from (sometimes.. I don't really understand what's in this one) & all people tagged as being "with you" in the post
 					if(post.has("to"))
 					{
 						JSONArray to = post.getJSONObject("to").getJSONArray("data");
 						for(int j = 0; j<to.length(); j++)
 						{
-							addToRankOf(Long.parseLong(post.getJSONObject("from").getString("id")), postTagValue, rankFromPostsWithYou);
+							addToRankOf(Long.parseLong(to.getJSONObject(j).getString("id")), postTagValue, rankFromPostsWithYou);
 						}
 					}
 					
@@ -183,7 +202,7 @@ public class PersonRanker {
 						JSONArray likes = post.getJSONObject("likes").getJSONArray("data");
 						for(int j = 0; j<likes.length(); j++)
 						{
-							addToRankOf(Long.parseLong(post.getJSONObject("from").getString("id")), postLikeValue, rankFromPostsLiking);
+							addToRankOf(Long.parseLong(likes.getJSONObject(j).getString("id")), postLikeValue, rankFromPostsLiking);
 						}
 					}
 					
@@ -194,7 +213,7 @@ public class PersonRanker {
 						for(int j = 0; j<comments.length(); j++)
 						{
 							JSONObject comment = comments.getJSONObject(j);
-							addToRankOf(Long.parseLong(post.getJSONObject("from").getString("id")), postCommentValue, rankFromPostsComment);
+							addToRankOf(Long.parseLong(comment.getJSONObject("from").getString("id")), postCommentValue, rankFromPostsComment);
 							
 							//People who are tagged in comments
 							if(comment.has("message_tags"))
@@ -202,7 +221,7 @@ public class PersonRanker {
 								JSONArray message_tags = comment.getJSONArray("message_tags");
 								for(int k = 0; k<message_tags.length(); k++)
 								{
-									addToRankOf(Long.parseLong(post.getJSONObject("from").getString("id")), postCommentTagValue, rankFromPostsComment);
+									addToRankOf(Long.parseLong(message_tags.getJSONObject(k).getString("id")), postCommentTagValue, rankFromPostsTaggedInComment);
 								}
 							}
 						}
@@ -232,7 +251,27 @@ public class PersonRanker {
 					JSONArray tags = photo.getJSONObject("tags").getJSONArray("data");
 					for (int j = 0; j<tags.length(); j++)
 					{
-						addToRankOf(Long.parseLong(photo.getJSONObject("from").getString("id")), photoValue, rankFromPhotosTagged);
+						addToRankOf(Long.parseLong(tags.getJSONObject(j).getString("id")), photoValue, rankFromPhotosTagged);
+					}
+				
+					//Likes
+					if(photo.has("likes")&&photo.getJSONObject("likes").has("data"))
+					{
+						JSONArray likes = photo.getJSONObject("likes").getJSONArray("data");
+						for(int j = 0; j<likes.length(); j++)
+						{
+							addToRankOf(Long.parseLong(likes.getJSONObject(j).getString("id")), photoLikeValue, rankFromPhotosLiked);
+						}
+					}
+					
+					//Comments
+					if(photo.has("comments")&&photo.getJSONObject("comments").has("data"))
+					{
+						JSONArray comments = photo.getJSONObject("comments").getJSONArray("data");
+						for(int k = 0; k<comments.length(); k++)
+						{
+							addToRankOf(Long.parseLong(comments.getJSONObject(k).getString("id")), photoCommentValue, rankFromPhotosCommented);
+						}
 					}
 				}
 			} 
@@ -243,7 +282,7 @@ public class PersonRanker {
 		}
 	}
 	
-	private void addToRankOf(long facebookId, int amount, int fromWhere) {
+	private User addToRankOf(long facebookId, int amount, int fromWhere) {
 		for(User person: facebookFriends)
 		{
 			if(person.getUserId()==facebookId)
@@ -254,19 +293,22 @@ public class PersonRanker {
 				{
 					switch(fromWhere)
 					{
-					case rankFromPhotosFromWho : {person.PhotosFromWho+=amount; break;}
-					case rankFromPhotosTagged : {person.PhotosTagged+=amount; break;}
-					case rankFromPostsComment : {person.PostsComments+=amount; break;}
-					case rankFromPostsFromWho : {person.PostsFromWho+=amount; break;}
-					case rankFromPostsLiking : {person.PostsLiked+=amount; break;}
-					case rankFromPostsTagged : {person.PostsTagged+=amount; break;}
-					case rankFromPostsTaggedInComment : {person.PostsTaggedInComment+=amount; break;}
-					case rankFromPostsWithYou : {person.PostsWithYou+=amount; break;}
+					case rankFromPhotosFromWho : {person.PhotosFromWho++; break;}
+					case rankFromPhotosTagged : {person.PhotosTagged++; break;}
+					case rankFromPhotosLiked : {person.PhotosLiked++; break;}
+					case rankFromPhotosCommented : {person.PhotosComments++; break;}
+					case rankFromPostsComment : {person.PostsComments++; break;}
+					case rankFromPostsFromWho : {person.PostsFromWho++; break;}
+					case rankFromPostsLiking : {person.PostsLiked++; break;}
+					case rankFromPostsTagged : {person.PostsTagged++; break;}
+					case rankFromPostsTaggedInComment : {person.PostsTaggedInComment++; break;}
+					case rankFromPostsWithYou : {person.PostsWithYou++; break;}
 					}
 				}
-				return;
+				return person;
 			}
 		}
+		return null;
 	}
 
 	public PubEvent getEvent() {return currentEvent;}

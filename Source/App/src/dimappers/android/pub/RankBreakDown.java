@@ -23,6 +23,8 @@ public class RankBreakDown extends Activity {
 		
 		((TextView)findViewById(R.id.photosFromWho)).setText(""+person.PhotosFromWho);
 		((TextView)findViewById(R.id.photosTagged)).setText(""+person.PhotosTagged);
+		((TextView)findViewById(R.id.photosComment)).setText(""+person.PhotosComments);
+		((TextView)findViewById(R.id.photoslike)).setText(""+person.PhotosLiked);
 		
 		((TextView)findViewById(R.id.historyStore)).setText(""+person.History);
 		

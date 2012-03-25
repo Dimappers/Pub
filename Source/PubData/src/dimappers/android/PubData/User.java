@@ -104,5 +104,7 @@ public class User implements Serializable {
 	public int PhotosFromWho = 0;
 	public int PhotosTagged = 0;
 	public int History = 0;
+	public int PhotosLiked = 0;
+	public int PhotosComments = 0;
 
 }
