@@ -174,7 +174,11 @@ public class RequestHandlingThread extends Thread{
 		
 		try
 		{
-			outputter.output(returnDocument, clientSocket.getOutputStream());
+			OutputStream outStream = clientSocket.getOutputStream();
+			outputter.output(returnDocument, outStream);
+			outStream.flush();
+			System.out.println("Closing connection");
+			clientSocket.close();
 		}
 		catch(Exception e)
 		{
@@ -183,7 +187,7 @@ public class RequestHandlingThread extends Thread{
 				OutputStream outStream = clientSocket.getOutputStream();
 				outputter.output(new Document(), outStream);
 				outStream.flush();
-				outStream.close();
+				//outStream.close();
 			} catch (Exception e1) {
 				throw new ServerException(ExceptionType.NewEventSendingErrorBack, e1);
 			}
@@ -312,6 +316,7 @@ public class RequestHandlingThread extends Thread{
 	{
 		try
 		{
+			System.out.println("Error: " + e.GetExceptionType().toString() + " occured at time: " + Calendar.getInstance().getTime());
 			PrintWriter errorWriter = new PrintWriter(new File("ServerErrorLog.txt"));
 			errorWriter.write("Error: " + e.GetExceptionType().toString() + " occured at time: " + Calendar.getInstance().getTime());
 			if(e.GetOriginalException() != null)
