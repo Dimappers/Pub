@@ -5,6 +5,31 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
+
+
+    <RelativeLayout
+        android:id="@+id/innerrel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center" >
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:visibility="gone" />
+        
+        <LinearLayout
+            android:id="@+id/innerlin"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+    
     <RelativeLayout
         android:id="@+id/location_relative"
         android:layout_width="match_parent"
@@ -107,4 +132,6 @@
             android:layout_marginRight="22dp"
             android:text="@string/save" />
     </LinearLayout>
+    </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>

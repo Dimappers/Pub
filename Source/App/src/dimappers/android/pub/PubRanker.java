@@ -27,7 +27,6 @@ public class PubRanker {
 	}
 	
 	public PubLocation returnBest() {
-		//TODO: Implement this
 		User[] guests = event.GetUserArray();
 		for(PubLocation pub : pubList) {
 			int rank = 0;
