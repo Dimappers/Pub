@@ -137,6 +137,18 @@
         android:layout_height="wrap_content"
         android:text="TextView" />
     
+        <TextView
+        android:id="@+id/textView22"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CallLog total:" />
+
+    <TextView
+        android:id="@+id/callLog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+    
     <TextView
         android:id="@+id/textView11"
         android:layout_width="wrap_content"

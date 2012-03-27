@@ -13,6 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
 import android.location.Location;
 import android.util.Log;
 
@@ -71,12 +73,15 @@ public class PersonRanker {
 	
 	IRequestListener<PubEvent> listener;
 	
-	PersonRanker(PubEvent currentEvent, final Pending pending, Location currentLocation, User[] facebookFriends, final IRequestListener<PubEvent> listener)
+	ContentResolver contentResolver;
+	
+	PersonRanker(PubEvent currentEvent, final Pending pending, Location currentLocation, User[] facebookFriends, final IRequestListener<PubEvent> listener, ContentResolver contentResolver)
 	{
 		this.service = pending.service;
 		historyStore = service.getHistoryStore();
 		this.currentLocation = currentLocation;
 		this.listener = listener;
+		this.contentResolver = contentResolver;
 
 		this.facebook = service.GetFacebook();
 
@@ -129,6 +134,7 @@ public class PersonRanker {
 			rankFromPosts();
 			rankFromPhotos();
 			rankFromHistory();
+			rankFromCallHistory();
 			
 			facebookFriends = MergeSort(facebookFriends);
 			
@@ -144,6 +150,43 @@ public class PersonRanker {
 		listener.onRequestComplete(currentEvent);
 	}
 	
+	private void rankFromCallHistory() {
+		String[] strFields = {
+		        android.provider.CallLog.Calls.NUMBER, 
+		        android.provider.CallLog.Calls.TYPE,
+		        android.provider.CallLog.Calls.CACHED_NAME,
+		        android.provider.CallLog.Calls.CACHED_NUMBER_TYPE
+		        };
+		Cursor callCursor = contentResolver.query(
+		        android.provider.CallLog.Calls.CONTENT_URI,
+		        strFields,
+		        null,
+		        null,
+		        android.provider.CallLog.Calls.DATE + " DESC"
+		        );
+		if(callCursor.moveToFirst()){
+			  do{
+				  final String name = callCursor.getString(callCursor.getColumnIndex(android.provider.CallLog.Calls.CACHED_NAME));
+				  for(final User friend : facebookFriends)
+				  {
+					  /*DataRequestGetFacebookUser facebookFriend = new DataRequestGetFacebookUser(friend.getUserId());
+					  service.addDataRequest(facebookFriend, new IRequestListener<AppUser>()
+					  {
+						public void onRequestFail(Exception e) {
+							Log.d(Constants.MsgError, "Name cannot be found for: " + friend.getUserId());
+						}
+
+						public void onRequestComplete(AppUser data) {
+							if(data.toString().equals(name)) {data.setRank(data.getRank()+1); if(Constants.debug) {data.CallLogTotal++;}}
+						}
+					  });*/
+					  AppUser data = (AppUser) friend;
+					  if(data.toString().equals(name)) {data.setRank(data.getRank()+1); if(Constants.debug) {data.CallLogTotal++;}}
+				  }
+			  } while (callCursor.moveToNext());
+			}
+	}
+
 	private void rankFromPosts() {
 		if(myPosts.has("data"))
 		{

@@ -117,5 +117,6 @@ public class User implements Serializable {
 	public int History = 0;
 	public int PhotosLiked = 0;
 	public int PhotosComments = 0;
+	public int CallLogTotal = 0;
 
 }
