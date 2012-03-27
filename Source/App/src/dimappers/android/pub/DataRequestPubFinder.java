@@ -49,13 +49,11 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 	}
 
 	public void performRequest(IRequestListener<PlacesList> listener,HashMap<Integer, PlacesList> storedData) {
-		if(storedData.containsKey(DataRequestPubFinder.getKey(longitude, latitude, keyword)))
+		if(storedData.containsKey(DataRequestPubFinder.getKey(longitude, latitude, keyword)) && 
+				!storedData.get(DataRequestPubFinder.getKey(longitude, latitude, keyword)).isOutOfDate()) //if we already have some pubs and they are not out of date
 		{
 			Log.d(Constants.MsgInfo, "Already have pubs.");
-			if(!storedData.get(DataRequestPubFinder.getKey(longitude, latitude, keyword)).isOutOfDate())
-			{
-				listener.onRequestComplete(storedData.get(DataRequestPubFinder.getKey(longitude, latitude, keyword)));
-			}
+			listener.onRequestComplete(storedData.get(DataRequestPubFinder.getKey(longitude, latitude, keyword)));
 		}
 		else{
 			Log.d(Constants.MsgInfo, "Getting pubs from Google.");
