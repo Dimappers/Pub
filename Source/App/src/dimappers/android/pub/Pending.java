@@ -86,8 +86,8 @@ public class Pending extends Activity implements OnClickListener {
 		if (v.getId() == R.id.cancelbutton) {finish();}
 	}
 
-	public void onFinish(PubEvent createdEvent, Location currentLocation) {
-		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle(createdEvent, currentLocation)));
+	public void onFinish(PubEvent createdEvent) {
+		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle(createdEvent)));
 		finish();
 	}
 	
@@ -99,15 +99,11 @@ public class Pending extends Activity implements OnClickListener {
 		unbindService(connection);
 	}
 
-	private Bundle fillBundle(PubEvent createdEvent, Location currentLocation) {
+	private Bundle fillBundle(PubEvent createdEvent) {
 		service.GiveNewSavedEvent(createdEvent);
 		Bundle eventBundle = new Bundle();
 		eventBundle.putInt(Constants.CurrentWorkingEvent, createdEvent.GetEventId());
 		eventBundle.putBoolean(Constants.IsSavedEventFlag, true);
-		eventBundle.putDouble(Constants.CurrentLatitude,
-				currentLocation.getLatitude());
-		eventBundle.putDouble(Constants.CurrentLongitude,
-				currentLocation.getLongitude());
 		return eventBundle;
 	}
 
@@ -218,11 +214,11 @@ public class Pending extends Activity implements OnClickListener {
 		{
 			//Start next batch of requests
 			PubEvent event = createEvent();
-			PersonRanker p = new PersonRanker(event, Pending.this, currentLocation, allFriends, new IRequestListener<PubEvent>() {
+			new PersonRanker(event, Pending.this, currentLocation, allFriends, new IRequestListener<PubEvent>() {
 
 				public void onRequestComplete(PubEvent data) {
 					data.SetPubLocation(new PubRanker(pubs, data, Pending.this.service.getHistoryStore()).returnBest());
-					Pending.this.onFinish(data, currentLocation);
+					Pending.this.onFinish(data);
 				}
 
 				public void onRequestFail(Exception e) {

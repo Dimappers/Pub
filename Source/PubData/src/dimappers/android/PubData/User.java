@@ -89,6 +89,8 @@ public class User implements Serializable {
 		Element user = new Element("User");
 		user.addContent(facebookUserId.toString());
 		
+		//TODO: add the location to this when we start actually using it
+		
 		return user;
 	}
 	
