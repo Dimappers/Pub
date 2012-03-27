@@ -147,7 +147,7 @@ public class PubService extends IntentService
 				Intent notificationIntent = new Intent(context, CurrentEvents.class);
 				PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 				
-				newNotification.setLatestEventInfo(context, newEvents.length + " new events", "wherererer", contentIntent);
+				newNotification.setLatestEventInfo(context, newEvents.length + " new events", newEvents.length + " new events", contentIntent);
 				
 				nManager.notify(1, newNotification);
 			}

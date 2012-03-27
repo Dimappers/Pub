@@ -14,12 +14,18 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -53,17 +59,62 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 	}
 	
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		MenuItem refreshBtn = menu.add("Refresh");
+		refreshBtn.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			
+			@Override
+			public boolean onMenuItemClick(MenuItem arg0) {
+				DataRequestRefresh refreshRequest = new DataRequestRefresh(true);
+				service.addDataRequest(refreshRequest, new IRequestListener<PubEventArray>() {
+
+					@Override
+					public void onRequestComplete(PubEventArray data) {
+						//TODO: Probably shouldn't make notifications
+						if(data.getEvents().length > 0)
+						{
+							service.NewEventsRecieved(data.getEvents());
+							CurrentEvents.this.runOnUiThread(new Runnable() {
+								
+								@Override
+								public void run() {
+									refreshList();
+									
+								}
+							});
+						}
+					}
+
+					@Override
+					public void onRequestFail(Exception e) {
+						Log.d(Constants.MsgError, "Error getting refresh: " + e.getMessage());
+						
+					}
+				});
+				return true;
+			}
+		});
+		
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
 	public void onResume()
 	{
 		super.onResume();
-		
+		refreshList();
+	}
+	
+	private void refreshList()
+	{
 		//This is a bit hacky, recreate the entire list adapter just to update the data, however, calling notifyDatasetInvalid seems to break things 0 making headers items etc.
 		//Ideally, we would resolve this, this is a work around
 		if(service != null)
 		{
 			adapter = new SeperatedListAdapter(this,service.GetActiveUser());
 			setListAdapter(adapter);
-			
+
 			adapter.setData(service);
 		}
 	}
