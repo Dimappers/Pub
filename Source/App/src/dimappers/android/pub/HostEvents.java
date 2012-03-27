@@ -364,26 +364,39 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	    			service.addDataRequest(getUser, new IRequestListener<AppUser>() {
 
 						public void onRequestComplete(AppUser data) {
-							mData.add(new GuestList(data.toString(), freeFromWhen));
-							HostEvents.this.runOnUiThread(new Runnable()
-							{
-
-								@Override
-								public void run() {
-									
-								}
-								
-							});
+							
+							HostEvents.this.runOnUiThread(new UpdateList(data, freeFromWhen));
 						}
 
 						public void onRequestFail(Exception e) {
 							// TODO Auto-generated method stub
 							
 						}
+						
+						class UpdateList implements Runnable
+						{
+							GuestList glEntry;
+							public UpdateList(AppUser data, String freeFromWhen)
+							{
+								glEntry = new GuestList(data.toString(), freeFromWhen);
+							}
+							
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								mData.add(glEntry);
+								notifyDataSetChanged();
+							}
+							
+						}
 	    				
 	    			});
 				}
+				
 			}
+			
+
+			
 		}
 
 	}
