@@ -12,6 +12,7 @@ import android.content.ServiceConnection;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.IBinder;
@@ -94,6 +95,7 @@ public class Pending extends Activity implements OnClickListener {
 	public void onDestroy()
 	{
 		super.onDestroy();
+		locationManager.removeUpdates(locationListener);
 		unbindService(connection);
 	}
 
@@ -226,18 +228,19 @@ public class Pending extends Activity implements OnClickListener {
 		}
 
 		public void onProviderDisabled(String provider) {
-			// TODO Auto-generated method stub
-			
+			Log.d(Constants.MsgWarning, provider + " is not avaliable");
+			Pending.this.errorOccurred();
 		}
 
 		public void onProviderEnabled(String provider) {
-			// TODO Auto-generated method stub
-			
+			Log.d(Constants.MsgInfo, provider + " is avaliable");
 		}
 
 		public void onStatusChanged(String provider, int status, Bundle extras) {
-			// TODO Auto-generated method stub
-			
+			if(status==LocationProvider.OUT_OF_SERVICE) //i.e. location will not be able to be provided for a while
+			{
+				Pending.this.errorOccurred();
+			}
 		}
 	};
 }
