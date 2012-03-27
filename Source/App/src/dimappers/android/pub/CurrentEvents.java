@@ -64,12 +64,10 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 		MenuItem refreshBtn = menu.add("Refresh");
 		refreshBtn.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			
-			@Override
 			public boolean onMenuItemClick(MenuItem arg0) {
 				DataRequestRefresh refreshRequest = new DataRequestRefresh(true);
 				service.addDataRequest(refreshRequest, new IRequestListener<PubEventArray>() {
 
-					@Override
 					public void onRequestComplete(PubEventArray data) {
 						//TODO: Probably shouldn't make notifications
 						if(data.getEvents().length > 0)
@@ -77,7 +75,6 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 							service.NewEventsRecieved(data.getEvents());
 							CurrentEvents.this.runOnUiThread(new Runnable() {
 								
-								@Override
 								public void run() {
 									refreshList();
 									
@@ -86,7 +83,6 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 						}
 					}
 
-					@Override
 					public void onRequestFail(Exception e) {
 						Log.d(Constants.MsgError, "Error getting refresh: " + e.getMessage());
 						

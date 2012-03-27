@@ -225,7 +225,7 @@ public class Pending extends Activity implements OnClickListener {
 					errorOccurred();
 				}
 				
-			});
+			}, getContentResolver());
 		}
 
 		public void onProviderDisabled(String provider) {

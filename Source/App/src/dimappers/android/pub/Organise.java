@@ -99,7 +99,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		guest_list.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 				
-				if(true)
+				if(false)
 				{
 					Intent i = new Intent(getBaseContext(), Guests.class);
 					Bundle b = new Bundle();
