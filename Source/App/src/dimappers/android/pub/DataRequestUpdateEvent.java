@@ -43,9 +43,8 @@ public class DataRequestUpdateEvent implements IDataRequest<Long, PubEvent> {
 		
 		//TODO: Put port in stream here
 		
-		XMLOutputter outputter = new XMLOutputter();
 		try {
-			outputter.output(xmlDoc, System.out);
+			DataSender.sendDocument(xmlDoc);
 		} catch (IOException e) {
 			listener.onRequestFail(e);
 			return;

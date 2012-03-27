@@ -1,6 +1,7 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -47,35 +48,25 @@ public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
 		RefreshData refreshMessage = new RefreshData(service.GetActiveUser(), fullRefresh);
 		root.addContent(refreshMessage.writeXml());
 		
-		XMLOutputter outputter = new XMLOutputter();
+		Socket socket;
 		try {
-			outputter.output(xmlRequest, System.out);
+			socket = DataSender.sendDocument(xmlRequest);
 		} catch (IOException e) {
 			listener.onRequestFail(e);
 			return;
-		}
-		//This creates a test event every 15 min
-		PubEvent madeUpEvent = new PubEvent(Calendar.getInstance(), new User(586668344L));
-		madeUpEvent.AddUser(service.GetActiveUser());
-		madeUpEvent.SetEventId(1288);
-		madeUpEvent.SetPubLocation(new PubLocation(0.0f, 0.0f, "Spoons"));
-		listener.onRequestComplete(new PubEventArray(new PubEvent[]{madeUpEvent}));
-		//listener.onRequestComplete(new PubEventArray(new PubEvent[]{}));
-		return;
-		//TODO: Replace with input stream 
-		/*SAXBuilder xmlBuilder = new SAXBuilder(); 
+		}  
 		Document returnDocument;
 		try
 		{
-			returnDocument = xmlBuilder.build(System.in);
+			returnDocument = DataSender.readTillEndOfMessage(socket.getInputStream());
 		} catch (Exception e)
 		{
 			listener.onRequestFail(e);
 			return;
 		}
 		
-		RefreshResponse response = new RefreshResponse(returnDocument.getRootElement());
-		listener.onRequestComplete(new PubEventArray(response.getEvents()));*/				
+		RefreshResponse response = new RefreshResponse(returnDocument.getRootElement().getChild(RefreshResponse.class.getSimpleName()));
+		listener.onRequestComplete(new PubEventArray(response.getEvents()));	
 	}
 
 	public String getStoredDataId() {

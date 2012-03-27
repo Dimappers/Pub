@@ -49,12 +49,12 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 	}
 
 	public void performRequest(IRequestListener<PlacesList> listener,HashMap<Integer, PlacesList> storedData) {
-		if(storedData.containsKey(getKey()))
+		if(storedData.containsKey(DataRequestPubFinder.getKey(longitude, latitude, keyword)))
 		{
 			Log.d(Constants.MsgInfo, "Already have pubs.");
-			if(!storedData.get(getKey()).isOutOfDate())
+			if(!storedData.get(DataRequestPubFinder.getKey(longitude, latitude, keyword)).isOutOfDate())
 			{
-				listener.onRequestComplete(storedData.get(getKey()));
+				listener.onRequestComplete(storedData.get(DataRequestPubFinder.getKey(longitude, latitude, keyword)));
 			}
 		}
 		else{
@@ -93,7 +93,7 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 			    	Calendar current = Calendar.getInstance();
 			    	current.add(Calendar.DATE, Constants.PubOutOfDateTime);
 			    	places.setOutOfDate(current);
-			    	storedData.put(getKey(), places);
+			    	storedData.put(DataRequestPubFinder.getKey(longitude, latitude, keyword), places);
 			    	listener.onRequestComplete(places);
 			    }
 			    //TODO: deal with no results separately because this isn't an error
@@ -112,11 +112,11 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 		return "PubLists";
 	}
 	
-	private double get2DP(double value) {
+	private static double get2DP(double value) {
 		DecimalFormat twoDForm = new DecimalFormat("#.##");
 		return Double.valueOf(twoDForm.format(value));
 	}
-	private Integer getKey() {
+	public static Integer getKey(double latitude, double longitude, String keyword) {
 		return new Double(Math.pow(2.0, get2DP(latitude))*Math.pow(3.0, get2DP(longitude))*Math.pow(5.0, keyword.hashCode())).hashCode();
 	}
 
