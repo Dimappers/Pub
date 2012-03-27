@@ -99,7 +99,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		guest_list.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 				
-				if(false)
+				if(true)
 				{
 					Intent i = new Intent(getBaseContext(), Guests.class);
 					Bundle b = new Bundle();
@@ -226,7 +226,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 						Intent intent = new Intent();
 						Bundle b = new Bundle();
 						b.putAll(getIntent().getExtras()); 
-						b.putSerializable(Constants.CurrentWorkingEvent, data);
+						b.putSerializable(Constants.CurrentWorkingEvent, data.GetEventId());
 						b.putBoolean(Constants.IsSavedEventFlag, false);
 						intent.putExtras(b);
 						setResult(RESULT_OK, intent);

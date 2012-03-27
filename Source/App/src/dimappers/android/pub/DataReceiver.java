@@ -39,7 +39,8 @@ public class DataReceiver
 		this.service = service;
 		Timer updateScheduler = new Timer();
 		refresher = new PerformRefresh();
-		updateScheduler.schedule(refresher, 0, UpdateFrequency);
+		refresher.doUpdate(true); //when we start the receiver do a full update to get back up to speed
+		updateScheduler.schedule(refresher, UpdateFrequency, UpdateFrequency);
 	}
 	
 	public void forceUpdate(boolean fullUpdate)
