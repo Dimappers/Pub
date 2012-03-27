@@ -43,7 +43,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	private ImageButton comment_made;
 	public static boolean sent;
 
-	IPubService serviceInterface;
+	IPubService service;
 	
 
 	public void onCreate(Bundle savedInstanceState) 
@@ -130,8 +130,26 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		switch (v.getId()) {
 		case R.id.send_Invites : 
 		{
-			//i = new Intent(this, HostingEvents.class);
-			//startActivity(i);
+			service.GiveNewSentEvent(event, new IRequestListener<PubEvent>() {
+				
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, "Could not send event");
+				}
+				
+				public void onRequestComplete(PubEvent data) {
+					Log.d(Constants.MsgInfo, "PubEvent sent, event id: " + data.GetEventId());
+					HostEvents.this.runOnUiThread(new Runnable()
+					{
+						@Override
+						public void run() {
+							findViewById(R.id.send_Invites).setVisibility(View.GONE);
+							findViewById(R.id.edit_button).setVisibility(View.GONE);
+							UpdateDataFromEvent();
+						}
+						
+					});
+				}
+			});
 			break;
 		}
 		case R.id.edit_button :
@@ -154,7 +172,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
     	{
     		if(requestCode == Constants.FromEdit)
     		{
-    			event = serviceInterface.getEvent(data.getExtras().getInt(Constants.CurrentWorkingEvent));
+    			event = service.getEvent(data.getExtras().getInt(Constants.CurrentWorkingEvent));
     			super.onActivityResult(requestCode, resultCode, data);
     			UpdateDataFromEvent();
     		}
@@ -175,7 +193,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		.setCancelable(true)  
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				serviceInterface.RemoveSavedEvent(event);
+				service.RemoveSavedEvent(event);
 				finish();
 
 			}
@@ -226,9 +244,9 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	{
 		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
 		{
-			serviceInterface = (IPubService)serviceBinder;
-			event = serviceInterface.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
-			facebookUser = serviceInterface.GetActiveUser();
+			service = (IPubService)serviceBinder;
+			event = service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			facebookUser = service.GetActiveUser();
 			
 			UpdateDataFromEvent();
 		}
