@@ -21,3 +21,4 @@ Tools/Git Extensions.lnk
 Source/ServerTest/.settings/org.eclipse.jdt.core.prefs
 Source/Server/ServerErrorLog.txt
 Source/App/src/dimappers/android/PubData/*
+Build/RunnableServer.jar

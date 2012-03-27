@@ -1,6 +1,12 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Queue;
@@ -8,6 +14,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
 import android.os.AsyncTask;
@@ -24,6 +32,8 @@ import dimappers.android.PubData.UpdateData;
 import dimappers.android.PubData.User;
 
 public class DataSender {
+	
+	private static final String endString = "</Message>";
 	
 	private Queue<Request<?, ?>> queue;
 	private SenderThread senderThread;
@@ -92,5 +102,38 @@ public class DataSender {
 		{
 			running = false;
 		}
+	}
+	
+	public static Socket sendDocument(Document docToSend) throws UnknownHostException, IOException
+	{
+		Socket sendSocket =  new Socket(InetAddress.getByName(Constants.ServerIp), Constants.Port);
+		XMLOutputter outputter = new XMLOutputter();
+		OutputStream outStream = sendSocket.getOutputStream();
+		outputter.output(docToSend, outStream);
+		outStream.flush();
+		
+		return sendSocket;
+	}
+	
+	public static Document readTillEndOfMessage(InputStream inStream) throws IOException, JDOMException
+	{
+		SAXBuilder docBuilder = new SAXBuilder();
+		int nextByte = inStream.read();
+		StringBuilder sBuilder = new StringBuilder();
+		while(nextByte != -1)
+		{
+			sBuilder.append((char)nextByte);
+			if(sBuilder.length() >= endString.length() && sBuilder.toString().endsWith(endString))
+			{
+				break;
+			}
+			else
+			{
+				nextByte = inStream.read();
+			}
+		}
+		System.out.println(sBuilder.toString());
+		StringReader reader = new StringReader(sBuilder.toString());
+		return docBuilder.build(reader);
 	}
 }

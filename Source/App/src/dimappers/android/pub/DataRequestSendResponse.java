@@ -1,6 +1,7 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -57,20 +58,16 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 		
 		root.addContent(rData.writeXml());
 		
-		//TODO: Actually send to the server
-		XMLOutputter outputter = new XMLOutputter();
+		Socket socket;
 		try {
-			outputter.output(xmlDoc, System.out);
+			socket = DataSender.sendDocument(xmlDoc);
 		} catch (IOException e) {
 			listener.onRequestFail(e);
 			return;
 		}
 		
-		
 		listener.onRequestComplete(null);
-		return;
-		
-		//TODO: Possibly get server to send back latest details
+		//TOOD: maybe the server sends back latest data??
 		/*SAXBuilder xmlBuilder = new SAXBuilder();
 		Document returnDocument;
 		try

@@ -166,7 +166,7 @@ public class RequestHandlingThread extends Thread{
 		AcknoledgementData ack = new AcknoledgementData(pubEventId);
 		
 		// Creates the XML Document tree that is being returned
-		Element root = new Element("root");
+		Element root = new Element("Message");
 		Document returnDocument = new Document(root);
 		root.addContent(ack.writeXml());
 		
@@ -175,9 +175,9 @@ public class RequestHandlingThread extends Thread{
 		try
 		{
 			OutputStream outStream = clientSocket.getOutputStream();
+			//outStream.write(b, off, len)
 			outputter.output(returnDocument, outStream);
 			outStream.flush();
-			System.out.println("Closing connection");
 			clientSocket.close();
 		}
 		catch(Exception e)
@@ -187,7 +187,7 @@ public class RequestHandlingThread extends Thread{
 				OutputStream outStream = clientSocket.getOutputStream();
 				outputter.output(new Document(), outStream);
 				outStream.flush();
-				//outStream.close();
+				outStream.close();
 			} catch (Exception e1) {
 				throw new ServerException(ExceptionType.NewEventSendingErrorBack, e1);
 			}
@@ -231,7 +231,7 @@ public class RequestHandlingThread extends Thread{
 		RefreshResponse response = new RefreshResponse(refreshEvents);
 		
 		// Creates the XML Document tree that is being returned
-		Element root = new Element("root");
+		Element root = new Element("Message");
 		Document returnDoc = new Document(root);
 		root.addContent(response.writeXml());
 		
@@ -384,6 +384,28 @@ public class RequestHandlingThread extends Thread{
 		case UpdateStreamCorrupted:
 			break;
 		case UpdateUnknownError:
+			break;
+		case MessageReceivedCastingObject:
+			break;
+		case MessageReceivedReadingObject:
+			break;
+		case MessageReceivedStreamCorrupted:
+			break;
+		case MessageReceivedUnknownError:
+			break;
+		case ServerUserNoSuchEvent:
+			break;
+		case UnknownMessageTypeError:
+			break;
+		case UserManagerErrorCreatingDatabase:
+			break;
+		case UserManagerErrorOpeningDatabase:
+			break;
+		case UserManagerErrorReadingDatabase:
+			break;
+		case UserManagerMaxUsers:
+			break;
+		case UserManagerNoSuchUser:
 			break;
 		
 		}

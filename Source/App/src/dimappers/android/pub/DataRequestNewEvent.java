@@ -1,6 +1,8 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 
 import org.jdom.Document;
@@ -39,40 +41,29 @@ public class DataRequestNewEvent implements IDataRequest<Integer, PubEvent>
 		root.addContent(messageTypeElement);
 		root.addContent(eventToSend.writeXml());
 		
-		//TODO: Put port in stream here
-		
-		XMLOutputter outputter = new XMLOutputter();
+		Socket s;
 		try {
-			outputter.output(xmlDoc, System.out);
-		} catch (IOException e) {
+			s = DataSender.sendDocument(xmlDoc);
+		} catch (Exception e) {
 			listener.onRequestFail(e);
 			return;
 		}
 		
-		eventToSend.SetEventId(41);
-		storedData.put(eventToSend.GetEventId(), eventToSend);
-		listener.onRequestComplete(eventToSend);
-		
-		//TODO: Replace with input stream 
-		/*SAXBuilder xmlBuilder = new SAXBuilder();
-		Document returnDocument;
-		try
-		{
-			returnDocument = xmlBuilder.build(System.in);
-		} catch (Exception e)
-		{
+		Document readDoc;
+		try {
+			readDoc = DataSender.readTillEndOfMessage(s.getInputStream());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			listener.onRequestFail(e);
 			return;
 		}
 		
-		Element ackDataElement = returnDocument.getRootElement().getChild(AcknoledgementData.class.getSimpleName());
-		
-		AcknoledgementData ackData = new AcknoledgementData(ackDataElement);
+		AcknoledgementData ackData = new AcknoledgementData(readDoc.getRootElement().getChild(AcknoledgementData.class.getSimpleName()));
 		
 		eventToSend.SetEventId(ackData.globalEventId);
 		storedData.put(ackData.globalEventId, eventToSend);
 		
-		listener.onRequestComplete(eventToSend);*/
+		listener.onRequestComplete(eventToSend);
 	}
 
 	public String getStoredDataId()
