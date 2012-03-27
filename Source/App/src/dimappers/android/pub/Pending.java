@@ -162,10 +162,15 @@ public class Pending extends Activity implements OnClickListener {
 		{
 			locationManager.removeUpdates(locationListener);
 			currentLocation = location;
+			
+			double[] locationarray = new double[2];
+			locationarray[0] = location.getLatitude();
+			locationarray[1] = location.getLongitude();
+			service.GetActiveUser().setLocation(locationarray);
+			
 			//Start tasks: Get people & get pubs
 			PersonFinder personFinder = new PersonFinder(service);
 			Pending.this.updateText("Finding friends");
-			
 			DataRequestPubFinder pubFinder = new DataRequestPubFinder(currentLocation.getLatitude(), currentLocation.getLongitude());
 			service.addDataRequest(pubFinder, new IRequestListener<PlacesList>(){
 

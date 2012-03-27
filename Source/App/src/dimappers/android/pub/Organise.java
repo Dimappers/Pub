@@ -133,9 +133,9 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		button_save_event.setOnClickListener(this);
 		Button button_send_invites = (Button)findViewById(R.id.send_invites_event);
 		button_send_invites.setOnClickListener(this);
+
 		cur_loc=(TextView)findViewById(R.id.current_location);
 		cur_loc.setOnClickListener(this);
-
 		latitude = getIntent().getExtras().getDouble(Constants.CurrentLatitude);
 		longitude = getIntent().getExtras().getDouble(Constants.CurrentLongitude);
 	}
@@ -403,6 +403,13 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			//Give the interface to the app
 			Organise.this.service = (IPubService)service;
 			event=Organise.this.service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+
+			if(Organise.this.latitude==0.0&&Organise.this.longitude==0.0)
+			{
+				double[] location = Organise.this.service.GetActiveUser().getLocation();
+				latitude = location[0];
+				longitude = location[1];
+			}
 			
 			Organise.this.service.addDataRequest(new DataRequestGetFriends(), new IRequestListener<AppUserArray>(){
 
