@@ -273,7 +273,7 @@ public class PersonRanker {
 						JSONArray comments = photo.getJSONObject("comments").getJSONArray("data");
 						for(int k = 0; k<comments.length(); k++)
 						{
-							addToRankOf(Long.parseLong(comments.getJSONObject(k).getString("id")), photoCommentValue, rankFromPhotosCommented);
+							addToRankOf(Long.parseLong(comments.getJSONObject(k).getJSONObject("from").getString("id")), photoCommentValue, rankFromPhotosCommented);
 						}
 					}
 				}
