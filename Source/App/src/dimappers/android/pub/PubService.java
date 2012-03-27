@@ -117,14 +117,23 @@ public class PubService extends IntentService
 		}
 
 		public void NewEventsRecieved(PubEvent[] newEvents) {
+			int hostedEvents = 0;
 			for(PubEvent event : newEvents)
 			{
-				storedData.AddNewInvitedEvent(event);
+				if(event.GetHost().equals(user))
+				{
+					storedData.GetGenericStore("PubEvent").put(event.GetEventId(), event);
+					++hostedEvents;
+				}
+				else
+				{
+					storedData.AddNewInvitedEvent(event);
+				}
 			}			
 			
 			NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 			Context context = PubService.this.getApplicationContext();
-			if(newEvents.length == 1)
+			if(newEvents.length - hostedEvents == 1)
 			{
 				Notification newNotification = new Notification(R.drawable.icon, "New pub event", System.currentTimeMillis());
 				newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
@@ -139,7 +148,7 @@ public class PubService extends IntentService
 				
 				nManager.notify(1, newNotification);
 			}
-			else
+			else if(newEvents.length - hostedEvents > 1)
 			{
 				Notification newNotification = new Notification(R.drawable.icon, newEvents.length + " new events", System.currentTimeMillis());
 				newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
