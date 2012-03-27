@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.jdom.Element;
 
+import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.User;
 
@@ -37,8 +38,9 @@ public class AppUserArray implements IXmlable {
 	
 	public boolean isOutOfDate()
 	{
-		Calendar weekAfterUpdate = lastUpdated;
-		weekAfterUpdate.add(Calendar.DAY_OF_MONTH, 7);
+		Calendar weekAfterUpdate = Calendar.getInstance();
+		weekAfterUpdate.setTime(lastUpdated.getTime());
+		weekAfterUpdate.add(Calendar.DAY_OF_MONTH, Constants.FriendsOutOfDateTime);
 		return Calendar.getInstance().after(weekAfterUpdate); //if we are after a week after the last update, we need updating
 	}
 	

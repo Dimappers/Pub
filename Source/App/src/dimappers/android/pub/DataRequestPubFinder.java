@@ -52,7 +52,10 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 		if(storedData.containsKey(DataRequestPubFinder.getKey(longitude, latitude, keyword)))
 		{
 			Log.d(Constants.MsgInfo, "Already have pubs.");
-			listener.onRequestComplete(storedData.get(DataRequestPubFinder.getKey(longitude, latitude, keyword)));
+			if(!storedData.get(DataRequestPubFinder.getKey(longitude, latitude, keyword)).isOutOfDate())
+			{
+				listener.onRequestComplete(storedData.get(DataRequestPubFinder.getKey(longitude, latitude, keyword)));
+			}
 		}
 		else{
 			Log.d(Constants.MsgInfo, "Getting pubs from Google.");

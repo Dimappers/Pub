@@ -31,15 +31,16 @@ public class AppUser extends User implements IXmlable
 	public AppUser(Long facebookUserId)
 	{
 		super(facebookUserId);
-		Calendar current = Calendar.getInstance();
-		current.add(Calendar.DATE,Constants.AppUserOutOfDateTime);
-		outOfDate = current;
+		outOfDate = Calendar.getInstance();
+		outOfDate.add(Calendar.DATE,Constants.AppUserOutOfDateTime);
 	}
 	
 	public AppUser(Long facebookUserId, String name)
 	{
 		super(facebookUserId);
 		facebookName = name;
+		outOfDate = Calendar.getInstance();
+		outOfDate.add(Calendar.DATE,Constants.AppUserOutOfDateTime);
 	}
 	
 	public AppUser(Element element)
@@ -114,7 +115,7 @@ public class AppUser extends User implements IXmlable
 		JSONObject them;
 		them = new JSONObject(facebook.request(Long.toString(user.getUserId())));
 		Calendar current = Calendar.getInstance();
-		current.add(Calendar.DATE,10);
+		current.add(Calendar.DATE,Constants.AppUserOutOfDateTime);
 		AppUser createdAppUser = new AppUser(user.getUserId(), them.getString("name"));
 		createdAppUser.setOutOfDate(current);
 		return createdAppUser;
