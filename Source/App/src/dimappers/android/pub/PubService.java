@@ -51,7 +51,19 @@ public class PubService extends IntentService
 
 		public void GiveNewSentEvent(PubEvent event, final IRequestListener<PubEvent> listener) {
 			DataRequestNewEvent r = new DataRequestNewEvent(event);
-			PubService.this.addDataRequest(r, listener);
+			final int savedEventId = event.GetEventId();
+			PubService.this.addDataRequest(r, new IRequestListener<PubEvent>() {
+					@Override
+					public void onRequestComplete(PubEvent data) {
+						storedData.DeleteSavedEvent(savedEventId);
+						listener.onRequestComplete(data);
+					}
+
+					@Override
+					public void onRequestFail(Exception e) {
+						listener.onRequestFail(e);
+					}
+				});
 		}
 
 		public Collection<PubEvent> GetSavedEvents() {
@@ -84,7 +96,7 @@ public class PubService extends IntentService
 		}
 
 		public void RemoveSavedEvent(PubEvent event) {
-			PubService.this.storedData.DeleteSavedEvent(event);
+			PubService.this.storedData.DeleteSavedEvent(event.GetEventId());
 			
 		}
 
