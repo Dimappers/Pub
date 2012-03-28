@@ -86,17 +86,18 @@ public class User implements Serializable {
 		 * If we have to add more information
 		 */
 		
-		Element user = new Element(getClass().getSimpleName());
+		Element user = new Element("User");
 		user.setText(facebookUserId.toString());
 		
-		if(latitude!=1000.0||longitude!=1000.0)
+		//When we start actually using the location, need to uncomment this bit & rewriting above bit to include new element
+		/*if(latitude!=1000.0||longitude!=1000.0)
 		{
 			Element locElem = new Element("location");
 			locElem.addContent(new Element("latitude").setText(""+latitude));
 			locElem.addContent(new Element("longitude").setText(""+longitude));
 			
 			user.addContent(locElem);
-		}
+		}*/
 		return user;
 	}
 	
@@ -104,12 +105,13 @@ public class User implements Serializable {
 	{
 		facebookUserId = Long.parseLong(userXmlElement.getText());
 		
-		if(userXmlElement.getChild("location")!=null)
+		//See comment in write method above
+		/*if(userXmlElement.getChild("location")!=null)
 		{
 			Element locElem = userXmlElement.getChild("location");
 			latitude = Double.parseDouble(locElem.getChildText("latitude"));
 			longitude = Double.parseDouble(locElem.getChildText("longitude"));
-		}
+		}*/
 		
 	}
 
