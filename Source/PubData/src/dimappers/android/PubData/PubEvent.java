@@ -29,7 +29,7 @@ public class PubEvent implements Serializable, IXmlable
 	private HashMap<User, UserStatus>	users;
 	private User 						host;
 	private Calendar					startTime;
-	private PubLocation					pubLocation;
+	protected PubLocation				pubLocation;
 	private int 						globalEventId;
 	
 	//Constructors
