@@ -24,6 +24,7 @@ public class PubEvent implements Serializable, IXmlable
 	private final String invitedUserTag = "InvitedUser";
 	private final String hostTag = "Host";
 	private final String startTimeTag = "StartTime";
+	private final String statusTag = "Status";
 	
 	//Properties
 	private HashMap<User, UserStatus>	users;
@@ -31,6 +32,7 @@ public class PubEvent implements Serializable, IXmlable
 	private Calendar					startTime;
 	protected PubLocation				pubLocation;
 	private int 						globalEventId;
+	private EventStatus 				status;
 	
 	//Constructors
 	public PubEvent(Calendar startTime, User host)
@@ -40,6 +42,7 @@ public class PubEvent implements Serializable, IXmlable
 		this.host = host;
 		this.startTime = startTime;
 		globalEventId = Constants.EventIdNotAssigned;
+		status = EventStatus.unknown;
 	}
 	
 	public PubEvent(Calendar startTime, PubLocation pubLocation, User host)
@@ -50,6 +53,7 @@ public class PubEvent implements Serializable, IXmlable
 		this.pubLocation = pubLocation;
 		this.startTime = startTime;
 		globalEventId = Constants.EventIdNotAssigned;
+		status = EventStatus.unknown;
 	}
 	
 	public PubEvent(Element element)
@@ -108,6 +112,16 @@ public class PubEvent implements Serializable, IXmlable
 	public void SetEventId(int id)
 	{
 		globalEventId = id;		
+	}
+	
+	public EventStatus getCurrentStatus()
+	{
+		return status;
+	}
+	
+	public void setCurrentStatus(EventStatus status)
+	{
+		this.status = status;
 	}
 	
 	//Public methods
@@ -211,6 +225,10 @@ public class PubEvent implements Serializable, IXmlable
 		
 		pubEventElement.addContent(pubLocation.writeXml());
 		
+		Element statusElement = new Element(statusTag);
+		statusElement.setText(status.toString());
+		pubEventElement.addContent(statusElement);
+		
 		Element hostElement = new Element(hostTag);
 		hostElement.addContent(host.writeXmlForTransmission());
 		pubEventElement.addContent(hostElement);
@@ -238,6 +256,8 @@ public class PubEvent implements Serializable, IXmlable
 		startTime.setTimeInMillis(Long.parseLong(element.getChildText(startTimeTag)));
 		
 		pubLocation = new PubLocation(element.getChild(PubLocation.class.getSimpleName()));
+		
+		status = EventStatus.valueOf(element.getChild(statusTag).getText());
 		
 		host = new User(element.getChild(hostTag).getChild(User.class.getSimpleName()));
 		
