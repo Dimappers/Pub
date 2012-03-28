@@ -142,7 +142,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 					Log.d(Constants.MsgInfo, "PubEvent sent, event id: " + data.GetEventId());
 					HostEvents.this.runOnUiThread(new Runnable()
 					{
-						@Override
 						public void run() {
 							findViewById(R.id.send_Invites).setVisibility(View.GONE);
 							findViewById(R.id.edit_button).setVisibility(View.GONE);
@@ -381,7 +380,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 								glEntry = new GuestList(data.toString(), freeFromWhen);
 							}
 							
-							@Override
 							public void run() {
 								// TODO Auto-generated method stub
 								mData.add(glEntry);

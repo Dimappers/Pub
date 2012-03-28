@@ -21,6 +21,7 @@ public class AppUser extends User implements IXmlable
 {
 	private final String usernameTag = "UserName";
 	final static String outOfDateTag = "outOfDate";
+	final static String rankTag = "rank";
 	
 	private Calendar outOfDate;
 	
@@ -57,12 +58,15 @@ public class AppUser extends User implements IXmlable
 	public Element writeXml()
 	{	
 		Element userElement = new Element("AppUser");
-		userElement.addContent(super.writeXmlForTransmission()); //we write the user id in this part of the xml
+		userElement.addContent(super.writeXmlForTransmission()); //we write the user id & location in this part of the xml
+		
 		Element userNameElement = new Element(usernameTag);
 		userNameElement.setText(facebookName);
 		userElement.addContent(userNameElement);
 		
 		userElement.addContent(new Element(outOfDateTag).setText(new Long(outOfDate.getTimeInMillis()).toString()));
+		
+		userElement.addContent(new Element(rankTag).setText(""+getRank()));
 		
 		return userElement;
 	}
@@ -79,6 +83,8 @@ public class AppUser extends User implements IXmlable
 		
 		outOfDate = Calendar.getInstance();
 		outOfDate.setTime(new Date(Long.parseLong(userXmlElement.getChildText(outOfDateTag))));
+		
+		setRank(Integer.parseInt(userXmlElement.getChildText(rankTag)));
 	}
 
 	
@@ -110,8 +116,10 @@ public class AppUser extends User implements IXmlable
 	{
 		return Calendar.getInstance().after(outOfDate);
 	}
+	
 	public static AppUser AppUserFromUser(User user, Facebook facebook) throws MalformedURLException, JSONException, IOException
 	{
+		if(user instanceof AppUser) { return (AppUser) user; }
 		JSONObject them;
 		them = new JSONObject(facebook.request(Long.toString(user.getUserId())));
 		Calendar current = Calendar.getInstance();

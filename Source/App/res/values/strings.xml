@@ -37,6 +37,8 @@
   	
   	<string name="confirm">Confirm</string>
   	
+  	<string name="host_name">from </string>
+  	
   	<string name="make_a_comment">Make a comment?</string>
   	
   	<string name="delete_event">DELETE EVENT!!!</string>

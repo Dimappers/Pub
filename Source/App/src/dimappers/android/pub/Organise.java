@@ -219,6 +219,14 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 					
 					public void onRequestFail(Exception e) {
 						Log.d(Constants.MsgError, "Could not send event");
+						e.printStackTrace();
+						runOnUiThread(new Runnable(){
+
+							public void run() {
+								progbar.setVisibility(View.GONE);
+								Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
+								//FIXME: probably should make it more obvious when this fails
+							}});
 					}
 					
 					public void onRequestComplete(PubEvent data) {

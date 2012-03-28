@@ -1,5 +1,7 @@
 package dimappers.android.pub;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -7,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.json.JSONException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -142,6 +146,16 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	    	
 	    	TextView startTime = (TextView) findViewById(R.id.userInviteStartTimeText);
 	    	startTime.setText(event.GetFormattedStartTime());
+	    	
+	    	try {
+				((TextView)findViewById(R.id.userInviteHostNameText)).setText(
+						getString(R.string.host_name)
+						+
+						AppUser.AppUserFromUser(event.GetHost(), service.GetFacebook()).toString());
+			} catch (Exception e) {
+				((TextView)findViewById(R.id.userInviteHostNameText)).setText(getString(R.string.host_name)+"Unknown");
+				e.printStackTrace();
+			}
 			
 			facebookUser = service.GetActiveUser();
 			

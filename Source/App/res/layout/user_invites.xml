@@ -3,55 +3,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-
-    <RelativeLayout
-        android:id="@+id/relativeLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center" >
-
+
         <TextView
             android:id="@+id/userInvitesPubNameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
+            android:layout_gravity="center_horizontal"
             android:text="@string/pub_name"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center" >
 
         <TextView
             android:id="@+id/userInviteStartTimeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
+            android:layout_gravity="center_horizontal"
             android:text="@string/current_start_time"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center" >
-
+			
+		<TextView
+		android:id="@+id/userInviteHostNameText"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"
+		android:text="@string/host_name"
+		android:textAppearance="?android:attr/textAppearanceMedium" />
+
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/guestHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:text="@string/guests"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-    </RelativeLayout>
 
     <ListView
         android:id="@+id/listView2"
@@ -61,41 +44,27 @@
         android:scrollbars="vertical" >
     </ListView>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center" >
-
+    <LinearLayout
+            android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
         <Button
             android:id="@+id/decline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="71dp"
-            android:text="@string/decline" />
-
+            android:layout_gravity="center_horizontal"
+            android:text="@string/decline"
+            android:layout_weight="1" />
+
         <Button
             android:id="@+id/going"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="60dp"
-            android:text="@string/going" />
-    </RelativeLayout>
+            android:layout_gravity="center_horizontal"
+            android:text="@string/going" 
+            android:layout_weight="1"/>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center" >
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center" >
-
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

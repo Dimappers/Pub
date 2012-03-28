@@ -82,9 +82,10 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	AppGardenAgent.startSchoolYear(this, "3c7b17c9-5ee0-4b3e-8edb-94a5ccaa7fe2");
     	
     	authoriseFacebook();
+    	
     	Button button_organise = (Button)findViewById(R.id.organise_button);
-    	button_organise.setOnClickListener(this);
     	button_organise.setVisibility(View.GONE);
+    	button_organise.setOnClickListener(this);
     	
     	Button button_invites = (Button)findViewById(R.id.invites_button);
     	button_invites.setOnClickListener(this);
