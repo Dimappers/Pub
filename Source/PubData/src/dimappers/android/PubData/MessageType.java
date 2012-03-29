@@ -17,7 +17,8 @@ public enum MessageType {
 	 * Class the server will send back: RefreshResponse which contains an array of PubEvents which are  
 	 * 									either new or need updating 
 	 */
-	refreshMessage, 
+	refreshMessage,
+	
 	/* 						respondMessage
 	 * Use: 							Tells the server the respond to a specific event
 	 * Class to send to the server: 	EventResponse - containing true if going and the global 
@@ -25,6 +26,7 @@ public enum MessageType {
 	 * Class the server will send back: Nothing
 	 */
 	respondMessage,
+	
 	/* 						updateMessage
 	 * Use: 							Tells the server to update information of an event 
 	 * 									(eg change in time) 
@@ -32,6 +34,13 @@ public enum MessageType {
 	 * Class the server will send back: Nothing
 	 */
 	updateMessage,
+	
+	/*						confirmMessage		
+	 * User:							Tells the invitees if the event 'is on' or not
+	 * Class to send to the server:		Confirm Message
+	 * Class the server will send back:	None - but should send this message on to all the guests
+	 */
+	confirmMessage,
 	
 	unknownMessageType
 }

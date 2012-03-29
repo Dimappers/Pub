@@ -19,7 +19,7 @@ public class HistoryStore implements IXmlable {
 	private static final int MaxEvents = 30;
 	
 	Queue<PubEvent> events;
-	PubEvent averagePubEvent;
+	AveragePubEvent averagePubEvent;
 	int averagePeople;
 	
 	public HistoryStore() 
@@ -40,7 +40,7 @@ public class HistoryStore implements IXmlable {
 		if(events.size() > MaxEvents)
 		{
 			PubEvent oldestEvent = events.remove();
-			//TODO: Average this into averagePubEvent
+			averagePubEvent.addEvent(oldestEvent);
 		}
 		
 		events.add(event);
@@ -104,7 +104,7 @@ public class HistoryStore implements IXmlable {
 		
 		if(element.getChild(averageElementTag) != null)
 		{
-			averagePubEvent = new PubEvent(element.getChild(averageElementTag).getChild(PubEvent.class.getSimpleName()));
+			averagePubEvent = new AveragePubEvent(element.getChild(averageElementTag).getChild(PubEvent.class.getSimpleName()));
 		}
 	}
 }

@@ -98,33 +98,12 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 
 		guest_list.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
-				
-				if(false)
-				{
-					Intent i = new Intent(getBaseContext(), Guests.class);
-					Bundle b = new Bundle();
-					b.putAll(getIntent().getExtras());
-					b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
-					i.putExtras(b);
-					startActivityForResult(i, Constants.GuestReturn);
-				}
-				else 
-				{
-					String name = (String) parent.getItemAtPosition(position);
-					AppUser person = null;
-					for(AppUser friend : facebookFriends)
-					{
-						if(friend.toString().equals(name)) {person = friend; break;}
-					}
-					if(person==null) {Log.d(Constants.MsgWarning, "friend is not a friend");}
-					else
-					{
-						Intent i = new Intent(getBaseContext(), RankBreakDown.class);
-						i.putExtra("person", person);
-						i.putExtras(getIntent().getExtras());
-						startActivityForResult(i, Constants.GuestReturn);
-					}
-				}
+				Intent i = new Intent(getBaseContext(), Guests.class);
+				Bundle b = new Bundle();
+				b.putAll(getIntent().getExtras());
+				b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
+				i.putExtras(b);
+				startActivityForResult(i, Constants.GuestReturn);
 			}
 		});
 
