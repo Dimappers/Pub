@@ -2,11 +2,13 @@ package dimappers.android.pub;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.HashMap;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
@@ -41,26 +43,19 @@ public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
 		Element root = new Element("Message");
 		xmlRequest.setRootElement(root);
 		
-		Element messageTypeElement = new Element("MessageType");
+		Element messageTypeElement = new Element(MessageType.class.getSimpleName());
 		messageTypeElement.addContent(MessageType.refreshMessage.toString());
 		root.addContent(messageTypeElement);
 		
 		RefreshData refreshMessage = new RefreshData(service.GetActiveUser(), fullRefresh);
 		root.addContent(refreshMessage.writeXml());
 		
-		Socket socket;
-		try {
-			socket = DataSender.sendDocument(xmlRequest);
-		} catch (IOException e) {
-			listener.onRequestFail(e);
-			return;
-		}  
+		
 		Document returnDocument;
-		try
-		{
-			returnDocument = DataSender.readTillEndOfMessage(socket.getInputStream());
-		} catch (Exception e)
-		{
+		
+		try {
+			returnDocument = DataSender.sendReceiveDocument(xmlRequest);
+		} catch (Exception e) {
 			listener.onRequestFail(e);
 			return;
 		}

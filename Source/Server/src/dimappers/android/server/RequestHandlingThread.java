@@ -23,6 +23,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
 import dimappers.android.PubData.AcknoledgementData;
+import dimappers.android.PubData.ConfirmMessage;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.RefreshData;
@@ -60,7 +61,7 @@ public class RequestHandlingThread extends Thread{
 		}
 		
 		if (doc != null) {
-			message = MessageType.valueOf(doc.getRootElement().getChild("MessageType").getText());
+			message = MessageType.valueOf(doc.getRootElement().getChild(MessageType.class.getSimpleName()).getText());
 		}
 		
 		
@@ -309,6 +310,18 @@ public class RequestHandlingThread extends Thread{
 			{
 				UserManager.markForUpdate(user, event.GetEventId());
 			}
+		}
+	}
+	
+	private static void ItsOnMessageReceived(Document doc, Socket clientSocket) throws ServerException
+	{
+		ConfirmMessage message = new ConfirmMessage(doc.getRootElement().getChild(ConfirmMessage.class.getSimpleName()));
+		
+		EventManager.ConfirmTrip(message.getEventId(), message.getEventStatus());
+		
+		for(User user : EventManager.GetPubEvent(message.getEventId()).GetUsers())
+		{
+			UserManager.markForUpdate(user, message.getEventId());
 		}
 	}
 	

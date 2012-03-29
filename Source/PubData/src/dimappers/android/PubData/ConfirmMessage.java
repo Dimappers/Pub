@@ -7,8 +7,8 @@ public class ConfirmMessage implements IXmlable {
 	private final String statusTag = "Status";
 	private final String eventIdTag = "EventId";
 	
-	EventStatus status;
-	int eventId;
+	private EventStatus status;
+	private int eventId;
 	
 	public ConfirmMessage(EventStatus status, int eventId)
 	{
@@ -19,6 +19,16 @@ public class ConfirmMessage implements IXmlable {
 	public ConfirmMessage(Element element)
 	{
 		readXml(element);
+	}
+	
+	public EventStatus getEventStatus()
+	{
+		return status;
+	}
+	
+	public int getEventId()
+	{
+		return eventId;
 	}
 	
 	@Override

@@ -9,6 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import dimappers.android.PubData.EventStatus;
 import dimappers.android.PubData.PubEvent;
 
 public class EventManager
@@ -74,6 +75,17 @@ public class EventManager
 			throw new ServerException(ExceptionType.EventManagerNoSuchEvent);
 		}
 		
+		events.put(pubEventId, event);
+	}
+	
+	public static void ConfirmTrip(int pubEventId, EventStatus status) throws ServerException
+	{
+		if(!events.containsKey(pubEventId))
+		{
+			throw new ServerException(ExceptionType.EventManagerNoSuchEvent);
+		}
+		PubEvent event = events.get(pubEventId);
+		event.setCurrentStatus(status);
 		events.put(pubEventId, event);
 	}
 }

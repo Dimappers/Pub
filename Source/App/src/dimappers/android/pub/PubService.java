@@ -103,11 +103,6 @@ public class PubService extends IntentService
 			PubService.this.receiver.forceUpdate(fullUpdate);
 		}
 
-		public boolean SendingMessage() {
-			//TODO: Should check to see if a new event has been created but hasn't yet been sent
-			return false;
-		}
-
 		public Facebook GetFacebook() {
 			return PubService.this.authenticatedFacebook;
 		}
@@ -184,6 +179,14 @@ public class PubService extends IntentService
 
 	
 	private final IPubService binder = new ServiceBinder();
+	
+
+	
+	
+	
+	
+	
+	
 	
 	private StoredData storedData;
 	private boolean hasStarted;

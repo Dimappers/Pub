@@ -28,8 +28,6 @@ public interface IPubService extends IBinder {
 	
 	void									PerformUpdate(boolean fullUpdate);
 	
-	boolean									SendingMessage();
-	
 	Facebook 								GetFacebook();
 	void									Logout();
 	
