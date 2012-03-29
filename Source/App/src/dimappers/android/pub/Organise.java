@@ -15,6 +15,9 @@ import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -87,31 +90,30 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		
 		Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
 
+		//Always available buttons
 		cur_pub = (Button)findViewById(R.id.pub_button);
 		cur_time = (Button)findViewById(R.id.time_button);
-		
-		progbar = (ProgressBar)findViewById(R.id.progressBar);
-
-		guest_list = (ListView)findViewById(android.R.id.list);
-		adapter = new ArrayAdapter<String>(this, android.R.layout.test_list_item, listItems);
-
-		setListAdapter(adapter);
-
-		cur_pub.setOnClickListener(this);
-		
-		
-		
+		cur_loc=(TextView)findViewById(R.id.current_location);
     	cur_pub.setTypeface(font);
     	cur_time.setTypeface(font);
+    	cur_loc.setTypeface(font);
+		cur_pub.setOnClickListener(this);
+		cur_time.setOnClickListener(this);
+		cur_loc.setOnClickListener(this);
+		
+		//Always visible text
+    	((TextView)findViewById(R.id.time_title)).setTypeface(font);
+    	((TextView)findViewById(R.id.pub_title)).setTypeface(font);
+    	((TextView)findViewById(R.id.guest_title)).setTypeface(font);
     	
-    	TextView text_time = (TextView)findViewById(R.id.time_title);
-    	text_time.setTypeface(font);
-    	TextView text_pub = (TextView)findViewById(R.id.pub_title);
-    	text_pub.setTypeface(font);
-    	TextView text_guest = (TextView)findViewById(R.id.guest_title);
-    	text_guest.setTypeface(font);
-    	
+    	//Progress bar
+		progbar = (ProgressBar)findViewById(R.id.progressBar);
 
+		//Guest list
+		guest_list = (ListView)findViewById(android.R.id.list);
+		setListAdapter(adapter);
+		adapter = new ArrayAdapter<String>(this, android.R.layout.test_list_item, listItems);
+		
 		guest_list.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 				Intent i = new Intent(getBaseContext(), Guests.class);
@@ -123,16 +125,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			}
 		});
 
-
-		cur_time.setOnClickListener(this);
-
-		Button button_save_event = (Button)findViewById(R.id.save_event);
-		button_save_event.setOnClickListener(this);
-		Button button_send_invites = (Button)findViewById(R.id.send_invites_event);
-		button_send_invites.setOnClickListener(this);
-
-		cur_loc=(TextView)findViewById(R.id.current_location);
-		cur_loc.setOnClickListener(this);
 	}
 	
 	class TextUpdater implements Runnable {
@@ -232,15 +224,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 					}
 					
 					public void onRequestComplete(PubEvent data) {
-						Log.d(Constants.MsgInfo, "PubEvent sent, event id: " + data.GetEventId());
-						Intent intent = new Intent();
-						Bundle b = new Bundle();
-						b.putAll(getIntent().getExtras()); 
-						b.putSerializable(Constants.CurrentWorkingEvent, data.GetEventId());
-						b.putBoolean(Constants.IsSavedEventFlag, false);
-						intent.putExtras(b);
-						setResult(RESULT_OK, intent);
-						finish();						
+							onSendSuccess(data);
 					}
 				});
 				
@@ -256,6 +240,20 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			}
 		}
 	}
+	
+	private void onSendSuccess(PubEvent data)
+	{
+		Log.d(Constants.MsgInfo, "PubEvent sent, event id: " + data.GetEventId());
+		Intent intent = new Intent();
+		Bundle b = new Bundle();
+		b.putAll(getIntent().getExtras()); 
+		b.putSerializable(Constants.CurrentWorkingEvent, data.GetEventId());
+		b.putBoolean(Constants.IsSavedEventFlag, false);
+		intent.putExtras(b);
+		setResult(RESULT_OK, intent);
+		finish();		
+	}
+	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -432,10 +430,33 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			Organise.this.service = (IPubService)service;
 			event=Organise.this.service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
 
+			//Get user's current location
 			double[] location = Organise.this.service.GetActiveUser().getLocation();
-			double latitude = location[0];
-			double longitude = location[1];
+			if(location==null)
+			{
+				final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+				LocationFinder lc = new LocationFinder(locationManager);
+				lc.findLocation(new LocationListener(){
+
+					public void onLocationChanged(Location loc) {
+						locationManager.removeUpdates(this);
+						geocode(loc.getLatitude(), loc.getLongitude());
+					}
+
+					public void onProviderDisabled(String arg0) {
+						Log.d(Constants.MsgError, arg0 + " is disabled.");
+					}
+
+					public void onProviderEnabled(String arg0) {}
+
+					public void onStatusChanged(String arg0, int arg1,Bundle arg2) {}});
+			}
+			else
+			{
+				geocode(location[0], location[1]);
+			}
 						
+			//get list of facebook friends
 			Organise.this.service.addDataRequest(new DataRequestGetFriends(), new IRequestListener<AppUserArray>(){
 
 				public void onRequestComplete(AppUserArray data) {
@@ -446,8 +467,54 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 					Log.d(Constants.MsgError, "FAIL");
 				}});
 			
-			UpdateFromEvent();
+
+			//update text on save/send buttons depending on whether the event is sent or not
+			Button button_save_event = (Button)findViewById(R.id.save_event);
+			Button button_send_invites = (Button)findViewById(R.id.send_invites_event);
 			
+			if(event.GetEventId()<0)
+			{
+				button_save_event.setOnClickListener(Organise.this);
+				button_send_invites.setOnClickListener(Organise.this);
+			}
+			else
+			{
+				button_save_event.setVisibility(View.INVISIBLE);
+				button_send_invites.setText(R.string.update);
+				button_send_invites.setOnClickListener(new OnClickListener(){
+
+					public void onClick(View arg0) {
+						progbar.setVisibility(View.VISIBLE);
+						DataRequestUpdateEvent update = new DataRequestUpdateEvent(event);
+						Organise.this.service.addDataRequest(update, new IRequestListener<PubEvent>(){
+
+							public void onRequestComplete(PubEvent data) {
+								if(data==null) {onSendSuccess(event);}
+								else {onSendSuccess(data);}
+							}
+
+							public void onRequestFail(Exception e) {
+								Log.d(Constants.MsgError,"Failed to update event: " + e.getMessage());
+								runOnUiThread(new Runnable(){
+									public void run() {
+										progbar.setVisibility(View.GONE);
+										Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
+									}});
+							}});
+					}});
+			}
+			
+			//update screen from event
+			UpdateFromEvent();
+		}
+
+		public void onServiceDisconnected(ComponentName className)
+		{
+		}
+		
+		private void geocode(double latitude, double longitude)
+		{			
+			//find name of location based on lat/long of user's location
 			DataRequestGeocoder geoCoder = new DataRequestGeocoder(latitude, longitude, getApplicationContext());
 			Organise.this.service.addDataRequest(geoCoder, new IRequestListener<XmlableString>(){
 
@@ -461,10 +528,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 					e.printStackTrace();
 					runOnUiThread(new TextUpdater("Unknown"));
 				}});
-		}
-
-		public void onServiceDisconnected(ComponentName className)
-		{
 		}
 
 	};

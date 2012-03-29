@@ -41,6 +41,7 @@ public class DataRequestUpdateEvent implements IDataRequest<Long, PubEvent> {
 	
 		root.addContent(data.writeXml());
 		
+		xmlDoc.setRootElement(root);
 		//TODO: Put port in stream here
 		
 		try {
