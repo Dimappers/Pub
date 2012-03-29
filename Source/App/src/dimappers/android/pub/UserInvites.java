@@ -150,10 +150,10 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	    	try {
 				((TextView)findViewById(R.id.userInviteHostNameText)).setText(
 						getString(R.string.host_name)
-						+
+						+ " " +
 						AppUser.AppUserFromUser(event.GetHost(), service.GetFacebook()).toString());
 			} catch (Exception e) {
-				((TextView)findViewById(R.id.userInviteHostNameText)).setText(getString(R.string.host_name)+"Unknown");
+				((TextView)findViewById(R.id.userInviteHostNameText)).setText(getString(R.string.host_name)+" unknown");
 				e.printStackTrace();
 			}
 			

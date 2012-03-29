@@ -53,13 +53,12 @@ public class PubService extends IntentService
 			DataRequestNewEvent r = new DataRequestNewEvent(event);
 			final int savedEventId = event.GetEventId();
 			PubService.this.addDataRequest(r, new IRequestListener<PubEvent>() {
-					@Override
+
 					public void onRequestComplete(PubEvent data) {
 						storedData.DeleteSavedEvent(savedEventId);
 						listener.onRequestComplete(data);
 					}
 
-					@Override
 					public void onRequestFail(Exception e) {
 						listener.onRequestFail(e);
 					}

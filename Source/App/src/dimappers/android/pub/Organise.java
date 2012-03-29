@@ -171,9 +171,16 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				if(locSet){
 					b.putDouble(Constants.CurrentLatitude, latSet);
 					b.putDouble(Constants.CurrentLongitude, lngSet);
+					i.putExtras(b);
+					startActivityForResult(i, Constants.PubLocationReturn);
 				}
-				i.putExtras(b);
-				startActivityForResult(i, Constants.PubLocationReturn);
+				else if (service!=null)
+				{
+					b.putDouble(Constants.CurrentLatitude, service.GetActiveUser().getLocation()[0]);
+					b.putDouble(Constants.CurrentLongitude, service.GetActiveUser().getLocation()[1]);
+					i.putExtras(b);
+					startActivityForResult(i, Constants.PubLocationReturn);
+				}
 				break;
 			}
 			case R.id.time_button : {

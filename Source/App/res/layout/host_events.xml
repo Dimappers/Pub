@@ -76,7 +76,16 @@
             android:layout_weight="1"
             android:layout_marginLeft="2dp"
             android:text="@string/edit" />
-
+        
+        <Button
+            android:id="@+id/it_is_on"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+			android:layout_weight="1"
+            android:layout_marginRight="2dp"
+            android:text="@string/it_is_on"
+            android:visibility="gone"/>
+        
     </LinearLayout>
 
 </LinearLayout>

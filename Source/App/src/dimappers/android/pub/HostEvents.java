@@ -29,6 +29,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
@@ -59,20 +60,25 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		button_send_invites.setOnClickListener(this);
 
 		Button button_edit = (Button) findViewById(R.id.edit_button);
-		button_edit.setOnClickListener(this);    	
+		button_edit.setOnClickListener(this);  
+		
+		Button button_itson = (Button) findViewById(R.id.it_is_on);
+		button_itson.setOnClickListener(this);
 
 		ListView list = (ListView) findViewById(R.id.listView1);
 
 		sent = !getIntent().getExtras().getBoolean(Constants.IsSavedEventFlag); //if we have saved the event, it has not been sent
 		if(sent)
 		{
-			findViewById(R.id.send_Invites).setVisibility(View.GONE);
-			findViewById(R.id.edit_button).setVisibility(View.GONE);
+			button_send_invites.setVisibility(View.GONE);
+			button_edit.setVisibility(View.GONE);
+			button_itson.setVisibility(View.VISIBLE);
 		}
 		else
 		{
-			findViewById(R.id.send_Invites).setVisibility(View.VISIBLE);
-			findViewById(R.id.edit_button).setVisibility(View.VISIBLE);
+			button_send_invites.setVisibility(View.VISIBLE);
+			button_edit.setVisibility(View.VISIBLE);
+			button_itson.setVisibility(View.GONE);
 		}
 		
 		gadapter = new GuestListAdapter(this);
@@ -145,6 +151,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 						public void run() {
 							findViewById(R.id.send_Invites).setVisibility(View.GONE);
 							findViewById(R.id.edit_button).setVisibility(View.GONE);
+							findViewById(R.id.it_is_on).setVisibility(View.VISIBLE);
 							UpdateDataFromEvent();
 						}
 						
@@ -164,6 +171,10 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			i.putExtras(bundle);
 			startActivityForResult(i, Constants.FromEdit);
 			break;
+		}
+		case R.id.it_is_on :
+		{
+			Toast.makeText(getApplicationContext(),"Implement this", Toast.LENGTH_LONG).show();
 		}
 
 		}
