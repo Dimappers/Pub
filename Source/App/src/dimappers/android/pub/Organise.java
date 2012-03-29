@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -83,6 +84,8 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		{
 			Log.d(Constants.MsgInfo, "Event has just been generated");
 		}
+		
+		Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
 
 		cur_pub = (Button)findViewById(R.id.pub_button);
 		cur_time = (Button)findViewById(R.id.time_button);
@@ -95,6 +98,19 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		setListAdapter(adapter);
 
 		cur_pub.setOnClickListener(this);
+		
+		
+		
+    	cur_pub.setTypeface(font);
+    	cur_time.setTypeface(font);
+    	
+    	TextView text_time = (TextView)findViewById(R.id.time_title);
+    	text_time.setTypeface(font);
+    	TextView text_pub = (TextView)findViewById(R.id.pub_title);
+    	text_pub.setTypeface(font);
+    	TextView text_guest = (TextView)findViewById(R.id.guest_title);
+    	text_guest.setTypeface(font);
+    	
 
 		guest_list.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
