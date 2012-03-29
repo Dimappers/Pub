@@ -58,7 +58,6 @@ public class Guests extends ListActivity implements OnClickListener{
     	
     	guest_list.setOnItemLongClickListener(new OnItemLongClickListener() {
 
-			@Override
 			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
 				
@@ -104,7 +103,6 @@ public class Guests extends ListActivity implements OnClickListener{
 		searchBox.requestFocus();
 		searchBox.addTextChangedListener(new TextWatcher() {
 			
-			@Override
 			public void onTextChanged(CharSequence searchTerm, int start, int before, int count) {
 				searchTerm = searchTerm.toString().toLowerCase();
 				if(searchTerm.equals(""))
@@ -136,14 +134,12 @@ public class Guests extends ListActivity implements OnClickListener{
 				}				
 			}
 			
-			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
 				// TODO Auto-generated method stub
 				
 			}
 			
-			@Override
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
 				
