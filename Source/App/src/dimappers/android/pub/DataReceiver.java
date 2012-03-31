@@ -65,9 +65,9 @@ public class DataReceiver
 
 
 				public void onRequestComplete(PubEventArray data) {
-					if(data.getEvents().length > 0)
+					if(data.getEvents().size() > 0)
 					{
-						service.NewEventsRecieved(data.getEvents());
+						service.NewEventsRecieved(data);
 					}
 				}
 

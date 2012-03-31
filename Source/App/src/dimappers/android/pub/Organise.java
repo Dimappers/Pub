@@ -111,8 +111,9 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 
 		//Guest list
 		guest_list = (ListView)findViewById(android.R.id.list);
-		setListAdapter(adapter);
+		
 		adapter = new ArrayAdapter<String>(this, android.R.layout.test_list_item, listItems);
+		setListAdapter(adapter);
 		
 		guest_list.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
