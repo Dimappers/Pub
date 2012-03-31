@@ -201,12 +201,12 @@ public class PersonRanker {
 				final String name = peopleCursor
 						.getString(peopleCursor
 								.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-				for (final User friend : facebookFriends) {
+				for (User friend : facebookFriends) {
 					if(friend instanceof AppUser)
 					{
 						AppUser data = (AppUser) friend;
 						if (data.toString().equals(name)) {
-							data.setRank(data.getRank() + peopleCursor.getInt(peopleCursor
+							friend.setRank(friend.getRank() + peopleCursor.getInt(peopleCursor
 									.getColumnIndex(ContactsContract.Contacts.TIMES_CONTACTED)));
 							if (Constants.debug) {
 								data.CallLogTotal++;
