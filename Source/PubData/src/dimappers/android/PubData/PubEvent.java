@@ -276,6 +276,12 @@ public class PubEvent implements Serializable, IXmlable
 		users = new HashMap<User, UserStatus>();
 		users.put(host, new UserStatus(GoingStatus.going, startTime, null));
 	}
+	
+	@Override
+	public int hashCode()
+	{
+		return globalEventId;
+	}
 }
 
 

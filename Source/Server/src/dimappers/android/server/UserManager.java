@@ -3,6 +3,7 @@ package dimappers.android.server;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import dimappers.android.PubData.UpdateType;
 import dimappers.android.PubData.User;
 
 public class UserManager {
@@ -70,7 +71,7 @@ public class UserManager {
 		}
 		
 		ServerUser sUser = users.get(user.getUserId());
-		sUser.setUpdate(eventId, true);
+		sUser.NotifyUpdateSent(eventId);
 	}
 	
 	public static void markAllAsUpToDate(User user) throws ServerException
@@ -84,7 +85,7 @@ public class UserManager {
 		sUser.NotifyUpdateSent();
 	}
 	
-	public static LinkedList<Integer> getUpdate(User user) throws ServerException {
+	public static HashMap<Integer, UpdateType> getUpdate(User user) throws ServerException {
 		/* Returns a Linked List of events that need to be refreshed for the given user. If the
 		 * user doesn't exist, returns null
 		 */
@@ -97,7 +98,7 @@ public class UserManager {
 		return sUser.getOutOfDateEvents();
 	}
 	
-	public static LinkedList<Integer> getFullUpdate(User user) throws ServerException {
+	public static HashMap<Integer, UpdateType> getFullUpdate(User user) throws ServerException {
 		if(!users.containsKey(user.getUserId()))
 		{
 			throw new ServerException(ExceptionType.UserManagerNoSuchUser);

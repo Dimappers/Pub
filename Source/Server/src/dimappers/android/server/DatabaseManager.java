@@ -2,11 +2,15 @@ package dimappers.android.server;
 
 import java.sql.*;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Set;
 
+import javax.naming.event.EventContext;
+
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
+import dimappers.android.PubData.UpdateType;
 import dimappers.android.PubData.User;
 
 public class DatabaseManager {
@@ -48,12 +52,13 @@ public class DatabaseManager {
 		statementUser.setBoolean(2, user.GetHasApp());
 		statementUser.execute();
 		
-		LinkedList<Integer> events = user.getAllEvents();
+		HashMap<Integer, UpdateType> events = user.getAllEvents();
 		// For each Event in the users event list, add it to the database
-		while (events.size() != 0) {
+		//MARK: Not really sure what this does, tried to adapt for my change but may be a load of rubbish
+		for(Integer eventId : events.keySet()) {
 			System.out.println("Events Size: " + events.size());
 			statementUserEvents.setLong(1, user.getUserId());
-			statementUserEvents.setInt(2, events.pop());
+			statementUserEvents.setInt(2, eventId);
 			statementUserEvents.execute();
 		}
 		
