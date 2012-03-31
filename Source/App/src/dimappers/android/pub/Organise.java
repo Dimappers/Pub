@@ -111,8 +111,8 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 
 		//Guest list
 		guest_list = (ListView)findViewById(android.R.id.list);
-		setListAdapter(adapter);
 		adapter = new ArrayAdapter<String>(this, android.R.layout.test_list_item, listItems);
+		setListAdapter(adapter);
 		
 		guest_list.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
@@ -153,6 +153,9 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		b.putAll(getIntent().getExtras()); 
 		b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 		switch (v.getId()){
+		case R.id.current_location : {
+			setLocation();
+		}
 			case R.id.pub_button : {
 				i = new Intent(this, ChoosePub.class);
 				if(locSet){
@@ -287,54 +290,58 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	public boolean onMenuItemClick(MenuItem item) {
 		switch(item.getItemId()){
 			case Menu.NONE : {
-				
-				final EditText loc = new EditText(getApplicationContext());
-				new AlertDialog.Builder(this).setMessage("Enter your current location:")  
-				.setTitle("Change Location")  
-				.setCancelable(true)  
-				.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						
-						progbar.setVisibility(View.VISIBLE);
-						
-						DataRequestReverseGeocoder request1 = new DataRequestReverseGeocoder(getApplicationContext(), loc.getText().toString());
-						service.addDataRequest(request1, new IRequestListener<XmlableDoubleArray>(){
-
-							public void onRequestFail(Exception e) {
-								failure();
-							}
-
-							public void onRequestComplete(XmlableDoubleArray data) {
-								
-								final double lat = data.getArray()[0];
-								final double lng = data.getArray()[1];
-								
-								DataRequestPubFinder request2 = new DataRequestPubFinder(lat, lng);
-								service.addDataRequest(request2, new IRequestListener<PlacesList>(){
-
-									public void onRequestComplete(PlacesList data) {
-										PubLocation best = new PubRanker(data.results, event, service.getHistoryStore()).returnBest();
-										if(best==null) {failure();}
-										else
-										{
-											event.SetPubLocation(best);
-											success(lat, lng, loc.getText().toString());
-										}
-										}
-
-									public void onRequestFail(Exception e) {
-										failure();
-									}});
-							}});
-						dialog.cancel();
-					}
-				})
-				.setView(loc)
-				.show(); 
+				setLocation();
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	void setLocation()
+	{
+		final EditText loc = new EditText(getApplicationContext());
+		new AlertDialog.Builder(this).setMessage("Enter your current location:")  
+		.setTitle("Change Location")  
+		.setCancelable(true)  
+		.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				
+				progbar.setVisibility(View.VISIBLE);
+				
+				DataRequestReverseGeocoder request1 = new DataRequestReverseGeocoder(getApplicationContext(), loc.getText().toString());
+				service.addDataRequest(request1, new IRequestListener<XmlableDoubleArray>(){
+
+					public void onRequestFail(Exception e) {
+						failure();
+					}
+
+					public void onRequestComplete(XmlableDoubleArray data) {
+						
+						final double lat = data.getArray()[0];
+						final double lng = data.getArray()[1];
+						
+						DataRequestPubFinder request2 = new DataRequestPubFinder(lat, lng);
+						service.addDataRequest(request2, new IRequestListener<PlacesList>(){
+
+							public void onRequestComplete(PlacesList data) {
+								PubLocation best = new PubRanker(data.results, event, service.getHistoryStore()).returnBest();
+								if(best==null) {failure();}
+								else
+								{
+									event.SetPubLocation(best);
+									success(lat, lng, loc.getText().toString());
+								}
+								}
+
+							public void onRequestFail(Exception e) {
+								failure();
+							}});
+					}});
+				dialog.cancel();
+			}
+		})
+		.setView(loc)
+		.show(); 
 	}
 	
 	void success(double lat, double lng, final String loc)

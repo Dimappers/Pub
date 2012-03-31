@@ -8,18 +8,25 @@ import java.util.Hashtable;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences.Editor;
 import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.facebook.android.Facebook;
 
@@ -94,9 +101,9 @@ public class PubService extends IntentService
 			return null;
 		}
 
-		public void RemoveSavedEvent(PubEvent event) {
+		public void RemoveEventFromStoredDataAndCancelNotification(PubEvent event) {
 			PubService.this.storedData.DeleteSavedEvent(event.GetEventId());
-			
+			/////////////////////////////////////////////////((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancel(event.GetEventId());
 		}
 
 		public void PerformUpdate(boolean fullUpdate) {
@@ -129,21 +136,45 @@ public class PubService extends IntentService
 
 		public void NewEventsRecieved(PubEvent[] newEvents) {
 			int hostedEvents = 0;
-			for(PubEvent event : newEvents)
+			for(final PubEvent event : newEvents)
 			{
 				if(event.GetHost().equals(user))
 				{
 					storedData.GetGenericStore("PubEvent").put(event.GetEventId(), event);
 					++hostedEvents;
+					
+					makeNotification(event);
+					
 				}
 				else
 				{
 					storedData.AddNewInvitedEvent(event);
+					DataRequestGetFacebookUser hostGetter = new DataRequestGetFacebookUser(event.GetHost().getUserId());
+					this.addDataRequest(hostGetter, new IRequestListener<AppUser>(){
+
+						public void onRequestComplete(AppUser data) {
+							
+							makeNotification();
+						}
+
+						private void makeNotification() {
+							//Create notification for start-time of event to remind guests
+							
+							ServiceBinder.this.makeNotification(event);
+					
+						}
+
+						public void onRequestFail(Exception e) {
+							makeNotification();
+							Log.d(Constants.MsgError, "Error getting host's name from facebook.");
+							e.printStackTrace();
+						}});
 				}
 			}			
 			
-			NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-			Context context = PubService.this.getApplicationContext();
+			Context context = getApplicationContext();
+			NotificationManager nManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+			
 			if(newEvents.length - hostedEvents == 1)
 			{
 				Notification newNotification = new Notification(R.drawable.icon, "New pub event", System.currentTimeMillis());
@@ -180,7 +211,17 @@ public class PubService extends IntentService
 		public PubEvent getEvent(int eventId) {
 			return storedData.getEvent(eventId);
 		}
-    }
+    
+		private void makeNotification(PubEvent event)
+		{
+			Intent notificationAlarmIntent = new Intent(getApplicationContext(), NotificationAlarmManager.class);
+			Bundle b = new Bundle();
+			b.putSerializable(Constants.CurrentWorkingEvent, event);
+			notificationAlarmIntent.putExtras(b);
+			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			((AlarmManager) getSystemService(Context.ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis(), contentIntent);
+		}
+	}
 
 	
 	private final IPubService binder = new ServiceBinder();
@@ -313,4 +354,7 @@ public class PubService extends IntentService
 		}
 		hasStarted = true;
 	}
+	
+	
+	
 }

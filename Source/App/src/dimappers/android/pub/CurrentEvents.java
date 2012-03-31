@@ -180,6 +180,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 						getIntent().getExtras().getInt(Constants.CurrentWorkingEvent)); 
 				Intent i;
 				Bundle b = new Bundle();
+				//FIXME: null pointers be here
 				b.putInt(Constants.CurrentWorkingEvent, createdEvent.GetEventId());
 				b.putBoolean(Constants.IsSavedEventFlag, getIntent().getExtras().getBoolean(Constants.IsSavedEventFlag));
 				if(createdEvent.GetHost().equals(facebookUser))
