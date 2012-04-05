@@ -25,6 +25,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -262,7 +263,7 @@ class GuestListAdapter extends BaseAdapter
 	}
 
 
-	public View getView(int position, View convertView, ViewGroup parent) 
+	public View getView(int position, final View convertView, ViewGroup parent) 
 	{
 		GuestListView glView = null;
 
@@ -281,15 +282,25 @@ class GuestListAdapter extends BaseAdapter
 		glView.time.setText(guestList.getTime().toString());
 
 		if(HostEvents.sent == true )
-		{
-			comment.setImageLevel(R.drawable.email_open);
-			comment.setClickable(true);
-			comment.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) 
-				{
-					showAddDialog();
-				}
-			});
+		{	
+			if(true)  //There is a message from a user
+			{
+				comment.setImageLevel(R.drawable.email_open);
+				comment.setClickable(true);
+				comment.setOnClickListener(new OnClickListener() {
+					public void onClick(View v) 
+					{
+						showAddDialog();
+
+						String test = "I can't wait for this event";
+						EditText commentReceived = (EditText)convertView.findViewById(R.id.comments_received);
+	
+						commentReceived.setText(test);//.toString();
+					}
+				});
+			}
+			else 
+				comment.setVisibility(View.GONE);
 		} 
 		else
 		{

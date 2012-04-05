@@ -28,6 +28,7 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -73,8 +74,8 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	    	
 	    	findViewById(R.id.going).setBackgroundColor(Color.GREEN);
 	    	findViewById(R.id.decline).setBackgroundResource(android.R.drawable.btn_default);
-	    	
-			break;
+
+	    	break;
 		}
 		case R.id.decline :
 		{
@@ -106,22 +107,31 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
          commentDialog.setTitle("Do you want to make a comment?");
          commentDialog.setCancelable(true);
 		
-        TextView text = (TextView) commentDialog.findViewById(R.id.comment_text_box);
 
 		Button attachButton = (Button) commentDialog.findViewById(R.id.attach); 
 		Button cancelButton = (Button) commentDialog.findViewById(R.id.cancel); 
 
 		attachButton.setOnClickListener(new OnClickListener() { 
 		// @Override 
-		public void onClick(View v) { 
-
-		Toast.makeText(getBaseContext(), "Make a comment", Toast.LENGTH_LONG).show(); 
+		public void onClick(View v) 
+		{ 
+		
+	    TextView text = (TextView) commentDialog.findViewById(R.id.comment_text_box);
+	    EditText time = (EditText) commentDialog.findViewById(R.id.changeTime);
+					
+		String commentMade = text.getText().toString();
+		Calendar timeChange = (Calendar) time.getText();
+					
+		Toast.makeText(getBaseContext(), commentMade, Toast.LENGTH_LONG).show(); 
+		
+		sendResponse(true,timeChange,commentMade);
 		} 
 		}); 
 
 		cancelButton.setOnClickListener(new OnClickListener() { 
 		// @Override 
-		public void onClick(View v) { 
+		public void onClick(View v) 
+		{ 
 		commentDialog.dismiss(); 
 		} 
 		});

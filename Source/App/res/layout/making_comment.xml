@@ -20,7 +20,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
-            android:id="@+id/editText1"
+            android:id="@+id/changeTime"
             android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
