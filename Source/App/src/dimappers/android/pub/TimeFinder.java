@@ -18,6 +18,7 @@ public class TimeFinder {
 		Calendar time = Calendar.getInstance();
 		time.set(time.get(Calendar.YEAR), time.get(Calendar.MONTH), time.get(Calendar.DATE), //Using current date 
 				hour, minutes, 0); 															 //Using time based on average start time of previous pub trips
+		if(Calendar.getInstance().after(time)) {time.add(Calendar.DATE, 1);} 
 		return time;
 	}
 	

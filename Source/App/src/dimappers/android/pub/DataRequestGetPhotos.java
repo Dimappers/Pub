@@ -25,16 +25,16 @@ public class DataRequestGetPhotos implements IDataRequest<String, XmlJasonObject
 		long userId = service.GetActiveUser().getUserId();
 		if(storedData.containsKey("Photos"))
 		{
-			Log.d(Constants.MsgError, "Already have photos stored.");
+			Log.d(Constants.MsgInfo, "Already have photos stored.");
 			if(!storedData.get("Photos").isOutOfDate())
 			{
-				Log.d(Constants.MsgError, "They are in date.");
-				listener.onRequestComplete(storedData.get(userId));
+				Log.d(Constants.MsgInfo, "They are in date.");
+				listener.onRequestComplete(storedData.get("Photos"));
 				return;
 			}
 		}
 		
-		Log.d(Constants.MsgError, "No in date photos available - Getting photos from Facebook.");
+		Log.d(Constants.MsgWarning, "No in date photos available - Getting photos from Facebook.");
 		XmlJasonObject myPhotos;
 		try {
 			myPhotos = new XmlJasonObject(service.GetFacebook().request("me/photos"));

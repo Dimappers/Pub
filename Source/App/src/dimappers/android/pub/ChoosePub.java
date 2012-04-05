@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
@@ -99,31 +100,30 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 		 
 	    void getPubs()
 	    {
-	    	DataRequestPubFinder pubFinder = new DataRequestPubFinder(latitude, longitude);
-			service.addDataRequest(pubFinder, new IRequestListener<PlacesList>() {
-
-				public void onRequestComplete(PlacesList data) {
-					runOnUiThread(new AdapterUpdater(data.results));
-				}
-
-				public void onRequestFail(Exception e) {
-					// TODO Auto-generated method stub
-					
-				}});
+			getPubs("");
 	    }
 	    
 	    void getPubs(String keyword)
 	    {
-	    	DataRequestPubFinder pubFinder = new DataRequestPubFinder(latitude, longitude, keyword);
-			service.addDataRequest(pubFinder, new IRequestListener<PlacesList>() {
+	    	DataRequestPubFinder pubFinder;
+	    	if(keyword.length()==0) {pubFinder = new DataRequestPubFinder(latitude, longitude);}
+	    	else {pubFinder = new DataRequestPubFinder(latitude, longitude, keyword);}
+	    	service.addDataRequest(pubFinder, new IRequestListener<PlacesList>() {
 
 				public void onRequestComplete(PlacesList data) {
 					runOnUiThread(new AdapterUpdater(data.results));
+					Log.d(Constants.MsgInfo, "Pubs returned from DataRequest");
 				}
 
 				public void onRequestFail(Exception e) {
-					// TODO Auto-generated method stub
-					
+					Log.d(Constants.MsgError, "Pubs not returned from DataRequest: " + e.getMessage());
+					runOnUiThread(new Runnable(){
+						
+						public void run()
+						{
+							Toast.makeText(getApplicationContext(), "Pubs are currently unavaliable.", Toast.LENGTH_LONG).show();
+						}
+					});
 				}});
 	    }
 			

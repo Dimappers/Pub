@@ -16,8 +16,8 @@ public class User implements Serializable {
 	
 	//Properties
 	protected Long facebookUserId;
-	private float latitude = 1000.0f;
-	private float longitude = 1000.0f;
+	private double latitude = 1000.0;
+	private double longitude = 1000.0;
 	private int rank = 0;
 	
 	//Constructor
@@ -52,11 +52,20 @@ public class User implements Serializable {
 		if(longitude!=1000.0f&&latitude!=1000.0f)
 		{
 			double[] returnValue = new double[2];
-			returnValue[0] = longitude;
-			returnValue[1] = latitude;
+			returnValue[0] = latitude;
+			returnValue[1] = longitude;
 			return returnValue;
 		}
 		else return null;
+	}
+	
+	public void setLocation(double[] location)
+	{
+		if(location.length==2)
+		{
+			latitude = location[0];
+			longitude = location[1];
+		}
 	}
 	
 	public void setRank(int rank) {this.rank = rank;}
@@ -78,14 +87,32 @@ public class User implements Serializable {
 		 */
 		
 		Element user = new Element("User");
-		user.addContent(facebookUserId.toString());
+		user.setText(facebookUserId.toString());
 		
+		//When we start actually using the location, need to uncomment this bit & rewriting above bit to include new element
+		/*if(latitude!=1000.0||longitude!=1000.0)
+		{
+			Element locElem = new Element("location");
+			locElem.addContent(new Element("latitude").setText(""+latitude));
+			locElem.addContent(new Element("longitude").setText(""+longitude));
+			
+			user.addContent(locElem);
+		}*/
 		return user;
 	}
 	
 	public void readXmlForTransmission(Element userXmlElement)
 	{
 		facebookUserId = Long.parseLong(userXmlElement.getText());
+		
+		//See comment in write method above
+		/*if(userXmlElement.getChild("location")!=null)
+		{
+			Element locElem = userXmlElement.getChild("location");
+			latitude = Double.parseDouble(locElem.getChildText("latitude"));
+			longitude = Double.parseDouble(locElem.getChildText("longitude"));
+		}*/
+		
 	}
 
 	@Override
@@ -106,5 +133,6 @@ public class User implements Serializable {
 	public int History = 0;
 	public int PhotosLiked = 0;
 	public int PhotosComments = 0;
+	public int CallLogTotal = 0;
 
 }

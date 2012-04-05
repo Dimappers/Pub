@@ -3,8 +3,34 @@
     android:id="@+id/organise_screen"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@drawable/orgmain" >
 
+
+
+    <RelativeLayout
+        android:id="@+id/innerrel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center" >
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:visibility="gone" />
+        
+        <LinearLayout
+            android:id="@+id/innerlin"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+    
     <RelativeLayout
         android:id="@+id/location_relative"
         android:layout_width="match_parent"
@@ -37,7 +63,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/pub_location"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_marginLeft="20sp"
+        android:layout_marginRight="20sp"
+        android:layout_marginTop="10sp" />
 
     <Button
         android:id="@+id/pub_button"
@@ -48,13 +77,18 @@
         android:layout_marginRight="22dp"
         android:gravity="center|center_horizontal"
         android:text="test_data"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:background="@android:color/transparent"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/time_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/time_title"
+        android:layout_marginLeft="20sp"
+        android:layout_marginRight="20sp"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <Button
@@ -66,13 +100,18 @@
         android:layout_marginRight="22dp"
         android:gravity="center"
         android:text="test_data"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textAppearance="?android:attr/textAppearanceSmall" 
+        android:background="@android:color/transparent"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"/>
 
     <TextView
         android:id="@+id/guest_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/guest_title"
+        android:layout_marginLeft="20sp"
+        android:layout_marginRight="20sp"
         android:textAppearance="?android:attr/textAppearanceSmall" />
    
     <ListView
@@ -80,8 +119,8 @@
         android:layout_width="match_parent"
         android:layout_height="275dp"
         android:layout_gravity="center"
-        android:layout_marginLeft="22dp"
-        android:layout_marginRight="22dp"
+        android:layout_marginLeft="25sp"
+        android:layout_marginRight="25sp"
         android:scrollbars="vertical"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -107,4 +146,6 @@
             android:layout_marginRight="22dp"
             android:text="@string/save" />
     </LinearLayout>
+    </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>

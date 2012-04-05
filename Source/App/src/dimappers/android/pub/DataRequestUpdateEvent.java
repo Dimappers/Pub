@@ -35,12 +35,13 @@ public class DataRequestUpdateEvent implements IDataRequest<Long, PubEvent> {
 		Document xmlDoc = new Document();
 		Element root= new Element("Message");
 		
-		Element messageTypeElement = new Element("MessageType");
+		Element messageTypeElement = new Element(MessageType.class.getSimpleName());
 		messageTypeElement.addContent(MessageType.updateMessage.toString());
 		root.addContent(messageTypeElement);
 	
 		root.addContent(data.writeXml());
 		
+		xmlDoc.setRootElement(root);
 		//TODO: Put port in stream here
 		
 		try {

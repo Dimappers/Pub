@@ -12,8 +12,12 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -30,6 +34,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +50,8 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	private Button cur_pub;
 	private Button cur_time;
 	private TextView cur_loc;
+	private ProgressBar progbar;
+	MenuItem edit;
 
 	private PubEvent event;
 	
@@ -56,9 +63,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	private boolean eventSavedAlready;
 	private double latSet;
 	private double lngSet;
-	
-	double latitude;
-	double longitude;
 
 	private AppUser[] facebookFriends;
 
@@ -83,61 +87,45 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		{
 			Log.d(Constants.MsgInfo, "Event has just been generated");
 		}
+		
+		Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
 
+		//Always available buttons
 		cur_pub = (Button)findViewById(R.id.pub_button);
 		cur_time = (Button)findViewById(R.id.time_button);
-
-		guest_list = (ListView)findViewById(android.R.id.list);
-		adapter = new ArrayAdapter<String>(this, android.R.layout.test_list_item, listItems);
-
-		setListAdapter(adapter);
-
+		cur_loc=(TextView)findViewById(R.id.current_location);
+    	cur_pub.setTypeface(font);
+    	cur_time.setTypeface(font);
+    	cur_loc.setTypeface(font);
 		cur_pub.setOnClickListener(this);
+		cur_time.setOnClickListener(this);
+		cur_loc.setOnClickListener(this);
+		
+		//Always visible text
+    	((TextView)findViewById(R.id.time_title)).setTypeface(font);
+    	((TextView)findViewById(R.id.pub_title)).setTypeface(font);
+    	((TextView)findViewById(R.id.guest_title)).setTypeface(font);
+    	
+    	//Progress bar
+		progbar = (ProgressBar)findViewById(R.id.progressBar);
 
+		//Guest list
+		guest_list = (ListView)findViewById(android.R.id.list);
+		
+		adapter = new ArrayAdapter<String>(this, android.R.layout.test_list_item, listItems);
+		setListAdapter(adapter);
+		
 		guest_list.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
-				
-				if(true)
-				{
-					Intent i = new Intent(getBaseContext(), Guests.class);
-					Bundle b = new Bundle();
-					b.putAll(getIntent().getExtras());
-					b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
-					i.putExtras(b);
-					startActivityForResult(i, Constants.GuestReturn);
-				}
-				else 
-				{
-					String name = (String) parent.getItemAtPosition(position);
-					AppUser person = null;
-					for(AppUser friend : facebookFriends)
-					{
-						if(friend.toString().equals(name)) {person = friend; break;}
-					}
-					if(person==null) {Log.d(Constants.MsgWarning, "friend is not a friend");}
-					else
-					{
-						Intent i = new Intent(getBaseContext(), RankBreakDown.class);
-						i.putExtra("person", person);
-						i.putExtras(getIntent().getExtras());
-						startActivityForResult(i, Constants.GuestReturn);
-					}
-				}
+				Intent i = new Intent(getBaseContext(), Guests.class);
+				Bundle b = new Bundle();
+				b.putAll(getIntent().getExtras());
+				b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
+				i.putExtras(b);
+				startActivityForResult(i, Constants.GuestReturn);
 			}
 		});
 
-
-		cur_time.setOnClickListener(this);
-
-		Button button_save_event = (Button)findViewById(R.id.save_event);
-		button_save_event.setOnClickListener(this);
-		Button button_send_invites = (Button)findViewById(R.id.send_invites_event);
-		button_send_invites.setOnClickListener(this);
-		cur_loc=(TextView)findViewById(R.id.current_location);
-		cur_loc.setOnClickListener(this);
-
-		latitude = getIntent().getExtras().getDouble(Constants.CurrentLatitude);
-		longitude = getIntent().getExtras().getDouble(Constants.CurrentLongitude);
 	}
 	
 	class TextUpdater implements Runnable {
@@ -171,9 +159,16 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				if(locSet){
 					b.putDouble(Constants.CurrentLatitude, latSet);
 					b.putDouble(Constants.CurrentLongitude, lngSet);
+					i.putExtras(b);
+					startActivityForResult(i, Constants.PubLocationReturn);
 				}
-				i.putExtras(b);
-				startActivityForResult(i, Constants.PubLocationReturn);
+				else if (service!=null)
+				{
+					b.putDouble(Constants.CurrentLatitude, service.GetActiveUser().getLocation()[0]);
+					b.putDouble(Constants.CurrentLongitude, service.GetActiveUser().getLocation()[1]);
+					i.putExtras(b);
+					startActivityForResult(i, Constants.PubLocationReturn);
+				}
 				break;
 			}
 			case R.id.time_button : {
@@ -219,32 +214,47 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 					
 					public void onRequestFail(Exception e) {
 						Log.d(Constants.MsgError, "Could not send event");
+						e.printStackTrace();
+						runOnUiThread(new Runnable(){
+
+							public void run() {
+								progbar.setVisibility(View.GONE);
+								Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
+								//FIXME: probably should make it more obvious when this fails
+							}});
 					}
 					
 					public void onRequestComplete(PubEvent data) {
-						Log.d(Constants.MsgInfo, "PubEvent sent, event id: " + data.GetEventId());
-						Intent intent = new Intent();
-						Bundle b = new Bundle();
-						b.putAll(getIntent().getExtras()); 
-						b.putSerializable(Constants.CurrentWorkingEvent, data.GetEventId());
-						b.putBoolean(Constants.IsSavedEventFlag, false);
-						intent.putExtras(b);
-						setResult(RESULT_OK, intent);
-						finish();						
+							onSendSuccess(data);
 					}
 				});
 				
 				
 				// Inflating the loading bar
-				LayoutInflater inflater = (LayoutInflater) getLayoutInflater();
+				/*LayoutInflater inflater = (LayoutInflater) getLayoutInflater();
 				ViewGroup parent = (ViewGroup) findViewById(R.id.organise_screen);
 
 				View pBar = inflater.inflate(R.layout.loading_bar, parent, false);
-				parent.addView(pBar);
+				parent.addView(pBar);*/
+				progbar.setVisibility(View.VISIBLE);
 				break;
 			}
 		}
 	}
+	
+	private void onSendSuccess(PubEvent data)
+	{
+		Log.d(Constants.MsgInfo, "PubEvent sent, event id: " + data.GetEventId());
+		Intent intent = new Intent();
+		Bundle b = new Bundle();
+		b.putAll(getIntent().getExtras()); 
+		b.putSerializable(Constants.CurrentWorkingEvent, data.GetEventId());
+		b.putBoolean(Constants.IsSavedEventFlag, false);
+		intent.putExtras(b);
+		setResult(RESULT_OK, intent);
+		finish();		
+	}
+	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -255,68 +265,68 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			UpdateFromEvent();
 		}
 	}
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) 
-	{
-		MenuItem edit = menu.add(0, Menu.NONE, 0, "Change Location");
-		edit.setOnMenuItemClickListener(this);
 
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		edit = menu.add(0, Menu.NONE, 0, "Change Location");
 		return super.onCreateOptionsMenu(menu);
 	}
-
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu)
+	{
+		if(service!=null)
+		{
+			edit.setOnMenuItemClickListener(Organise.this); 
+			//don't let people change the location before we have connected to the service, as we need the service to find pubs etc. from current location
+		}
+		return super.onPrepareOptionsMenu(menu);
+	}
+	
 	public boolean onMenuItemClick(MenuItem item) {
 		switch(item.getItemId()){
 			case Menu.NONE : {
+				
 				final EditText loc = new EditText(getApplicationContext());
 				new AlertDialog.Builder(this).setMessage("Enter your current location:")  
 				.setTitle("Change Location")  
 				.setCancelable(true)  
 				.setPositiveButton("Save", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						Geocoder geocoder = new Geocoder(getApplicationContext());
-						try {
-							List<Address> addresses = geocoder.getFromLocationName(loc.getText().toString(), 5);
-							double lat = 0;
-							double latsum = 0;
-							double lng = 0;
-							double lngsum = 0;
-							if(addresses!=null) {
-								for(int i=0; i<addresses.size(); i++) {
-									Address a = addresses.get(i);
-									if(a!=null) 
-									{
-										if(lat==0) {lat = a.getLatitude();}
-										else {
-											latsum+=a.getLatitude();
-											lat=latsum/i;
-										}
-										if(lng==0) {lng = a.getLongitude();}
-										else {
-											lngsum+=a.getLongitude();
-											lng=lngsum/i;
-										}
-									}
-								}
+						
+						progbar.setVisibility(View.VISIBLE);
+						
+						DataRequestReverseGeocoder request1 = new DataRequestReverseGeocoder(getApplicationContext(), loc.getText().toString());
+						service.addDataRequest(request1, new IRequestListener<XmlableDoubleArray>(){
+
+							public void onRequestFail(Exception e) {
+								failure();
 							}
-							if(lat!=0&&lng!=0&&findNewNearestPub(lat,lng)){
-								latSet=lat;
-								lngSet=lng;
-								locSet=true;
-								cur_loc.setText(loc.getText()); 
-								UpdateFromEvent();
-							}
-							else {Toast.makeText(getApplicationContext(), "Unrecognised location", Toast.LENGTH_SHORT).show();}
-						} 
-						catch (IOException e) 
-						{
-							Log.d(Constants.MsgError,"Error in finding latitude & longitude from given location.");
-							e.printStackTrace();
-						}
-						dialog.cancel();
-					}
-				})
-				.setNegativeButton("Discard", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
+
+							public void onRequestComplete(XmlableDoubleArray data) {
+								
+								final double lat = data.getArray()[0];
+								final double lng = data.getArray()[1];
+								
+								DataRequestPubFinder request2 = new DataRequestPubFinder(lat, lng);
+								service.addDataRequest(request2, new IRequestListener<PlacesList>(){
+
+									public void onRequestComplete(PlacesList data) {
+										PubLocation best = new PubRanker(data.results, event, service.getHistoryStore()).returnBest();
+										if(best==null) {failure();}
+										else
+										{
+											event.SetPubLocation(best);
+											success(lat, lng, loc.getText().toString());
+										}
+										}
+
+									public void onRequestFail(Exception e) {
+										failure();
+									}});
+							}});
 						dialog.cancel();
 					}
 				})
@@ -326,7 +336,38 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			}
 		}
 		return false;
-	} 
+	}
+	
+	void success(double lat, double lng, final String loc)
+	{
+		latSet=lat;
+		lngSet=lng;
+		locSet=true; 
+		runOnUiThread(new Runnable(){
+			public void run() {
+				cur_loc.setText(loc);
+				UpdateFromEvent();
+				removeProgBar();
+			}});
+	}
+	void failure()
+	{
+		removeProgBar();
+		Log.d(Constants.MsgError, "Error using custom location!!");
+		runOnUiThread(new Runnable(){
+			public void run() {
+				Toast.makeText(getApplicationContext(), "Unrecognised location", Toast.LENGTH_SHORT).show();
+			}});
+	}
+	
+	void removeProgBar()
+	{
+		runOnUiThread(new Runnable(){
+
+			public void run() {
+				progbar.setVisibility(View.GONE);
+			}});
+	}
 
 
 	private void UpdateFromEvent()
@@ -364,20 +405,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			}
 		}
 	}
-	private boolean findNewNearestPub(double lat, double lng) {
-		PubFinder finder = new PubFinder(lat,lng);
-		try {
-			List<Place> list = finder.performSearch();
-			PubLocation best = new PubRanker(list, event, service.getHistoryStore()).returnBest();
-			if(best==null) {return false;}
-			event.SetPubLocation(best);
-			return true;
-		} catch (Exception e) {
-			Log.d(Constants.MsgError, "Cannot find pubs based on this location.");
-			e.printStackTrace();
-			return false;
-		}
-	}
 
 	//TODO: Move this into the service
 	/*private void sendEventToServer() {
@@ -403,7 +430,34 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			//Give the interface to the app
 			Organise.this.service = (IPubService)service;
 			event=Organise.this.service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
-			
+
+			//Get user's current location
+			double[] location = Organise.this.service.GetActiveUser().getLocation();
+			if(location==null)
+			{
+				final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+				LocationFinder lc = new LocationFinder(locationManager);
+				lc.findLocation(new LocationListener(){
+
+					public void onLocationChanged(Location loc) {
+						locationManager.removeUpdates(this);
+						geocode(loc.getLatitude(), loc.getLongitude());
+					}
+
+					public void onProviderDisabled(String arg0) {
+						Log.d(Constants.MsgError, arg0 + " is disabled.");
+					}
+
+					public void onProviderEnabled(String arg0) {}
+
+					public void onStatusChanged(String arg0, int arg1,Bundle arg2) {}});
+			}
+			else
+			{
+				geocode(location[0], location[1]);
+			}
+						
+			//get list of facebook friends
 			Organise.this.service.addDataRequest(new DataRequestGetFriends(), new IRequestListener<AppUserArray>(){
 
 				public void onRequestComplete(AppUserArray data) {
@@ -414,8 +468,54 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 					Log.d(Constants.MsgError, "FAIL");
 				}});
 			
-			UpdateFromEvent();
+
+			//update text on save/send buttons depending on whether the event is sent or not
+			Button button_save_event = (Button)findViewById(R.id.save_event);
+			Button button_send_invites = (Button)findViewById(R.id.send_invites_event);
 			
+			if(event.GetEventId()<0)
+			{
+				button_save_event.setOnClickListener(Organise.this);
+				button_send_invites.setOnClickListener(Organise.this);
+			}
+			else
+			{
+				button_save_event.setVisibility(View.INVISIBLE);
+				button_send_invites.setText(R.string.update);
+				button_send_invites.setOnClickListener(new OnClickListener(){
+
+					public void onClick(View arg0) {
+						progbar.setVisibility(View.VISIBLE);
+						DataRequestUpdateEvent update = new DataRequestUpdateEvent(event);
+						Organise.this.service.addDataRequest(update, new IRequestListener<PubEvent>(){
+
+							public void onRequestComplete(PubEvent data) {
+								if(data==null) {onSendSuccess(event);}
+								else {onSendSuccess(data);}
+							}
+
+							public void onRequestFail(Exception e) {
+								Log.d(Constants.MsgError,"Failed to update event: " + e.getMessage());
+								runOnUiThread(new Runnable(){
+									public void run() {
+										progbar.setVisibility(View.GONE);
+										Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
+									}});
+							}});
+					}});
+			}
+			
+			//update screen from event
+			UpdateFromEvent();
+		}
+
+		public void onServiceDisconnected(ComponentName className)
+		{
+		}
+		
+		private void geocode(double latitude, double longitude)
+		{			
+			//find name of location based on lat/long of user's location
 			DataRequestGeocoder geoCoder = new DataRequestGeocoder(latitude, longitude, getApplicationContext());
 			Organise.this.service.addDataRequest(geoCoder, new IRequestListener<XmlableString>(){
 
@@ -429,10 +529,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 					e.printStackTrace();
 					runOnUiThread(new TextUpdater("Unknown"));
 				}});
-		}
-
-		public void onServiceDisconnected(ComponentName className)
-		{
 		}
 
 	};

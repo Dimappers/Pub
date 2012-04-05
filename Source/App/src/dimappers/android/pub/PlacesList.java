@@ -29,7 +29,7 @@ public class PlacesList implements IXmlable{
  
  public boolean isOutOfDate() {
 	 Calendar currentTime = Calendar.getInstance();
-	 return (currentTime.compareTo(outOfDate)<=0);
+	 return (currentTime.compareTo(outOfDate)>=0);
  }
  
 public Element writeXml() {

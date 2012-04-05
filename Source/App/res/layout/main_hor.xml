@@ -40,7 +40,10 @@
 	    android:layout_marginRight="20sp"
 	    android:layout_alignParentLeft="true"
 	    android:layout_alignParentTop="true"
-	    android:background="@drawable/organise"/>
+	    android:textColor="#FFFFFF" 
+        android:text="@string/organise"
+        android:textSize="35sp"
+        android:background="@drawable/buttonback"/>
     	
     		<Button
 	    android:id="@+id/invites_button"
@@ -53,7 +56,10 @@
 	    android:layout_marginRight="20sp"
 	    android:layout_alignParentLeft="true"
 	    android:layout_alignParentTop="true"
-	    android:background="@drawable/invites"/>
+	    android:textColor="#FFFFFF" 
+        android:text="@string/invites"
+        android:textSize="35sp"
+        android:background="@drawable/buttonback"/>
     		</LinearLayout>
     		
     		<ListView

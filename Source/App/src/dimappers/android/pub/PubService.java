@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -26,6 +27,7 @@ import com.facebook.android.Facebook;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.UpdateType;
 import dimappers.android.PubData.User;
 
 public class PubService extends IntentService
@@ -51,7 +53,18 @@ public class PubService extends IntentService
 
 		public void GiveNewSentEvent(PubEvent event, final IRequestListener<PubEvent> listener) {
 			DataRequestNewEvent r = new DataRequestNewEvent(event);
-			PubService.this.addDataRequest(r, listener);
+			final int savedEventId = event.GetEventId();
+			PubService.this.addDataRequest(r, new IRequestListener<PubEvent>() {
+
+					public void onRequestComplete(PubEvent data) {
+						storedData.DeleteSavedEvent(savedEventId);
+						listener.onRequestComplete(data);
+					}
+
+					public void onRequestFail(Exception e) {
+						listener.onRequestFail(e);
+					}
+				});
 		}
 
 		public Collection<PubEvent> GetSavedEvents() {
@@ -84,17 +97,12 @@ public class PubService extends IntentService
 		}
 
 		public void RemoveSavedEvent(PubEvent event) {
-			PubService.this.storedData.DeleteSavedEvent(event);
+			PubService.this.storedData.DeleteSavedEvent(event.GetEventId());
 			
 		}
 
 		public void PerformUpdate(boolean fullUpdate) {
 			PubService.this.receiver.forceUpdate(fullUpdate);
-		}
-
-		public boolean SendingMessage() {
-			//TODO: Should check to see if a new event has been created but hasn't yet been sent
-			return false;
 		}
 
 		public Facebook GetFacebook() {
@@ -116,38 +124,81 @@ public class PubService extends IntentService
 			return user;
 		}
 
-		public void NewEventsRecieved(PubEvent[] newEvents) {
-			for(PubEvent event : newEvents)
+		public void NewEventsRecieved(PubEventArray events) {
+			int hostedEvents = 0;
+			
+			ArrayList<Notification> newEventNotifications = new ArrayList<Notification>();
+			ArrayList<Notification> updatedEventNotifications = new ArrayList<Notification>();
+			ArrayList<Notification> confirmedEventNotifications = new ArrayList<Notification>();
+			ArrayList<Notification> newEventConfirmedNotifications = new ArrayList<Notification>();
+			ArrayList<Notification> updatedConfirmedNotifications = new ArrayList<Notification>();
+			ArrayList<Notification> confirmedUpdatedNotifications = new ArrayList<Notification>();
+			
+					
+			for(Entry<PubEvent, UpdateType> eventEntry : events.getEvents().entrySet())
 			{
-				storedData.AddNewInvitedEvent(event);
+				//If either the event hasn't been updated (ie this user has already got this data before and this is a full refresh caused by restarting the app
+				if(eventEntry.getValue() == UpdateType.noChangeSinceLastUpdate)
+				{
+					storedData.GetGenericStore("PubEvent").put(eventEntry.getKey().GetEventId(), eventEntry.getKey());
+					++hostedEvents;
+				}
+				else
+				{
+					storedData.AddNewInvitedEvent(eventEntry.getKey());
+					switch(eventEntry.getValue())
+					{
+					case confirmed:
+						confirmedEventNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), eventEntry.getKey()));
+						break;
+					case confirmedUpdated:
+						confirmedUpdatedNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), eventEntry.getKey()));
+						break;
+					case newEvent:
+						newEventNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), eventEntry.getKey()));
+						break;
+					case newEventConfirmed:
+						newEventConfirmedNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), eventEntry.getKey()));
+						break;
+					case updatedConfirmed:
+						updatedConfirmedNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), eventEntry.getKey()));
+						break;
+					case updatedEvent:
+						updatedEventNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), eventEntry.getKey()));
+						break;
+					
+					}
+				}
 			}			
 			
+			//TODO: This is still using the old notifcations, want to use the above array lists and fill in the method in NotificationCreator
 			NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 			Context context = PubService.this.getApplicationContext();
-			if(newEvents.length == 1)
+			if(events.getEvents().size() - hostedEvents == 1)
 			{
 				Notification newNotification = new Notification(R.drawable.icon, "New pub event", System.currentTimeMillis());
 				newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
 				newNotification.defaults |= Notification.DEFAULT_VIBRATE;
 				Intent notificationIntent = new Intent(context, LaunchApplication.class);
 				Bundle b = new Bundle();
-				b.putSerializable(Constants.CurrentWorkingEvent, newEvents[0].GetEventId());
+				PubEvent event = events.getEvents().keySet().iterator().next();
+				b.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
 				notificationIntent.putExtras(b);
 				PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 				
-				newNotification.setLatestEventInfo(context, "New Pub Event", newEvents[0].toString(), contentIntent);
+				newNotification.setLatestEventInfo(context, "New Pub Event", event.toString(), contentIntent);
 				
 				nManager.notify(1, newNotification);
 			}
-			else
+			else if(events.getEvents().size() - hostedEvents > 1)
 			{
-				Notification newNotification = new Notification(R.drawable.icon, newEvents.length + " new events", System.currentTimeMillis());
+				Notification newNotification = new Notification(R.drawable.icon, events.getEvents().size() + " new events", System.currentTimeMillis());
 				newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
 				newNotification.defaults |= Notification.DEFAULT_VIBRATE;
 				Intent notificationIntent = new Intent(context, CurrentEvents.class);
 				PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 				
-				newNotification.setLatestEventInfo(context, newEvents.length + " new events", newEvents.length + " new events", contentIntent);
+				newNotification.setLatestEventInfo(context, events.getEvents().size() + " new events", events.getEvents().size() + " new events", contentIntent);
 				
 				nManager.notify(1, newNotification);
 			}
@@ -159,11 +210,19 @@ public class PubService extends IntentService
 
 		public PubEvent getEvent(int eventId) {
 			return storedData.getEvent(eventId);
-		}
+		} 
     }
 
 	
 	private final IPubService binder = new ServiceBinder();
+	
+
+	
+	
+	
+	
+	
+	
 	
 	private StoredData storedData;
 	private boolean hasStarted;

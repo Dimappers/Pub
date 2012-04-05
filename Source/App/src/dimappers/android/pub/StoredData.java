@@ -186,13 +186,13 @@ public class StoredData implements Serializable
 		invitedEvents.put(invitedEvent.GetEventId(), invitedEvent);
 	}
 	
-	public void DeleteSavedEvent(PubEvent event)
+	public void DeleteSavedEvent(int eventId)
 	{
-		if(event.GetEventId() >= 0)
+		if(eventId >= 0)
 		{
 			Log.d(Constants.MsgWarning, "This does not appear to be a saved event");
 		}
-		savedEvents.remove(event.GetEventId());
+		savedEvents.remove(eventId);
 	}
 	
 	/*public void notifySentEventHasId(int eventId)

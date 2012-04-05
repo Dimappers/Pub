@@ -17,7 +17,7 @@ public interface IPubService extends IBinder {
 	int 									GiveNewSavedEvent(PubEvent event);
 	void 									GiveNewSentEvent(PubEvent event, final IRequestListener<PubEvent> listener);
 	
-	void 									NewEventsRecieved(PubEvent[] events);
+	void 									NewEventsRecieved(PubEventArray events);
 		
 	Collection<PubEvent> 					GetSavedEvents();
 	Collection<PubEvent> 					GetSentEvents();
@@ -27,8 +27,6 @@ public interface IPubService extends IBinder {
 	void									RemoveSavedEvent(PubEvent event);
 	
 	void									PerformUpdate(boolean fullUpdate);
-	
-	boolean									SendingMessage();
 	
 	Facebook 								GetFacebook();
 	void									Logout();

@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -49,6 +50,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
+    	
     	
     	if(getIntent().getExtras() != null)
     	{
@@ -82,13 +84,19 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	AppGardenAgent.startSchoolYear(this, "3c7b17c9-5ee0-4b3e-8edb-94a5ccaa7fe2");
     	
     	authoriseFacebook();
+    	
+    	Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf"); 
+    	
     	Button button_organise = (Button)findViewById(R.id.organise_button);
-    	button_organise.setOnClickListener(this);
     	button_organise.setVisibility(View.GONE);
+    	button_organise.setOnClickListener(this);
+    	button_organise.setTypeface(font);
     	
     	Button button_invites = (Button)findViewById(R.id.invites_button);
     	button_invites.setOnClickListener(this);
     	button_invites.setVisibility(View.GONE);
+    	button_invites.setTypeface(font);
+    	    	
     	
     	findViewById(android.R.id.list).setVisibility(View.GONE);
     }

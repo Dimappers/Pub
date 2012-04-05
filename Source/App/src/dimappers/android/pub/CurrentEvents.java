@@ -14,6 +14,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -36,6 +37,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.EventStatus;
 import dimappers.android.PubData.GoingStatus;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
@@ -64,20 +66,17 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 		MenuItem refreshBtn = menu.add("Refresh");
 		refreshBtn.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			
-			@Override
 			public boolean onMenuItemClick(MenuItem arg0) {
 				DataRequestRefresh refreshRequest = new DataRequestRefresh(true);
 				service.addDataRequest(refreshRequest, new IRequestListener<PubEventArray>() {
 
-					@Override
 					public void onRequestComplete(PubEventArray data) {
 						//TODO: Probably shouldn't make notifications
-						if(data.getEvents().length > 0)
+						if(data.getEvents().size() > 0)
 						{
-							service.NewEventsRecieved(data.getEvents());
+							service.NewEventsRecieved(data);
 							CurrentEvents.this.runOnUiThread(new Runnable() {
 								
-								@Override
 								public void run() {
 									refreshList();
 									
@@ -86,7 +85,6 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 						}
 					}
 
-					@Override
 					public void onRequestFail(Exception e) {
 						Log.d(Constants.MsgError, "Error getting refresh: " + e.getMessage());
 						
@@ -293,14 +291,32 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener
 
 		public View getView(int position, View convertView, ViewGroup parent) 
 		{
-			int sectionnum = 0;  
+			int sectionnum = 0;
+			int oldPosition = position;
 			for(Object section : this.sections.keySet()) {  
 				Adapter adapter = sections.get(section);  
 				int size = adapter.getCount() + 1;  
 
 				// check if position inside this section  
 				if(position == 0) return headers.getView(sectionnum, convertView, parent);  
-				if(position < size) return adapter.getView(position - 1, convertView, parent);  
+				if(position < size) 
+				{
+					View v = adapter.getView(position - 1, convertView, parent);
+					PubEvent specificEvent = (PubEvent)getItem(oldPosition);
+					if(specificEvent.getCurrentStatus() == EventStatus.itsOn)
+					{
+						v.setBackgroundColor(Color.GREEN);
+					}
+					else if(specificEvent.getCurrentStatus() == EventStatus.itsOff)
+					{
+						v.setBackgroundColor(Color.RED);
+					}
+					else
+					{
+						v.setBackgroundColor(Color.YELLOW);
+					}
+					return v;
+				}
 
 				// otherwise jump into next section  
 				position -= size;  

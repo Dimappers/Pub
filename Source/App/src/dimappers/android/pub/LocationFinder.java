@@ -34,6 +34,7 @@ public class LocationFinder {
 			}
 			else
 			{
+				locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
 				locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
 			}
 		}

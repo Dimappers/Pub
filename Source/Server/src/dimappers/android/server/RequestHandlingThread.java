@@ -14,7 +14,9 @@ import java.io.StringBufferInputStream;
 import java.io.StringReader;
 import java.net.Socket;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -23,12 +25,14 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
 import dimappers.android.PubData.AcknoledgementData;
+import dimappers.android.PubData.ConfirmMessage;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.RefreshData;
 import dimappers.android.PubData.RefreshResponse;
 import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.UpdateData;
+import dimappers.android.PubData.UpdateType;
 import dimappers.android.PubData.User;
 
 public class RequestHandlingThread extends Thread{
@@ -60,7 +64,7 @@ public class RequestHandlingThread extends Thread{
 		}
 		
 		if (doc != null) {
-			message = MessageType.valueOf(doc.getRootElement().getChild("MessageType").getText());
+			message = MessageType.valueOf(doc.getRootElement().getChild(MessageType.class.getSimpleName()).getText());
 		}
 		
 		
@@ -124,6 +128,17 @@ public class RequestHandlingThread extends Thread{
 			break;
 		}
 
+		case confirmMessage:
+			try
+			{
+				System.out.println("Confirm/Deny received");
+				ItsOnMessageReceived(doc, clientSocket);
+			}
+			catch(ServerException e)
+			{
+				HandleException(e);
+			}
+			break;
 		case unknownMessageType:
 		default:
 			HandleException(new ServerException(ExceptionType.UnknownMessageTypeError));
@@ -207,7 +222,7 @@ public class RequestHandlingThread extends Thread{
 		RefreshData refresh;
 		refresh = new RefreshData(doc.getRootElement().getChild(RefreshData.class.getSimpleName()));
 
-		LinkedList<Integer> refreshEventIds;
+		HashMap<Integer, UpdateType> refreshEventIds;
 		if (refresh.isFullUpdate()) {
 			// If true, returns all the events, otherwise just the events that need refreshing
 			refreshEventIds = UserManager.getFullUpdate(refresh.getUser());
@@ -219,15 +234,15 @@ public class RequestHandlingThread extends Thread{
 		UserManager.markAllAsUpToDate(refresh.getUser());
 		
 		// Create an array to fit all needed events in
-		PubEvent[] refreshEvents = new PubEvent[refreshEventIds.size()];
-		int eventCounter = 0;
+		HashMap<PubEvent, UpdateType> refreshEvents = new HashMap<PubEvent, UpdateType>();
 
 		// Create an Iterator and iterate through each eventId, adding the appropriate event to the array
-		for(int event : refreshEventIds)
+		for(Entry<Integer, UpdateType> event : refreshEventIds.entrySet())
 		{
-			refreshEvents[eventCounter++] = EventManager.GetPubEvent(event);
+			refreshEvents.put(EventManager.GetPubEvent(event.getKey()), event.getValue());
 		}
 
+		
 		RefreshResponse response = new RefreshResponse(refreshEvents);
 		
 		// Creates the XML Document tree that is being returned
@@ -309,6 +324,18 @@ public class RequestHandlingThread extends Thread{
 			{
 				UserManager.markForUpdate(user, event.GetEventId());
 			}
+		}
+	}
+	
+	private static void ItsOnMessageReceived(Document doc, Socket clientSocket) throws ServerException
+	{
+		ConfirmMessage message = new ConfirmMessage(doc.getRootElement().getChild(ConfirmMessage.class.getSimpleName()));
+		
+		EventManager.ConfirmTrip(message.getEventId(), message.getEventStatus());
+		
+		for(User user : EventManager.GetPubEvent(message.getEventId()).GetUsers())
+		{
+			UserManager.markForUpdate(user, message.getEventId());
 		}
 	}
 	
