@@ -144,13 +144,14 @@ public class PubService extends IntentService
 					
 			for(Entry<PubEvent, UpdateType> eventEntry : events.getEvents().entrySet())
 			{
+				makeNotification(eventEntry.getKey(), NotificationAlarmManager.NotificationType.EventAboutToStart);
+				
 				//If either the event hasn't been updated (ie this user has already got this data before and this is a full refresh caused by restarting the app
 				if(eventEntry.getValue() == UpdateType.noChangeSinceLastUpdate)
 				{
-					storedData.GetGenericStore("PubEvent").put(eventEntry.getKey().GetEventId(), eventEntry.getKey());
+					PubEvent event = eventEntry.getKey();
+					storedData.GetGenericStore("PubEvent").put(event.GetEventId(), event);
 					++hostedEvents;
-					
-					makeNotification(event);
 					
 				}
 				else
@@ -223,11 +224,12 @@ public class PubService extends IntentService
 			return storedData.getEvent(eventId);
 		} 
     
-		private void makeNotification(PubEvent event)
+		private void makeNotification(PubEvent event, NotificationAlarmManager.NotificationType type)
 		{
 			Intent notificationAlarmIntent = new Intent(getApplicationContext(), NotificationAlarmManager.class);
 			Bundle b = new Bundle();
 			b.putSerializable(Constants.CurrentWorkingEvent, event);
+			b.putSerializable(Constants.RequiredNotificationType, type);
 			notificationAlarmIntent.putExtras(b);
 			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 			((AlarmManager) getSystemService(Context.ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis(), contentIntent);
@@ -236,14 +238,6 @@ public class PubService extends IntentService
 
 	
 	private final IPubService binder = new ServiceBinder();
-	
-
-	
-	
-	
-	
-	
-	
 	
 	private StoredData storedData;
 	private boolean hasStarted;

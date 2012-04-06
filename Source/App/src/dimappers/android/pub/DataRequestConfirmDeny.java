@@ -21,13 +21,11 @@ public class DataRequestConfirmDeny implements IDataRequest<Integer, PubEvent> {
 		this.event = event;
 	}
 	
-	@Override
 	public void giveConnection(IPubService connectionInterface) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void performRequest(IRequestListener<PubEvent> listener,
 			HashMap<Integer, PubEvent> storedData) {
 		ConfirmMessage cMessage = new ConfirmMessage(event.getCurrentStatus(), event.GetEventId());
@@ -60,7 +58,6 @@ public class DataRequestConfirmDeny implements IDataRequest<Integer, PubEvent> {
 		
 	}
 
-	@Override
 	public String getStoredDataId() {
 		return Constants.NoDictionaryForGenericDataStore;
 	}

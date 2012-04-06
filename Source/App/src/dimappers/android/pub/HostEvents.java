@@ -181,7 +181,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			DataRequestConfirmDeny request = new DataRequestConfirmDeny(event);
 			service.addDataRequest(request, new IRequestListener<PubEvent>() {
 
-				@Override
 				public void onRequestComplete(PubEvent data) {
 					if(data != null)
 					{
@@ -190,7 +189,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 					
 				}
 
-				@Override
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, e.getMessage());					
 				}

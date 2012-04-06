@@ -87,10 +87,16 @@ public class User implements Serializable {
 		 */
 		
 		Element user = new Element("User");
+		
 		user.setText(facebookUserId.toString());
 		
-		//When we start actually using the location, need to uncomment this bit & rewriting above bit to include new element
-		/*if(latitude!=1000.0||longitude!=1000.0)
+		//TODO: When we start actually using the location, need to uncomment this bit & delete the line above
+		
+		/*Element facebookId = new Element("facebookId");
+		facebookId.setText(facebookUserId.toString());
+		user.addContent(facebookId);
+		
+		if(latitude!=1000.0||longitude!=1000.0) //only need to include the location if it has been set (1000.0 is the default)
 		{
 			Element locElem = new Element("location");
 			locElem.addContent(new Element("latitude").setText(""+latitude));
@@ -105,14 +111,17 @@ public class User implements Serializable {
 	{
 		facebookUserId = Long.parseLong(userXmlElement.getText());
 		
-		//See comment in write method above
-		/*if(userXmlElement.getChild("location")!=null)
+		//See comment in write method above (need to remove line above & uncomment lines below)
+		
+		/*facebookUserId = Long.parseLong(userXmlElement.getChildText("facebookId"));
+		
+		if(userXmlElement.getChild("location")!=null)
 		{
 			Element locElem = userXmlElement.getChild("location");
 			latitude = Double.parseDouble(locElem.getChildText("latitude"));
 			longitude = Double.parseDouble(locElem.getChildText("longitude"));
-		}*/
-		
+		}
+		*/
 	}
 
 	@Override

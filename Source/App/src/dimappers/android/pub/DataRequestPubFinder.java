@@ -94,6 +94,10 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 			    	storedData.put(DataRequestPubFinder.getKey(longitude, latitude, keyword), places);
 			    	listener.onRequestComplete(places);
 			    }
+			    else if(places.status.equals("ZERO_RESULTS"))
+			    {
+			    	listener.onRequestComplete(places);
+			    }
 			    //TODO: deal with no results separately because this isn't an error
 			    else
 			    {

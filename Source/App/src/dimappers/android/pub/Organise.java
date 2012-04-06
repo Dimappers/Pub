@@ -312,7 +312,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				service.addDataRequest(request1, new IRequestListener<XmlableDoubleArray>(){
 
 					public void onRequestFail(Exception e) {
-						failure();
+						failure(2);
 					}
 
 					public void onRequestComplete(XmlableDoubleArray data) {
@@ -325,7 +325,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 
 							public void onRequestComplete(PlacesList data) {
 								PubLocation best = new PubRanker(data.results, event, service.getHistoryStore()).returnBest();
-								if(best==null) {failure();}
+								if(best==null) {failure(0);}
 								else
 								{
 									event.SetPubLocation(best);
@@ -334,7 +334,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 								}
 
 							public void onRequestFail(Exception e) {
-								failure();
+								failure(1);
 							}});
 					}});
 				dialog.cancel();
@@ -356,14 +356,38 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				removeProgBar();
 			}});
 	}
-	void failure()
+	void failure(int which)
 	{
 		removeProgBar();
 		Log.d(Constants.MsgError, "Error using custom location!!");
-		runOnUiThread(new Runnable(){
+		if(which==0) //no pubs found
+		{
+			runOnUiThread(new Runnable(){
+				public void run() {
+					Toast.makeText(getApplicationContext(), "No pubs found near this location", Toast.LENGTH_SHORT).show();
+				}});
+		}
+		else if(which==1) //error finding pubs
+		{
+			runOnUiThread(new Runnable(){
 			public void run() {
-				Toast.makeText(getApplicationContext(), "Unrecognised location", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), "Pubs unable to be found", Toast.LENGTH_SHORT).show();
 			}});
+		}
+		else if(which==2) //error when geocoding
+		{
+			runOnUiThread(new Runnable(){
+				public void run() {
+					Toast.makeText(getApplicationContext(), "Unrecognised location", Toast.LENGTH_SHORT).show();
+				}});
+		}
+		else //this shouldn't happen
+		{
+			runOnUiThread(new Runnable(){
+				public void run() {
+					Toast.makeText(getApplicationContext(), "Unknown error", Toast.LENGTH_SHORT).show();
+				}});
+		}
 	}
 	
 	void removeProgBar()
