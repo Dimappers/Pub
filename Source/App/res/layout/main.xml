@@ -39,7 +39,7 @@
 	   	 	android:layout_alignParentTop="true"
             android:textColor="#FFFFFF" 
             android:text="@string/organise"
-            android:textSize="35sp"
+            android:textSize="45sp"
             android:background="@drawable/buttonback" />
 	    
 	<Button
@@ -55,7 +55,7 @@
 	    android:layout_alignParentTop="true"
 	    android:textColor="#FFFFFF"
 	    android:text="@string/invites"
-	    android:textSize="35sp"
+	    android:textSize="45sp"
 	    android:background="@drawable/buttonback"/>
     
 	<Button

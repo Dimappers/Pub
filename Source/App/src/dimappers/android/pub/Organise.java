@@ -100,7 +100,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		cur_pub.setOnClickListener(this);
 		
 		
-		
     	cur_pub.setTypeface(font);
     	cur_time.setTypeface(font);
     	
