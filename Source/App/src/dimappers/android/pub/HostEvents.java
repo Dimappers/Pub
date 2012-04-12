@@ -144,7 +144,12 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			service.GiveNewSentEvent(event, new IRequestListener<PubEvent>() {
 				
 				public void onRequestFail(Exception e) {
-					Log.d(Constants.MsgError, "Could not send event");
+					Log.d(Constants.MsgError, "Could not sent invite: " + e.getMessage());
+					runOnUiThread(new Runnable(){
+						public void run() {
+							Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
+							//FIXME: probably should make it more obvious when this fails
+						}});
 				}
 				
 				public void onRequestComplete(PubEvent data) {

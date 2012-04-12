@@ -39,7 +39,7 @@ import dimappers.android.PubData.User;
 
 public class PubService extends IntentService
 {
-	AppUser user;
+	//AppUser user;
 	
 	public PubService() {
 		super("PubService");
@@ -128,7 +128,7 @@ public class PubService extends IntentService
 		}
 
 		public AppUser GetActiveUser() {
-			return user;
+			return storedData.getActiveUser();
 		}
 
 		public void NewEventsRecieved(PubEventArray events) {
@@ -264,8 +264,15 @@ public class PubService extends IntentService
 			}
 			
 			//TODO: this causes null pointers
-			user = (AppUser)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
-			
+			if(intent.getExtras().containsKey(Constants.CurrentFacebookUser))
+			{
+				storedData.setActiveUser((AppUser)intent.getExtras().getSerializable(Constants.CurrentFacebookUser));
+				
+				//Editor e = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).edit();
+				//e.putString(Constants.CurrentFacebookUser, Long.toString(user.getUserId());
+				//e.commit();
+			}			
+			AppUser user = binder.GetActiveUser();
 			storedData.GetGenericStore("AppUser").put(user.getUserId(), user);
 			
 			sender = new DataSender();
@@ -332,11 +339,6 @@ public class PubService extends IntentService
 		editor.commit();
 		
 		super.onDestroy();
-	}
-	
-	public User getUser()
-	{
-		return user;
 	}
 	
 	public StoredData getDataStore()
