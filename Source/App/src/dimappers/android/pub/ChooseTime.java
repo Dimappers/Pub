@@ -9,12 +9,14 @@ import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
@@ -37,6 +39,10 @@ public class ChooseTime extends Activity implements OnClickListener{
     	button_save_date_time.setOnClickListener(this);
     	
     	bindService(new Intent(getApplicationContext(), PubService.class), connection, 0);
+    	
+    	Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
+    	((TextView)findViewById(R.id.choose_time)).setTypeface(font);
+    	((TextView)findViewById(R.id.choose_date)).setTypeface(font);
         
     	// Date
         date_picker = (DatePicker)findViewById(R.id.datePicker);
