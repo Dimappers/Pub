@@ -216,9 +216,9 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
     		{
     			event = service.getEvent(data.getExtras().getInt(Constants.CurrentWorkingEvent));
     			super.onActivityResult(requestCode, resultCode, data);
-    			UpdateDataFromEvent();
     		}
     	}
+    	UpdateDataFromEvent();
     }
 
 	@Override

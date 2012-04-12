@@ -146,10 +146,18 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		unbindService(connection);
 	}
 
+	void packageLocForActivity(double[] loc, Bundle b, Intent i)
+	{
+		b.putDouble(Constants.CurrentLatitude, loc[0]);
+		b.putDouble(Constants.CurrentLongitude, loc[1]);
+		i.putExtras(b);
+		startActivityForResult(i, Constants.PubLocationReturn);
+	}
+	
 	public void onClick(View v)
 	{
-		Intent i;
-		Bundle b = new Bundle();
+		final Intent i;
+		final Bundle b = new Bundle();
 		b.putAll(getIntent().getExtras()); 
 		b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 		switch (v.getId()){
@@ -166,10 +174,35 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				}
 				else if (service!=null)
 				{
-					b.putDouble(Constants.CurrentLatitude, service.GetActiveUser().getLocation()[0]);
-					b.putDouble(Constants.CurrentLongitude, service.GetActiveUser().getLocation()[1]);
-					i.putExtras(b);
-					startActivityForResult(i, Constants.PubLocationReturn);
+					double[] loc = service.GetActiveUser().getLocation();
+
+					if(loc!=null)
+					{
+						packageLocForActivity(loc, b, i);
+					}
+					else
+					{
+					final LocationManager locMan = (LocationManager)getSystemService(LOCATION_SERVICE);
+					new LocationFinder(locMan).findLocation(new LocationListener(){
+
+						public void onLocationChanged(Location arg0) {
+							double[] location = new double[2];
+							location[0] = arg0.getLatitude();
+							location[1] = arg0.getLongitude();
+							service.GetActiveUser().setLocation(location);
+							locMan.removeUpdates(this);
+							packageLocForActivity(location, b, i);
+						}
+						public void onProviderDisabled(String provider) {
+							runOnUiThread(new Runnable(){
+
+								public void run() {
+									Toast.makeText(getApplicationContext(), "Cannot find your current location.", Toast.LENGTH_LONG).show();
+								}});
+						}
+						public void onProviderEnabled(String provider) {}
+						public void onStatusChanged(String provider,int status, Bundle extras) {}});
+					}
 				}
 				break;
 			}
@@ -406,6 +439,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		cur_time.setText(event.GetFormattedStartTime());
 
 		listItems.clear();
+		adapter.notifyDataSetChanged();
 		for(User user : event.GetUsers()) {
 			if(user instanceof AppUser)
 			{
@@ -417,10 +451,10 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				DataRequestGetFacebookUser request = new DataRequestGetFacebookUser(user.getUserId());
 				service.addDataRequest(request, new IRequestListener<AppUser>() {
 
-					public void onRequestComplete(AppUser data) {
-						listItems.add(data.toString());
+					public void onRequestComplete(final AppUser data) {
 						Organise.this.runOnUiThread(new Runnable() {
 							public void run() {
+								listItems.add(data.toString());
 								adapter.notifyDataSetChanged();					
 							}
 						});
