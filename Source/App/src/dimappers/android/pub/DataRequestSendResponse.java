@@ -53,7 +53,7 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 		Document xmlDoc = new Document();
 		xmlDoc.setRootElement(root);
 		
-		Element messageTypeElement = new Element("MessageType");
+		Element messageTypeElement = new Element(MessageType.class.getSimpleName());
 		messageTypeElement.setText(MessageType.respondMessage.toString());
 		
 		root.addContent(rData.writeXml());

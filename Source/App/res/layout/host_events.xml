@@ -69,12 +69,23 @@
             android:layout_marginRight="2dp"
             android:text="@string/send_invites" />
 
+        <TextView
+            android:id="@+id/hostEventTimeTillPubText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Time till pub"
+            android:visibility="gone"
+            android:layout_marginRight="2dp"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
         <Button
             android:id="@+id/edit_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginLeft="2dp"
+            android:layout_gravity="center_horizontal"
             android:text="@string/edit" />
         
         <Button

@@ -152,7 +152,7 @@ public class RunServerTest
 	
 	private static Socket GetSendSocket() throws UnknownHostException, IOException
 	{
-		return new Socket(InetAddress.getByName("176.34.191.200"), Constants.Port);
+		return new Socket(InetAddress.getByName(Constants.ServerIp), Constants.Port);
 	}
 	
 	private static HashMap<String, Boolean> RunTest(TestType testType) throws ClassNotFoundException
@@ -439,7 +439,13 @@ public class RunServerTest
 		
 		try {
 			InputStream inStream = sendSocket.getInputStream();
-			returnDoc = xmlBuilder.build(sendSocket.getInputStream());
+			int a = inStream.read();
+			while(a != -1)
+			{
+				System.out.println((char)a);
+				a = inStream.read();
+			}
+			returnDoc = xmlBuilder.build(inStream);
 		} catch (IOException e) {
 			System.out.println("Error in building the acknowledgement");
 			return -4;

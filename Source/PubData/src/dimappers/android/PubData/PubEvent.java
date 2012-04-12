@@ -216,11 +216,11 @@ public class PubEvent implements Serializable, IXmlable
 		Element pubEventElement = new Element(getClass().getSimpleName());
 		
 		Element eventIdElement = new Element(eventIdTag);
-		eventIdElement.addContent(Integer.toString(globalEventId));
+		eventIdElement.setText(Integer.toString(globalEventId));
 		pubEventElement.addContent(eventIdElement);
 		
 		Element startTimeElement = new Element(startTimeTag);
-		startTimeElement.addContent(Long.toString(startTime.getTimeInMillis()));
+		startTimeElement.setText(Long.toString(startTime.getTimeInMillis()));
 		pubEventElement.addContent(startTimeElement);
 		
 		pubEventElement.addContent(pubLocation.writeXml());
@@ -275,6 +275,12 @@ public class PubEvent implements Serializable, IXmlable
 	public void emptyGuestList() {
 		users = new HashMap<User, UserStatus>();
 		users.put(host, new UserStatus(GoingStatus.going, startTime, null));
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return globalEventId;
 	}
 }
 

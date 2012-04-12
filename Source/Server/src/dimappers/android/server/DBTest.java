@@ -41,10 +41,10 @@ public class DBTest {
 			db.addEvent(event);
 		}
 		
-		Object[] u1t = user1.getAllEvents().toArray();
-		for (int i=0; i<u1t.length; ++i) {
+		//Object[] u1t = user1.getAllEvents().toArray();
+		/*for (int i=0; i<u1t.length; ++i) {
 			System.out.println(u1t[i].toString());
-		}
+		}*/
 		user2.SetHasApp(true);
 		
 		

@@ -136,4 +136,11 @@ public class DataSender {
 		StringReader reader = new StringReader(sBuilder.toString());
 		return docBuilder.build(reader);
 	}
+	
+	public static Document sendReceiveDocument(Document docToSend) throws UnknownHostException, IOException, JDOMException
+	{
+		Socket s = sendDocument(docToSend);
+		
+		return readTillEndOfMessage(s.getInputStream());
+	}
 }

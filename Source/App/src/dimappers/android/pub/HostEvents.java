@@ -14,7 +14,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.IBinder;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,6 +33,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.EventStatus;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
@@ -174,7 +177,29 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		}
 		case R.id.it_is_on :
 		{
-			Toast.makeText(getApplicationContext(),"Implement this", Toast.LENGTH_LONG).show();
+			event.setCurrentStatus(EventStatus.itsOn);
+			DataRequestConfirmDeny request = new DataRequestConfirmDeny(event);
+			service.addDataRequest(request, new IRequestListener<PubEvent>() {
+
+				public void onRequestComplete(PubEvent data) {
+					if(data != null)
+					{
+						event = data;
+					}
+					
+				}
+
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, e.getMessage());					
+				}
+			});
+			
+			TextView tv = (TextView)findViewById(R.id.hostEventTimeTillPubText);
+			v.setVisibility(View.GONE);
+			tv.setVisibility(View.VISIBLE);
+			
+			TimeTillPub timer = new TimeTillPub(event.GetStartTime(), tv);
+			timer.start();
 		}
 
 		}
@@ -205,7 +230,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		.setCancelable(true)  
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				service.RemoveSavedEvent(event);
+				service.RemoveEventFromStoredDataAndCancelNotification(event);
 				finish();
 
 			}
@@ -250,6 +275,17 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 
 		gadapter.updateList(event);
 		gadapter.notifyDataSetChanged();
+		
+		if(event.getCurrentStatus() == EventStatus.itsOn)
+		{
+			TextView tv = (TextView)findViewById(R.id.hostEventTimeTillPubText);
+			View v = findViewById(R.id.it_is_on);
+			v.setVisibility(View.GONE);
+			tv.setVisibility(View.VISIBLE);
+			
+			TimeTillPub timer = new TimeTillPub(event.GetStartTime(), tv);
+			timer.start();
+		}
 	}
 	
 	private ServiceConnection connection = new ServiceConnection()
@@ -447,5 +483,46 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	{
 		protected TextView guest;
 		protected TextView time;	
+	}
+	
+	class TimeTillPub extends CountDownTimer	
+	{
+		private TextView textView;
+		public TimeTillPub(Calendar pubStartTime, TextView countdownTextView)
+		{
+			super(pubStartTime.getTimeInMillis() - Calendar.getInstance().getTimeInMillis(), 10);
+			textView = countdownTextView;
+		}
+		@Override
+		public void onFinish() {
+			// TODO Auto-generated method stub
+			textView.setText("It's on!");
+		}
+
+		@Override
+		public void onTick(long millisUntilFinished) {
+			int hours, minutes, seconds, miliseconds;
+			
+			hours = (int)(millisUntilFinished / (60 * 60 * 1000));
+			millisUntilFinished -= hours * 60 * 60 * 1000;
+			minutes = (int)(millisUntilFinished / (60 * 1000));
+			millisUntilFinished -= minutes * 60 * 1000;
+			seconds = (int)(millisUntilFinished / 1000);
+			millisUntilFinished -= seconds * 1000;
+			miliseconds = (int)millisUntilFinished;
+			
+			int microSeconds = (int)(miliseconds / 10);
+			String formattedMicroseconds;
+			if(microSeconds < 10)
+			{
+				formattedMicroseconds = "0" + Integer.toString(microSeconds);
+			}
+			else
+			{
+				formattedMicroseconds = Integer.toString(microSeconds);
+			}
+			
+			textView.setText(hours + ":" + minutes + ":" + seconds + ":" + formattedMicroseconds + " until beer");			
+		}
 	}
 }
