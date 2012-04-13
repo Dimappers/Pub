@@ -264,7 +264,8 @@ public class PubService extends IntentService
 			}
 			
 			//TODO: this causes null pointers
-			if(intent.getExtras().containsKey(Constants.CurrentFacebookUser))
+			Bundle bundle = intent.getExtras();
+			if(bundle!=null && bundle.containsKey(Constants.CurrentFacebookUser))
 			{
 				storedData.setActiveUser((AppUser)intent.getExtras().getSerializable(Constants.CurrentFacebookUser));
 				

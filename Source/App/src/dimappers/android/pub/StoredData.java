@@ -320,7 +320,7 @@ public class StoredData implements Serializable
 
 		Element root = loadedDoc.getRootElement();
 		
-		loggedInUser = new AppUser(root.getChild(loggedInUserTag));
+		loggedInUser = new AppUser(root.getChild(loggedInUserTag).getChild(AppUser.class.getSimpleName()));
 		
 		Element hostSavedElement = root.getChild(hostSavedTag);
 		List<Element> elements = hostSavedElement.getChildren(PubEvent.class.getSimpleName());
