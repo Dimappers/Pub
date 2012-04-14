@@ -1,6 +1,7 @@
 package dimappers.android.pub;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 import com.facebook.android.Facebook;
 
@@ -38,4 +39,6 @@ public interface IPubService extends IBinder {
 	HistoryStore							getHistoryStore();
 	
 	PubEvent								getEvent(int eventId);
+	
+	<K, V  extends IXmlable> HashMap<K, V> 	GetGenericStore(String key);
 }

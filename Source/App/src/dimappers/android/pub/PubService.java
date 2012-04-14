@@ -234,6 +234,12 @@ public class PubService extends IntentService
 			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 			((AlarmManager) getSystemService(Context.ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis(), contentIntent);
 		}
+
+		@Override
+		public <K, V extends IXmlable> HashMap<K, V> GetGenericStore(String key) {
+			// TODO Auto-generated method stub
+			return storedData.GetGenericStore(key);
+		}
 	}
 
 	

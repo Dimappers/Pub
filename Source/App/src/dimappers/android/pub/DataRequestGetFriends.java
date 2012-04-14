@@ -100,5 +100,12 @@ public class DataRequestGetFriends implements IDataRequest<Long, AppUserArray> {
 	public String getStoredDataId() {
 		return "AppUsers";
 	}
+	
+	public static void UpateOrdering(AppUser[] newOrdering, IPubService service)
+	{
+		HashMap<Long, AppUserArray> store = service.GetGenericStore("AppUsers");
+		//store.put(0L, new AppUserArray(newOrdering));
+		store.get(0L).setArray(newOrdering);
+	} 
 
 }
