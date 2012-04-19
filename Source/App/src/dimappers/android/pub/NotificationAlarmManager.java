@@ -25,21 +25,27 @@ import dimappers.android.PubData.UserStatus;
 		
 		 Notification newNotification; 
 		 PubEvent event;
+		 IPubService service;
+		 int eventId;
+		 Bundle extras;
 		
 		@Override
 	 public void onCreate(Bundle savedInstanceState)
 		{
 		 super.onCreate(savedInstanceState);
 		 Log.d(Constants.MsgWarning, "NotificationAlarmManager has been fired");
-		 final Bundle extras = getIntent().getExtras();
+		 extras = getIntent().getExtras();
 		 
-		 final int eventId = extras.getInt(Constants.CurrentWorkingEvent);
+		 eventId = extras.getInt(Constants.CurrentWorkingEvent);
 		 
-		 bindService(new Intent(this, PubService.class), new ServiceConnection(){
+		 bindService(new Intent(this, PubService.class), connection, 0);
+	 }
+		
+		ServiceConnection connection = new ServiceConnection(){
 
 			public void onServiceConnected(ComponentName arg0, IBinder serviceBinder) {
 				
-				IPubService service = (IPubService) serviceBinder;
+				service = (IPubService) serviceBinder;
 				event = service.getEvent(eventId);
 				
 				 NotificationType type = (NotificationType)(extras.getSerializable(Constants.RequiredNotificationType));
@@ -70,8 +76,7 @@ import dimappers.android.PubData.UserStatus;
 				 finish();
 			}
 
-			public void onServiceDisconnected(ComponentName name) {}}, 0);
-	 }
+			public void onServiceDisconnected(ComponentName name) {}};
 	 
 		private void eventAboutToStart()
 		{
@@ -117,6 +122,12 @@ import dimappers.android.PubData.UserStatus;
 					 "Please confirm trip to " + event.GetPubLocation().toString() + " starting " + event.GetFormattedStartTime(), 
 					 "This event has " + confirmed + " confirmed guest(s).", 
 					 contentIntent);
+		}
+		
+		public void onDestroy()
+		{
+			super.onDestroy();
+			unbindService(connection);
 		}
 		
 		public enum NotificationType implements Serializable
