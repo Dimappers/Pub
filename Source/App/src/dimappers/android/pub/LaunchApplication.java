@@ -258,4 +258,9 @@ public class LaunchApplication extends Activity implements OnClickListener{
         return ((ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo()!=null;
     }
     
+    public void runHere(Runnable r)
+    {
+    	runOnUiThread(r);
+    }
+    
 }

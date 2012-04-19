@@ -24,128 +24,139 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:visibility="gone" />
-        
+        
         <LinearLayout
             android:id="@+id/innerlin"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical" >
-    
-    <RelativeLayout
-        android:id="@+id/location_relative"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center" >
 
-        <TextView
-            android:id="@+id/location_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:text="@string/location"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            <RelativeLayout
+                android:id="@+id/location_relative"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center" >
 
-        <TextView
-            android:id="@+id/current_location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="22dp"
-            android:layout_toRightOf="@+id/location_title"
-            android:text="@string/default_location"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-    </RelativeLayout>
+                <TextView
+                    android:id="@+id/location_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:text="@string/location"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <TextView
-        android:id="@+id/pub_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/pub_location"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:layout_marginLeft="20sp"
-        android:layout_marginRight="20sp"
-        android:layout_marginTop="10sp" />
-
-    <Button
-        android:id="@+id/pub_button"
-        style="?android:attr/editTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="22dp"
-        android:layout_marginRight="22dp"
-        android:gravity="center|center_horizontal"
-        android:text="test_data"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:background="@android:color/transparent"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/current_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="22dp"
+                    android:layout_toRightOf="@+id/location_title"
+                    android:text="@string/default_location"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+            </RelativeLayout>
 
-    <TextView
-        android:id="@+id/time_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/time_title"
-        android:layout_marginLeft="20sp"
-        android:layout_marginRight="20sp"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    <Button
-        android:id="@+id/time_button"
-        style="?android:attr/editTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="22dp"
-        android:layout_marginRight="22dp"
-        android:gravity="center"
-        android:text="test_data"
-        android:textAppearance="?android:attr/textAppearanceSmall" 
-        android:background="@android:color/transparent"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"/>
+            <TextView
+                android:id="@+id/pub_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20sp"
+                android:layout_marginRight="20sp"
+                android:layout_marginTop="10sp"
+                android:text="@string/pub_location"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textSize="20sp" />
 
-    <TextView
-        android:id="@+id/guest_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/guest_title"
-        android:layout_marginLeft="20sp"
-        android:layout_marginRight="20sp"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-   
-    <ListView
-        android:id="@+id/@android:id/list"
-        android:layout_width="match_parent"
-        android:layout_height="275dp"
-        android:layout_gravity="center"
-        android:layout_marginLeft="25sp"
-        android:layout_marginRight="25sp"
-        android:scrollbars="vertical"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+            <Button
+                android:id="@+id/pub_button"
+                style="?android:attr/editTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="22dp"
+                android:layout_marginRight="22dp"
+                android:background="@android:color/transparent"
+                android:gravity="center|center_horizontal"
+                android:text="test_data"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#FFFFFF"
+                android:textSize="35sp" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:orientation="horizontal">
+            <TextView
+                android:id="@+id/time_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20sp"
+                android:layout_marginRight="20sp"
+                android:text="@string/time_title"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textSize="20sp" />
 
-        <Button
-            android:id="@+id/send_invites_event"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-        android:layout_marginLeft="22dp"
-            android:text="@string/send_invites" />
+            <Button
+                android:id="@+id/time_button"
+                style="?android:attr/editTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="22dp"
+                android:layout_marginRight="22dp"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:text="test_data"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#FFFFFF"
+                android:textSize="35sp" />
 
-        <Button
-            android:id="@+id/save_event"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"        
-            android:layout_marginRight="22dp"
-            android:text="@string/save" />
-    </LinearLayout>
-    </LinearLayout>
+            <TextView
+                android:id="@+id/guest_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20sp"
+                android:layout_marginRight="20sp"
+                android:text="@string/guest_title"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textSize="20sp" />
+
+            <ListView
+                android:id="@+id/@android:id/list"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="25sp"
+                android:layout_marginRight="25sp"
+                
+                android:scrollbars="vertical"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/send_invites_event"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="22dp"
+                    android:layout_weight="1"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentBottom="true"
+                    android:text="@string/send_invites" />
+
+                <Button
+                    android:id="@+id/save_event"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="22dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_weight="1"
+                    android:text="@string/save" />
+            </LinearLayout>
+        </LinearLayout>
+
     </RelativeLayout>
 </LinearLayout>

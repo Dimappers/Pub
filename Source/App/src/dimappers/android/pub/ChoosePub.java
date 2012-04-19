@@ -122,6 +122,7 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 						public void run()
 						{
 							Toast.makeText(getApplicationContext(), "Pubs are currently unavaliable.", Toast.LENGTH_LONG).show();
+							findViewById(R.id.progressBar).setVisibility(View.GONE);
 						}
 					});
 				}});
@@ -140,6 +141,7 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 					listItems.add(p);
 				}
 				adapter.notifyDataSetChanged();
+				findViewById(R.id.progressBar).setVisibility(View.GONE);
 			}
 	    	
 	    }

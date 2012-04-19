@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical" 
+    android:background="@drawable/orgmain">
 
         <TextView
             android:id="@+id/userInvitesPubNameText"
@@ -10,7 +11,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/pub_name"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginTop="30sp" />
 
         <TextView
             android:id="@+id/userInviteStartTimeText"
@@ -39,9 +41,11 @@
     <ListView
         android:id="@+id/listView2"
         android:layout_width="match_parent"
-        android:layout_height="116dp"
-        android:layout_weight="0.55"
-        android:scrollbars="vertical" >
+        android:layout_height="300dp"
+        android:scrollbars="vertical"
+        android:layout_marginLeft="25sp"
+        android:layout_marginRight="25sp"
+        android:layout_marginBottom="5sp" >
     </ListView>
 
     <LinearLayout
@@ -55,7 +59,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/decline"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="22dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true" />
 
         <Button
             android:id="@+id/going"
@@ -63,7 +71,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/going" 
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="22dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"/>
 
     </LinearLayout>
 

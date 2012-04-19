@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 import com.facebook.android.Facebook;
 
@@ -35,6 +36,9 @@ public class Guests extends ListActivity implements OnClickListener{
 	ArrayAdapter<AppUser> adapter;
 	ListView guest_list;
 	PubEvent event;
+	PubEvent eventPreEdit;
+	
+	boolean isSent;
 	
 	AppUser[] allFriends;
 	
@@ -174,7 +178,6 @@ public class Guests extends ListActivity implements OnClickListener{
 	}
 	
 	public void onClick(View v){
-		Intent i;
 		switch(v.getId())
 		{
 		case R.id.save : {
@@ -191,17 +194,26 @@ public class Guests extends ListActivity implements OnClickListener{
 	}
 	
 	public void onListItemClick(ListView l, View v, int pos, long id) 
-	{
-		super.onListItemClick(l, v, pos, id);
-		
+	{	
 		//Add/Remove guest from
-		User modifedUser = listItems.get(pos);
-		if(event.DoesContainUser(modifedUser))
+		User modifiedUser = listItems.get(pos);
+		if(event.DoesContainUser(modifiedUser))
 		{
-			event.RemoveUser(modifedUser);		}
+			if(isSent&&eventPreEdit.DoesContainUser(modifiedUser))
+			{
+				guest_list.setItemChecked(pos, true);
+				Toast.makeText(getApplicationContext(), "Cannot uninvite a guest!", Toast.LENGTH_LONG).show();
+			}
+			else
+			{
+				super.onListItemClick(l, v, pos, id);
+				event.RemoveUser(modifiedUser);
+			}		
+		}
 		else
 		{
-			event.AddUser(modifedUser);
+			super.onListItemClick(l, v, pos, id);
+			event.AddUser(modifiedUser);
 		}
 	}
 	
@@ -223,8 +235,13 @@ public class Guests extends ListActivity implements OnClickListener{
 		{
 			//Give the interface to the app
 			service = (IPubService)bService;
-			event =  service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			int eventId = getIntent().getExtras().getInt(Constants.CurrentWorkingEvent);
+			event =  service.getEvent(eventId);
+			eventPreEdit = new PubEvent(event.writeXml());
 			facebook = service.GetFacebook();
+			
+			if(eventId>=0) {isSent = true;}
+			else {isSent = false;}
 			
 			DataRequestGetFriends getFriends = new DataRequestGetFriends();
 			service.addDataRequest(getFriends, new IRequestListener<AppUserArray>() {

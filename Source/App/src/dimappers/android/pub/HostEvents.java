@@ -145,7 +145,12 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			service.GiveNewSentEvent(event, new IRequestListener<PubEvent>() {
 				
 				public void onRequestFail(Exception e) {
-					Log.d(Constants.MsgError, "Could not send event");
+					Log.d(Constants.MsgError, "Could not sent invite: " + e.getMessage());
+					runOnUiThread(new Runnable(){
+						public void run() {
+							Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
+							//FIXME: probably should make it more obvious when this fails
+						}});
 				}
 				
 				public void onRequestComplete(PubEvent data) {
@@ -182,7 +187,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			DataRequestConfirmDeny request = new DataRequestConfirmDeny(event);
 			service.addDataRequest(request, new IRequestListener<PubEvent>() {
 
-				@Override
 				public void onRequestComplete(PubEvent data) {
 					if(data != null)
 					{
@@ -191,7 +195,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 					
 				}
 
-				@Override
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, e.getMessage());					
 				}
@@ -214,9 +217,9 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
     		{
     			event = service.getEvent(data.getExtras().getInt(Constants.CurrentWorkingEvent));
     			super.onActivityResult(requestCode, resultCode, data);
-    			UpdateDataFromEvent();
     		}
     	}
+    	UpdateDataFromEvent();
     }
 
 	@Override
@@ -233,7 +236,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		.setCancelable(true)  
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				service.RemoveSavedEvent(event);
+				service.RemoveEventFromStoredDataAndCancelNotification(event);
 				finish();
 
 			}

@@ -34,6 +34,7 @@ import dimappers.android.PubData.PubEvent;
 public class StoredData implements Serializable
 {	
 	//Names of hash maps
+	public static final String loggedInUserTag = "LUser";
 	public static final String hostSavedTag = "HostSaved";
 	public static final String hostSentTag = "HostSent";
 	public static final String invitedTag = "Invited";
@@ -53,6 +54,8 @@ public class StoredData implements Serializable
 	private Dictionary<String, HashMap<?,? extends IXmlable>> dataStores;
 	private HistoryStore historyStore;
 	
+	private AppUser loggedInUser;
+	
 	public StoredData()
 	{
 		//nextHistorySlot = 0;
@@ -67,6 +70,18 @@ public class StoredData implements Serializable
 		
 		dataStores = new Hashtable<String, HashMap<?,? extends IXmlable>>();
 		historyStore = new HistoryStore();
+	
+		loggedInUser =null;
+	}
+	
+	public void setActiveUser(AppUser user)
+	{
+		loggedInUser = user;
+	}
+	
+	public AppUser getActiveUser()
+	{
+		return loggedInUser;
 		
 	}
 	
@@ -212,6 +227,10 @@ public class StoredData implements Serializable
 		Document saveDoc = new Document();
 		Element root = new Element("PubSaveData");
 		
+		Element loggedInUserElement = new Element(loggedInUserTag);
+		loggedInUserElement.addContent(loggedInUser.writeXml());
+		root.addContent(loggedInUserElement);
+		
 		Element rootSaved = new Element(hostSavedTag);
 		for(PubEvent event : savedEvents.values())
 		{
@@ -300,6 +319,9 @@ public class StoredData implements Serializable
 		}
 
 		Element root = loadedDoc.getRootElement();
+		
+		loggedInUser = new AppUser(root.getChild(loggedInUserTag).getChild(AppUser.class.getSimpleName()));
+		
 		Element hostSavedElement = root.getChild(hostSavedTag);
 		List<Element> elements = hostSavedElement.getChildren(PubEvent.class.getSimpleName());
 		for(Element savedEventElement : elements)

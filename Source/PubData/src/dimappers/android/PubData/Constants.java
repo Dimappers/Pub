@@ -14,6 +14,7 @@ public final class Constants {
 	public static final String AuthToken = "authtoken";
 	public static final String Expires = "expires";
 	public static final String FacebookAppId = "153926784723826";
+	public static final String RequiredNotificationType = "requiredNotificationType";
 	
 	//Error constants
 	public static final int MissingDataInBundle = -12;
@@ -75,4 +76,5 @@ public final class Constants {
 	public static final int CurrentLocationOutOfDateTime = 15;
 	public static final int XmlObjectOutOfDateTime = 7; //TODO: May want to change this, so each different type of XMlJasonObject has a different outofdate time
 	public static final int FriendsOutOfDateTime = 7;
+
 }

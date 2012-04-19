@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical" 
+    android:background="@drawable/orgmain" >
 
     <TextView
         android:id="@+id/choose_date"
@@ -10,7 +11,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="@string/choose_date"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginTop="30sp" />
 
     <DatePicker
         android:id="@+id/datePicker"
@@ -23,24 +25,25 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="@string/choose_time"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginTop="5sp" />
 
     <RelativeLayout
         android:id="@+id/relativeLayout1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
-
+
         <Button
             android:id="@+id/hour_add"
-            android:layout_width="100dp"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/minute_add"
             android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/minute_add"
             android:text="@string/plus" />
-
+
         <Button
             android:id="@+id/currenthour"
-            android:layout_width="100dp"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/hour_add"
             android:layout_toLeftOf="@+id/currentminute"
@@ -48,7 +51,7 @@
 
         <Button
             android:id="@+id/hour_take"
-            android:layout_width="100dp"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/currenthour"
             android:layout_toLeftOf="@+id/minute_take"
@@ -56,7 +59,7 @@
 
         <Button
             android:id="@+id/currentminute"
-            android:layout_width="100dp"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:layout_above="@+id/hour_take"
             android:layout_centerHorizontal="true"
@@ -64,7 +67,7 @@
 
         <Button
             android:id="@+id/minute_take"
-            android:layout_width="100dp"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/currentminute"
             android:layout_below="@+id/currentminute"
@@ -72,7 +75,7 @@
 
         <Button
             android:id="@+id/minute_add"
-            android:layout_width="100dp"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:layout_above="@+id/currentminute"
             android:layout_alignLeft="@+id/currentminute"
@@ -80,19 +83,20 @@
 
         <Button
             android:id="@+id/am_pm"
-            android:layout_width="100dp"
+            android:layout_width="95dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/minute_add"
             android:layout_toRightOf="@+id/currentminute"
             android:text="PM" />
 
     </RelativeLayout>
-
+
     <Button
         android:id="@+id/save_date_and_time"
-        android:layout_width="wrap_content"
+        android:layout_width="67dp"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
+        android:layout_marginRight="25sp"
         android:text="@string/save" />
 
 </LinearLayout>
