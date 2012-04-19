@@ -35,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.EventStatus;
+import dimappers.android.PubData.GoingStatus;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
@@ -347,6 +348,8 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 
 			GuestList guestList = mData.get(position);
 
+			
+			
 			glView.guest.setText(guestList.getGuest().toString());
 			glView.time.setText(guestList.getTime().toString());
 			
@@ -397,13 +400,24 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			for(final Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
 			{
 				final String freeFromWhen;
-				if(userResponse.getValue().freeFrom != null)
+				if(userResponse.getValue().freeFrom != null && userResponse.getValue().freeFrom.getTimeInMillis() != event.GetStartTime().getTimeInMillis())
 				{
 					freeFromWhen = PubEvent.GetFormattedDate(userResponse.getValue().freeFrom);
 				}
 				else
 				{
-					freeFromWhen = event.GetFormattedStartTime();
+					if(userResponse.getValue().goingStatus == GoingStatus.going)
+					{
+						freeFromWhen = "Up for it!";
+					}
+					else if(userResponse.getValue().goingStatus == GoingStatus.notGoing)
+					{
+						freeFromWhen ="Nah";
+					}
+					else
+					{
+						freeFromWhen = "";
+					}
 				}
 				if(userResponse.getKey() instanceof AppUser)
 				{
