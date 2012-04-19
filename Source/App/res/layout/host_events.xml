@@ -59,58 +59,60 @@
      <TextView android:id="@+id/TO_CELL"
          android:layout_width="60dip"
          android:layout_height="wrap_content"  android:layout_weight="1"/>
+        
+        
 	</LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/linearLayout3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="horizontal"
-        android:gravity="center" >
+     <LinearLayout
+         android:id="@+id/linearLayout3"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:gravity="center"
+         android:layout_marginLeft="25sp"
+         android:layout_marginRight="25sp"
+         android:orientation="horizontal" >
 
-        <Button
-            android:id="@+id/send_Invites"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/send_invites" 
-            android:layout_weight="1"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="22dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"/>
+         <Button
+             android:id="@+id/send_Invites"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_alignParentBottom="true"
+             android:layout_gravity="center_horizontal"
+             android:layout_marginBottom="10dp"
+             android:layout_marginRight="22dp"
+             android:layout_weight="1"
+             android:text="@string/send_invites" />
 
-        <TextView
-            android:id="@+id/hostEventTimeTillPubText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Time till pub"
-            android:visibility="gone"
-            android:layout_marginRight="2dp"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+         <Button
+             android:id="@+id/edit_button"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_alignParentBottom="true"
+             android:layout_alignParentLeft="true"
+             android:layout_gravity="center_horizontal"
+             android:layout_marginBottom="10dp"
+             android:layout_marginRight="22dp"
+             android:layout_weight="1"
+             android:text="@string/edit" />
 
-        <Button
-            android:id="@+id/edit_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="22dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/edit" />
-        
-        <Button
-            android:id="@+id/it_is_on"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_weight="1"
-            android:layout_marginRight="2dp"
-            android:text="@string/it_is_on"
-            android:visibility="gone"/>
-        
-    </LinearLayout>
+         <TextView
+             android:id="@+id/hostEventTimeTillPubText"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_marginRight="2dp"
+             android:layout_weight="1"
+             android:text="Time till pub"
+             android:textAppearance="?android:attr/textAppearanceLarge"
+             android:visibility="gone" />
+
+         <Button
+             android:id="@+id/it_is_on"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_marginRight="2dp"
+             android:layout_weight="1"
+             android:text="@string/it_is_on"
+             android:visibility="gone" />
+     </LinearLayout>
 
 </LinearLayout>

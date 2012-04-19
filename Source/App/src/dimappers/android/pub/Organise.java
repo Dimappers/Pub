@@ -197,6 +197,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			}
 			case R.id.time_button : {
 				i = new Intent(this, ChooseTime.class);
+				b.putBoolean(Constants.HostOrNot, true);
 				i.putExtras(b);
 				startActivityForResult(i,Constants.StartingTimeReturn);
 				break;

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,6 +105,8 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		return false;
 	}
 	
+	TextView timeText;
+	
 	private void showAddDialog() 
 	{
 		 final Dialog commentDialog = new Dialog(UserInvites.this);
@@ -113,7 +116,23 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		
 
 		Button attachButton = (Button) commentDialog.findViewById(R.id.attach); 
-		Button cancelButton = (Button) commentDialog.findViewById(R.id.cancel); 
+		Button cancelButton = (Button) commentDialog.findViewById(R.id.cancel);
+		
+		timeText = (TextView) commentDialog.findViewById(R.id.changeTime);
+		Calendar startTime = event.GetStartTime();
+		String ampm="AM";
+		if (startTime.get(Calendar.AM_PM)==1) {ampm = "PM";}
+		timeText.setText(startTime.get(Calendar.HOUR) + ":" + startTime.get(Calendar.MINUTE) + " " + ampm);
+	    timeText.setOnClickListener(new OnClickListener() {
+	    	public void onClick(View v) {
+	    		Intent i = new Intent(UserInvites.this, ChooseTime.class);
+	    		Bundle b = new Bundle();
+	    		b.putBoolean(Constants.HostOrNot, false);
+	    		b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
+	    		i.putExtras(b);
+	    		startActivityForResult(i, Constants.MessageTimeSetter);
+	    	}
+	    });
 
 		attachButton.setOnClickListener(new OnClickListener() { 
 		// @Override 
@@ -121,7 +140,6 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		{ 
 		
 	    TextView text = (TextView) commentDialog.findViewById(R.id.comment_text_box);
-	    TextView time = (TextView) commentDialog.findViewById(R.id.changeTime);
 					
 		String commentMade = text.getText().toString();
 		Calendar timeChange = event.GetStartTime(); //(Calendar) time.getText();
@@ -142,6 +160,21 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		});
 		
 		commentDialog.show();
+	}
+	
+	public void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+		if(resultCode==RESULT_OK)
+		{
+			long time = data.getExtras().getLong(Constants.ChosenTime);
+			Date date = new Date(time);
+			int hour = date.getHours();
+			String ampm;
+			if(hour>12) {hour -= 12; ampm = "PM";}
+			else {ampm = "AM";}
+			timeText.setText(hour + ":" + date.getMinutes() + " " + ampm);
+		}
 	}
 	
 	private ServiceConnection connection = new ServiceConnection()

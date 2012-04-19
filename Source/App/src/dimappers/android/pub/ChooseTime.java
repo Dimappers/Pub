@@ -25,6 +25,8 @@ public class ChooseTime extends Activity implements OnClickListener{
 	private PubEvent event;
 	private DatePicker date_picker;
 	
+	boolean host = true;
+	
 	//TimePicker:
 		private Button currenthour;
 		private Button currentminute;
@@ -44,9 +46,16 @@ public class ChooseTime extends Activity implements OnClickListener{
     	((TextView)findViewById(R.id.choose_time)).setTypeface(font);
     	((TextView)findViewById(R.id.choose_date)).setTypeface(font);
         
+		host = getIntent().getExtras().getBoolean(Constants.HostOrNot);
+    	
     	// Date
         date_picker = (DatePicker)findViewById(R.id.datePicker);
-        date_picker.setOnClickListener(this);
+        if(host) {date_picker.setOnClickListener(this);}
+        else
+        {
+        	date_picker.setVisibility(View.GONE);
+        	findViewById(R.id.choose_date).setVisibility(View.INVISIBLE);
+        }
         
         // Time
         findViewById(R.id.hour_add).setOnClickListener(this);
@@ -93,7 +102,8 @@ public class ChooseTime extends Activity implements OnClickListener{
     	Calendar c = Calendar.getInstance();
     	return event.GetStartTime().getTimeInMillis() - c.getTimeInMillis() > 604800000; //number of milliseconds in a week
     }
-    public void onClick(View v) {
+    public void onClick(View v) 
+    {
     	switch(v.getId())
     	{
     		case R.id.save_date_and_time : {
@@ -252,7 +262,8 @@ public class ChooseTime extends Activity implements OnClickListener{
     }
     private void returnTime() {
     	Bundle b = new Bundle();
-		b.putInt(Constants.CurrentWorkingEvent,event.GetEventId());
+		if(host){b.putInt(Constants.CurrentWorkingEvent,event.GetEventId());}
+		else {b.putLong(Constants.ChosenTime, event.GetStartTime().getTimeInMillis());}
 		Intent returnIntent = new Intent();
 		returnIntent.putExtras(b);
 		this.setResult(RESULT_OK,returnIntent);
@@ -305,7 +316,9 @@ public class ChooseTime extends Activity implements OnClickListener{
 		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
 		{
 			IPubService serviceInterface = (IPubService)serviceBinder;
+			
 			event = serviceInterface.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			if(!host) {event = new PubEvent(event.writeXml());}
 			
 			Calendar startTime = event.GetStartTime();
 			

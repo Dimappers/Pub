@@ -256,7 +256,6 @@ public class PubService extends IntentService
 			}
 		}
 
-		@Override
 		public <K, V extends IXmlable> HashMap<K, V> GetGenericStore(String key) {
 			// TODO Auto-generated method stub
 			return storedData.GetGenericStore(key);
@@ -293,7 +292,8 @@ public class PubService extends IntentService
 			if(intent!=null && intent.getExtras()!=null && intent.getExtras().containsKey(Constants.CurrentFacebookUser))
 			{
 				storedData.setActiveUser((AppUser)intent.getExtras().getSerializable(Constants.CurrentFacebookUser));
-				
+				storedData.setAuthKey(intent.getExtras().getString(Constants.AuthToken));
+				storedData.setExpiryDate(intent.getExtras().getLong(Constants.Expires));
 				//Editor e = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).edit();
 				//e.putString(Constants.CurrentFacebookUser, Long.toString(user.getUserId());
 				//e.commit();
@@ -306,8 +306,8 @@ public class PubService extends IntentService
 			
 			//FIXME: this causes null pointers
 			authenticatedFacebook = new Facebook(Constants.FacebookAppId);
-			authenticatedFacebook.setAccessToken(intent.getExtras().getString(Constants.AuthToken));
-			authenticatedFacebook.setAccessExpires(intent.getExtras().getLong(Constants.Expires));
+			authenticatedFacebook.setAccessToken(storedData.getAuthKey());
+			authenticatedFacebook.setAccessExpires(storedData.getExpiryDate());
 			
 			hasStarted = true;
 			
