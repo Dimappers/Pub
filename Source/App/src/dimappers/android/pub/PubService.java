@@ -256,7 +256,6 @@ public class PubService extends IntentService
 			}
 		}
 
-		@Override
 		public <K, V extends IXmlable> HashMap<K, V> GetGenericStore(String key) {
 			// TODO Auto-generated method stub
 			return storedData.GetGenericStore(key);

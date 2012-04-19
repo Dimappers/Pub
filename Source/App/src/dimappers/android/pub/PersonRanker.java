@@ -55,8 +55,6 @@ public class PersonRanker {
 	private final static int guestValue = 1;
 	private final static int hostValue = 2;
 
-	private final static int callLogValue = 1;
-
 	private final static int rankFromPhotosFromWho = -1;
 	private final static int rankFromPhotosTagged = -2;
 	private final static int rankFromPhotosLiked = 3;
@@ -68,8 +66,6 @@ public class PersonRanker {
 	private final static int rankFromPostsTagged = -5;
 	private final static int rankFromPostsComment = -6;
 	private final static int rankFromPostsTaggedInComment = -7;
-
-	private final static int rankFromHistory = 1;
 
 	private final int maxDist = 2;
 
