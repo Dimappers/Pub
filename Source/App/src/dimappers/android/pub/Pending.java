@@ -74,12 +74,6 @@ public class Pending extends Activity implements OnClickListener {
 
 	public PubEvent createEvent() {
 		updateText("Creating Event");
-
-		Bundle b = getIntent().getExtras();
-		if (b == null) {
-			Debug.waitForDebugger();
-		}
-
 		return new PubEvent(new TimeFinder(service.getHistoryStore()).chooseTime(), service.GetActiveUser());
 	}
 

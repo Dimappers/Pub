@@ -137,6 +137,7 @@ public class PersonRanker {
 
 	}
 
+	
 	private void doRanking() {
 		Log.d(Constants.MsgInfo, "Starting at: "
 				+ Calendar.getInstance().getTime().toString());

@@ -113,17 +113,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		guest_list = (ListView)findViewById(android.R.id.list);
 		adapter = new ArrayAdapter<String>(this, android.R.layout.test_list_item, listItems);
 		setListAdapter(adapter);
-		
-		guest_list.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
-				Intent i = new Intent(getBaseContext(), Guests.class);
-				Bundle b = new Bundle();
-				b.putAll(getIntent().getExtras());
-				b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
-				i.putExtras(b);
-				startActivityForResult(i, Constants.GuestReturn);
-			}
-		});
 
 	}
 	
@@ -494,6 +483,18 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			//Give the interface to the app
 			Organise.this.service = (IPubService)service;
 			event=Organise.this.service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			
+			
+			guest_list.setOnItemClickListener(new OnItemClickListener() {
+				public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
+					Intent i = new Intent(getBaseContext(), Guests.class);
+					Bundle b = new Bundle();
+					b.putAll(getIntent().getExtras());
+					b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
+					i.putExtras(b);
+					startActivityForResult(i, Constants.GuestReturn);
+				}
+			});
 
 			//Get user's current location
 			double[] location = Organise.this.service.GetActiveUser().getLocation();

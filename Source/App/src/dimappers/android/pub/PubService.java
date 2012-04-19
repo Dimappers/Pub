@@ -36,6 +36,7 @@ import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.UpdateType;
 import dimappers.android.PubData.User;
+import dimappers.android.pub.NotificationAlarmManager.NotificationType;
 
 public class PubService extends IntentService
 {
@@ -48,6 +49,9 @@ public class PubService extends IntentService
 
 	//ServiceBinder is our interface to communicate with the service
 	public class ServiceBinder extends Binder implements IPubService {
+		
+		long hostReminderTime = 7200000; //currently set to milliseconds in 2 hours
+		
         PubService getService() {
             // Return this instance of LocalService so clients can call public methods
             return PubService.this;
@@ -72,6 +76,8 @@ public class PubService extends IntentService
 						listener.onRequestFail(e);
 					}
 				});
+			makeNotification(event, NotificationAlarmManager.NotificationType.EventAboutToStart);
+			makeNotification(event, NotificationAlarmManager.NotificationType.HostClickItsOnReminder);
 		}
 
 		public Collection<PubEvent> GetSavedEvents() {
@@ -228,11 +234,26 @@ public class PubService extends IntentService
 		{
 			Intent notificationAlarmIntent = new Intent(getApplicationContext(), NotificationAlarmManager.class);
 			Bundle b = new Bundle();
-			b.putSerializable(Constants.CurrentWorkingEvent, event);
+			b.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
 			b.putSerializable(Constants.RequiredNotificationType, type);
 			notificationAlarmIntent.putExtras(b);
 			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-			((AlarmManager) getSystemService(Context.ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis(), contentIntent);
+			
+			switch (type)
+			{
+				case EventAboutToStart :
+				{
+					((AlarmManager) getSystemService(Context.ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis(), contentIntent);
+					break;
+				}
+				case HostClickItsOnReminder :
+				{
+					long time = event.GetStartTime().getTimeInMillis();
+					time -= hostReminderTime;
+					((AlarmManager) getSystemService(Context.ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, time, contentIntent);
+					break;
+				}
+			}
 		}
 
 		@Override
@@ -269,9 +290,7 @@ public class PubService extends IntentService
 				storedData.Load(storedDataString);
 			}
 			
-			//TODO: this causes null pointers
-			Bundle bundle = intent.getExtras();
-			if(bundle!=null && bundle.containsKey(Constants.CurrentFacebookUser))
+			if(intent!=null && intent.getExtras()!=null && intent.getExtras().containsKey(Constants.CurrentFacebookUser))
 			{
 				storedData.setActiveUser((AppUser)intent.getExtras().getSerializable(Constants.CurrentFacebookUser));
 				
@@ -285,6 +304,7 @@ public class PubService extends IntentService
 			sender = new DataSender();
 			receiver = new DataReceiver(binder);
 			
+			//FIXME: this causes null pointers
 			authenticatedFacebook = new Facebook(Constants.FacebookAppId);
 			authenticatedFacebook.setAccessToken(intent.getExtras().getString(Constants.AuthToken));
 			authenticatedFacebook.setAccessExpires(intent.getExtras().getLong(Constants.Expires));
