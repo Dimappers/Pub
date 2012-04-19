@@ -132,7 +132,23 @@ public class Guests extends ListActivity implements OnClickListener{
 						if(!guest_list.isItemChecked(0))
 						{
 							guest_list.setItemChecked(0, true);
-							event.AddUser(usersToKeep.get(0));
+							AppUser newlyAddedUser = usersToKeep.get(0); 
+							event.AddUser(newlyAddedUser);
+							
+							//Shift this user up to the bottom of the selected, above all unselected
+							int inviteeEnd = event.GetUserArray().length;
+							int oldPosition = -1;
+							for(int i = 0; i < allFriends.length; ++i)
+							{
+								if(allFriends[i] == newlyAddedUser)
+								{
+									oldPosition = i;
+									break;
+								}
+							}
+							AppUser temp = allFriends[inviteeEnd];
+							allFriends[inviteeEnd] = newlyAddedUser;
+							allFriends[oldPosition] = temp;
 						}
 					}
 				}				
@@ -151,6 +167,7 @@ public class Guests extends ListActivity implements OnClickListener{
 		});
 		return true;
 	}
+	
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event)  {
@@ -186,7 +203,7 @@ public class Guests extends ListActivity implements OnClickListener{
 			Intent returnIntent = new Intent();
 			returnIntent.putExtras(b);
 			this.setResult(RESULT_OK,returnIntent);
-			
+			DataRequestGetFriends.UpateOrdering(allFriends, service);
 			finish();
 			break;
 		}
@@ -196,7 +213,7 @@ public class Guests extends ListActivity implements OnClickListener{
 	public void onListItemClick(ListView l, View v, int pos, long id) 
 	{	
 		//Add/Remove guest from
-		User modifiedUser = listItems.get(pos);
+		AppUser modifiedUser = listItems.get(pos);
 		if(event.DoesContainUser(modifiedUser))
 		{
 			if(isSent&&eventPreEdit.DoesContainUser(modifiedUser))
@@ -206,15 +223,34 @@ public class Guests extends ListActivity implements OnClickListener{
 			}
 			else
 			{
-				super.onListItemClick(l, v, pos, id);
-				event.RemoveUser(modifiedUser);
-			}		
+					event.RemoveUser(modifiedUser);
+					int inviteeEnd = event.GetUserArray().length - 1;
+			
+					for(int i = pos; i<inviteeEnd; ++i)
+					{
+						allFriends[i] = allFriends[i+1];
+					}
+			
+					allFriends[inviteeEnd] = modifiedUser;
+			}
 		}
 		else
 		{
-			super.onListItemClick(l, v, pos, id);
+			int inviteeEnd = event.GetUserArray().length - 1; //don't include the host
 			event.AddUser(modifiedUser);
+			
+			
+			int oldPosition = pos;
+			
+			for(int i = oldPosition; i > inviteeEnd; --i)
+			{
+				allFriends[i] = allFriends[i-1];
+			}
+			
+			allFriends[inviteeEnd] = modifiedUser;
 		}
+		
+		UpdateListView(allFriends);
 	}
 	
 	@Override

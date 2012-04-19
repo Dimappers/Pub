@@ -156,7 +156,7 @@ public class PubService extends IntentService
 				if(eventEntry.getValue() == UpdateType.noChangeSinceLastUpdate)
 				{
 					PubEvent event = eventEntry.getKey();
-					storedData.GetGenericStore("PubEvent").put(event.GetEventId(), event);
+					storedData.AddNewInvitedEvent(eventEntry.getKey());
 					++hostedEvents;
 					
 				}
@@ -254,6 +254,12 @@ public class PubService extends IntentService
 					break;
 				}
 			}
+		}
+
+		@Override
+		public <K, V extends IXmlable> HashMap<K, V> GetGenericStore(String key) {
+			// TODO Auto-generated method stub
+			return storedData.GetGenericStore(key);
 		}
 	}
 
