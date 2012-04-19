@@ -156,7 +156,7 @@ public class PubService extends IntentService
 				if(eventEntry.getValue() == UpdateType.noChangeSinceLastUpdate)
 				{
 					PubEvent event = eventEntry.getKey();
-					storedData.GetGenericStore("PubEvent").put(event.GetEventId(), event);
+					storedData.AddNewInvitedEvent(eventEntry.getKey());
 					++hostedEvents;
 					
 				}
