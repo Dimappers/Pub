@@ -121,14 +121,15 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		{ 
 		
 	    TextView text = (TextView) commentDialog.findViewById(R.id.comment_text_box);
-	    EditText time = (EditText) commentDialog.findViewById(R.id.changeTime);
+	    TextView time = (TextView) commentDialog.findViewById(R.id.changeTime);
 					
 		String commentMade = text.getText().toString();
-		Calendar timeChange = (Calendar) time.getText();
+		Calendar timeChange = event.GetStartTime(); //(Calendar) time.getText();
 					
 		Toast.makeText(getBaseContext(), commentMade, Toast.LENGTH_LONG).show(); 
 		
 		sendResponse(true,timeChange,commentMade);
+		commentDialog.dismiss();
 		} 
 		}); 
 

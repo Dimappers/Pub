@@ -56,6 +56,7 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 		Element messageTypeElement = new Element(MessageType.class.getSimpleName());
 		messageTypeElement.setText(MessageType.respondMessage.toString());
 		
+		root.addContent(messageTypeElement);
 		root.addContent(rData.writeXml());
 		
 		Socket socket;
