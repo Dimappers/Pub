@@ -378,9 +378,19 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 
 			ImageButton cancelButton = (ImageButton) commentDialog.findViewById(R.id.cancel_dialog); 
 
-			TextView text = (TextView) commentDialog.findViewById(R.id.comments_received);
-			text.setClickable(false);
-
+			String text = (String) commentDialog.findViewById(R.id.comments_received).toString();
+			//text.setClickable(false);
+			
+			for(final Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
+			{
+				
+				
+				if(userResponse.getValue().messageToHost != "")
+				{
+					text = userResponse.getValue().messageToHost;
+				}
+					
+			}
 			cancelButton.setOnClickListener(new OnClickListener() { 
 				// @Override 
 				public void onClick(View v) { 
@@ -397,6 +407,15 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			for(final Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
 			{
 				final String freeFromWhen;
+				final String message;
+				
+				if(userResponse.getValue().messageToHost != null)
+				{
+					Toast.makeText(getBaseContext(), userResponse.getValue().messageToHost, Toast.LENGTH_LONG).show(); 
+
+				} 
+					
+				
 				if(userResponse.getValue().freeFrom != null)
 				{
 					freeFromWhen = PubEvent.GetFormattedDate(userResponse.getValue().freeFrom);
