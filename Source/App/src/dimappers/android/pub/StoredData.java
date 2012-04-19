@@ -35,6 +35,8 @@ public class StoredData implements Serializable
 {	
 	//Names of hash maps
 	public static final String loggedInUserTag = "LUser";
+	private static final String fbAuthStringTag ="FbAuth";
+	private static final String fbExpiryTag = "FbExp";
 	public static final String hostSavedTag = "HostSaved";
 	public static final String hostSentTag = "HostSent";
 	public static final String invitedTag = "Invited";
@@ -55,6 +57,8 @@ public class StoredData implements Serializable
 	private HistoryStore historyStore;
 	
 	private AppUser loggedInUser;
+	private String authKey;
+	private long expiryDate;
 	
 	public StoredData()
 	{
@@ -82,9 +86,24 @@ public class StoredData implements Serializable
 	public AppUser getActiveUser()
 	{
 		return loggedInUser;
-		
 	}
 	
+	public String getAuthKey() {
+		return authKey;
+	}
+
+	public void setAuthKey(String authKey) {
+		this.authKey = authKey;
+	}
+
+	public long getExpiryDate() {
+		return expiryDate;
+	}
+
+	public void setExpiryDate(long expiryDate) {
+		this.expiryDate = expiryDate;
+	}
+
 	public <K, V  extends IXmlable> HashMap<K, V> GetGenericStore(IDataRequest<K, V> dataRequest)
 	{
 		if(dataRequest.getStoredDataId() == Constants.NoDictionaryForGenericDataStore)
@@ -231,6 +250,14 @@ public class StoredData implements Serializable
 		loggedInUserElement.addContent(loggedInUser.writeXml());
 		root.addContent(loggedInUserElement);
 		
+		Element facebookAuthTokenElement = new Element(fbAuthStringTag);
+		facebookAuthTokenElement.setText(authKey);
+		root.addContent(facebookAuthTokenElement);
+		
+		Element facebookExpiryElement = new Element(fbExpiryTag);
+		facebookExpiryElement.setText(Long.toString(expiryDate));
+		root.addContent(facebookExpiryElement);
+		
 		Element rootSaved = new Element(hostSavedTag);
 		for(PubEvent event : savedEvents.values())
 		{
@@ -321,6 +348,8 @@ public class StoredData implements Serializable
 		Element root = loadedDoc.getRootElement();
 		
 		loggedInUser = new AppUser(root.getChild(loggedInUserTag).getChild(AppUser.class.getSimpleName()));
+		authKey = root.getChildText(fbAuthStringTag);
+		expiryDate = Long.parseLong(root.getChildText(fbExpiryTag));
 		
 		Element hostSavedElement = root.getChild(hostSavedTag);
 		List<Element> elements = hostSavedElement.getChildren(PubEvent.class.getSimpleName());
