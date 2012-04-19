@@ -352,6 +352,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			
 			if(HostEvents.sent == true )
 			{
+				
 				comment.setImageLevel(R.drawable.email_open);
 				comment.setClickable(true);
 				comment.setOnClickListener(new OnClickListener() {
@@ -378,16 +379,15 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 
 			ImageButton cancelButton = (ImageButton) commentDialog.findViewById(R.id.cancel_dialog); 
 
-			String text = (String) commentDialog.findViewById(R.id.comments_received).toString();
+			TextView text = (TextView) commentDialog.findViewById(R.id.comments_received);
 			//text.setClickable(false);
 			
 			for(final Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
 			{
-				
-				
-				if(userResponse.getValue().messageToHost != "")
+								
+				if(userResponse.getValue().messageToHost != "" && userResponse.getValue().messageToHost != null)
 				{
-					text = userResponse.getValue().messageToHost;
+					text.setText(userResponse.getValue().messageToHost);
 				}
 					
 			}
@@ -406,15 +406,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			mData.clear();
 			for(final Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
 			{
-				final String freeFromWhen;
-				final String message;
-				
-				if(userResponse.getValue().messageToHost != null)
-				{
-					Toast.makeText(getBaseContext(), userResponse.getValue().messageToHost, Toast.LENGTH_LONG).show(); 
-
-				} 
-					
+				final String freeFromWhen;	
 				
 				if(userResponse.getValue().freeFrom != null)
 				{
