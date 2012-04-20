@@ -79,7 +79,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	    	
 	    	findViewById(R.id.going).setBackgroundColor(Color.GREEN);
 	    	findViewById(R.id.decline).setBackgroundResource(android.R.drawable.btn_default);
-
+	    	sendResponse(true,event.GetStartTime(),"");
 	    	break;
 		}
 		case R.id.decline :
@@ -87,7 +87,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	    	
 	    	findViewById(R.id.decline).setBackgroundColor(Color.RED);
 	    	findViewById(R.id.going).setBackgroundResource(android.R.drawable.btn_default);
-
+	    	sendResponse(false,event.GetStartTime(),"");
 			break;
 		}
 		}
@@ -142,11 +142,19 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	    TextView text = (TextView) commentDialog.findViewById(R.id.comment_text_box);
 					
 		String commentMade = text.getText().toString();
-		Calendar timeChange = event.GetStartTime(); //(Calendar) time.getText();
 					
-		Toast.makeText(getBaseContext(), commentMade, Toast.LENGTH_LONG).show(); 
+		if(commentMade!="")
+		{
+			Toast.makeText(getBaseContext(), commentMade, Toast.LENGTH_LONG).show();
+		} 
 		
-		sendResponse(true,timeChange,commentMade);
+		if(timeSet==event.GetStartTime().getTimeInMillis()){sendResponse(true,event.GetStartTime(),commentMade);}
+		else {
+			Calendar time = Calendar.getInstance();
+			time.setTime(new Date(timeSet));
+			sendResponse(true, time, commentMade);
+		}
+		
 		commentDialog.dismiss();
 		} 
 		}); 
@@ -162,13 +170,15 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		commentDialog.show();
 	}
 	
+	long timeSet;
+	
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		super.onActivityResult(requestCode, resultCode, data);
 		if(resultCode==RESULT_OK)
 		{
-			long time = data.getExtras().getLong(Constants.ChosenTime);
-			Date date = new Date(time);
+			timeSet = data.getExtras().getLong(Constants.ChosenTime);
+			Date date = new Date(timeSet);
 			int hour = date.getHours();
 			String ampm;
 			if(hour>12) {hour -= 12; ampm = "PM";}
@@ -184,6 +194,12 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			service = (IPubService)serviceBinder;
 			
 			event = service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			
+			switch(event.GetUserGoingStatus(service.GetActiveUser()))
+			{
+				case going : {findViewById(R.id.going).setBackgroundColor(Color.GREEN); break;}
+				case notGoing : {findViewById(R.id.decline).setBackgroundColor(Color.RED); break;}
+			}
 			
 			TextView pubNameText = (TextView) findViewById(R.id.userInvitesPubNameText);
 	    	pubNameText.setText(event.GetPubLocation().toString());
@@ -213,7 +229,6 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		
 	};
 	
-	//TODO: Connect this method to button presses
 	private void sendResponse(boolean going, Calendar freeFromWhen, String msgToHost)
 	{
 		DataRequestSendResponse response = new DataRequestSendResponse(going, event.GetEventId(), freeFromWhen, msgToHost);
