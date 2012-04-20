@@ -304,6 +304,40 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			facebookUser = service.GetActiveUser();
 			
 			UpdateDataFromEvent();
+			
+			DataRequestRefresh refresher = new DataRequestRefresh(false);
+			service.addDataRequest(refresher, new IRequestListener<PubEventArray>(){
+
+				@Override
+				public void onRequestComplete(PubEventArray data) {
+					
+					//service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+					for(PubEvent updatedEvent : data.getEvents().keySet())
+					{
+						if(updatedEvent.GetEventId() == event.GetEventId())
+						{
+							event = updatedEvent;
+							runOnUiThread(new Runnable(){
+
+								@Override
+								public void run() {
+									UpdateDataFromEvent();							
+								}
+								
+							});					
+							break;
+	
+						}
+					}
+				}
+
+				@Override
+				public void onRequestFail(Exception e) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+			});
 		}
 
 		public void onServiceDisconnected(ComponentName arg0)
