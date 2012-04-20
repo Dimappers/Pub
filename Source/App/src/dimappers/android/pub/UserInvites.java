@@ -40,6 +40,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.GoingStatus;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.UpdateData;
 import dimappers.android.PubData.User;
@@ -195,6 +196,33 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			
 			event = service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
 			
+			service.addDataRequest(new DataRequestRefresh(false), new IRequestListener<PubEventArray>(){
+
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, "Error when refreshing event: " + e.getMessage());
+				}
+
+				public void onRequestComplete(PubEventArray data) {
+					event = service.getEvent(event.GetEventId());
+					runOnUiThread(new Runnable(){
+
+						public void run() {
+							updateScreen();
+						}});
+				}});
+			
+			updateScreen();
+			
+			facebookUser = service.GetActiveUser();
+			
+			ListView list = (ListView) findViewById(R.id.listView2);   
+			list.setAdapter(new GuestAdapter(event, service));
+		}
+
+		public void onServiceDisconnected(ComponentName arg0){}
+		
+		private void updateScreen()
+		{
 			switch(event.GetUserGoingStatus(service.GetActiveUser()))
 			{
 				case going : {findViewById(R.id.going).setBackgroundColor(Color.GREEN); break;}
@@ -217,14 +245,6 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 				e.printStackTrace();
 			}
 			
-			facebookUser = service.GetActiveUser();
-			
-			ListView list = (ListView) findViewById(R.id.listView2);   
-			list.setAdapter(new GuestAdapter(event, service));
-		}
-
-		public void onServiceDisconnected(ComponentName arg0)
-		{			
 		}
 		
 	};
@@ -258,7 +278,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			mylist = new ArrayList<UserUserStatus>();
 			
 			Set<Entry<User, UserStatus>> asd = event.GetGoingStatusMap().entrySet();
-			for(final Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
+			for(final Entry<User, UserStatus> userResponse : asd)
 	    	{	    
 	    		if(userResponse.getKey() instanceof AppUser)
 	    		{
@@ -310,8 +330,31 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			userName.setText(mylist.get(position).user.toString());
 			
 			TextView freeFromText = (TextView) v.findViewById(R.id.user_time);
-			freeFromText.setText(PubEvent.GetFormattedDate(mylist.get(position).status.freeFrom));
-			
+			UserStatus userStatus =  mylist.get(position).status;
+			switch(userStatus.goingStatus)
+			{
+			case notGoing :
+			{
+				freeFromText.setText("Nah");
+				break;
+			}
+			case going :
+			{
+				if(userStatus.freeFrom.equals(event.GetStartTime()))
+				{
+					freeFromText.setText("Up for it");
+				}
+				else
+				{
+					freeFromText.setText(PubEvent.GetFormattedDate(userStatus.freeFrom));
+				}
+				break;
+			}
+			case maybeGoing : {
+				freeFromText.setText("");
+				break;
+			}
+			}
 			return v;
 		}
 		

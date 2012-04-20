@@ -37,21 +37,24 @@
             android:layout_gravity="center_horizontal"
             android:text="@string/guests"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-
+
     <ListView
         android:id="@+id/listView2"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:scrollbars="vertical"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="5sp"
         android:layout_marginLeft="25sp"
         android:layout_marginRight="25sp"
-        android:layout_marginBottom="5sp" >
-    </ListView>
+        android:layout_weight="1"
+        android:scrollbars="vertical" >
 
+    </ListView>
+
     <LinearLayout
-            android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal" >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:orientation="horizontal" >
 
         <Button
             android:id="@+id/decline"
