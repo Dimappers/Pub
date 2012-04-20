@@ -37,6 +37,7 @@ public class DataRequestConfirmDeny implements IDataRequest<Integer, PubEvent> {
 		root.addContent(messageTypeElement);
 		root.addContent(cMessage.writeXml());
 		
+		docToSend.setRootElement(root);
 		
 		try {
 			DataSender.sendDocument(docToSend);

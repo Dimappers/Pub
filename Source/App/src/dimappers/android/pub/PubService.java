@@ -156,32 +156,47 @@ public class PubService extends IntentService
 				if(eventEntry.getValue() == UpdateType.noChangeSinceLastUpdate)
 				{
 					PubEvent event = eventEntry.getKey();
-					storedData.AddNewInvitedEvent(eventEntry.getKey());
+					if(event.GetHost().equals(GetActiveUser()))
+					{
+						storedData.GetGenericStore("PubEvent").put(event.GetEventId(), event);
+					}
+					else
+					{
+						storedData.AddNewInvitedEvent(eventEntry.getKey());
+					}
 					++hostedEvents;
 					
 				}
 				else
 				{
-					storedData.AddNewInvitedEvent(eventEntry.getKey());
+					PubEvent event = eventEntry.getKey();
+					if(event.GetHost().equals(GetActiveUser()))
+					{
+						storedData.GetGenericStore("PubEvent").put(event.GetEventId(), event);
+					}
+					else
+					{
+						storedData.AddNewInvitedEvent(eventEntry.getKey());
+					}
 					switch(eventEntry.getValue())
 					{
 					case confirmed:
-						confirmedEventNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), eventEntry.getKey()));
+						confirmedEventNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), event));
 						break;
 					case confirmedUpdated:
-						confirmedUpdatedNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), eventEntry.getKey()));
+						confirmedUpdatedNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), event));
 						break;
 					case newEvent:
-						newEventNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), eventEntry.getKey()));
+						newEventNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), event));
 						break;
 					case newEventConfirmed:
-						newEventConfirmedNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), eventEntry.getKey()));
+						newEventConfirmedNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), event));
 						break;
 					case updatedConfirmed:
-						updatedConfirmedNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), eventEntry.getKey()));
+						updatedConfirmedNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), event));
 						break;
 					case updatedEvent:
-						updatedEventNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), eventEntry.getKey()));
+						updatedEventNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), event));
 						break;
 					
 					}

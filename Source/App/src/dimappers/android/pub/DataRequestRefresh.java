@@ -61,6 +61,10 @@ public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
 		}
 		
 		RefreshResponse response = new RefreshResponse(returnDocument.getRootElement().getChild(RefreshResponse.class.getSimpleName()));
+		
+		PubEventArray returnStuff = new PubEventArray(response.getEvents());
+		service.NewEventsRecieved(returnStuff);
+		
 		listener.onRequestComplete(new PubEventArray(response.getEvents()));	
 	}
 
