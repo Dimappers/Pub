@@ -52,7 +52,7 @@ public final class Constants {
 	public static final int NumberOfEventCategories = 4;
 	
 	//Server stuff
-	public static final String ServerIp = "192.168.0.9";
+	public static final String ServerIp = "176.34.191.200";
 	public static final int Port = 8031;
 	
 	//Log categories

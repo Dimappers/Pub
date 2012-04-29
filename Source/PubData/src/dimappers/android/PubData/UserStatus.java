@@ -53,8 +53,14 @@ public class UserStatus implements Serializable
 		freeFrom = Calendar.getInstance();
 		freeFrom.setTimeInMillis(Long.parseLong(element.getChildText(freeFromTag)));
 		Element msgElement = element.getChild(msgTag);
-
-		messageToHost = msgElement.getText();
-		System.out.println("HELLO");
+		if(msgElement != null)
+		{
+			messageToHost = msgElement.getText();
+			System.out.println("HELLO");
+		}
+		else
+		{
+			messageToHost = "";
+		}
 	}
 }

@@ -134,21 +134,6 @@ public class Guests extends ListActivity implements OnClickListener{
 							guest_list.setItemChecked(0, true);
 							AppUser newlyAddedUser = usersToKeep.get(0); 
 							event.AddUser(newlyAddedUser);
-							
-							//Shift this user up to the bottom of the selected, above all unselected
-							int inviteeEnd = event.GetUserArray().length;
-							int oldPosition = -1;
-							for(int i = 0; i < allFriends.length; ++i)
-							{
-								if(allFriends[i] == newlyAddedUser)
-								{
-									oldPosition = i;
-									break;
-								}
-							}
-							AppUser temp = allFriends[inviteeEnd];
-							allFriends[inviteeEnd] = newlyAddedUser;
-							allFriends[oldPosition] = temp;
 						}
 					}
 				}				
@@ -224,33 +209,13 @@ public class Guests extends ListActivity implements OnClickListener{
 			else
 			{
 					event.RemoveUser(modifiedUser);
-					int inviteeEnd = event.GetUserArray().length - 1;
-			
-					for(int i = pos; i<inviteeEnd; ++i)
-					{
-						allFriends[i] = allFriends[i+1];
-					}
-			
-					allFriends[inviteeEnd] = modifiedUser;
 			}
 		}
 		else
 		{
-			int inviteeEnd = event.GetUserArray().length - 1; //don't include the host
 			event.AddUser(modifiedUser);
-			
-			
-			int oldPosition = pos;
-			
-			for(int i = oldPosition; i > inviteeEnd; --i)
-			{
-				allFriends[i] = allFriends[i-1];
-			}
-			
-			allFriends[inviteeEnd] = modifiedUser;
 		}
 		
-		UpdateListView(allFriends);
 	}
 	
 	@Override
@@ -311,14 +276,33 @@ public class Guests extends ListActivity implements OnClickListener{
 		public void run() {
 			listItems.clear();
 	    	
+			ArrayList<AppUser> checkedUsers = new ArrayList<AppUser>();
+			ArrayList<AppUser> uncheckedUsers = new ArrayList<AppUser>();
+			
+			
 			for(AppUser user : sortedArray) {
-	    		listItems.add(user);
+	    		if(event.DoesContainUser(user))
+	    		{
+	    			checkedUsers.add(user);
+	    		}
+	    		else
+	    		{
+	    			uncheckedUsers.add(user);
+	    		}
 	    	}
 			
-			for(int i  = 0; i < listItems.size()/*guest_list.getCount()*/; ++i)
+			int i = 0;
+			for(AppUser checkedUser: checkedUsers)
 			{
-				User listUser = listItems.get(i);
-				guest_list.setItemChecked(i, event.DoesContainUser(listUser));
+				listItems.add(checkedUser);
+				guest_list.setItemChecked(i, true);
+				++i;
+			}
+			for(AppUser uncheckedUser : uncheckedUsers)
+			{
+				listItems.add(uncheckedUser);
+				guest_list.setItemChecked(i, false);
+				++i;
 			}
 			
 			adapter.notifyDataSetChanged();			
