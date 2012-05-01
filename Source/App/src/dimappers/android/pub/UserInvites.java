@@ -123,7 +123,9 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		Calendar startTime = event.GetStartTime();
 		String ampm="AM";
 		if (startTime.get(Calendar.AM_PM)==1) {ampm = "PM";}
-		timeText.setText(startTime.get(Calendar.HOUR) + ":" + startTime.get(Calendar.MINUTE) + " " + ampm);
+		String min = Integer.toString(startTime.get(Calendar.MINUTE));
+		if(startTime.get(Calendar.MINUTE)==0) {min = "00";}
+		timeText.setText(startTime.get(Calendar.HOUR) + ":" + min + " " + ampm);
 	    timeText.setOnClickListener(new OnClickListener() {
 	    	public void onClick(View v) {
 	    		Intent i = new Intent(UserInvites.this, ChooseTime.class);
@@ -149,8 +151,12 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			Toast.makeText(getBaseContext(), commentMade, Toast.LENGTH_LONG).show();
 		} 
 		
-		if(timeSet==event.GetStartTime().getTimeInMillis()){sendResponse(true,event.GetStartTime(),commentMade);}
-		else {
+		if(timeSet==0||timeSet==event.GetStartTime().getTimeInMillis())
+		{
+			sendResponse(true,event.GetStartTime(),commentMade);
+		}
+		else 
+		{
 			Calendar time = Calendar.getInstance();
 			time.setTime(new Date(timeSet));
 			sendResponse(true, time, commentMade);
@@ -161,17 +167,17 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		}); 
 
 		cancelButton.setOnClickListener(new OnClickListener() { 
-		// @Override 
-		public void onClick(View v) 
-		{ 
-		commentDialog.dismiss(); 
-		} 
+			// @Override 
+			public void onClick(View v) 
+			{ 
+			commentDialog.dismiss(); 
+			} 
 		});
 		
 		commentDialog.show();
 	}
 	
-	long timeSet;
+	long timeSet = 0;
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
@@ -184,7 +190,9 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			String ampm;
 			if(hour>12) {hour -= 12; ampm = "PM";}
 			else {ampm = "AM";}
-			timeText.setText(hour + ":" + date.getMinutes() + " " + ampm);
+			String minutes = Integer.toString(date.getMinutes());
+			if(date.getMinutes()==0) {minutes = "00";}
+			timeText.setText(hour + ":" + minutes + " " + ampm);
 		}
 	}
 	

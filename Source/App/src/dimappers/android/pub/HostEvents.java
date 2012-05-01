@@ -308,7 +308,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			DataRequestRefresh refresher = new DataRequestRefresh(false);
 			service.addDataRequest(refresher, new IRequestListener<PubEventArray>(){
 
-				@Override
 				public void onRequestComplete(PubEventArray data) {
 					
 					//service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
@@ -319,7 +318,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 							event = updatedEvent;
 							runOnUiThread(new Runnable(){
 
-								@Override
 								public void run() {
 									UpdateDataFromEvent();							
 								}
@@ -331,10 +329,9 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 					}
 				}
 
-				@Override
 				public void onRequestFail(Exception e) {
 					// TODO Auto-generated method stub
-					
+					e.printStackTrace();
 				}
 				
 			});
