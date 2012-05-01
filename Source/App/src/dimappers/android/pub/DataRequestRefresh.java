@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -19,7 +20,9 @@ import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.RefreshData;
+import dimappers.android.PubData.RefreshEventMessage;
 import dimappers.android.PubData.RefreshResponse;
+import dimappers.android.PubData.UpdateType;
 import dimappers.android.PubData.User;
 
 public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
@@ -62,10 +65,36 @@ public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
 		
 		RefreshResponse response = new RefreshResponse(returnDocument.getRootElement().getChild(RefreshResponse.class.getSimpleName()));
 		
-		PubEventArray returnStuff = new PubEventArray(response.getEvents());
-		service.NewEventsRecieved(returnStuff);
+		HashMap<PubEvent, UpdateType> events = new HashMap<PubEvent, UpdateType>();
 		
-		listener.onRequestComplete(new PubEventArray(response.getEvents()));	
+		for(Entry<Integer, UpdateType> eventUpdate : response.getEvents().entrySet())
+		{
+			if(fullRefresh || eventUpdate.getValue() != UpdateType.noChangeSinceLastUpdate)
+			{
+				RefreshEventMessage refreshEventMessage = new RefreshEventMessage(eventUpdate.getKey());
+				Element rootElement = new Element("Message");
+				
+				Element messageTElement = new Element(MessageType.class.getSimpleName());
+				messageTElement.addContent(MessageType.refreshEventMessage.toString());
+				rootElement.addContent(messageTElement);
+				
+				rootElement.addContent(refreshEventMessage.writeXml());
+				Document refreshEventDocToSend = new Document(rootElement);
+				
+				try {
+					Document pubReturnDocument = DataSender.sendReceiveDocument(refreshEventDocToSend);
+					events.put(new PubEvent(pubReturnDocument.getRootElement().getChild(PubEvent.class.getSimpleName())), eventUpdate.getValue());
+				} catch (Exception e) {
+					listener.onRequestFail(e);
+				}
+			}
+		}
+		
+		PubEventArray pubArray = new PubEventArray(events);
+		
+		service.NewEventsRecieved(pubArray);
+		
+		listener.onRequestComplete(pubArray);
 	}
 
 	public String getStoredDataId() {

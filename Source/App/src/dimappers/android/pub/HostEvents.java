@@ -95,11 +95,16 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	{
 		MenuItem edit = menu.add(0, R.id.edit, 0, "Edit");
 		edit.setOnMenuItemClickListener(this);
-		MenuItem delete_event = menu.add(0, R.id.delete_event, 1, "Delete Event");
-		delete_event.setOnMenuItemClickListener(this);
-		MenuItem cancel = menu.add(0, R.id.cancel, 2, "Cancel");
-		cancel.setOnMenuItemClickListener(this);
-
+		if(event!=null)
+		{
+			//FIXME: should refresh when sent is hit.
+			if(event.GetEventId()<0)
+			{MenuItem delete_event = menu.add(0, R.id.delete_event, 1, "Delete Event");
+			delete_event.setOnMenuItemClickListener(this);}
+			else{
+			MenuItem cancel = menu.add(0, R.id.cancel, 2, "Cancel");
+			cancel.setOnMenuItemClickListener(this);}
+		}
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -117,7 +122,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 
 			i = new Intent(this, Organise.class);
 			i.putExtras(bundle);
-			startActivity(i);
+			startActivityForResult(i,0);
 			return true;
 
 		}

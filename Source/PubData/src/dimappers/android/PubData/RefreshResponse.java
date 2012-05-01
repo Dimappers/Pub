@@ -11,9 +11,9 @@ public class RefreshResponse implements IXmlable {
 	private final String EventTag = "Event";
 	
 	//private PubEvent[] newEvents;
-	private HashMap<PubEvent, UpdateType> newEvents;
+	private HashMap<Integer, UpdateType> newEvents;
 	
-	public RefreshResponse(HashMap<PubEvent, UpdateType> events)
+	public RefreshResponse(HashMap<Integer, UpdateType> events)
 	{
 		newEvents = events;
 	}
@@ -23,18 +23,18 @@ public class RefreshResponse implements IXmlable {
 		readXml(element);
 	}
 	
-	public HashMap<PubEvent, UpdateType> getEvents()
+	public HashMap<Integer, UpdateType> getEvents()
 	{
 		return newEvents;
 	}
 	
 	public Element writeXml() {
 		Element rootElement = new Element(getClass().getSimpleName());
-		for(Entry<PubEvent, UpdateType> eventEntry : newEvents.entrySet())
+		for(Entry<Integer, UpdateType> eventEntry : newEvents.entrySet())
 		{
 			Element entryElement = new Element(EventTag); 
 			
-			entryElement.addContent(eventEntry.getKey().writeXml());
+			entryElement.setText(eventEntry.getKey().toString());
 			
 			Element updateTypeElement = new Element(UpdateType.class.getSimpleName());
 			updateTypeElement.setText(eventEntry.getValue().toString());
@@ -47,10 +47,10 @@ public class RefreshResponse implements IXmlable {
 
 	public void readXml(Element element) {
 		List<Element> eventElements = element.getChildren(); 
-		newEvents = new HashMap<PubEvent, UpdateType>();
+		newEvents = new HashMap<Integer, UpdateType>();
 		for(Element eventEntryElement : eventElements)
 		{
-			PubEvent event = new PubEvent(eventEntryElement.getChild(PubEvent.class.getSimpleName()));
+			Integer event = new Integer(eventEntryElement.getText());
 			UpdateType updateType = UpdateType.valueOf(eventEntryElement.getChildText(UpdateType.class.getSimpleName()));
 			newEvents.put(event, updateType);
 		}
