@@ -161,6 +161,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 				
 				public void onRequestComplete(PubEvent data) {
 					Log.d(Constants.MsgInfo, "PubEvent sent, event id: " + data.GetEventId());
+					sent = true;
 					HostEvents.this.runOnUiThread(new Runnable()
 					{
 						public void run() {
