@@ -99,15 +99,38 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		{
 			//FIXME: should refresh when sent is hit.
 			if(event.GetEventId()<0)
-			{MenuItem delete_event = menu.add(0, R.id.delete_event, 1, "Delete Event");
-			delete_event.setOnMenuItemClickListener(this);}
-			else{
-			MenuItem cancel = menu.add(0, R.id.cancel, 2, "Cancel");
-			cancel.setOnMenuItemClickListener(this);}
+			{
+				MenuItem delete_event = menu.add(0, R.id.delete_event, 1, "Delete Event");
+				delete_event.setOnMenuItemClickListener(this);
+			}
+			else
+			{
+				MenuItem cancel = menu.add(0, R.id.cancel, 1, "Cancel");
+				cancel.setOnMenuItemClickListener(this);
+			}
 		}
 		return super.onCreateOptionsMenu(menu);
 	}
 
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu)
+	{
+		menu.removeItem(R.id.cancel);
+		menu.removeItem(R.id.delete_event);
+		if(sent||(event!=null&&event.GetEventId()>=0))
+		{ 
+			MenuItem delete_event = menu.add(1, R.id.delete_event, 1, "Delete Event");
+			delete_event.setOnMenuItemClickListener(this);
+		}
+		else
+		{
+			MenuItem cancel = menu.add(0, R.id.cancel, 1, "Cancel");
+			cancel.setOnMenuItemClickListener(this);
+		}
+		return super.onPrepareOptionsMenu(menu);
+		
+	}
+	
 	public boolean onMenuItemClick(MenuItem item) {
 
 		Intent i;	 
