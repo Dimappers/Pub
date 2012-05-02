@@ -311,28 +311,20 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			
 			UpdateDataFromEvent();
 			
-			DataRequestRefresh refresher = new DataRequestRefresh(false);
-			service.addDataRequest(refresher, new IRequestListener<PubEventArray>(){
+			DataRequestGetLatestAboutPubEvent refresher = new DataRequestGetLatestAboutPubEvent(event.GetEventId());
+			service.addDataRequest(refresher, new IRequestListener<PubEvent>(){
 
-				public void onRequestComplete(PubEventArray data) {
+				public void onRequestComplete(PubEvent data) {
 					
-					//service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
-					for(PubEvent updatedEvent : data.getEvents().keySet())
-					{
-						if(updatedEvent.GetEventId() == event.GetEventId())
-						{
-							event = updatedEvent;
-							runOnUiThread(new Runnable(){
+					event = data;
+					runOnUiThread(new Runnable(){
 
-								public void run() {
-									UpdateDataFromEvent();							
-								}
-								
-							});					
-							break;
-	
+						public void run() {
+							UpdateDataFromEvent();			
 						}
-					}
+				
+					});					
+					
 				}
 
 				public void onRequestFail(Exception e) {
