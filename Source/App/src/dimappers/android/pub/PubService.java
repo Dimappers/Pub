@@ -145,14 +145,8 @@ public class PubService extends IntentService
 		}
 
 		public void NewEventsRecieved(PubEventArray events) {
-			int hostedEvents = 0;
 			
-			ArrayList<Notification> newEventNotifications = new ArrayList<Notification>();
-			ArrayList<Notification> updatedEventNotifications = new ArrayList<Notification>();
-			ArrayList<Notification> confirmedEventNotifications = new ArrayList<Notification>();
-			ArrayList<Notification> newEventConfirmedNotifications = new ArrayList<Notification>();
-			ArrayList<Notification> updatedConfirmedNotifications = new ArrayList<Notification>();
-			ArrayList<Notification> confirmedUpdatedNotifications = new ArrayList<Notification>();
+			ArrayList<Notification> notifications = new ArrayList<Notification>();
 			
 					
 			for(Entry<PubEvent, UpdateType> eventEntry : events.getEvents().entrySet())
@@ -160,100 +154,44 @@ public class PubService extends IntentService
 				makeNotification(eventEntry.getKey(), NotificationAlarmManager.NotificationType.EventAboutToStart);
 				
 				//If either the event hasn't been updated (ie this user has already got this data before and this is a full refresh caused by restarting the app
-				if(eventEntry.getValue() == UpdateType.noChangeSinceLastUpdate)
+				PubEvent event = eventEntry.getKey();
+				if(event.GetHost().equals(GetActiveUser()))
 				{
-					PubEvent event = eventEntry.getKey();
-					if(event.GetHost().equals(GetActiveUser()))
-					{
-						storedData.GetGenericStore("PubEvent").put(event.GetEventId(), event);
-					}
-					else
-					{
-						storedData.AddNewInvitedEvent(eventEntry.getKey());
-					}
-					++hostedEvents;
-					
+					storedData.GetGenericStore("PubEvent").put(event.GetEventId(), event);
 				}
 				else
 				{
-					PubEvent event = eventEntry.getKey();
-					if(event.GetHost().equals(GetActiveUser()))
-					{
-						storedData.GetGenericStore("PubEvent").put(event.GetEventId(), event);
-					}
-					else
-					{
-						storedData.AddNewInvitedEvent(eventEntry.getKey());
-					}
-					switch(eventEntry.getValue())
-					{
-					case confirmed:
-						confirmedEventNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), event));
-						break;
-					case confirmedUpdated:
-						confirmedUpdatedNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), event));
-						break;
-					case newEvent:
-						newEventNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), event));
-						break;
-					case newEventConfirmed:
-						newEventConfirmedNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), event));
-						break;
-					case updatedConfirmed:
-						updatedConfirmedNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), event));
-						break;
-					case updatedEvent:
-						updatedEventNotifications.add(NotificationCreator.createNotification(eventEntry.getValue(), event));
-						break;
-					
-					}
-					
-					//If the event has been cancelled, then remove
-					//TODO: Needs some consideration
-					/*if(eventEntry.getValue() == UpdateType.confirmed || 
-							eventEntry.getValue() == UpdateType.confirmedUpdated || 
-							eventEntry.getValue() == UpdateType.updatedConfirmed ||
-							eventEntry.getValue() == UpdateType.newEventConfirmed)
-					{
-						if(eventEntry.getKey().getCurrentStatus() == EventStatus.itsOff)
-						{
-							storedData.DeleteSentEvent(eventEntry.getKey().GetEventId());
-						}
-					}*/
+					storedData.AddNewInvitedEvent(eventEntry.getKey());
 				}
+				Context context = getApplicationContext();
+				Notification newNotification = NotificationCreator.createNotification(eventEntry.getValue(), event, context);
+				if(newNotification != null)
+				{
+					notifications.add(newNotification);
+				}
+				
+				//If the event has been cancelled, then remove
+				//TODO: Needs some consideration
+				/*if(eventEntry.getValue() == UpdateType.confirmed || 
+						eventEntry.getValue() == UpdateType.confirmedUpdated || 
+						eventEntry.getValue() == UpdateType.updatedConfirmed ||
+						eventEntry.getValue() == UpdateType.newEventConfirmed)
+				{
+					if(eventEntry.getKey().getCurrentStatus() == EventStatus.itsOff)
+					{
+						storedData.DeleteSentEvent(eventEntry.getKey().GetEventId());
+					}
+				}*/
+				
 			}			
 			
 			//TODO: This is still using the old notifcations, want to use the above array lists and fill in the method in NotificationCreator
-			Context context = getApplicationContext();
+			
 			NotificationManager nManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 			
-			if(events.getEvents().size() - hostedEvents == 1)
+			for(Notification n : notifications)
 			{
-				Notification newNotification = new Notification(R.drawable.icon, "New pub event", System.currentTimeMillis());
-				newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
-				newNotification.defaults |= Notification.DEFAULT_VIBRATE;
-				Intent notificationIntent = new Intent(context, LaunchApplication.class);
-				Bundle b = new Bundle();
-				PubEvent event = events.getEvents().keySet().iterator().next();
-				b.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
-				notificationIntent.putExtras(b);
-				PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-				
-				newNotification.setLatestEventInfo(context, "New Pub Event", event.toString(), contentIntent);
-				
-				nManager.notify(1, newNotification);
-			}
-			else if(events.getEvents().size() - hostedEvents > 1)
-			{
-				Notification newNotification = new Notification(R.drawable.icon, events.getEvents().size() + " new events", System.currentTimeMillis());
-				newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
-				newNotification.defaults |= Notification.DEFAULT_VIBRATE;
-				Intent notificationIntent = new Intent(context, CurrentEvents.class);
-				PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-				
-				newNotification.setLatestEventInfo(context, events.getEvents().size() + " new events", events.getEvents().size() + " new events", contentIntent);
-				
-				nManager.notify(1, newNotification);
+				nManager.notify(1, n);
 			}
 		}
 

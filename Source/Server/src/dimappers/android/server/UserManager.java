@@ -63,6 +63,28 @@ public class UserManager {
 		sUser.NotifyEventUpdated(eventId);
 	}
 	
+	public static void markForConfirmed(User user, int eventId) throws ServerException {
+		/*Marks this event for the user as having been confirmed or denied*/
+		if(!users.containsKey(user.getUserId()))
+		{
+			throw new ServerException(ExceptionType.UserManagerNoSuchUser);
+		}
+		
+		ServerUser sUser = users.get(user.getUserId());
+		sUser.NotifyEventConfirmed(eventId);
+	}
+	
+	public static void markForUserResponse(User user, int eventId) throws ServerException {
+		/*Marks the event as having someone replied */
+		if(!users.containsKey(user.getUserId()))
+		{
+			throw new ServerException(ExceptionType.UserManagerNoSuchUser);
+		}
+		
+		ServerUser sUser = users.get(user.getUserId());
+		sUser.NotifyEventConfirmed(eventId);
+	}
+	
 	public static void markAsUpToDate(User user, int eventId) throws ServerException
 	{
 		if(!users.containsKey(user.getUserId()))

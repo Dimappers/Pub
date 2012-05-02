@@ -75,6 +75,9 @@ public class ServerUser extends dimappers.android.PubData.User
 			case newEventConfirmed:
 				// Still do nothing is still a newEvent that has been confirmed
 				break;
+			case userReplied:
+				events.put(eventId, UpdateType.updatedEvent);
+				break;
 			case noChangeSinceLastUpdate:
 				events.put(eventId, UpdateType.updatedEvent);
 				break;
@@ -98,10 +101,25 @@ public class ServerUser extends dimappers.android.PubData.User
 			case noChangeSinceLastUpdate:
 				events.put(eventId, UpdateType.confirmed);
 				break;
+			case userReplied:
+				events.put(eventId, UpdateType.confirmed);
 			case updatedEvent:
 				events.put(eventId, UpdateType.updatedConfirmed);
 				break;
 			
+			}
+		}
+	}
+	
+	public void NotifyPersonResponded(int eventId)
+	{
+		if(events.containsKey(eventId))
+		{
+			switch(events.get(eventId))
+			{
+			case noChangeSinceLastUpdate:
+				events.put(eventId, UpdateType.userReplied);
+				break;
 			}
 		}
 	}

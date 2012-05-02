@@ -7,5 +7,6 @@ public enum UpdateType {
 	newEventConfirmed, // Event is new and has been confirmed since last update
 	updatedConfirmed, //Event has changed and since been confirmed 
 	confirmedUpdated, //Has been confirmed, then updated (After being confirmed) since last update
+	userReplied, //One or more users has replied
 	noChangeSinceLastUpdate //The event is not different since last update (=> user has called for a full update)
 }

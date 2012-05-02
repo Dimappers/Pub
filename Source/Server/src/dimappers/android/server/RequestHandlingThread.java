@@ -365,7 +365,7 @@ public class RequestHandlingThread extends Thread{
 		
 		for(User user : EventManager.GetPubEvent(message.getEventId()).GetUsers())
 		{
-			UserManager.markForUpdate(user, message.getEventId());
+			UserManager.markForConfirmed(user, message.getEventId());
 		}
 	}
 	
