@@ -119,13 +119,13 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		menu.removeItem(R.id.delete_event);
 		if(sent||(event!=null&&event.GetEventId()>=0))
 		{ 
-			MenuItem delete_event = menu.add(1, R.id.delete_event, 1, "Delete Event");
-			delete_event.setOnMenuItemClickListener(this);
+			MenuItem cancel = menu.add(0, R.id.cancel, 1, "Cancel");
+			cancel.setOnMenuItemClickListener(this);
 		}
 		else
 		{
-			MenuItem cancel = menu.add(0, R.id.cancel, 1, "Cancel");
-			cancel.setOnMenuItemClickListener(this);
+			MenuItem delete_event = menu.add(1, R.id.delete_event, 1, "Delete Event");
+			delete_event.setOnMenuItemClickListener(this);
 		}
 		return super.onPrepareOptionsMenu(menu);
 		

@@ -44,7 +44,7 @@ public class DataRequestGetLatestAboutPubEvent implements IDataRequest<Integer, 
 	}
 
 	public String getStoredDataId() {
-		return "PubEvents";
+		return "PubEvent";
 	}
 
 }
