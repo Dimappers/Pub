@@ -204,14 +204,14 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			
 			event = service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
 			
-			service.addDataRequest(new DataRequestRefresh(false), new IRequestListener<PubEventArray>(){
+			service.addDataRequest(new DataRequestGetLatestAboutPubEvent(event.GetEventId()), new IRequestListener<PubEvent>(){
 
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, "Error when refreshing event: " + e.getMessage());
 				}
 
-				public void onRequestComplete(PubEventArray data) {
-					event = service.getEvent(event.GetEventId());
+				public void onRequestComplete(PubEvent data) {
+					event = data;
 					runOnUiThread(new Runnable(){
 
 						public void run() {

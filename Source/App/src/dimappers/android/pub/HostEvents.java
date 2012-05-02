@@ -99,15 +99,38 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		{
 			//FIXME: should refresh when sent is hit.
 			if(event.GetEventId()<0)
-			{MenuItem delete_event = menu.add(0, R.id.delete_event, 1, "Delete Event");
-			delete_event.setOnMenuItemClickListener(this);}
-			else{
-			MenuItem cancel = menu.add(0, R.id.cancel, 2, "Cancel");
-			cancel.setOnMenuItemClickListener(this);}
+			{
+				MenuItem delete_event = menu.add(0, R.id.delete_event, 1, "Delete Event");
+				delete_event.setOnMenuItemClickListener(this);
+			}
+			else
+			{
+				MenuItem cancel = menu.add(0, R.id.cancel, 1, "Cancel");
+				cancel.setOnMenuItemClickListener(this);
+			}
 		}
 		return super.onCreateOptionsMenu(menu);
 	}
 
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu)
+	{
+		menu.removeItem(R.id.cancel);
+		menu.removeItem(R.id.delete_event);
+		if(sent||(event!=null&&event.GetEventId()>=0))
+		{ 
+			MenuItem cancel = menu.add(0, R.id.cancel, 1, "Cancel");
+			cancel.setOnMenuItemClickListener(this);
+		}
+		else
+		{
+			MenuItem delete_event = menu.add(1, R.id.delete_event, 1, "Delete Event");
+			delete_event.setOnMenuItemClickListener(this);
+		}
+		return super.onPrepareOptionsMenu(menu);
+		
+	}
+	
 	public boolean onMenuItemClick(MenuItem item) {
 
 		Intent i;	 
@@ -311,28 +334,20 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			
 			UpdateDataFromEvent();
 			
-			DataRequestRefresh refresher = new DataRequestRefresh(false);
-			service.addDataRequest(refresher, new IRequestListener<PubEventArray>(){
+			DataRequestGetLatestAboutPubEvent refresher = new DataRequestGetLatestAboutPubEvent(event.GetEventId());
+			service.addDataRequest(refresher, new IRequestListener<PubEvent>(){
 
-				public void onRequestComplete(PubEventArray data) {
+				public void onRequestComplete(PubEvent data) {
 					
-					//service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
-					for(PubEvent updatedEvent : data.getEvents().keySet())
-					{
-						if(updatedEvent.GetEventId() == event.GetEventId())
-						{
-							event = updatedEvent;
-							runOnUiThread(new Runnable(){
+					event = data;
+					runOnUiThread(new Runnable(){
 
-								public void run() {
-									UpdateDataFromEvent();							
-								}
-								
-							});					
-							break;
-	
+						public void run() {
+							UpdateDataFromEvent();			
 						}
-					}
+				
+					});					
+					
 				}
 
 				public void onRequestFail(Exception e) {

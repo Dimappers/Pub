@@ -45,15 +45,13 @@ import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.User;
 
-public class Organise extends ListActivity implements OnClickListener, OnMenuItemClickListener{
+public class Organise extends LocationRequiringActivity implements OnClickListener, OnMenuItemClickListener{
 
 	private Button cur_pub;
 	private Button cur_time;
 	private TextView cur_loc;
-	private ProgressBar progbar;
+	public ProgressBar progbar;
 	MenuItem edit;
-
-	private PubEvent event;
 	
 	private ArrayList<String> listItems=new ArrayList<String>();
 	private ArrayAdapter<String> adapter;
@@ -66,7 +64,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 
 	private AppUser[] facebookFriends;
 
-	IPubService service;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -322,49 +319,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	
 	void setLocation()
 	{
-		final EditText loc = new EditText(getApplicationContext());
-		new AlertDialog.Builder(this).setMessage("Enter your current location:")  
-		.setTitle("Change Location")  
-		.setCancelable(true)  
-		.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
-				
-				progbar.setVisibility(View.VISIBLE);
-				
-				DataRequestReverseGeocoder request1 = new DataRequestReverseGeocoder(getApplicationContext(), loc.getText().toString());
-				service.addDataRequest(request1, new IRequestListener<XmlableDoubleArray>(){
-
-					public void onRequestFail(Exception e) {
-						failure(2);
-					}
-
-					public void onRequestComplete(XmlableDoubleArray data) {
-						
-						final double lat = data.getArray()[0];
-						final double lng = data.getArray()[1];
-						
-						DataRequestPubFinder request2 = new DataRequestPubFinder(lat, lng);
-						service.addDataRequest(request2, new IRequestListener<PlacesList>(){
-
-							public void onRequestComplete(PlacesList data) {
-								PubLocation best = new PubRanker(data.results, event, service.getHistoryStore()).returnBest();
-								if(best==null) {failure(0);}
-								else
-								{
-									event.SetPubLocation(best);
-									success(lat, lng, loc.getText().toString());
-								}
-								}
-
-							public void onRequestFail(Exception e) {
-								failure(1);
-							}});
-					}});
-				dialog.cancel();
-			}
-		})
-		.setView(loc)
-		.show(); 
+		LocationChanger.changeLocation(this);
 	}
 	
 	void success(double lat, double lng, final String loc)
@@ -378,39 +333,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				UpdateFromEvent();
 				removeProgBar();
 			}});
-	}
-	void failure(int which)
-	{
-		removeProgBar();
-		Log.d(Constants.MsgError, "Error using custom location!!");
-		if(which==0) //no pubs found
-		{
-			runOnUiThread(new Runnable(){
-				public void run() {
-					Toast.makeText(getApplicationContext(), "No pubs found near this location", Toast.LENGTH_SHORT).show();
-				}});
-		}
-		else if(which==1) //error finding pubs
-		{
-			runOnUiThread(new Runnable(){
-			public void run() {
-				Toast.makeText(getApplicationContext(), "Pubs unable to be found", Toast.LENGTH_SHORT).show();
-			}});
-		}
-		else if(which==2) //error when geocoding
-		{
-			runOnUiThread(new Runnable(){
-				public void run() {
-					Toast.makeText(getApplicationContext(), "Unrecognised location", Toast.LENGTH_SHORT).show();
-				}});
-		}
-		else //this shouldn't happen
-		{
-			runOnUiThread(new Runnable(){
-				public void run() {
-					Toast.makeText(getApplicationContext(), "Unknown error", Toast.LENGTH_SHORT).show();
-				}});
-		}
 	}
 	
 	void removeProgBar()

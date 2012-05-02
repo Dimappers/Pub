@@ -136,30 +136,36 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 		case Constants.ProposedEventNoResponse: {
 			i = new Intent(this, UserInvites.class);
 			i.putExtras(bundle);
-			startActivity(i);
+			startActivityForResult(i, 0);
 			break;
 		}
 		case Constants.HostedEventSent: {
 			i = new Intent(this, HostEvents.class);
 			bundle.putBoolean(Constants.IsSavedEventFlag, false);
 			i.putExtras(bundle);
-			startActivity(i);
+			startActivityForResult(i, 0);
 			break;
 		}
 		case Constants.ProposedEventHaveResponded: {
 			i = new Intent(this, UserInvites.class);
 			i.putExtras(bundle);
-			startActivity(i);
+			startActivityForResult(i,0);
 			break;
 		}
 		case Constants.HostedEventSaved: {
 			i = new Intent(this, HostEvents.class);
 			bundle.putBoolean(Constants.IsSavedEventFlag, true);
 			i.putExtras(bundle);
-			startActivity(i);
+			startActivityForResult(i,0);
 			break;
 		}
 		}
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent i)
+	{
+		refreshList();
 	}
 
 	private ServiceConnection connection = new ServiceConnection() {
@@ -190,13 +196,26 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 				}
 
 				i.putExtras(b);
-				startActivity(i);
+				startActivityForResult(i, 0);
 			}
 
 			adapter = new SeperatedListAdapter(CurrentEvents.this, facebookUser);
 			setListAdapter(adapter);
-
 			adapter.setData(CurrentEvents.this.service);
+			
+			CurrentEvents.this.service.addDataRequest(new DataRequestRefresh(false), new IRequestListener<PubEventArray>(){
+
+				public void onRequestComplete(PubEventArray data) {
+					runOnUiThread(new Runnable(){
+
+						public void run() {
+							refreshList();
+						}});
+				}
+
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, e.getMessage());
+				}});
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
