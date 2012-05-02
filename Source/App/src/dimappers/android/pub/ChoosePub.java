@@ -24,15 +24,12 @@ import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 
-public class ChoosePub extends ListActivity implements OnClickListener {
+public class ChoosePub extends LocationRequiringActivity implements OnClickListener {
 		
 		EditText pub_input;
-		PubEvent event;
 		ListView pub_list;
 		ArrayAdapter<Place> adapter;
 		ArrayList<Place> listItems = new ArrayList<Place>();
-		
-		IPubService service;
 
 		double latitude;
 		double longitude;
@@ -60,7 +57,7 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 		 public void onClick(View v) {
 			 switch(v.getId()) {
 				 case R.id.use_pub_button : {
-					 getPubs(pub_input.getText().toString());
+					 getPubs(pub_input.getText().toString().trim());
 					break;
 				 }
 			 }
@@ -111,8 +108,19 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 	    	service.addDataRequest(pubFinder, new IRequestListener<PlacesList>() {
 
 				public void onRequestComplete(PlacesList data) {
-					runOnUiThread(new AdapterUpdater(data.results));
-					Log.d(Constants.MsgInfo, "Pubs returned from DataRequest");
+					if(data.status.equals("ZERO_RESULTS")) //this is when no places have been found
+					{
+						runOnUiThread(new Runnable(){
+
+							public void run() {
+								LocationChanger.changeLocation(ChoosePub.this);
+							}});
+					}
+					else
+					{
+						runOnUiThread(new AdapterUpdater(data.results));
+						Log.d(Constants.MsgInfo, "Pubs returned from DataRequest");
+					}
 				}
 
 				public void onRequestFail(Exception e) {
@@ -127,7 +135,13 @@ public class ChoosePub extends ListActivity implements OnClickListener {
 					});
 				}});
 	    }
-			
+		
+	    void success(double lat, double lng, final String loc)
+	    {
+	    	latitude = lat;
+	    	longitude = lng;
+	    	getPubs(pub_input.getText().toString().trim());
+	    }
 	    
 	    private class AdapterUpdater implements Runnable
 	    {
