@@ -58,7 +58,7 @@ public class DataRequestNewEvent implements IDataRequest<Integer, PubEvent>
 
 	public String getStoredDataId()
 	{
-		return "PubEvent";
+		return StoredData.sentEventsStore;
 	}
 
 }
