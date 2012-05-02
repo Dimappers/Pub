@@ -42,6 +42,9 @@ public class StoredData implements Serializable
 	public static final String invitedTag = "Invited";
 	public static final String genericStoresTag = "GenericStores";
 	private static final String historyStoreTag = "HistoryStore";
+	
+	public static final String sentEventsStore = "PubEvent";
+	
 	//private final int HistoryDepth = 15;
 	
 	private HashMap<Integer, PubEvent> savedEvents; //Events the users has created and saved
@@ -190,7 +193,7 @@ public class StoredData implements Serializable
 			}
 			else
 			{
-				return (PubEvent)dataStores.get("PubEvent").get(eventId);
+				return (PubEvent)dataStores.get(sentEventsStore).get(eventId);
 			}
 		}
 		else
@@ -227,6 +230,19 @@ public class StoredData implements Serializable
 			Log.d(Constants.MsgWarning, "This does not appear to be a saved event");
 		}
 		savedEvents.remove(eventId);
+	}
+	
+	//This method does not remove from the server, only deletes the data locally
+	public void DeleteSentEvent(int eventId)
+	{
+		if(invitedEvents.containsKey(eventId))
+		{
+			invitedEvents.remove(eventId);
+		}
+		else
+		{
+			dataStores.get(sentEventsStore).remove(eventId);
+		}
 	}
 	
 	/*public void notifySentEventHasId(int eventId)

@@ -2,41 +2,29 @@ package dimappers.android.pub;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map.Entry;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.SharedPreferences.Editor;
 import android.os.Binder;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.facebook.android.Facebook;
 
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.EventStatus;
 import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.UpdateType;
-import dimappers.android.PubData.User;
-import dimappers.android.pub.NotificationAlarmManager.NotificationType;
 
 public class PubService extends IntentService
 {
@@ -93,7 +81,6 @@ public class PubService extends IntentService
 			}
 			
 			return eventsArray;
-			
 		}
 		
 		public Collection<PubEvent> GetInvitedEvents() {
@@ -112,6 +99,26 @@ public class PubService extends IntentService
 		public void RemoveEventFromStoredDataAndCancelNotification(PubEvent event) {
 			PubService.this.storedData.DeleteSavedEvent(event.GetEventId());
 			/////////////////////////////////////////////////((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancel(event.GetEventId());
+		}
+		
+		public void CancelEvent(final PubEvent event)
+		{
+			event.setCurrentStatus(EventStatus.itsOff);
+			
+			DataRequestConfirmDeny cancel = new DataRequestConfirmDeny(event);
+			addDataRequest(cancel, new IRequestListener<PubEvent>(){
+				public void onRequestComplete(PubEvent data)
+				{
+					//PubService.this.storedData.DeleteSentEvent(event.GetEventId());
+					//TODO: Remove notifications for the future
+				}
+				public void onRequestFail(Exception e)
+				{
+					// TODO Auto-generated method stub
+					
+				}
+				
+			});
 		}
 
 		public void PerformUpdate(boolean fullUpdate) {
@@ -200,6 +207,19 @@ public class PubService extends IntentService
 						break;
 					
 					}
+					
+					//If the event has been cancelled, then remove
+					//TODO: Needs some consideration
+					/*if(eventEntry.getValue() == UpdateType.confirmed || 
+							eventEntry.getValue() == UpdateType.confirmedUpdated || 
+							eventEntry.getValue() == UpdateType.updatedConfirmed ||
+							eventEntry.getValue() == UpdateType.newEventConfirmed)
+					{
+						if(eventEntry.getKey().getCurrentStatus() == EventStatus.itsOff)
+						{
+							storedData.DeleteSentEvent(eventEntry.getKey().GetEventId());
+						}
+					}*/
 				}
 			}			
 			
