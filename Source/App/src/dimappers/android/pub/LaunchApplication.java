@@ -13,8 +13,11 @@ import org.json.JSONObject;
 
 import net.awl.appgarden.sdk.AppGardenAgent;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -70,7 +73,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
        		Intent i = new Intent(this, NoInternet.class); 
        		startActivityForResult(i,Constants.NoInternet);
        	}
-    	
+    	else {
     	//Orientate the screen - currently just using standard rotation for everything
         /*if(getWindowManager().getDefaultDisplay().getRotation()==Surface.ROTATION_90||getWindowManager().getDefaultDisplay().getRotation()==Surface.ROTATION_270)
         {
@@ -98,7 +101,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	button_invites.setTypeface(font);
     	    	
     	
-    	findViewById(android.R.id.list).setVisibility(View.GONE);
+    	findViewById(android.R.id.list).setVisibility(View.GONE); }
     }
     
     private void authoriseFacebook()
@@ -164,7 +167,18 @@ public class LaunchApplication extends Activity implements OnClickListener{
 			}
 
 			public void onRequestFail(Exception e) {
-				finish();
+				new AlertDialog.Builder(LaunchApplication.this)
+						.setCancelable(true)  
+						.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,	int which) 
+							{
+								dialog.cancel();
+								LaunchApplication.this.finish();
+							}
+						})
+						.setTitle("An error has occurred trying to authenticate with Facebook")
+						.show();
 			}};
 	    array[1] = facebook;
     	new GetPerson().execute(array);
