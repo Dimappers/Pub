@@ -44,7 +44,6 @@ public class DataRequestGetLatestAboutPubEvent implements IDataRequest<Integer, 
 			
 			PubEvent event = returnMessage.getEvent();
 			
-			storedData.put(eventId, event);
 			HashMap<PubEvent, UpdateType> update = new HashMap<PubEvent, UpdateType>();
 			update.put(event,  returnMessage.getUpdateType());
 			service.NewEventsRecieved(new PubEventArray(update));
@@ -57,7 +56,7 @@ public class DataRequestGetLatestAboutPubEvent implements IDataRequest<Integer, 
 	}
 
 	public String getStoredDataId() {
-		return "PubEvent";
+		return Constants.NoDictionaryForGenericDataStore;
 	}
 
 }

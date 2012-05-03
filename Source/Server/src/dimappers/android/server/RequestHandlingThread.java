@@ -27,6 +27,7 @@ import org.jdom.output.XMLOutputter;
 
 import dimappers.android.PubData.AcknoledgementData;
 import dimappers.android.PubData.ConfirmMessage;
+import dimappers.android.PubData.GoingStatus;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.RefreshData;
@@ -37,6 +38,7 @@ import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.UpdateData;
 import dimappers.android.PubData.UpdateType;
 import dimappers.android.PubData.User;
+import dimappers.android.PubData.UserStatus;
 
 public class RequestHandlingThread extends Thread{
 
@@ -325,10 +327,23 @@ public class RequestHandlingThread extends Thread{
 		UpdateData update;
 		update = new UpdateData(doc.getRootElement().getChild(UpdateData.class.getSimpleName()));
 
+		EventChange eventChange = EventChange.timeNotChanged;
+		Calendar oldEventTime;
+		
 		PubEvent event = EventManager.GetPubEvent(update.getEventId());
 
+		oldEventTime = event.GetStartTime();
 		// Checks if the start time needs amending
 		if (update.getStartTime() != null) {
+			if(event.GetStartTime().after(update.getStartTime()))
+			{
+				//original event time is after the new time, there for the new time is earlier
+				eventChange = EventChange.earlierTime;
+			}
+			else if(event.GetStartTime().before(update.getStartTime()))
+			{
+				eventChange = EventChange.laterTime;
+			}
 			event.SetStartTime(update.getStartTime());
 		}
 
@@ -357,6 +372,48 @@ public class RequestHandlingThread extends Thread{
 			if(!user.equals(event.GetHost()))
 			{
 				UserManager.markForUpdate(user, event.GetEventId());
+				/*UserStatus userGoingStatus = event.GetGoingStatusMap().get(user);
+				if(eventChange != EventChange.timeNotChanged)
+				{
+					//If the time has changed then we need to update the responses for users to reflect new time
+					switch(userGoingStatus.goingStatus)
+					{
+						case going:
+							if(eventChange == EventChange.earlierTime)
+							{
+								//The event now starts earlier so therefore we say this person has said they are free from whenever they originally agreed
+								
+								//If they haven't selected a time, set it to be the original starting time
+								if(userGoingStatus.freeFrom == null)
+								{
+									userGoingStatus.freeFrom = oldEventTime;
+									event.GetGoingStatusMap().put(user, userGoingStatus);
+								}
+								//Else they have already selected a time so we can continue to use this time as there free from
+							}
+							else
+							{
+								//Is a later time, we assume to person is still free at this later time
+								userGoingStatus.freeFrom = event.GetStartTime();
+								event.GetGoingStatusMap().put(user, userGoingStatus);
+							}
+							break;
+						case maybeGoing:
+							//They haven't replied, in this instance, they still haven't replied
+							userGoingStatus.freeFrom = oldEventTime;
+							event.GetGoingStatusMap().put(user, userGoingStatus);
+							break;
+						case notGoing:
+							break;
+						
+					}
+				}*/
+			}
+			else
+			{
+				//We are the host, so we are obviously free for this time
+				ResponseData response = new ResponseData(user, event.GetEventId(), true, event.GetStartTime(), "");
+				event.UpdateUserStatus(response);
 			}
 		}
 	}
@@ -492,5 +549,12 @@ public class RequestHandlingThread extends Thread{
 		System.out.println(sBuilder.toString());
 		StringReader reader = new StringReader(sBuilder.toString());
 		return docBuilder.build(reader);
+	}
+	
+	enum EventChange
+	{
+		laterTime,
+		earlierTime,
+		timeNotChanged
 	}
 }

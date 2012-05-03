@@ -42,6 +42,7 @@ import android.widget.Toast;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.GoingStatus;
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.UpdateData;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
@@ -229,37 +230,42 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 
 		public void onServiceDisconnected(ComponentName arg0){}
 		
-		private void updateScreen()
+	};
+	
+
+	private void updateScreen()
+	{
+		switch(event.GetUserGoingStatus(service.GetActiveUser()))
 		{
-			switch(event.GetUserGoingStatus(service.GetActiveUser()))
-			{
-				case going : {findViewById(R.id.going).setBackgroundColor(Color.GREEN); break;}
-				case notGoing : {findViewById(R.id.decline).setBackgroundColor(Color.RED); break;}
-			}
-			
-			TextView pubNameText = (TextView) findViewById(R.id.userInvitesPubNameText);
-	    	pubNameText.setText(event.GetPubLocation().toString());
-	    	
-	    	TextView startTime = (TextView) findViewById(R.id.userInviteStartTimeText);
-	    	startTime.setText(event.GetFormattedStartTime());
-	    	
-	    	try {
-				((TextView)findViewById(R.id.userInviteHostNameText)).setText(
-						getString(R.string.host_name)
-						+ " " +
-						AppUser.AppUserFromUser(event.GetHost(), service.GetFacebook()).toString());
-			} catch (Exception e) {
-				((TextView)findViewById(R.id.userInviteHostNameText)).setText(getString(R.string.host_name)+" unknown");
-				e.printStackTrace();
-			}
-			
+			case going : {findViewById(R.id.going).setBackgroundColor(Color.GREEN); break;}
+			case notGoing : {findViewById(R.id.decline).setBackgroundColor(Color.RED); break;}
 		}
 		
-	};
+		TextView pubNameText = (TextView) findViewById(R.id.userInvitesPubNameText);
+    	pubNameText.setText(event.GetPubLocation().toString());
+    	
+    	TextView startTime = (TextView) findViewById(R.id.userInviteStartTimeText);
+    	startTime.setText(event.GetFormattedStartTime());
+    	
+    	try {
+			((TextView)findViewById(R.id.userInviteHostNameText)).setText(
+					getString(R.string.host_name)
+					+ " " +
+					AppUser.AppUserFromUser(event.GetHost(), service.GetFacebook()).toString());
+		} catch (Exception e) {
+			((TextView)findViewById(R.id.userInviteHostNameText)).setText(getString(R.string.host_name)+" unknown");
+			e.printStackTrace();
+		}
+		
+	}
 	
 	private void sendResponse(boolean going, Calendar freeFromWhen, String msgToHost)
 	{
 		DataRequestSendResponse response = new DataRequestSendResponse(going, event.GetEventId(), freeFromWhen, msgToHost);
+		
+		//Work around: we should get updated event back from the server and refresh from that 
+		event.UpdateUserStatus(new ResponseData(service.GetActiveUser(), event.GetEventId(), going, freeFromWhen, msgToHost));
+		updateScreen();
 		service.addDataRequest(response, new IRequestListener<PubEvent>() {
 					public void onRequestComplete(PubEvent data) {
 						if(data != null)
@@ -348,8 +354,9 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			}
 			case going :
 			{
-				if(userStatus.freeFrom.equals(event.GetStartTime()))
+				if(userStatus.freeFrom.equals(event.GetStartTime()) || userStatus.freeFrom.before(event.GetStartTime()))
 				{
+					//The user has either said this time or an earlier time and hence is free
 					freeFromText.setText("Up for it");
 				}
 				else

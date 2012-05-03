@@ -462,24 +462,26 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			for(final Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
 			{
 				final String freeFromWhen;	
-				if(userResponse.getValue().freeFrom != null && userResponse.getValue().freeFrom.getTimeInMillis() != event.GetStartTime().getTimeInMillis())
+				if(userResponse.getValue().goingStatus == GoingStatus.going)
 				{
-					freeFromWhen = PubEvent.GetFormattedDate(userResponse.getValue().freeFrom);
-				}
-				else
-				{
-					if(userResponse.getValue().goingStatus == GoingStatus.going)
+					if(userResponse.getValue().freeFrom != null 
+							&& userResponse.getValue().freeFrom.getTimeInMillis() != event.GetStartTime().getTimeInMillis()
+							&& userResponse.getValue().freeFrom.after(event.GetStartTime()))
 					{
-						freeFromWhen = "Up for it!";
-					}
-					else if(userResponse.getValue().goingStatus == GoingStatus.notGoing)
-					{
-						freeFromWhen ="Nah";
+						freeFromWhen = PubEvent.GetFormattedDate(userResponse.getValue().freeFrom);
 					}
 					else
 					{
-						freeFromWhen = "";
+						freeFromWhen = "Up for it!";
 					}
+				}
+				else if(userResponse.getValue().goingStatus == GoingStatus.notGoing)
+				{
+					freeFromWhen ="Nah";
+				}
+				else
+				{
+					freeFromWhen = "";
 				}
 				if(userResponse.getKey() instanceof AppUser)
 				{
