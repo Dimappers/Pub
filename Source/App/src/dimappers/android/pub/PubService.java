@@ -285,7 +285,7 @@ public class PubService extends IntentService
 			hasStarted = true;
 			
 			// Begin retrieving friends
-			DataRequestGetFriends getFriends = new DataRequestGetFriends();
+			DataRequestGetFriends getFriends = new DataRequestGetFriends(getApplicationContext());
 			addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
 
 				public void onRequestComplete(AppUserArray data) {

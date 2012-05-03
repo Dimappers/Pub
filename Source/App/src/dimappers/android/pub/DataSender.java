@@ -39,7 +39,7 @@ public class DataSender {
 	private SenderThread senderThread;
 	
 	DataSender(){
-		queue = new ArrayBlockingQueue<Request<?, ?>>(100);
+		queue = new ArrayBlockingQueue<Request<?, ?>>(500);
 		senderThread = new SenderThread();
 		senderThread.execute(new Object[]{});
 	}

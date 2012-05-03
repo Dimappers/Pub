@@ -446,7 +446,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 			}
 						
 			//get list of facebook friends
-			Organise.this.service.addDataRequest(new DataRequestGetFriends(), new IRequestListener<AppUserArray>(){
+			Organise.this.service.addDataRequest(new DataRequestGetFriends(getApplicationContext()), new IRequestListener<AppUserArray>(){
 
 				public void onRequestComplete(AppUserArray data) {
 					facebookFriends = data.getArray();
