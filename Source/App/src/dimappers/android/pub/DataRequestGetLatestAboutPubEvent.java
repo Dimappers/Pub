@@ -9,6 +9,8 @@ import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.RefreshEventMessage;
+import dimappers.android.PubData.RefreshEventResponseMessage;
+import dimappers.android.PubData.UpdateType;
 
 public class DataRequestGetLatestAboutPubEvent implements IDataRequest<Integer, PubEvent> {
 
@@ -23,7 +25,7 @@ public class DataRequestGetLatestAboutPubEvent implements IDataRequest<Integer, 
 
 	public void performRequest(IRequestListener<PubEvent> listener,	HashMap<Integer, PubEvent> storedData) {
 		
-		RefreshEventMessage refreshEventMessage = new RefreshEventMessage(eventId);
+		RefreshEventMessage refreshEventMessage = new RefreshEventMessage(eventId, service.GetActiveUser());
 		Element rootElement = new Element("Message");
 		
 		Element messageTElement = new Element(MessageType.class.getSimpleName());
@@ -35,9 +37,20 @@ public class DataRequestGetLatestAboutPubEvent implements IDataRequest<Integer, 
 		
 		try {
 			Document pubReturnDocument = DataSender.sendReceiveDocument(refreshEventDocToSend);
-			PubEvent event = new PubEvent(pubReturnDocument.getRootElement().getChild(PubEvent.class.getSimpleName()));
-			listener.onRequestComplete(event);
+			//PubEvent event = new PubEvent(pubReturnDocument.getRootElement().getChild(PubEvent.class.getSimpleName()));
+			
+			RefreshEventResponseMessage returnMessage = new RefreshEventResponseMessage(pubReturnDocument.getRootElement().
+					getChild(RefreshEventResponseMessage.class.getSimpleName()));
+			
+			PubEvent event = returnMessage.getEvent();
+			
 			storedData.put(eventId, event);
+			HashMap<PubEvent, UpdateType> update = new HashMap<PubEvent, UpdateType>();
+			update.put(event,  returnMessage.getUpdateType());
+			service.NewEventsRecieved(new PubEventArray(update));
+			
+			listener.onRequestComplete(event);
+			
 		} catch (Exception e) {
 			listener.onRequestFail(e);
 		}

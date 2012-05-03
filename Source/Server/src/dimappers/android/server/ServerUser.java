@@ -1,6 +1,7 @@
 package dimappers.android.server;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
@@ -30,23 +31,23 @@ public class ServerUser extends dimappers.android.PubData.User
 		}
 	}
 	
-	public HashMap<Integer, UpdateType> getOutOfDateEvents() {
+	public Set<Integer> getOutOfDateEvents() {
 		// Iterates through each event, checking if it needs refreshing
-		HashMap<Integer, UpdateType> outOfDateEvents = new HashMap<Integer, UpdateType>();
+		Set<Integer> outOfDateEvents = new HashSet<Integer>();
 		
 		for(Entry<Integer, UpdateType> eventEntry : events.entrySet())
 		{
 			if(eventEntry.getValue() != UpdateType.noChangeSinceLastUpdate)
 			{
-				outOfDateEvents.put(eventEntry.getKey(), eventEntry.getValue());
+				outOfDateEvents.add(eventEntry.getKey());
 			}
 		}
 		
 		return outOfDateEvents;
 	}
 	
-	public HashMap<Integer, UpdateType> getAllEvents() {
-		return events;
+	public Set<Integer> getAllEvents() {
+		return events.keySet();
 	}
 	
 	/*public void setUpdate(int eventId, boolean update) throws ServerException {
@@ -147,11 +148,21 @@ public class ServerUser extends dimappers.android.PubData.User
 	public boolean GetHasApp() 				{	return hasApp;	}
 	public void SetHasApp(boolean hasApp)	{	this.hasApp = hasApp;	}
 	
+	public UpdateType getUpdateType(int eventId) throws ServerException
+	{
+		if(!events.containsKey(eventId))
+		{
+			throw new ServerException(ExceptionType.ServerUserNoSuchEvent);
+		}
+		
+		return events.get(eventId);
+	}
+	
 	public String toString() {
 		/* A toString method to aid debugging */
 		String str = "Id: " + super.getUserId() + " hasApp: " + hasApp + "\n";
 		str += "Events: \n";
-		for(Integer event : this.getAllEvents().keySet())
+		for(Integer event : this.getAllEvents())
 		{
 			str += event;
 		}

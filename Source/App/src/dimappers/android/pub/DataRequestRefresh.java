@@ -21,6 +21,7 @@ import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.RefreshData;
 import dimappers.android.PubData.RefreshEventMessage;
+import dimappers.android.PubData.RefreshEventResponseMessage;
 import dimappers.android.PubData.RefreshResponse;
 import dimappers.android.PubData.UpdateType;
 import dimappers.android.PubData.User;
@@ -67,26 +68,27 @@ public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
 		
 		HashMap<PubEvent, UpdateType> events = new HashMap<PubEvent, UpdateType>();
 		
-		for(Entry<Integer, UpdateType> eventUpdate : response.getEvents().entrySet())
+		for(Integer eventUpdate : response.getEvents())
 		{
-			if(fullRefresh || eventUpdate.getValue() != UpdateType.noChangeSinceLastUpdate)
-			{
-				RefreshEventMessage refreshEventMessage = new RefreshEventMessage(eventUpdate.getKey());
-				Element rootElement = new Element("Message");
+			RefreshEventMessage refreshEventMessage = new RefreshEventMessage(eventUpdate, service.GetActiveUser());
+			Element rootElement = new Element("Message");
+			
+			Element messageTElement = new Element(MessageType.class.getSimpleName());
+			messageTElement.addContent(MessageType.refreshEventMessage.toString());
+			rootElement.addContent(messageTElement);
+			
+			rootElement.addContent(refreshEventMessage.writeXml());
+			Document refreshEventDocToSend = new Document(rootElement);
+			
+			try {
+				Document pubReturnDocument = DataSender.sendReceiveDocument(refreshEventDocToSend);
+				RefreshEventResponseMessage returnMessage = new RefreshEventResponseMessage(pubReturnDocument.getRootElement().
+						getChild(RefreshEventResponseMessage.class.getSimpleName()));
 				
-				Element messageTElement = new Element(MessageType.class.getSimpleName());
-				messageTElement.addContent(MessageType.refreshEventMessage.toString());
-				rootElement.addContent(messageTElement);
-				
-				rootElement.addContent(refreshEventMessage.writeXml());
-				Document refreshEventDocToSend = new Document(rootElement);
-				
-				try {
-					Document pubReturnDocument = DataSender.sendReceiveDocument(refreshEventDocToSend);
-					events.put(new PubEvent(pubReturnDocument.getRootElement().getChild(PubEvent.class.getSimpleName())), eventUpdate.getValue());
-				} catch (Exception e) {
-					listener.onRequestFail(e);
-				}
+				events.put(returnMessage.getEvent(), returnMessage.getUpdateType());
+				//events.put(new PubEvent(pubReturnDocument.getRootElement().getChild(PubEvent.class.getSimpleName())), eventUpdate.getValue());
+			} catch (Exception e) {
+				listener.onRequestFail(e);
 			}
 		}
 		

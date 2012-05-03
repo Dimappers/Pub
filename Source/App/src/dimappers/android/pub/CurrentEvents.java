@@ -72,7 +72,6 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 							public void onRequestComplete(PubEventArray data) {
 								// TODO: Probably shouldn't make notifications
 								if (data.getEvents().size() > 0) {
-									service.NewEventsRecieved(data);
 									CurrentEvents.this
 											.runOnUiThread(new Runnable() {
 

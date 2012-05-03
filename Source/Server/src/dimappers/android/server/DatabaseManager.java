@@ -52,10 +52,10 @@ public class DatabaseManager {
 		statementUser.setBoolean(2, user.GetHasApp());
 		statementUser.execute();
 		
-		HashMap<Integer, UpdateType> events = user.getAllEvents();
+		Set<Integer> events = user.getAllEvents();
 		// For each Event in the users event list, add it to the database
 		//MARK: Not really sure what this does, tried to adapt for my change but may be a load of rubbish
-		for(Integer eventId : events.keySet()) {
+		for(Integer eventId : events) {
 			System.out.println("Events Size: " + events.size());
 			statementUserEvents.setLong(1, user.getUserId());
 			statementUserEvents.setInt(2, eventId);
