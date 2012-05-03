@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -30,6 +31,7 @@ import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.RefreshData;
 import dimappers.android.PubData.RefreshEventMessage;
+import dimappers.android.PubData.RefreshEventResponseMessage;
 import dimappers.android.PubData.RefreshResponse;
 import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.UpdateData;
@@ -235,7 +237,7 @@ public class RequestHandlingThread extends Thread{
 		RefreshData refresh;
 		refresh = new RefreshData(doc.getRootElement().getChild(RefreshData.class.getSimpleName()));
 
-		HashMap<Integer, UpdateType> refreshEventIds;
+		Set<Integer> refreshEventIds;
 		if (refresh.isFullUpdate()) {
 			// If true, returns all the events, otherwise just the events that need refreshing
 			refreshEventIds = UserManager.getFullUpdate(refresh.getUser());
@@ -243,8 +245,6 @@ public class RequestHandlingThread extends Thread{
 		else {
 			refreshEventIds = UserManager.getUpdate(refresh.getUser());
 		}
-		
-		UserManager.markAllAsUpToDate(refresh.getUser());
 
 		RefreshResponse response = new RefreshResponse(refreshEventIds);
 		
@@ -272,13 +272,15 @@ public class RequestHandlingThread extends Thread{
 	private static void RefreshEventMessageReceived(Document doc, Socket clientSocket) throws ServerException
 	{
 		RefreshEventMessage refreshEventMessage;
-		refreshEventMessage =new RefreshEventMessage(doc.getRootElement().getChild(RefreshEventMessage.class.getSimpleName()));
-		
+		refreshEventMessage = new RefreshEventMessage(doc.getRootElement().getChild(RefreshEventMessage.class.getSimpleName()));
+			
+		UpdateType updateType = UserManager.getUpdateType(refreshEventMessage.getUser(), refreshEventMessage.getEventId());
 		PubEvent eventToReturn = EventManager.GetPubEvent(refreshEventMessage.getEventId());
+		RefreshEventResponseMessage returnMessage = new RefreshEventResponseMessage(eventToReturn, updateType);
 		
 		Element root = new Element("Message");
 		Document returnDoc = new Document(root);
-		root.addContent(eventToReturn.writeXml());
+		root.addContent(returnMessage.writeXml());
 		
 		XMLOutputter outputter = new XMLOutputter();
 		
@@ -294,6 +296,8 @@ public class RequestHandlingThread extends Thread{
 			}
 			throw new ServerException(ExceptionType.RefreshUnknownError, e);
 		}
+		
+		UserManager.markAsUpToDate(refreshEventMessage.getUser(), refreshEventMessage.getEventId());
 	}
 
 	private static void RespondMessageReceived(Document doc, Socket clientSocket) throws ServerException
@@ -310,7 +314,7 @@ public class RequestHandlingThread extends Thread{
 			if(!user.equals(response.GetUser()))
 			{
 				//Tell that user they need an update
-				UserManager.markForUpdate(user, response.GetEventId());
+				UserManager.markForUserResponse(user, response.GetEventId());
 			}
 		}
 	}

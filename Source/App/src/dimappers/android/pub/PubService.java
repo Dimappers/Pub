@@ -164,7 +164,7 @@ public class PubService extends IntentService
 					storedData.AddNewInvitedEvent(eventEntry.getKey());
 				}
 				Context context = getApplicationContext();
-				Notification newNotification = NotificationCreator.createNotification(eventEntry.getValue(), event, context);
+				Notification newNotification = NotificationCreator.createNotification(eventEntry.getValue(), event, context, GetActiveUser(), GetFacebook());
 				if(newNotification != null)
 				{
 					notifications.add(newNotification);
