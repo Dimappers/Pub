@@ -378,29 +378,43 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			View rowView = inflater.inflate(R.layout.hosted_row, parent, false);
 
 			glView = new GuestListView();
-
+			
+			/* TODO: i can see the message from a user when sent by the user but envelope for that guest should be the only envelope
+			 * that appears.
+			 * Also in that envelope should hold only the message sent by that guest.
+			 * If these two things, which are more or less the same issue are resolved then DONE
+			 */
+			
+			//ImageView comment = (ImageView) rowView.findViewById(R.id.envelope);
 			ImageView comment = (ImageView) rowView.findViewById(R.id.envelope);
 			glView.guest = (TextView) rowView.findViewById(R.id.guest);
 			glView.time = (TextView) rowView.findViewById(R.id.time);
 
 			GuestList guestList = mData.get(position);
 
-			
+			comment.setVisibility(View.INVISIBLE);
 			
 			glView.guest.setText(guestList.getGuest().toString());
 			glView.time.setText(guestList.getTime().toString());
 			
 			if(HostEvents.sent == true )
 			{
-				
-				comment.setImageLevel(R.drawable.email_open);
-				comment.setClickable(true);
-				comment.setOnClickListener(new OnClickListener() {
-					public void onClick(View v) 
+				/*for(final Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())  //since each row is returned, maybe should be looking at guest in row
+				{
+					if(userResponse.getValue().messageToHost != "" && userResponse.getValue().messageToHost != null)
 					{
-						showAddDialog();
+						
+						comment.setVisibility(View.VISIBLE);
+						comment.setImageLevel(R.drawable.email_open);
+						comment.setClickable(true);
+						comment.setOnClickListener(new OnClickListener() {
+							public void onClick(View v) 
+							{
+								showAddDialog();
+							}
+						});
 					}
-				});
+				}*/
 			} 
 			else
 			{
@@ -422,12 +436,17 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			TextView text = (TextView) commentDialog.findViewById(R.id.comments_received);
 			//text.setClickable(false);
 			
+			GuestListView glView = new GuestListView();
+			
+			
 			for(final Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
 			{
 								
 				if(userResponse.getValue().messageToHost != "" && userResponse.getValue().messageToHost != null)
 				{
-					text.setText(userResponse.getValue().messageToHost);
+					glView.comment.setText(userResponse.getValue().messageToHost);
+
+					//text.setText(userResponse.getValue().messageToHost);
 				}
 					
 			}
@@ -444,9 +463,19 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		public void updateList(PubEvent event)
 		{
 			mData.clear();
+			ImageView comment = (ImageView) findViewById(R.id.envelope);
+
 			for(final Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
 			{
-				final String freeFromWhen;	
+				final String freeFromWhen;
+				final boolean message = true;
+				
+				if(userResponse.getValue().messageToHost != null && userResponse.getValue().messageToHost != "")
+				{
+					//message = true;
+					comment.setVisibility(View.VISIBLE);
+				}
+				
 				if(userResponse.getValue().freeFrom != null && userResponse.getValue().freeFrom.getTimeInMillis() != event.GetStartTime().getTimeInMillis())
 				{
 					freeFromWhen = PubEvent.GetFormattedDate(userResponse.getValue().freeFrom);
@@ -468,7 +497,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 				}
 				if(userResponse.getKey() instanceof AppUser)
 				{
-					mData.add(new GuestList(((AppUser)userResponse.getKey()).toString(), freeFromWhen));  
+					mData.add(new GuestList(((AppUser)userResponse.getKey()).toString(), freeFromWhen, message));  
 				}
 				else
 				{
@@ -478,7 +507,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 
 						public void onRequestComplete(AppUser data) {
 							
-							HostEvents.this.runOnUiThread(new UpdateList(data, freeFromWhen));
+							HostEvents.this.runOnUiThread(new UpdateList(data, freeFromWhen, message));
 						}
 
 						public void onRequestFail(Exception e) {
@@ -489,9 +518,9 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 						class UpdateList implements Runnable
 						{
 							GuestList glEntry;
-							public UpdateList(AppUser data, String freeFromWhen)
+							public UpdateList(AppUser data, String freeFromWhen, boolean message)
 							{
-								glEntry = new GuestList(data.toString(), freeFromWhen);
+								glEntry = new GuestList(data.toString(), freeFromWhen, message);
 							}
 							
 							public void run() {
@@ -517,11 +546,13 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	{
 		private String guest;
 		private String time;
+		private boolean message;
 
-		public GuestList(String guest, String time)
+		public GuestList(String guest, String time, boolean message)
 		{
 			this.guest = guest;
 			this.time = time;
+			this.message = message;
 		}
 
 		public void setGuest(String guest)
@@ -543,13 +574,23 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		{
 			return time;
 		}
+		
+		public void setMessage(boolean message)
+		{
+			this.message = message;
+		}
+		public boolean getMessage()
+		{
+			return message;
+		}
 
 	}
 
 	class GuestListView
 	{
 		protected TextView guest;
-		protected TextView time;	
+		protected TextView time;
+		protected TextView comment;
 	}
 	
 	class TimeTillPub extends CountDownTimer	
