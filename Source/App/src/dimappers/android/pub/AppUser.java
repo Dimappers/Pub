@@ -112,6 +112,7 @@ public class AppUser extends User implements IXmlable
 	{
 		outOfDate = newTime;
 	}
+	
 	public boolean isOutOfDate()
 	{
 		return Calendar.getInstance().after(outOfDate);

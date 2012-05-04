@@ -32,6 +32,7 @@ public class PersonRanker {
 	HistoryStore historyStore;
 	long me;
 	User[] facebookFriends;
+	User[] removedFriendsList;
 	Location currentLocation;
 	List<PubEvent> trips;
 	Facebook facebook;
@@ -93,7 +94,7 @@ public class PersonRanker {
 
 		this.currentEvent = currentEvent;
 		trips = historyStore.getPubTrips();
-		removeTooFarAwayFriends();
+		if(!Constants.debug) {removeTooFarAwayFriends();}
 
 		DataRequestGetFacebookPosts posts = new DataRequestGetFacebookPosts();
 		service.addDataRequest(posts, new IRequestListener<XmlJasonObject>() {
@@ -146,6 +147,21 @@ public class PersonRanker {
 			rankFromCallHistory();
 
 			facebookFriends = MergeSort(facebookFriends);
+			if(!Constants.debug)
+			{
+				User[] allFriends = new User[facebookFriends.length + removedFriendsList.length];
+				for(int i = 0; i<facebookFriends.length; i++)
+				{
+					allFriends[i] = facebookFriends[i];
+				}
+				for(int i = 0; i<removedFriendsList.length; i++)
+				{
+					allFriends[i+facebookFriends.length] = removedFriendsList[i];
+				}
+				facebookFriends = allFriends;
+			}
+			
+			DataRequestGetFriends.UpdateOrdering(facebookFriends, service);
 
 			int n = Math.min(historyStore.getAverageNumberOfFriends(),
 					facebookFriends.length);
@@ -407,7 +423,7 @@ public class PersonRanker {
 	private void addToRankOf(long facebookId, int amount, int fromWhere) {
 		if (facebookId != me) {
 			for (User person : facebookFriends) {
-				if (person.getUserId() == facebookId) {
+				if (person!=null && person.getUserId() == facebookId) {
 					person.setRank(person.getRank() + amount);
 					if (Constants.debug) {
 						switch (fromWhere) {
@@ -529,22 +545,36 @@ public class PersonRanker {
 
 	private void removeTooFarAwayFriends() {
 		int removedFriends = 0;
+		removedFriendsList = new User[facebookFriends.length];
 		for (int i = 0; i < facebookFriends.length; i++) {
 			if (isTooFarAway(facebookFriends[i].getLocation())) {
+				User friend = facebookFriends[i];
+				try {
+					removedFriendsList[removedFriends] = AppUser.AppUserFromUser(friend, service.GetFacebook());
+				} catch (Exception e) {
+					removedFriendsList[removedFriends] = new User(friend.getUserId());
+				}
 				facebookFriends[i] = null;
 				removedFriends++;
 			}
 		}
 		int j = 0;
 		User[] tmp = new User[facebookFriends.length - removedFriends];
-		for (int i = 0; i < tmp.length; i++) {
-			while (facebookFriends[j] == null) {
-				j++;
+		User[] tmp2 = new User[removedFriends];
+		for (int i = 0; i < removedFriends; i++) {
+			if(j<facebookFriends.length)
+			{
+				while (facebookFriends[j] == null) {
+					j++;
+					if(j>=facebookFriends.length) {break;}
+				}
 			}
-			tmp[i] = facebookFriends[j];
+			if(j<facebookFriends.length) {tmp[i] = facebookFriends[j];}
+			tmp2[i] = removedFriendsList[i];
 			j++;
 		}
 		facebookFriends = tmp;
+		removedFriendsList = tmp2;
 	}
 
 	private boolean isTooFarAway(double[] location) {

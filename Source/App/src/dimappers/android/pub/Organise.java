@@ -2,6 +2,7 @@ package dimappers.android.pub;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -43,17 +44,17 @@ import com.facebook.android.Facebook;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
+import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.User;
+import dimappers.android.PubData.UserStatus;
 
-public class Organise extends ListActivity implements OnClickListener, OnMenuItemClickListener{
+public class Organise extends LocationRequiringActivity implements OnClickListener, OnMenuItemClickListener{
 
 	private Button cur_pub;
 	private Button cur_time;
 	private TextView cur_loc;
-	private ProgressBar progbar;
+	public ProgressBar progbar;
 	MenuItem edit;
-
-	private PubEvent event;
 	
 	private ArrayList<String> listItems=new ArrayList<String>();
 	private ArrayAdapter<String> adapter;
@@ -65,8 +66,8 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	private double lngSet;
 
 	private AppUser[] facebookFriends;
+	//private Calendar originalTime;
 
-	IPubService service;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -322,49 +323,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	
 	void setLocation()
 	{
-		final EditText loc = new EditText(getApplicationContext());
-		new AlertDialog.Builder(this).setMessage("Enter your current location:")  
-		.setTitle("Change Location")  
-		.setCancelable(true)  
-		.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
-				
-				progbar.setVisibility(View.VISIBLE);
-				
-				DataRequestReverseGeocoder request1 = new DataRequestReverseGeocoder(getApplicationContext(), loc.getText().toString());
-				service.addDataRequest(request1, new IRequestListener<XmlableDoubleArray>(){
-
-					public void onRequestFail(Exception e) {
-						failure(2);
-					}
-
-					public void onRequestComplete(XmlableDoubleArray data) {
-						
-						final double lat = data.getArray()[0];
-						final double lng = data.getArray()[1];
-						
-						DataRequestPubFinder request2 = new DataRequestPubFinder(lat, lng);
-						service.addDataRequest(request2, new IRequestListener<PlacesList>(){
-
-							public void onRequestComplete(PlacesList data) {
-								PubLocation best = new PubRanker(data.results, event, service.getHistoryStore()).returnBest();
-								if(best==null) {failure(0);}
-								else
-								{
-									event.SetPubLocation(best);
-									success(lat, lng, loc.getText().toString());
-								}
-								}
-
-							public void onRequestFail(Exception e) {
-								failure(1);
-							}});
-					}});
-				dialog.cancel();
-			}
-		})
-		.setView(loc)
-		.show(); 
+		LocationChanger.changeLocation(this);
 	}
 	
 	void success(double lat, double lng, final String loc)
@@ -378,39 +337,6 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 				UpdateFromEvent();
 				removeProgBar();
 			}});
-	}
-	void failure(int which)
-	{
-		removeProgBar();
-		Log.d(Constants.MsgError, "Error using custom location!!");
-		if(which==0) //no pubs found
-		{
-			runOnUiThread(new Runnable(){
-				public void run() {
-					Toast.makeText(getApplicationContext(), "No pubs found near this location", Toast.LENGTH_SHORT).show();
-				}});
-		}
-		else if(which==1) //error finding pubs
-		{
-			runOnUiThread(new Runnable(){
-			public void run() {
-				Toast.makeText(getApplicationContext(), "Pubs unable to be found", Toast.LENGTH_SHORT).show();
-			}});
-		}
-		else if(which==2) //error when geocoding
-		{
-			runOnUiThread(new Runnable(){
-				public void run() {
-					Toast.makeText(getApplicationContext(), "Unrecognised location", Toast.LENGTH_SHORT).show();
-				}});
-		}
-		else //this shouldn't happen
-		{
-			runOnUiThread(new Runnable(){
-				public void run() {
-					Toast.makeText(getApplicationContext(), "Unknown error", Toast.LENGTH_SHORT).show();
-				}});
-		}
 	}
 	
 	void removeProgBar()
@@ -484,7 +410,8 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			//Give the interface to the app
 			Organise.this.service = (IPubService)service;
 			event=Organise.this.service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
-			
+			/*originalTime = Calendar.getInstance();
+			originalTime.setTimeInMillis(event.GetStartTime().getTimeInMillis());*/
 			
 			guest_list.setOnItemClickListener(new OnItemClickListener() {
 				public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
@@ -524,7 +451,7 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			}
 						
 			//get list of facebook friends
-			Organise.this.service.addDataRequest(new DataRequestGetFriends(), new IRequestListener<AppUserArray>(){
+			Organise.this.service.addDataRequest(new DataRequestGetFriends(getApplicationContext()), new IRequestListener<AppUserArray>(){
 
 				public void onRequestComplete(AppUserArray data) {
 					facebookFriends = data.getArray();
@@ -556,8 +483,14 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 						Organise.this.service.addDataRequest(update, new IRequestListener<PubEvent>(){
 
 							public void onRequestComplete(PubEvent data) {
-								if(data==null) {onSendSuccess(event);}
-								else {onSendSuccess(data);}
+								if(data==null) 
+								{
+									onSendSuccess(event);
+								}
+								else 
+								{
+									onSendSuccess(data);
+								}
 							}
 
 							public void onRequestFail(Exception e) {
@@ -568,6 +501,72 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 										Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
 									}});
 							}});
+						
+						/*EventChange eventChange = EventChange.timeNotChanged;
+						if(event.GetStartTime().after(originalTime))
+						{
+							eventChange = EventChange.laterTime;
+						}
+						else if(event.GetStartTime().before(originalTime))
+						{
+							eventChange = EventChange.earlierTime;
+						}
+						
+						for(User user : event.GetUsers())
+						{
+							if(!user.equals(event.GetHost()))
+							{
+								UserStatus userGoingStatus = event.GetGoingStatusMap().get(user);
+								if(eventChange != EventChange.timeNotChanged)
+								{
+									//If the time has changed then we need to update the responses for users to reflect new time
+									switch(userGoingStatus.goingStatus)
+									{
+										case going:
+											if(eventChange == EventChange.earlierTime)
+											{
+												//The event now starts earlier so therefore we say this person has said they are free from whenever they originally agreed
+												
+												//If they haven't selected a time, set it to be the original starting time
+												if(userGoingStatus.freeFrom == null)
+												{
+													userGoingStatus.freeFrom = originalTime;
+													event.GetGoingStatusMap().put(user, userGoingStatus);
+												}
+												//Else they have already selected a time so we can continue to use this time as there free from
+											}
+											else
+											{
+												//Is a later time, we assume to person is still free at this later time
+												userGoingStatus.freeFrom = event.GetStartTime();
+												event.GetGoingStatusMap().put(user, userGoingStatus);
+											}
+											break;
+										case maybeGoing:
+											//They haven't replied, in this instance, they still haven't replied
+											userGoingStatus.freeFrom = originalTime;
+											event.GetGoingStatusMap().put(user, userGoingStatus);
+											break;
+										case notGoing:
+											break;
+										
+									}
+								}
+							}
+							else
+							{
+								//We are the host, so we are obviously free for this time
+								ResponseData response = new ResponseData(user, event.GetEventId(), true, event.GetStartTime(), "");
+								event.UpdateUserStatus(response);
+							}
+						}
+						*/
+						
+						//Set the host as up for this time
+						UserStatus userStatus = event.GetGoingStatusMap().get(event.GetHost());
+						userStatus.freeFrom = event.GetStartTime();
+						event.GetGoingStatusMap().put(event.GetHost(), userStatus);
+						
 					}});
 			}
 			
@@ -598,4 +597,11 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		}
 
 	};
+	
+	enum EventChange
+	{
+		laterTime,
+		earlierTime,
+		timeNotChanged
+	}
 }

@@ -16,8 +16,8 @@ public class User implements Serializable {
 	
 	//Properties
 	protected Long facebookUserId;
-	private double latitude = 1000.0;
-	private double longitude = 1000.0;
+	protected double latitude = 1000.0;
+	protected double longitude = 1000.0;
 	private int rank = 0;
 	
 	//Constructor

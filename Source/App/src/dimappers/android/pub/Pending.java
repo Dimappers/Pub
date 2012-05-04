@@ -160,7 +160,7 @@ public class Pending extends Activity implements OnClickListener {
 			service.GetActiveUser().setLocation(locationarray);
 			
 			//Start tasks: Get people & get pubs
-			PersonFinder personFinder = new PersonFinder(service);
+			PersonFinder personFinder = new PersonFinder(service, getApplicationContext());
 			Pending.this.updateText("Finding friends");
 			
 			findPubs();

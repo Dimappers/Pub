@@ -50,7 +50,15 @@ public class GetPerson extends AsyncTask<Object, Void, AppUser> {
     	
 		Log.d(Constants.MsgInfo, "Logged in as user: " + name + " with ID: " + id);
 		
-    	return new AppUser(Long.parseLong(id), name);
+    	try
+    	{
+    		return new AppUser(Long.parseLong(id), name);
+    	}
+    	catch(NumberFormatException e)
+    	{
+    		Log.d(Constants.MsgError, e.getMessage());
+    		return null;
+    	}
 	}
 	
 	@Override

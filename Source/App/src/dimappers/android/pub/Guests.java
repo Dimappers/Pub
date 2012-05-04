@@ -188,7 +188,7 @@ public class Guests extends ListActivity implements OnClickListener{
 			Intent returnIntent = new Intent();
 			returnIntent.putExtras(b);
 			this.setResult(RESULT_OK,returnIntent);
-			DataRequestGetFriends.UpateOrdering(allFriends, service);
+			DataRequestGetFriends.UpdateOrdering(allFriends, service);
 			finish();
 			break;
 		}
@@ -244,7 +244,7 @@ public class Guests extends ListActivity implements OnClickListener{
 			if(eventId>=0) {isSent = true;}
 			else {isSent = false;}
 			
-			DataRequestGetFriends getFriends = new DataRequestGetFriends();
+			DataRequestGetFriends getFriends = new DataRequestGetFriends(getApplicationContext());
 			service.addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
 
 				public void onRequestComplete(AppUserArray data) {

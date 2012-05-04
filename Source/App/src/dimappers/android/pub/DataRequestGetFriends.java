@@ -1,11 +1,16 @@
 package dimappers.android.pub;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
+import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.facebook.android.Facebook;
@@ -13,14 +18,17 @@ import com.facebook.android.Facebook;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.User;
 
-public class DataRequestGetFriends implements IDataRequest<Long, AppUserArray> {
+public class DataRequestGetFriends extends Activity implements IDataRequest<Long, AppUserArray> {
 
 	IPubService service;
+	Context context;
 	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
-
+	
+	public DataRequestGetFriends(Context context) {this.context = context;}
+	
 	public void performRequest(IRequestListener<AppUserArray> listener,
 			HashMap<Long, AppUserArray> storedData) {
 		Facebook facebook = service.GetFacebook();
@@ -30,7 +38,7 @@ public class DataRequestGetFriends implements IDataRequest<Long, AppUserArray> {
 			{
 				Log.d(Constants.MsgInfo, "Friends cached, not need to ask facebook");
 				AppUserArray friendsArray = storedData.get(0L);
-				friendsArray.setArray(MergeSort(friendsArray.getArray()));
+				friendsArray.setArray(friendsArray.getArray());
 				listener.onRequestComplete(friendsArray); //Friends last got one week ago so we are done - TODO: Test me!!
 				return;
 			}
@@ -38,19 +46,55 @@ public class DataRequestGetFriends implements IDataRequest<Long, AppUserArray> {
 		Log.d(Constants.MsgInfo, "Getting friends");
 		JSONObject mefriends = null;
 		try {
-			mefriends = new JSONObject(facebook.request("me/friends"));
+			Bundle bundle = new Bundle();
+			bundle.putString("fields", "location, name");
+			mefriends = new JSONObject(facebook.request("me/friends", bundle));
 		} catch (Exception e) {
 			listener.onRequestFail(e);
 			return;
 		} 
 		try {
 			JSONArray jasonsFriends = mefriends.getJSONArray("data");
-			AppUser[] friends = new AppUser[jasonsFriends.length()];
+			final AppUser[] friends = new AppUser[jasonsFriends.length()];
 			for (int i=0; i < jasonsFriends.length(); i++)
 			{
-				JSONObject jason = (JSONObject) jasonsFriends.get(i);
+				final JSONObject jason = (JSONObject) jasonsFriends.get(i);
 				Long id = Long.parseLong(jason.getString("id"));
 				friends[i] = new AppUser(id, jason.getString("name"));
+				
+				//Getting location
+				if(jason.has("location"))
+				{
+					JSONObject location = jason.getJSONObject("location");
+					final String name = location.getString("name");
+					final AppUser friend = friends[i];
+					try{
+						service.addDataRequest(new DataRequestReverseGeocoder(context, name), new IRequestListener<XmlableDoubleArray>() {
+
+							public void onRequestComplete(XmlableDoubleArray data) {
+								double[] loc = data.array;
+								if(loc.length==2)
+								{
+									friend.setLocation(loc);
+									Log.d(Constants.MsgInfo, friend.toString() + " is at " + name + " (" + loc[0] + "," + loc[1]);
+								}
+							}
+
+							public void onRequestFail(Exception e) {
+								try {
+									Log.d(Constants.MsgWarning, "Geocoding " + jason.getString("name") + "'s location has failed.");
+								} catch (JSONException e1) {
+									Log.d(Constants.MsgWarning, "Geocoding <unknown person>'s location has failed.");
+									e1.printStackTrace();
+								}
+							}
+						});
+					}
+					catch(IllegalStateException e)
+					{
+						Log.d(Constants.MsgWarning, "Data Request Queue is full.");
+					}
+				}
 			}
 			AppUserArray friendsArray = new AppUserArray(friends);
 			storedData.put(0L, friendsArray);
@@ -101,11 +145,36 @@ public class DataRequestGetFriends implements IDataRequest<Long, AppUserArray> {
 		return "AppUsers";
 	}
 	
-	public static void UpateOrdering(AppUser[] newOrdering, IPubService service)
+	public static void UpdateOrdering(User[] newOrdering, IPubService service)
 	{
+		AppUser[] newArray = new AppUser[newOrdering.length];
+		for(int i = 0; i<newOrdering.length; i++)
+		{
+			User user = newOrdering[i];
+			if(user instanceof AppUser)
+			{
+				newArray[i] = (AppUser) user;
+			}
+			else
+			{
+				try {
+					newArray[i] = AppUser.AppUserFromUser(user, service.GetFacebook());
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		HashMap<Long, AppUserArray> store = service.GetGenericStore("AppUsers");
 		//store.put(0L, new AppUserArray(newOrdering));
-		store.get(0L).setArray(newOrdering);
+		store.get(0L).setArray(newArray);
 	} 
 
 }

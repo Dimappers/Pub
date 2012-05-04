@@ -47,7 +47,8 @@ import dimappers.android.PubData.UserStatus;
 				
 				service = (IPubService) serviceBinder;
 				event = service.getEvent(eventId);
-				
+				if(event!=null)
+				{
 				 NotificationType type = (NotificationType)(extras.getSerializable(Constants.RequiredNotificationType));
 
 				 NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -73,6 +74,7 @@ import dimappers.android.PubData.UserStatus;
 					 
 					 nManager.notify(event.GetEventId(), newNotification);
 				 }
+				}
 				 finish();
 			}
 

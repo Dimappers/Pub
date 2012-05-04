@@ -98,7 +98,6 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 			    {
 			    	listener.onRequestComplete(places);
 			    }
-			    //TODO: deal with no results separately because this isn't an error
 			    else
 			    {
 			    	listener.onRequestFail(new Exception(places.status));	
@@ -119,7 +118,10 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 		return Double.valueOf(twoDForm.format(value));
 	}
 	public static Integer getKey(double latitude, double longitude, String keyword) {
-		return new Double(Math.pow(2.0, get2DP(latitude))*Math.pow(3.0, get2DP(longitude))*Math.pow(5.0, keyword.hashCode())).hashCode();
+		int lat = (int)(1000*latitude);
+		int lng = (int)(1000*longitude);
+		int keyhash = keyword.hashCode();
+		return lat + lng + keyhash;
 	}
 
 }
