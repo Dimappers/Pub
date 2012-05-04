@@ -224,7 +224,7 @@ public class NotificationCreator {
 		Notification newNotification = new Notification(R.drawable.icon, "New replies", System.currentTimeMillis());
 		newNotification.defaults |= Notification.DEFAULT_VIBRATE;
 		newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
-		Intent notificationIntent = new Intent(context, UserInvites.class);
+		Intent notificationIntent = new Intent(context, HostEvents.class);
 		
 		Bundle b = new Bundle();
 		b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
