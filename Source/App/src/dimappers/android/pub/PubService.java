@@ -246,10 +246,10 @@ public class PubService extends IntentService
 			}
 		}
 
-		@Override
 		public void EventHasHappenened(PubEvent event) {
 			HistoryStore hStore = getHistoryStore();
 			hStore.addEvent(event);
+			storedData.DeleteSentEvent(event.GetEventId());
 		}
 	}
 
