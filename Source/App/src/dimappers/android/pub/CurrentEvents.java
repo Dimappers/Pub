@@ -114,23 +114,29 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 	                                ContextMenuInfo menuInfo) {
 	    super.onCreateContextMenu(menu, v, menuInfo);
 	    int pos = ((AdapterContextMenuInfo)menuInfo).position;
-	    pos = adapter.getItemCategory(pos); //Convert into a category
-	    MenuInflater inflater = getMenuInflater();
-	    switch (pos) {
-			case Constants.ProposedEventNoResponse:
-			case Constants.ProposedEventHaveResponded:{
-				inflater.inflate(R.menu.invited_hold_menu, menu);
-				break;
+	    int category = adapter.getItemCategory(pos); //Convert into a category
+	    if(category >= 0) //if we have not selected a category header
+	    {
+	    	PubEvent event = (PubEvent)adapter.getItem(pos);
+		    MenuInflater inflater = getMenuInflater();
+		    
+		    switch (category) {
+				case Constants.ProposedEventNoResponse:
+				case Constants.ProposedEventHaveResponded:{
+					inflater.inflate(R.menu.invited_hold_menu, menu);
+					break;
+				}
+				case Constants.HostedEventSent: {
+					inflater.inflate(R.menu.host_sent_hold_menu, menu);
+					break;
+				}
+				case Constants.HostedEventSaved: {
+					inflater.inflate(R.menu.host_saved_hold_menu, menu);
+					break;
+				}
 			}
-			case Constants.HostedEventSent: {
-				inflater.inflate(R.menu.host_sent_hold_menu, menu);
-				break;
-			}
-			case Constants.HostedEventSaved: {
-				inflater.inflate(R.menu.host_saved_hold_menu, menu);
-				break;
-			}
-			}
+		    menu.setHeaderTitle(event.toString());
+	    }
 	    
 	}
 	
@@ -529,7 +535,14 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 				--position; // discount the header
 
 				if (position < sectionAdapter.getCount()) {
-					return i;
+					if(position >= 0)
+					{
+						return i;
+					}
+					else
+					{
+						return -1; //This is a category and hence is not in a category
+					}
 				} else {
 					position -= sectionAdapter.getCount();
 					++i;
