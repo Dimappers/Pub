@@ -19,8 +19,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
@@ -29,6 +31,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -43,6 +46,7 @@ import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.User;
+import dimappers.android.pub.HostEvents.TimeTillPub;
 
 public class CurrentEvents extends ListActivity implements OnItemClickListener {
 	SeperatedListAdapter adapter;
@@ -57,6 +61,8 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 
 		((ListView) findViewById(android.R.id.list))
 				.setOnItemClickListener(this);
+		
+		registerForContextMenu(getListView());
 	}
 
 	@Override
@@ -101,6 +107,173 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 	public void onResume() {
 		super.onResume();
 		refreshList();
+	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	                                ContextMenuInfo menuInfo) {
+	    super.onCreateContextMenu(menu, v, menuInfo);
+	    int pos = ((AdapterContextMenuInfo)menuInfo).position;
+	    pos = adapter.getItemCategory(pos); //Convert into a category
+	    MenuInflater inflater = getMenuInflater();
+	    switch (pos) {
+			case Constants.ProposedEventNoResponse:
+			case Constants.ProposedEventHaveResponded:{
+				inflater.inflate(R.menu.invited_hold_menu, menu);
+				break;
+			}
+			case Constants.HostedEventSent: {
+				inflater.inflate(R.menu.host_sent_hold_menu, menu);
+				break;
+			}
+			case Constants.HostedEventSaved: {
+				inflater.inflate(R.menu.host_saved_hold_menu, menu);
+				break;
+			}
+			}
+	    
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+	    AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+	    int itemPosition = ((AdapterContextMenuInfo)item.getMenuInfo()).position;
+	    Object pubEventO = adapter.getItem(itemPosition);
+	    if(pubEventO != null && pubEventO instanceof PubEvent)
+	    {
+	    	PubEvent selectedEvent = (PubEvent)pubEventO;
+		    switch (item.getItemId()) {
+		    	
+		    	//Saved event - click delete
+		        case R.id.host_saved_menu_item_delete:
+		            Log.d(Constants.MsgInfo, "Delete event");
+		            service.RemoveEventFromStoredDataAndCancelNotification(selectedEvent);
+		            refreshList();
+		            return true;
+		            
+		        //Saved event - click send
+		        case R.id.host_saved_menu_item_send:
+		        	Log.d(Constants.MsgInfo, "Send event");
+		        	service.GiveNewSentEvent(selectedEvent, new IRequestListener<PubEvent>() {
+						
+						public void onRequestFail(Exception e) {
+							Log.d(Constants.MsgError, "Could not sent invite: " + e.getMessage());
+							runOnUiThread(new Runnable(){
+								public void run() {
+									Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
+									//FIXME: probably should make it more obvious when this fails
+								}});
+						}
+						
+						public void onRequestComplete(PubEvent data) {
+							Log.d(Constants.MsgInfo, "PubEvent sent, event id: " + data.GetEventId());
+							CurrentEvents.this.runOnUiThread(new Runnable()
+							{
+								public void run() {
+									refreshList();
+								}
+								
+							});
+						}
+		        	});
+		        	
+		            return true;
+		            
+		        case R.id.host_saved_menu_item_edit:
+		        case R.id.host_sent_menu_item_edit:
+		        	Intent i;
+		        	Bundle bundle = new Bundle();
+					bundle.putInt(Constants.CurrentWorkingEvent, selectedEvent.GetEventId());
+					bundle.putBoolean(Constants.IsSavedEventFlag, true);
+
+					i = new Intent(this, Organise.class);
+					i.putExtras(bundle);
+					startActivityForResult(i, Constants.FromEdit);
+		        	return true;
+		            
+		        //Sent event, confirming it is on
+		        case R.id.host_sent_menu_item_confirm:
+		        	selectedEvent.setCurrentStatus(EventStatus.itsOn);
+					DataRequestConfirmDeny request = new DataRequestConfirmDeny(selectedEvent);
+					service.addDataRequest(request, new IRequestListener<PubEvent>() {
+
+						public void onRequestComplete(PubEvent data) {
+							if(data != null)
+							{
+								CurrentEvents.this.runOnUiThread(new Runnable()
+								{
+									public void run() {
+										refreshList();
+									}
+									
+								});
+							}
+							
+						}
+
+						public void onRequestFail(Exception e) {
+							Log.d(Constants.MsgError, e.getMessage());					
+						}
+					});
+					refreshList();
+		        	return true;
+		        	
+		        case R.id.host_sent_menu_item_cancel:
+		        	service.CancelEvent(selectedEvent);
+		        	refreshList();
+		        	return true;
+		        	
+		        case R.id.invited_menu_item_up:
+		        	DataRequestSendResponse response = new DataRequestSendResponse(true, selectedEvent.GetEventId(), selectedEvent.GetStartTime(), "");
+		    		
+		    		//Work around: we should get updated event back from the server and refresh from that 
+		        	selectedEvent.UpdateUserStatus(new ResponseData(service.GetActiveUser(), selectedEvent.GetEventId(), true, selectedEvent.GetStartTime(), ""));
+		    		refreshList();
+		    		service.addDataRequest(response, new IRequestListener<PubEvent>() {
+		    					public void onRequestComplete(PubEvent data) {
+		    						runOnUiThread(new Runnable()
+		    						{
+										public void run()
+										{
+											refreshList();
+										}
+		    						});
+		    					}
+
+		    					public void onRequestFail(Exception e) {
+		    						Log.d(Constants.MsgError, e.getMessage());						
+		    					}
+		    				});
+		        	return true;
+		        	
+		        case R.id.invited_menu_item_no:
+		        	DataRequestSendResponse negativeresponse = new DataRequestSendResponse(false, selectedEvent.GetEventId(), selectedEvent.GetStartTime(), "");
+		    		
+		    		//Work around: we should get updated event back from the server and refresh from that 
+		        	selectedEvent.UpdateUserStatus(new ResponseData(service.GetActiveUser(), selectedEvent.GetEventId(), false, selectedEvent.GetStartTime(), ""));
+		    		refreshList();
+		    		service.addDataRequest(negativeresponse, new IRequestListener<PubEvent>() {
+		    					public void onRequestComplete(PubEvent data) {
+		    						runOnUiThread(new Runnable()
+		    						{
+										public void run()
+										{
+											refreshList();
+										}
+		    						});
+		    					}
+
+		    					public void onRequestFail(Exception e) {
+		    						Log.d(Constants.MsgError, e.getMessage());						
+		    					}
+		    				});
+		        	return true;
+		        default:
+		            return super.onContextItemSelected(item);
+		    }
+		    }
+        return super.onContextItemSelected(item);
+	    
 	}
 
 	private void refreshList() {
@@ -249,7 +422,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 			for (PubEvent savedEvent : serviceInterface.GetSavedEvents()) {
 				hostingSaved.add(savedEvent);
 			}
-
+			
 			ArrayAdapter<PubEvent> hostingSent = new ArrayAdapter<PubEvent>(
 					CurrentEvents.this.getApplicationContext(),
 					R.layout.list_item);

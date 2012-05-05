@@ -67,7 +67,8 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 
 	private AppUser[] facebookFriends;
 	//private Calendar originalTime;
-
+	boolean changed;
+	PubEvent oldEvent = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -82,11 +83,13 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		eventSavedAlready = getIntent().getExtras().getBoolean(Constants.IsSavedEventFlag);
 		if(eventSavedAlready)
 		{
-			Log.d(Constants.MsgInfo, "Event has been created before");	    			
+			Log.d(Constants.MsgInfo, "Event has been created before");	   
+			changed = false;
 		}
 		else
 		{
 			Log.d(Constants.MsgInfo, "Event has just been generated");
+			changed = true;
 		}
 		
 		Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
@@ -204,29 +207,6 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 				break;
 			}
 			case R.id.save_event : {
-				if(!eventSavedAlready)
-				{
-					//TODO: This may not be in the correct position, kind of needs issue 120
-					DataRequestUpdateEvent updateRequest = new DataRequestUpdateEvent(event);
-					service.addDataRequest(updateRequest, new IRequestListener<PubEvent>(){
-
-						
-						public void onRequestComplete(PubEvent data) {
-							if(data != null)
-							{
-								event = data;
-								UpdateFromEvent();
-							}
-						}
-
-						
-						public void onRequestFail(Exception e) {
-							// TODO Auto-generated method stub
-							
-						}
-						
-					});
-				}
 				i = new Intent();
 				service.GiveNewSavedEvent(event);
 				b.putBoolean(Constants.IsSavedEventFlag, true);
@@ -268,6 +248,97 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		}
 	}
 	
+	@Override
+	public void onBackPressed() {
+	    //Handle the back button
+	        //Ask the user if they want to quit
+		if(changed)
+		{
+			if(event.GetEventId() < 0) //is a local event
+			{
+		        new AlertDialog.Builder(this)
+		        .setIcon(android.R.drawable.ic_dialog_alert)
+		        .setTitle("Save or discard?")
+		        .setMessage("Would you like to save before exiting")
+		        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+	
+		            public void onClick(DialogInterface dialog, int which) {
+	
+		                service.GiveNewSavedEvent(event);
+		                finish();    
+		            }
+	
+		        })
+		        .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
+					
+					public void onClick(DialogInterface dialog, int which)
+					{
+						if(oldEvent == null) //then this is a fresh event
+						{
+							service.RemoveEventFromStoredDataAndCancelNotification(event);
+						}
+						else //this is an event being edited, we should revert to last version
+						{
+							event = new PubEvent(oldEvent.writeXml());
+							service.GiveNewSavedEvent(event);
+							Intent i = new Intent();
+							Bundle b = new Bundle();
+							b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
+							i.putExtras(b);
+							setResult(RESULT_OK, i);
+						}
+						finish();					
+					}
+				})
+		        .show();
+			}
+			else
+			{
+				new AlertDialog.Builder(this)
+		        .setIcon(android.R.drawable.ic_dialog_alert)
+		        .setTitle("Update or abandon changes?")
+		        .setMessage("Would you like to update the event")
+		        .setPositiveButton("Update", new DialogInterface.OnClickListener() {
+	
+		            public void onClick(DialogInterface dialog, int which) {
+	
+		            	//Update the event on the server
+		                updateEvent();
+		                finish();    
+		            }
+	
+		        })
+		        .setNegativeButton("Abandon", new DialogInterface.OnClickListener() {
+					
+					public void onClick(DialogInterface dialog, int which)
+					{
+						if(oldEvent != null) //abandon changes
+						{
+							event = new PubEvent(oldEvent.writeXml());
+							service.UpdatePubEvent(event);
+							Intent i = new Intent();
+							Bundle b = new Bundle();
+							b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
+							i.putExtras(b);
+							setResult(RESULT_OK, i);
+						}
+						else //This should never be true - this is the dialog for a sent event 
+						{
+							Log.d(Constants.MsgError, "Should always been an old event");
+						}
+						finish();					
+					}
+				})
+		        .show();
+			}
+		}
+		else
+		{
+			finish();
+		}
+
+	}
+	
 	private void onSendSuccess(PubEvent data)
 	{
 		Log.d(Constants.MsgInfo, "PubEvent sent, event id: " + data.GetEventId());
@@ -289,6 +360,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 			//We don't actually care what we are returning from, always get the latest event and update the screen
 			event = service.getEvent(data.getExtras().getInt(Constants.CurrentWorkingEvent));
 			UpdateFromEvent();
+			changed = true;
 		}
 	}
 
@@ -356,7 +428,8 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 
 		listItems.clear();
 		adapter.notifyDataSetChanged();
-		for(User user : event.GetUsers()) {
+		for(User user : event.GetUsers()) 
+		{
 			if(user instanceof AppUser)
 			{
 				listItems.add(user.toString());
@@ -365,23 +438,27 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 			else
 			{
 				DataRequestGetFacebookUser request = new DataRequestGetFacebookUser(user.getUserId());
-				service.addDataRequest(request, new IRequestListener<AppUser>() {
-
-					public void onRequestComplete(final AppUser data) {
-						Organise.this.runOnUiThread(new Runnable() {
-							public void run() {
+				service.addDataRequest(request, new IRequestListener<AppUser>() 
+				{
+					public void onRequestComplete(final AppUser data) 
+					{
+						Organise.this.runOnUiThread(new Runnable() 
+						{
+							public void run() 
+							{
 								listItems.add(data.toString());
 								adapter.notifyDataSetChanged();					
 							}
 						});
 					}
 
-					public void onRequestFail(Exception e) {
+					public void onRequestFail(Exception e) 
+					{
 						// TODO Auto-generated method stub
 						Log.d(Constants.MsgError, e.getMessage());
 					}
 					
-				} );
+				});
 			}
 		}
 	}
@@ -402,6 +479,45 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 
 	}*/
 
+	private void updateEvent()
+	{
+		progbar.setVisibility(View.VISIBLE);
+		DataRequestUpdateEvent update = new DataRequestUpdateEvent(event);
+		Organise.this.service.addDataRequest(update, new IRequestListener<PubEvent>()
+		{
+			public void onRequestComplete(PubEvent data) 
+			{
+				if(data==null) 
+				{
+					onSendSuccess(event);
+				}
+				else 
+				{
+					onSendSuccess(data);
+				}
+			}
+
+			public void onRequestFail(Exception e) 
+			{
+				Log.d(Constants.MsgError,"Failed to update event: " + e.getMessage());
+				runOnUiThread(new Runnable()
+				{
+					public void run() 
+					{
+						progbar.setVisibility(View.GONE);
+						Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
+					}
+				});
+			}
+		});
+			
+				
+		//Set the host as up for this time
+		UserStatus userStatus = event.GetGoingStatusMap().get(event.GetHost());
+		userStatus.freeFrom = event.GetStartTime();
+		event.GetGoingStatusMap().put(event.GetHost(), userStatus);
+	}
+	
 	private ServiceConnection connection = new ServiceConnection()
 	{
 
@@ -410,6 +526,11 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 			//Give the interface to the app
 			Organise.this.service = (IPubService)service;
 			event=Organise.this.service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			if(eventSavedAlready)
+			{
+				oldEvent = new PubEvent(event.writeXml()); //duplicate the old event
+			}
+			
 			/*originalTime = Calendar.getInstance();
 			originalTime.setTimeInMillis(event.GetStartTime().getTimeInMillis());*/
 			
@@ -475,99 +596,15 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 			{
 				button_save_event.setVisibility(View.INVISIBLE);
 				button_send_invites.setText(R.string.update);
-				button_send_invites.setOnClickListener(new OnClickListener(){
+				
+				button_send_invites.setOnClickListener(new OnClickListener()
+				{
 
-					public void onClick(View arg0) {
-						progbar.setVisibility(View.VISIBLE);
-						DataRequestUpdateEvent update = new DataRequestUpdateEvent(event);
-						Organise.this.service.addDataRequest(update, new IRequestListener<PubEvent>(){
-
-							public void onRequestComplete(PubEvent data) {
-								if(data==null) 
-								{
-									onSendSuccess(event);
-								}
-								else 
-								{
-									onSendSuccess(data);
-								}
-							}
-
-							public void onRequestFail(Exception e) {
-								Log.d(Constants.MsgError,"Failed to update event: " + e.getMessage());
-								runOnUiThread(new Runnable(){
-									public void run() {
-										progbar.setVisibility(View.GONE);
-										Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
-									}});
-							}});
-						
-						/*EventChange eventChange = EventChange.timeNotChanged;
-						if(event.GetStartTime().after(originalTime))
-						{
-							eventChange = EventChange.laterTime;
-						}
-						else if(event.GetStartTime().before(originalTime))
-						{
-							eventChange = EventChange.earlierTime;
-						}
-						
-						for(User user : event.GetUsers())
-						{
-							if(!user.equals(event.GetHost()))
-							{
-								UserStatus userGoingStatus = event.GetGoingStatusMap().get(user);
-								if(eventChange != EventChange.timeNotChanged)
-								{
-									//If the time has changed then we need to update the responses for users to reflect new time
-									switch(userGoingStatus.goingStatus)
-									{
-										case going:
-											if(eventChange == EventChange.earlierTime)
-											{
-												//The event now starts earlier so therefore we say this person has said they are free from whenever they originally agreed
-												
-												//If they haven't selected a time, set it to be the original starting time
-												if(userGoingStatus.freeFrom == null)
-												{
-													userGoingStatus.freeFrom = originalTime;
-													event.GetGoingStatusMap().put(user, userGoingStatus);
-												}
-												//Else they have already selected a time so we can continue to use this time as there free from
-											}
-											else
-											{
-												//Is a later time, we assume to person is still free at this later time
-												userGoingStatus.freeFrom = event.GetStartTime();
-												event.GetGoingStatusMap().put(user, userGoingStatus);
-											}
-											break;
-										case maybeGoing:
-											//They haven't replied, in this instance, they still haven't replied
-											userGoingStatus.freeFrom = originalTime;
-											event.GetGoingStatusMap().put(user, userGoingStatus);
-											break;
-										case notGoing:
-											break;
-										
-									}
-								}
-							}
-							else
-							{
-								//We are the host, so we are obviously free for this time
-								ResponseData response = new ResponseData(user, event.GetEventId(), true, event.GetStartTime(), "");
-								event.UpdateUserStatus(response);
-							}
-						}
-						*/
-						
-						//Set the host as up for this time
-						UserStatus userStatus = event.GetGoingStatusMap().get(event.GetHost());
-						userStatus.freeFrom = event.GetStartTime();
-						event.GetGoingStatusMap().put(event.GetHost(), userStatus);
-						
-					}});
+					public void onClick(View arg0) 
+					{
+						updateEvent();
+					}
+				});
 			}
 			
 			//update screen from event
@@ -593,15 +630,8 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 					Log.d(Constants.MsgError,"Exception thrown by Geocoder in Organise.");
 					e.printStackTrace();
 					runOnUiThread(new TextUpdater("Unknown"));
-				}});
+				}
+			});
 		}
-
 	};
-	
-	enum EventChange
-	{
-		laterTime,
-		earlierTime,
-		timeNotChanged
-	}
 }

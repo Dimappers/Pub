@@ -233,6 +233,18 @@ public class PubService extends IntentService
 			// TODO Auto-generated method stub
 			return storedData.GetGenericStore(key);
 		}
+
+		public void UpdatePubEvent(PubEvent newEvent)
+		{
+			if(newEvent.GetEventId() < 0)
+			{
+				GiveNewSavedEvent(newEvent);
+			}
+			else
+			{
+				storedData.GetGenericStore(StoredData.sentEventsStore).put(newEvent.GetEventId(), newEvent);
+			}
+		}
 	}
 
 	

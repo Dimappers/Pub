@@ -76,7 +76,7 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 								if(loc.length==2)
 								{
 									friend.setLocation(loc);
-									Log.d(Constants.MsgInfo, friend.toString() + " is at " + name + " (" + loc[0] + "," + loc[1]);
+									//Log.d(Constants.MsgInfo, friend.toString() + " is at " + name + " (" + loc[0] + "," + loc[1]);
 								}
 							}
 

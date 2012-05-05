@@ -25,6 +25,8 @@ public interface IPubService extends IBinder {
 	Collection<PubEvent> 					GetInvitedEvents();
 	PubEvent 								GetNextEvent();
 	
+	void 									UpdatePubEvent(PubEvent newEvent);
+	
 	void									RemoveEventFromStoredDataAndCancelNotification(PubEvent event);
 	void 									CancelEvent(final PubEvent event);
 	
