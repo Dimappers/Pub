@@ -30,7 +30,6 @@ public class User implements Serializable {
 		readXmlForTransmission(userXmlElement);
 	}
 	
-	
 	//Encapsulation
 	public Long getUserId() 	{ return facebookUserId; }	
 	
