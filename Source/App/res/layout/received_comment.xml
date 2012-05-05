@@ -1,38 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/relativeLayout1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" >
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:text="Comments made by: "
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <ImageButton
-        android:id="@+id/cancel_dialog"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:background="#80000000"
-        android:src="@android:drawable/ic_delete" />
-    
-    <TextView
-        android:id="@+id/comments_received"
-        style="?android:attr/editTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_marginTop="42dp"
-        android:inputType="textMultiLine" >
-
-        <requestFocus />
-    </TextView>
+                    <TextView
+                        android:id="@+id/name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="24dp"
+                        android:layout_marginTop="47dp"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
+                    
+                    <TextView
+                        android:id="@+id/says"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_below="@+id/name"
+                        android:text="Says"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
+                    
+                    <TextView
+                        android:id="@+id/messageText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true" 
+                        android:layout_below="@+id/says"
+                        android:layout_marginLeft="24dp"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 
-</RelativeLayout>
+                </RelativeLayout>
