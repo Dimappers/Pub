@@ -424,9 +424,13 @@ public class RequestHandlingThread extends Thread{
 		
 		EventManager.ConfirmTrip(message.getEventId(), message.getEventStatus());
 		
-		for(User user : EventManager.GetPubEvent(message.getEventId()).GetUsers())
+		PubEvent event = EventManager.GetPubEvent(message.getEventId());
+		for(User user : event.GetUsers())
 		{
-			UserManager.markForConfirmed(user, message.getEventId());
+			if(!user.equals(event.GetHost()))
+			{
+				UserManager.markForConfirmed(user, message.getEventId());
+			}
 		}
 	}
 	

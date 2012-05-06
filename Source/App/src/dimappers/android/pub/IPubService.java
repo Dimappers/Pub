@@ -43,5 +43,7 @@ public interface IPubService extends IBinder {
 	
 	PubEvent								getEvent(int eventId);
 	
+	void 									EventHasHappenened(PubEvent event);
+	
 	<K, V  extends IXmlable> HashMap<K, V> 	GetGenericStore(String key);
 }
