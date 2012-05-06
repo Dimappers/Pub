@@ -55,6 +55,8 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	
 	IPubService service;
 	
+	GuestAdapter gAdapter;
+	
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
@@ -138,44 +140,41 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	    	}
 	    });
 
-		attachButton.setOnClickListener(new OnClickListener() { 
-		// @Override 
-		public void onClick(View v) 
-		{ 
-		
-	    TextView text = (TextView) commentDialog.findViewById(R.id.comment_text_box);
-					
-		String commentMade = text.getText().toString();
-					
-		if(commentMade!="")
-		{
-			Toast.makeText(getBaseContext(), commentMade, Toast.LENGTH_LONG).show();
-		} 
-		
-		if(timeSet==0||timeSet==event.GetStartTime().getTimeInMillis())
-		{
-			sendResponse(true,event.GetStartTime(),commentMade);
-		}
-		else 
-		{
-			Calendar time = Calendar.getInstance();
-			time.setTime(new Date(timeSet));
-			sendResponse(true, time, commentMade);
-		}
-		
-		commentDialog.dismiss();
-		} 
-		}); 
+	    attachButton.setOnClickListener(new OnClickListener() {  
+	    	public void onClick(View v) 
+	    	{ 
+	    		TextView text = (TextView) commentDialog.findViewById(R.id.comment_text_box);
 
-		cancelButton.setOnClickListener(new OnClickListener() { 
-			// @Override 
-			public void onClick(View v) 
-			{ 
-			commentDialog.dismiss(); 
-			} 
-		});
-		
-		commentDialog.show();
+	    		String commentMade = text.getText().toString();
+
+	    		if(commentMade!="")
+	    		{
+	    			Toast.makeText(getBaseContext(), commentMade, Toast.LENGTH_LONG).show();
+	    		} 
+
+	    		if(timeSet==0||timeSet==event.GetStartTime().getTimeInMillis())
+	    		{
+	    			sendResponse(true,event.GetStartTime(),commentMade);
+	    		}
+	    		else 
+	    		{
+	    			Calendar time = Calendar.getInstance();
+	    			time.setTime(new Date(timeSet));
+	    			sendResponse(true, time, commentMade);
+	    		}
+
+	    		commentDialog.dismiss();
+	    	} 
+	    }); 
+
+	    cancelButton.setOnClickListener(new OnClickListener() {  
+	    	public void onClick(View v) 
+	    	{ 
+	    		commentDialog.dismiss(); 
+	    	} 
+	    });
+
+	    commentDialog.show();
 	}
 	
 	long timeSet = 0;
@@ -219,13 +218,14 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 							updateScreen();
 						}});
 				}});
-			
-			updateScreen();
-			
+					
 			facebookUser = service.GetActiveUser();
 			
-			ListView list = (ListView) findViewById(R.id.listView2);   
-			list.setAdapter(new GuestAdapter(event, service));
+			ListView list = (ListView) findViewById(R.id.listView2);
+			gAdapter = new GuestAdapter(event, service); 
+			list.setAdapter(gAdapter);
+			
+			updateScreen();
 		}
 
 		public void onServiceDisconnected(ComponentName arg0){}
@@ -256,7 +256,10 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			((TextView)findViewById(R.id.userInviteHostNameText)).setText(getString(R.string.host_name)+" unknown");
 			e.printStackTrace();
 		}
-		
+    	
+		ListView list = (ListView) findViewById(R.id.listView2);
+		gAdapter = new GuestAdapter(event, service); 
+		list.setAdapter(gAdapter);
 	}
 	
 	private void sendResponse(boolean going, Calendar freeFromWhen, String msgToHost)
@@ -271,7 +274,14 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 						if(data != null)
 						{
 							event = data;
-							//TODO: Update screen as we have received new information
+							runOnUiThread(new Runnable()
+							{
+								public void run() {
+									updateScreen();
+									
+								}
+								
+							});
 						}
 					}
 

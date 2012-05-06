@@ -74,7 +74,7 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 			return;
 		}
 		
-		RefreshEventResponseMessage response = new RefreshEventResponseMessage(returnDocument.getRootElement());
+		RefreshEventResponseMessage response = new RefreshEventResponseMessage(returnDocument.getRootElement().getChild(RefreshEventResponseMessage.class.getSimpleName()));
 		
 		PubEvent event = response.getEvent();
 		

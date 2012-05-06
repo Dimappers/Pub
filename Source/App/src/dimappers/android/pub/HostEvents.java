@@ -221,6 +221,11 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 					if(data != null)
 					{
 						event = data;
+						runOnUiThread(new Runnable(){
+							public void run() {
+								UpdateDataFromEvent();			
+							}
+						});	
 					}
 					
 				}
