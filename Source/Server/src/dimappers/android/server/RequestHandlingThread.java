@@ -319,6 +319,31 @@ public class RequestHandlingThread extends Thread{
 				UserManager.markForUserResponse(user, response.GetEventId());
 			}
 		}
+		
+		UpdateType updateType = UserManager.getUpdateType(response.GetUser(), event.GetEventId());
+		
+		RefreshEventResponseMessage latestEventReturnMessage = new RefreshEventResponseMessage(event, updateType);
+		
+		Element root = new Element("Message");
+		Document returnDoc = new Document(root);
+		root.addContent(latestEventReturnMessage.writeXml());
+		
+		XMLOutputter outputter = new XMLOutputter();
+		
+		// Return the latest info about the specified event
+		try
+		{
+			outputter.output(returnDoc, clientSocket.getOutputStream());
+		} catch (Exception e)
+		{
+			if(e instanceof IOException) {
+				//Error reading object
+				throw new ServerException(ExceptionType.RefreshReadingObject, e);
+			}
+			throw new ServerException(ExceptionType.RefreshUnknownError, e);
+		}
+		
+		UserManager.markAsUpToDate(response.GetUser(), event.GetEventId());		
 	}
 
 	private static void UpdateMessageReceived(Document doc, Socket clientSocket) throws ServerException
@@ -372,42 +397,6 @@ public class RequestHandlingThread extends Thread{
 			if(!user.equals(event.GetHost()))
 			{
 				UserManager.markForUpdate(user, event.GetEventId());
-				/*UserStatus userGoingStatus = event.GetGoingStatusMap().get(user);
-				if(eventChange != EventChange.timeNotChanged)
-				{
-					//If the time has changed then we need to update the responses for users to reflect new time
-					switch(userGoingStatus.goingStatus)
-					{
-						case going:
-							if(eventChange == EventChange.earlierTime)
-							{
-								//The event now starts earlier so therefore we say this person has said they are free from whenever they originally agreed
-								
-								//If they haven't selected a time, set it to be the original starting time
-								if(userGoingStatus.freeFrom == null)
-								{
-									userGoingStatus.freeFrom = oldEventTime;
-									event.GetGoingStatusMap().put(user, userGoingStatus);
-								}
-								//Else they have already selected a time so we can continue to use this time as there free from
-							}
-							else
-							{
-								//Is a later time, we assume to person is still free at this later time
-								userGoingStatus.freeFrom = event.GetStartTime();
-								event.GetGoingStatusMap().put(user, userGoingStatus);
-							}
-							break;
-						case maybeGoing:
-							//They haven't replied, in this instance, they still haven't replied
-							userGoingStatus.freeFrom = oldEventTime;
-							event.GetGoingStatusMap().put(user, userGoingStatus);
-							break;
-						case notGoing:
-							break;
-						
-					}
-				}*/
 			}
 			else
 			{
@@ -416,6 +405,31 @@ public class RequestHandlingThread extends Thread{
 				event.UpdateUserStatus(response);
 			}
 		}
+		
+		UpdateType updateType = UserManager.getUpdateType(event.GetHost(), event.GetEventId());
+		
+		RefreshEventResponseMessage latestEventReturnMessage = new RefreshEventResponseMessage(event, updateType);
+		
+		Element root = new Element("Message");
+		Document returnDoc = new Document(root);
+		root.addContent(latestEventReturnMessage.writeXml());
+		
+		XMLOutputter outputter = new XMLOutputter();
+		
+		// Return the latest info about the specified event
+		try
+		{
+			outputter.output(returnDoc, clientSocket.getOutputStream());
+		} catch (Exception e)
+		{
+			if(e instanceof IOException) {
+				//Error reading object
+				throw new ServerException(ExceptionType.RefreshReadingObject, e);
+			}
+			throw new ServerException(ExceptionType.RefreshUnknownError, e);
+		}
+		
+		UserManager.markAsUpToDate(event.GetHost(), event.GetEventId());
 	}
 	
 	private static void ItsOnMessageReceived(Document doc, Socket clientSocket) throws ServerException
@@ -432,6 +446,31 @@ public class RequestHandlingThread extends Thread{
 				UserManager.markForConfirmed(user, message.getEventId());
 			}
 		}
+		
+		UpdateType updateType = UserManager.getUpdateType(event.GetHost(), event.GetEventId());
+		
+		RefreshEventResponseMessage latestEventReturnMessage = new RefreshEventResponseMessage(event, updateType);
+		
+		Element root = new Element("Message");
+		Document returnDoc = new Document(root);
+		root.addContent(latestEventReturnMessage.writeXml());
+		
+		XMLOutputter outputter = new XMLOutputter();
+		
+		// Return the latest info about the specified event
+		try
+		{
+			outputter.output(returnDoc, clientSocket.getOutputStream());
+		} catch (Exception e)
+		{
+			if(e instanceof IOException) {
+				//Error reading object
+				throw new ServerException(ExceptionType.RefreshReadingObject, e);
+			}
+			throw new ServerException(ExceptionType.RefreshUnknownError, e);
+		}
+		
+		UserManager.markAsUpToDate(event.GetHost(), event.GetEventId());
 	}
 	
 	private static void HandleException(ServerException e)

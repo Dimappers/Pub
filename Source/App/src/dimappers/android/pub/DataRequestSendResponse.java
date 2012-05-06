@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
@@ -15,8 +16,10 @@ import android.media.AudioRecord.OnRecordPositionUpdateListener;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.RefreshEventResponseMessage;
 import dimappers.android.PubData.RefreshResponse;
 import dimappers.android.PubData.ResponseData;
+import dimappers.android.PubData.UpdateType;
 
 public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 
@@ -59,34 +62,28 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 		root.addContent(messageTypeElement);
 		root.addContent(rData.writeXml());
 		
-		Socket socket;
+		Document returnDocument;
 		try {
-			socket = DataSender.sendDocument(xmlDoc);
+			returnDocument = DataSender.sendReceiveDocument(xmlDoc);
 		} catch (IOException e) {
 			listener.onRequestFail(e);
 			return;
-		}
-		
-		listener.onRequestComplete(null);
-		//TOOD: maybe the server sends back latest data??
-		/*SAXBuilder xmlBuilder = new SAXBuilder();
-		Document returnDocument;
-		try
-		{
-			returnDocument = xmlBuilder.build(System.in);
-		} catch (Exception e)
-		{
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
 			listener.onRequestFail(e);
 			return;
 		}
 		
-		RefreshResponse response = new RefreshResponse(returnDocument.getRootElement());
-		if(response.getEvents().length > 0)
-		{
-			service.NewEventsRecieved(response.getEvents());
-		}
-		//Maybe return the latest event if an update?
-		listener.onRequestComplete(null);		*/
+		RefreshEventResponseMessage response = new RefreshEventResponseMessage(returnDocument.getRootElement());
+		
+		PubEvent event = response.getEvent();
+		
+		HashMap<PubEvent, UpdateType> update = new HashMap<PubEvent, UpdateType>();
+		update.put(event,  response.getUpdateType());
+		service.NewEventsRecieved(new PubEventArray(update));
+		
+		listener.onRequestComplete(event);
+		
 	}
 
 	
