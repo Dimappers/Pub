@@ -245,6 +245,12 @@ public class PubService extends IntentService
 				storedData.GetGenericStore(StoredData.sentEventsStore).put(newEvent.GetEventId(), newEvent);
 			}
 		}
+
+		public void EventHasHappenened(PubEvent event) {
+			HistoryStore hStore = getHistoryStore();
+			hStore.addEvent(event);
+			storedData.DeleteSentEvent(event.GetEventId());
+		}
 	}
 
 	
