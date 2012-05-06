@@ -57,6 +57,8 @@ public class PubService extends IntentService
 
 					public void onRequestComplete(PubEvent data) {
 						storedData.DeleteSavedEvent(savedEventId);
+						makeNotification(data, NotificationAlarmManager.NotificationType.EventAboutToStart);
+						makeNotification(data, NotificationAlarmManager.NotificationType.HostClickItsOnReminder);
 						listener.onRequestComplete(data);
 					}
 
@@ -64,8 +66,6 @@ public class PubService extends IntentService
 						listener.onRequestFail(e);
 					}
 				});
-			makeNotification(event, NotificationAlarmManager.NotificationType.EventAboutToStart);
-			makeNotification(event, NotificationAlarmManager.NotificationType.HostClickItsOnReminder);
 		}
 
 		public Collection<PubEvent> GetSavedEvents() {
@@ -151,8 +151,10 @@ public class PubService extends IntentService
 					
 			for(Entry<PubEvent, UpdateType> eventEntry : events.getEvents().entrySet())
 			{
-				makeNotification(eventEntry.getKey(), NotificationAlarmManager.NotificationType.EventAboutToStart);
-				
+				if(eventEntry.getValue()!=UpdateType.noChangeSinceLastUpdate)
+				{
+					makeNotification(eventEntry.getKey(), NotificationAlarmManager.NotificationType.EventAboutToStart);
+				}
 				//If either the event hasn't been updated (ie this user has already got this data before and this is a full refresh caused by restarting the app
 				PubEvent event = eventEntry.getKey();
 				if(event.GetHost().equals(GetActiveUser()))

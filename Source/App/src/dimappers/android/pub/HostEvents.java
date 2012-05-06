@@ -329,7 +329,8 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
 		{
 			service = (IPubService)serviceBinder;
-			event = service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			int eventId = getIntent().getExtras().getInt(Constants.CurrentWorkingEvent);
+			event = service.getEvent(eventId);
 			facebookUser = service.GetActiveUser();
 			
 			UpdateDataFromEvent();

@@ -31,7 +31,6 @@ public class ConfirmMessage implements IXmlable {
 		return eventId;
 	}
 	
-	@Override
 	public Element writeXml() {
 		Element confirmElement = new Element(getClass().getSimpleName());
 		
@@ -46,7 +45,6 @@ public class ConfirmMessage implements IXmlable {
 		return confirmElement;
 	}
 
-	@Override
 	public void readXml(Element element) {
 		status = EventStatus.valueOf(element.getChildText(statusTag));
 		eventId = Integer.parseInt(element.getChildText(eventIdTag));

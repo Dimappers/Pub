@@ -86,7 +86,9 @@ import dimappers.android.PubData.UserStatus;
 					R.drawable.icon, 
 					"The pub trip to " + event.GetPubLocation().toString() + " is starting now.", 
 					event.GetStartTime().getTimeInMillis());
-			 Intent notificationIntent = new Intent(getBaseContext(), LaunchApplication.class);
+			 Intent notificationIntent;
+			 if(event.GetHost().equals(service.GetActiveUser())) {notificationIntent = new Intent(getBaseContext(), HostEvents.class);}
+			 else {notificationIntent = new Intent(getBaseContext(), UserInvites.class);}
 			 Bundle b = new Bundle();
 			 b.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
 			 notificationIntent.putExtras(b);
@@ -96,6 +98,7 @@ import dimappers.android.PubData.UserStatus;
 					 "Pub event at " + event.GetPubLocation().toString(), 
 					 "This event is now starting.", 
 					 contentIntent);
+			 
 		}
 		
 		private void hostClickItsOn()
@@ -105,7 +108,7 @@ import dimappers.android.PubData.UserStatus;
 					"The pub trip to " + event.GetPubLocation().toString() + " needs confirming.", 
 					System.currentTimeMillis());
 			
-			 Intent notificationIntent = new Intent(getBaseContext(), LaunchApplication.class);
+			 Intent notificationIntent = new Intent(getBaseContext(), HostEvents.class);
 			 Bundle b = new Bundle();
 			 b.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
 			 notificationIntent.putExtras(b);
