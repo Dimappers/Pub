@@ -27,6 +27,33 @@ public class AppUser extends User implements IXmlable
 	
 	//Properties
 	private String facebookName;
+	
+	private double latitude = 1000.0;
+	private double longitude = 1000.0;
+	private String locationName;
+	
+	public double[] getLocation()
+	{
+		if(longitude!=1000.0f&&latitude!=1000.0f)
+		{
+			double[] returnValue = new double[2];
+			returnValue[0] = latitude;
+			returnValue[1] = longitude;
+			return returnValue;
+		}
+		else return null;
+	}
+	
+	public void setLocation(double[] location)
+	{
+		if(location.length==2)
+		{
+			latitude = location[0];
+			longitude = location[1];
+		}
+	}
+	public String getLocationName() {return locationName;}
+	public void setLocationName(String loc) {locationName = loc;}
 
 	//Constructors
 	public AppUser(Long facebookUserId)
@@ -68,12 +95,20 @@ public class AppUser extends User implements IXmlable
 		
 		userElement.addContent(new Element(rankTag).setText(""+getRank()));
 		
+		if(latitude!=1000.0||longitude!=1000.0) //only need to include the location if it has been set (1000.0 is the default)
+		{
+			Element locElem = new Element("location");
+			locElem.addContent(new Element("latitude").setText(""+latitude));
+			locElem.addContent(new Element("longitude").setText(""+longitude));
+			
+			userElement.addContent(locElem);
+		}
+		
 		return userElement;
 	}
 	
 	public void readXml(Element userXmlElement)
 	{
-		//facebookUserId = Long.parseLong(userXmlElement.getText());
 		if(facebookUserId == null || facebookUserId == 0)
 		{
 			Log.d(Constants.MsgError, "Must call parent read first! - use the constructor for AppUser");
@@ -85,6 +120,18 @@ public class AppUser extends User implements IXmlable
 		outOfDate.setTime(new Date(Long.parseLong(userXmlElement.getChildText(outOfDateTag))));
 		
 		setRank(Integer.parseInt(userXmlElement.getChildText(rankTag)));
+		
+		if(userXmlElement.getChild("location")!=null)
+		{
+			Element locElem = userXmlElement.getChild("location");
+			latitude = Double.parseDouble(locElem.getChildText("latitude"));
+			longitude = Double.parseDouble(locElem.getChildText("longitude"));
+		}
+		else
+		{
+			latitude = 1000.0;
+			longitude = 1000.0;
+		}
 	}
 
 	
