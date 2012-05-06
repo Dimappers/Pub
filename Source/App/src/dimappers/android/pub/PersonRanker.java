@@ -31,8 +31,8 @@ public class PersonRanker {
 	IPubService service;
 	HistoryStore historyStore;
 	long me;
-	User[] facebookFriends;
-	User[] removedFriendsList;
+	AppUser[] facebookFriends;
+	AppUser[] removedFriendsList;
 	Location currentLocation;
 	List<PubEvent> trips;
 	Facebook facebook;
@@ -77,7 +77,7 @@ public class PersonRanker {
 	ContentResolver contentResolver;
 
 	PersonRanker(PubEvent currentEvent, final Pending pending,
-			Location currentLocation, User[] facebookFriends,
+			Location currentLocation, AppUser[] facebookFriends,
 			final IRequestListener<PubEvent> listener,
 			ContentResolver contentResolver) {
 		this.service = pending.service;
@@ -141,6 +141,10 @@ public class PersonRanker {
 		Log.d(Constants.MsgInfo, "Friend count: " + facebookFriends.length);
 
 		if (facebookFriends.length > 0) {
+			for(AppUser friend : facebookFriends)
+			{
+				if(friend.getRank()!=0) {friend.setRank(0);}
+			}
 			rankFromPosts();
 			rankFromPhotos();
 			rankFromHistory();
@@ -149,7 +153,7 @@ public class PersonRanker {
 			facebookFriends = MergeSort(facebookFriends);
 			if(!Constants.debug)
 			{
-				User[] allFriends = new User[facebookFriends.length + removedFriendsList.length];
+				AppUser[] allFriends = new AppUser[facebookFriends.length + removedFriendsList.length];
 				for(int i = 0; i<facebookFriends.length; i++)
 				{
 					allFriends[i] = facebookFriends[i];
@@ -479,11 +483,11 @@ public class PersonRanker {
 		return currentEvent;
 	}
 
-	private User[] MergeSort(User[] list) {
+	private AppUser[] MergeSort(AppUser[] list) {
 		if (list.length <= 1)
 			return list;
-		User[] lista = new User[(int) list.length / 2];
-		User[] listb = new User[list.length - lista.length];
+		AppUser[] lista = new AppUser[(int) list.length / 2];
+		AppUser[] listb = new AppUser[list.length - lista.length];
 		for (int i = 0; i < list.length; i++) {
 			if (i < lista.length) {
 				lista[i] = list[i];
@@ -496,11 +500,11 @@ public class PersonRanker {
 		return Merge(lista, listb);
 	}
 
-	private User[] Merge(User[] lista, User[] listb) {
+	private AppUser[] Merge(AppUser[] lista, AppUser[] listb) {
 		int a = 0;
 		int b = 0;
 		int c = 0;
-		User[] temp = new User[lista.length + listb.length];
+		AppUser[] temp = new AppUser[lista.length + listb.length];
 		while (c != temp.length) {
 			if (lista.length == a) {
 				temp[c] = listb[b];
@@ -524,14 +528,14 @@ public class PersonRanker {
 
 	private void rankFromHistory() {
 		for (PubEvent trip : trips) {
-			for (User friend : facebookFriends) {
+			for (AppUser friend : facebookFriends) {
 				friend.setRank(friend.getRank() + isInGuestList(trip, friend));
 				friend.History += isInGuestList(trip, friend);
 			}
 		}
 	}
 
-	private int isInGuestList(PubEvent trip, User friend) {
+	private int isInGuestList(PubEvent trip, AppUser friend) {
 		if (friend.equals(trip.GetHost())) {
 			return hostValue;
 		}
@@ -545,22 +549,18 @@ public class PersonRanker {
 
 	private void removeTooFarAwayFriends() {
 		int removedFriends = 0;
-		removedFriendsList = new User[facebookFriends.length];
+		removedFriendsList = new AppUser[facebookFriends.length];
 		for (int i = 0; i < facebookFriends.length; i++) {
 			if (isTooFarAway(facebookFriends[i].getLocation())) {
-				User friend = facebookFriends[i];
-				try {
-					removedFriendsList[removedFriends] = AppUser.AppUserFromUser(friend, service.GetFacebook());
-				} catch (Exception e) {
-					removedFriendsList[removedFriends] = new User(friend.getUserId());
-				}
+				AppUser friend = facebookFriends[i];
+				removedFriendsList[removedFriends] = new AppUser(((AppUser) friend).writeXml());
 				facebookFriends[i] = null;
 				removedFriends++;
 			}
 		}
 		int j = 0;
-		User[] tmp = new User[facebookFriends.length - removedFriends];
-		User[] tmp2 = new User[removedFriends];
+		AppUser[] tmp = new AppUser[facebookFriends.length - removedFriends];
+		AppUser[] tmp2 = new AppUser[removedFriends];
 		for (int i = 0; i < removedFriends; i++) {
 			if(j<facebookFriends.length)
 			{
