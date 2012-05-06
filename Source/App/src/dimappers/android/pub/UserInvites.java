@@ -27,6 +27,9 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -47,7 +50,7 @@ import dimappers.android.PubData.UpdateData;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
 
-public class UserInvites extends Activity implements OnClickListener, OnLongClickListener 
+public class UserInvites extends Activity implements OnClickListener, OnLongClickListener, OnMenuItemClickListener 
 {
 
 	PubEvent event;
@@ -73,6 +76,45 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     	
     	Button button_decline = (Button) findViewById(R.id.decline);
     	button_decline.setOnClickListener(this);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) 
+	{
+		if(event!=null)
+		{
+			//FIXME: should refresh when sent is hit.			
+			MenuItem refresh = menu.add(0,R.id.refresh_event, 2, "Refresh");
+			refresh.setOnMenuItemClickListener(this);
+		}
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onMenuItemClick(MenuItem arg0) {
+		switch(arg0.getItemId())
+		{
+			case R.id.refresh_event:
+			{
+				service.addDataRequest(new DataRequestGetLatestAboutPubEvent(event.GetEventId()), new IRequestListener<PubEvent>(){
+
+					public void onRequestFail(Exception e) {
+						Log.d(Constants.MsgError, "Error when refreshing event: " + e.getMessage());
+					}
+
+					public void onRequestComplete(PubEvent data) {
+						event = data;
+						runOnUiThread(new Runnable(){
+
+							public void run() {
+								updateScreen();
+							}});
+					}});
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public void onClick(View v)
