@@ -2,100 +2,84 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-
-    <RelativeLayout
-        android:id="@+id/relativeLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center" >
-
+    android:orientation="vertical" 
+    android:background="@drawable/orgmain">
+
         <TextView
             android:id="@+id/userInvitesPubNameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
+            android:layout_gravity="center_horizontal"
             android:text="@string/pub_name"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center" >
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginTop="30sp" />
 
         <TextView
             android:id="@+id/userInviteStartTimeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
+            android:layout_gravity="center_horizontal"
             android:text="@string/current_start_time"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center" >
-
+			
+		<TextView
+		android:id="@+id/userInviteHostNameText"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"
+		android:text="@string/host_name"
+		android:textAppearance="?android:attr/textAppearanceMedium" />
+
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/guestHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:text="@string/guests"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-    </RelativeLayout>
-
+
     <ListView
         android:id="@+id/listView2"
         android:layout_width="match_parent"
-        android:layout_height="116dp"
-        android:layout_weight="0.55"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="5sp"
+        android:layout_marginLeft="25sp"
+        android:layout_marginRight="25sp"
+        android:layout_weight="1"
         android:scrollbars="vertical" >
+
     </ListView>
-
-    <RelativeLayout
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center" >
-
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:orientation="horizontal" >
+
         <Button
             android:id="@+id/decline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="71dp"
-            android:text="@string/decline" />
-
+            android:layout_gravity="center_horizontal"
+            android:text="@string/decline"
+            android:layout_weight="1"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="22dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true" />
+
         <Button
             android:id="@+id/going"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/going" 
+            android:layout_weight="1"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="22dp"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="60dp"
-            android:text="@string/going" />
-    </RelativeLayout>
+            android:layout_alignParentBottom="true"/>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center" >
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center" >
-
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

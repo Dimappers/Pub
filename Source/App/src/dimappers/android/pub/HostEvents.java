@@ -14,7 +14,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.IBinder;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,16 +25,23 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.EventStatus;
+import dimappers.android.PubData.GoingStatus;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
+import dimappers.android.pub.UserInvites.GuestAdapter.UpdateList;
+import dimappers.android.pub.UserInvites.GuestAdapter.UserUserStatus;
 
 
 public class HostEvents extends Activity implements OnClickListener, OnMenuItemClickListener{
@@ -43,7 +52,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	private ImageButton comment_made;
 	public static boolean sent;
 
-	IPubService serviceInterface;
+	IPubService service;
 	
 
 	public void onCreate(Bundle savedInstanceState) 
@@ -57,20 +66,25 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		button_send_invites.setOnClickListener(this);
 
 		Button button_edit = (Button) findViewById(R.id.edit_button);
-		button_edit.setOnClickListener(this);    	
+		button_edit.setOnClickListener(this);  
+		
+		Button button_itson = (Button) findViewById(R.id.it_is_on);
+		button_itson.setOnClickListener(this);
 
 		ListView list = (ListView) findViewById(R.id.listView1);
 
 		sent = !getIntent().getExtras().getBoolean(Constants.IsSavedEventFlag); //if we have saved the event, it has not been sent
 		if(sent)
 		{
-			findViewById(R.id.send_Invites).setVisibility(View.GONE);
-			findViewById(R.id.edit_button).setVisibility(View.GONE);
+			button_send_invites.setVisibility(View.GONE);
+			button_edit.setVisibility(View.GONE);
+			button_itson.setVisibility(View.VISIBLE);
 		}
 		else
 		{
-			findViewById(R.id.send_Invites).setVisibility(View.VISIBLE);
-			findViewById(R.id.edit_button).setVisibility(View.VISIBLE);
+			button_send_invites.setVisibility(View.VISIBLE);
+			button_edit.setVisibility(View.VISIBLE);
+			button_itson.setVisibility(View.GONE);
 		}
 		
 		gadapter = new GuestListAdapter(this);
@@ -82,14 +96,49 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	{
 		MenuItem edit = menu.add(0, R.id.edit, 0, "Edit");
 		edit.setOnMenuItemClickListener(this);
-		MenuItem delete_event = menu.add(0, R.id.delete_event, 1, "Delete Event");
-		delete_event.setOnMenuItemClickListener(this);
-		MenuItem cancel = menu.add(0, R.id.cancel, 2, "Cancel");
-		cancel.setOnMenuItemClickListener(this);
-
+		if(event!=null)
+		{
+			//FIXME: should refresh when sent is hit.
+			if(event.GetEventId()<0)
+			{
+				MenuItem delete_event = menu.add(0, R.id.delete_event, 1, "Delete Event");
+				delete_event.setOnMenuItemClickListener(this);
+			}
+			else
+			{
+				MenuItem cancel = menu.add(0, R.id.cancel, 1, "Cancel");
+				cancel.setOnMenuItemClickListener(this);
+				
+				MenuItem refresh = menu.add(0,R.id.refresh_event, 2, "Refresh");
+				refresh.setOnMenuItemClickListener(this);
+			}
+		}
 		return super.onCreateOptionsMenu(menu);
 	}
 
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu)
+	{
+		menu.removeItem(R.id.cancel);
+		menu.removeItem(R.id.delete_event);
+		menu.removeItem(R.id.refresh_event);
+		if(sent||(event!=null&&event.GetEventId()>=0))
+		{ 
+			MenuItem cancel = menu.add(0, R.id.cancel, 1, "Cancel");
+			cancel.setOnMenuItemClickListener(this);
+			
+			MenuItem refresh = menu.add(0,R.id.refresh_event, 2, "Refresh");
+			refresh.setOnMenuItemClickListener(this);
+		}
+		else
+		{
+			MenuItem delete_event = menu.add(1, R.id.delete_event, 1, "Delete Event");
+			delete_event.setOnMenuItemClickListener(this);
+		}
+		return super.onPrepareOptionsMenu(menu);
+		
+	}
+	
 	public boolean onMenuItemClick(MenuItem item) {
 
 		Intent i;	 
@@ -104,7 +153,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 
 			i = new Intent(this, Organise.class);
 			i.putExtras(bundle);
-			startActivity(i);
+			startActivityForResult(i,0);
 			return true;
 
 		}
@@ -118,6 +167,32 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			displayCancelAlert();
 			break;
 		}
+		
+		case(R.id.refresh_event):
+		{
+			DataRequestGetLatestAboutPubEvent refresher = new DataRequestGetLatestAboutPubEvent(event.GetEventId());
+			service.addDataRequest(refresher, new IRequestListener<PubEvent>(){
+
+				public void onRequestComplete(PubEvent data) {
+					
+					event = data;
+					runOnUiThread(new Runnable(){
+
+						public void run() {
+							UpdateDataFromEvent();			
+						}
+				
+					});					
+					
+				}
+
+				public void onRequestFail(Exception e) {
+					// TODO Auto-generated method stub
+					e.printStackTrace();
+				}
+				
+			});
+		}
 		}
 		return false;
 
@@ -130,8 +205,32 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		switch (v.getId()) {
 		case R.id.send_Invites : 
 		{
-			//i = new Intent(this, HostingEvents.class);
-			//startActivity(i);
+			service.GiveNewSentEvent(event, new IRequestListener<PubEvent>() {
+				
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, "Could not sent invite: " + e.getMessage());
+					runOnUiThread(new Runnable(){
+						public void run() {
+							Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
+							//FIXME: probably should make it more obvious when this fails
+						}});
+				}
+				
+				public void onRequestComplete(PubEvent data) {
+					Log.d(Constants.MsgInfo, "PubEvent sent, event id: " + data.GetEventId());
+					sent = true;
+					HostEvents.this.runOnUiThread(new Runnable()
+					{
+						public void run() {
+							findViewById(R.id.send_Invites).setVisibility(View.GONE);
+							findViewById(R.id.edit_button).setVisibility(View.GONE);
+							findViewById(R.id.it_is_on).setVisibility(View.VISIBLE);
+							UpdateDataFromEvent();
+						}
+						
+					});
+				}
+			});
 			break;
 		}
 		case R.id.edit_button :
@@ -146,6 +245,37 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			startActivityForResult(i, Constants.FromEdit);
 			break;
 		}
+		case R.id.it_is_on :
+		{
+			event.setCurrentStatus(EventStatus.itsOn);
+			DataRequestConfirmDeny request = new DataRequestConfirmDeny(event);
+			service.addDataRequest(request, new IRequestListener<PubEvent>() {
+
+				public void onRequestComplete(PubEvent data) {
+					if(data != null)
+					{
+						event = data;
+						runOnUiThread(new Runnable(){
+							public void run() {
+								UpdateDataFromEvent();			
+							}
+						});	
+					}
+					
+				}
+
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, e.getMessage());					
+				}
+			});
+			
+			TextView tv = (TextView)findViewById(R.id.hostEventTimeTillPubText);
+			v.setVisibility(View.GONE);
+			tv.setVisibility(View.VISIBLE);
+			
+			TimeTillPub timer = new TimeTillPub(event.GetStartTime(), tv);
+			timer.start();
+		}
 
 		}
 	}
@@ -154,11 +284,11 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
     	{
     		if(requestCode == Constants.FromEdit)
     		{
-    			event = serviceInterface.getEvent(data.getExtras().getInt(Constants.CurrentWorkingEvent));
+    			event = service.getEvent(data.getExtras().getInt(Constants.CurrentWorkingEvent));
     			super.onActivityResult(requestCode, resultCode, data);
-    			UpdateDataFromEvent();
     		}
     	}
+    	UpdateDataFromEvent();
     }
 
 	@Override
@@ -175,7 +305,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		.setCancelable(true)  
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				serviceInterface.RemoveSavedEvent(event);
+				service.RemoveEventFromStoredDataAndCancelNotification(event);
 				finish();
 
 			}
@@ -196,8 +326,8 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		.setCancelable(true)  
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
+				service.CancelEvent(event);
 				finish();
-				//TODO: Actually deletes the event!!!
 			}
 		})
 		.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -220,17 +350,52 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 
 		gadapter.updateList(event);
 		gadapter.notifyDataSetChanged();
+		
+		if(event.getCurrentStatus() == EventStatus.itsOn)
+		{
+			TextView tv = (TextView)findViewById(R.id.hostEventTimeTillPubText);
+			View v = findViewById(R.id.it_is_on);
+			v.setVisibility(View.GONE);
+			tv.setVisibility(View.VISIBLE);
+			
+			TimeTillPub timer = new TimeTillPub(event.GetStartTime(), tv);
+			timer.start();
+		}
 	}
 	
 	private ServiceConnection connection = new ServiceConnection()
 	{
 		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
 		{
-			serviceInterface = (IPubService)serviceBinder;
-			event = serviceInterface.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
-			facebookUser = serviceInterface.GetActiveUser();
+			service = (IPubService)serviceBinder;
+			int eventId = getIntent().getExtras().getInt(Constants.CurrentWorkingEvent);
+			event = service.getEvent(eventId);
+			facebookUser = service.GetActiveUser();
 			
 			UpdateDataFromEvent();
+			
+			DataRequestGetLatestAboutPubEvent refresher = new DataRequestGetLatestAboutPubEvent(event.GetEventId());
+			service.addDataRequest(refresher, new IRequestListener<PubEvent>(){
+
+				public void onRequestComplete(PubEvent data) {
+					
+					event = data;
+					runOnUiThread(new Runnable(){
+
+						public void run() {
+							UpdateDataFromEvent();			
+						}
+				
+					});					
+					
+				}
+
+				public void onRequestFail(Exception e) {
+					// TODO Auto-generated method stub
+					e.printStackTrace();
+				}
+				
+			});
 		}
 
 		public void onServiceDisconnected(ComponentName arg0)
@@ -238,147 +403,278 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		}
 		
 	};
-}
-
-class GuestListAdapter extends BaseAdapter 
-{
-	private Context context;
-	private final List<GuestList> mData;	
-
-	public GuestListAdapter(Context context)
+	class GuestListAdapter extends BaseAdapter 
 	{
-		mData = new ArrayList<GuestList>();
-		this.context = context;
-	}
-	public int getCount() {
-		return mData.size();
-	}
+		private Context context;
+		private final List<GuestList> mData;	
 
-	public Object getItem(int position) {
-		return mData.get(position);
-	}
-	public long getItemId(int position) {
-		return position;
-	}
-
-
-	public View getView(int position, View convertView, ViewGroup parent) 
-	{
-		GuestListView glView = null;
-
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View rowView = inflater.inflate(R.layout.hosted_row, parent, false);
-
-		glView = new GuestListView();
-
-		ImageView comment = (ImageView) rowView.findViewById(R.id.envelope);
-		glView.guest = (TextView) rowView.findViewById(R.id.guest);
-		glView.time = (TextView) rowView.findViewById(R.id.time);
-
-		GuestList guestList = mData.get(position);
-
-		glView.guest.setText(guestList.getGuest().toString());
-		glView.time.setText(guestList.getTime().toString());
-
-		if(HostEvents.sent == true )
+		public GuestListAdapter(Context context)
 		{
-			comment.setImageLevel(R.drawable.email_open);
-			comment.setClickable(true);
-			comment.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) 
-				{
-					showAddDialog();
-				}
-			});
-		} 
-		else
-		{
-			comment.setVisibility(View.GONE);	
+			mData = new ArrayList<GuestList>();
+			this.context = context;
+		}
+		public int getCount() {
+			return mData.size();
 		}
 
-		return rowView;
-	}
+		public Object getItem(int position) {
+			return mData.get(position);
+		}
+		public long getItemId(int position) {
+			return position;
+		}
 
-	//Dialog box for comments received from guests but at moment shows only old comment dialog box.
-	private void showAddDialog() 
-	{
-		final Dialog commentDialog = new Dialog(context);
-		commentDialog.setContentView(R.layout.received_comment);
-		//commentDialog.setTitle(R.id.title);  //After this should have the user name who sent message 
 
-		ImageButton cancelButton = (ImageButton) commentDialog.findViewById(R.id.cancel_dialog); 
-
-		TextView text = (TextView) commentDialog.findViewById(R.id.comments_received);
-		text.setClickable(false);
-
-		cancelButton.setOnClickListener(new OnClickListener() { 
-			// @Override 
-			public void onClick(View v) { 
-				commentDialog.dismiss(); 
-			} 
-		});
-
-		commentDialog.show();
-	}
-	
-	public void updateList(PubEvent event)
-	{
-		mData.clear();
-		for(Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
+		public View getView(final int position, View convertView, ViewGroup parent) 
 		{
-			String freeFromWhen = event.GetFormattedStartTime();
-			if(userResponse.getValue().freeFrom != null)
+			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			convertView = inflater.inflate(R.layout.hosted_row, parent, false);
+			
+			ImageView comment = (ImageView) convertView.findViewById(R.id.envelope);
+			TextView guest = (TextView)convertView.findViewById(R.id.guest);
+			TextView time = (TextView)convertView.findViewById(R.id.time);
+
+			GuestList guestList = mData.get(position);
+
+			comment.setVisibility(View.INVISIBLE);		
+			guest.setText(guestList.getGuest().toString());
+			time.setText(guestList.getTime().toString());
+			
+			
+			if(HostEvents.sent == true )
 			{
-				freeFromWhen = PubEvent.GetFormattedDate(userResponse.getValue().freeFrom);
+				for(final Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())  //since each row is returned, maybe should be looking at guest in row
+				{
+					if(userResponse.getValue().messageToHost != "" && userResponse.getValue().messageToHost != null)
+					{						
+
+						if(guestList.getGuestId() == userResponse.getKey().getUserId())
+						{
+							comment.setVisibility(View.VISIBLE);
+							comment.setImageLevel(R.drawable.email_open);
+							comment.setClickable(true);
+							comment.setOnClickListener(new OnClickListener() {
+								public void onClick(View v) 
+								{
+									showAddDialog(position, v);
+								}
+							});	
+							break;
+						}
+						else
+							comment.setVisibility(View.INVISIBLE);
+					}
+					else 
+						comment.setVisibility(View.INVISIBLE);
+							
+				}
+			} 
+			else
+			{
+				comment.setVisibility(View.GONE);	
 			}
-			if(userResponse.getKey() instanceof AppUser)
+
+			return convertView;
+		}
+
+		//Dialog box for comments received from guests but at moment shows only old comment dialog box.
+		private void showAddDialog(int position, View view) 
+		{
+			final Dialog commentDialog = new Dialog(context);
+			commentDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			commentDialog.setContentView(R.layout.received_comment);
+			TextView title = (TextView) commentDialog.findViewById(R.id.name);  //After this should have the user name who sent message 
+			
+			TextView text = (TextView) commentDialog.findViewById(R.id.messageText);
+			GuestList guestList = mData.get(position);
+			
+						
+			for(final Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
 			{
-				mData.add(new GuestList(((AppUser)userResponse.getKey()).toString(), freeFromWhen));  
+				if(guestList.getGuestId() == userResponse.getKey().getUserId())
+				{
+					title.setText(guestList.getGuest().toString());
+					text.setText(guestList.getMessage());
+				}
+					
+			}
+
+			commentDialog.show();
+		}
+		
+		public void updateList(PubEvent event)
+		{
+			mData.clear();
+
+			for(final Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
+			{
+				final String freeFromWhen;
+				final String message;
+				
+				if(userResponse.getValue().messageToHost != null && userResponse.getValue().messageToHost != "")
+				{
+					message = userResponse.getValue().messageToHost;
+				}			
+				else 
+					message = "";
+				
+				
+				if(userResponse.getValue().goingStatus == GoingStatus.going)
+				{
+					if(userResponse.getValue().freeFrom != null 
+							&& userResponse.getValue().freeFrom.getTimeInMillis() != event.GetStartTime().getTimeInMillis()
+							&& userResponse.getValue().freeFrom.after(event.GetStartTime()))
+					{
+						freeFromWhen = PubEvent.GetFormattedDate(userResponse.getValue().freeFrom);
+					}
+					else
+					{
+						freeFromWhen = "Up for it!";
+					}
+				}
+				else if(userResponse.getValue().goingStatus == GoingStatus.notGoing)
+				{
+					freeFromWhen ="Nah";
+				}
+				else
+				{
+					freeFromWhen = "";
+				}
+				if(userResponse.getKey() instanceof AppUser)
+				{
+					mData.add(new GuestList(((AppUser)userResponse.getKey()), freeFromWhen, message));  
+				}
+				else
+				{
+					//TODO: Untested - should work but would require an event where we don't already have the users downloaded - ie host an event, loose it locally then reget from server
+					DataRequestGetFacebookUser getUser = new DataRequestGetFacebookUser(userResponse.getKey().getUserId());
+	    			service.addDataRequest(getUser, new IRequestListener<AppUser>() {
+
+						public void onRequestComplete(AppUser data) {
+							
+							HostEvents.this.runOnUiThread(new UpdateList(data, freeFromWhen, message));
+						}
+
+						public void onRequestFail(Exception e) {
+							// TODO Auto-generated method stub
+							
+						}
+						
+						class UpdateList implements Runnable
+						{
+							GuestList glEntry;
+							public UpdateList(AppUser data, String freeFromWhen, String message)
+							{
+								glEntry = new GuestList(data, freeFromWhen, message);
+							}
+							
+							public void run() {
+								// TODO Auto-generated method stub
+								mData.add(glEntry);
+								notifyDataSetChanged();
+							}
+							
+						}
+	    				
+	    			});
+				}
+				
+			}
+			
+
+			
+		}
+
+	}
+
+	class GuestList
+	{
+		private AppUser guest;
+		private String time;
+		private String message;
+		
+		public GuestList(AppUser guest, String time, String message)
+		{
+			this.guest = guest;
+			this.time = time;
+			this.message = message;
+		}
+
+		public void setGuest(AppUser guest)
+		{
+			this.guest = guest;
+		}
+
+		public AppUser getGuest()
+		{
+			return guest;
+		}
+		
+		public long getGuestId()
+		{
+			return guest.getUserId();
+		}
+
+		public void setTime(String time)
+		{
+			this.time = time;
+		}
+
+		public String getTime()
+		{
+			return time;
+		}
+		
+		public void setMessage(String message)
+		{
+			this.message = message;
+		}
+		
+		public String getMessage()
+		{
+			return message;
+		}
+
+	}
+
+	class TimeTillPub extends CountDownTimer	
+	{
+		private TextView textView;
+		public TimeTillPub(Calendar pubStartTime, TextView countdownTextView)
+		{
+			super(pubStartTime.getTimeInMillis() - Calendar.getInstance().getTimeInMillis(), 10);
+			textView = countdownTextView;
+		}
+		@Override
+		public void onFinish() {
+			// TODO Auto-generated method stub
+			textView.setText("It's on!");
+		}
+
+		@Override
+		public void onTick(long millisUntilFinished) {
+			int hours, minutes, seconds, miliseconds;
+			
+			hours = (int)(millisUntilFinished / (60 * 60 * 1000));
+			millisUntilFinished -= hours * 60 * 60 * 1000;
+			minutes = (int)(millisUntilFinished / (60 * 1000));
+			millisUntilFinished -= minutes * 60 * 1000;
+			seconds = (int)(millisUntilFinished / 1000);
+			millisUntilFinished -= seconds * 1000;
+			miliseconds = (int)millisUntilFinished;
+			
+			int microSeconds = (int)(miliseconds / 10);
+			String formattedMicroseconds;
+			if(microSeconds < 10)
+			{
+				formattedMicroseconds = "0" + Integer.toString(microSeconds);
 			}
 			else
 			{
-				//TODO: Convert in to an AppUser - requires getting facebook in to the service
+				formattedMicroseconds = Integer.toString(microSeconds);
 			}
+			
+			textView.setText(hours + ":" + minutes + ":" + seconds + ":" + formattedMicroseconds + " until beer");			
 		}
 	}
-
-}
-
-class GuestList
-{
-	private String guest;
-	private String time;
-
-	public GuestList(String guest, String time)
-	{
-		this.guest = guest;
-		this.time = time;
-	}
-
-	public void setGuest(String guest)
-	{
-		this.guest = guest;
-	}
-
-	public String getGuest()
-	{
-		return guest;
-	}
-
-	public void setTime(String time)
-	{
-		this.time = time;
-	}
-
-	public String getTime()
-	{
-		return time;
-	}
-
-}
-
-class GuestListView
-{
-	protected TextView guest;
-	protected TextView time;	
 }

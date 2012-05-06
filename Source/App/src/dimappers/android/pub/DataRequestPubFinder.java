@@ -49,13 +49,11 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 	}
 
 	public void performRequest(IRequestListener<PlacesList> listener,HashMap<Integer, PlacesList> storedData) {
-		if(storedData.containsKey(DataRequestPubFinder.getKey(longitude, latitude, keyword)))
+		if(storedData.containsKey(DataRequestPubFinder.getKey(longitude, latitude, keyword)) && 
+				!storedData.get(DataRequestPubFinder.getKey(longitude, latitude, keyword)).isOutOfDate()) //if we already have some pubs and they are not out of date
 		{
 			Log.d(Constants.MsgInfo, "Already have pubs.");
-			if(!storedData.get(DataRequestPubFinder.getKey(longitude, latitude, keyword)).isOutOfDate())
-			{
-				listener.onRequestComplete(storedData.get(DataRequestPubFinder.getKey(longitude, latitude, keyword)));
-			}
+			listener.onRequestComplete(storedData.get(DataRequestPubFinder.getKey(longitude, latitude, keyword)));
 		}
 		else{
 			Log.d(Constants.MsgInfo, "Getting pubs from Google.");
@@ -96,7 +94,10 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 			    	storedData.put(DataRequestPubFinder.getKey(longitude, latitude, keyword), places);
 			    	listener.onRequestComplete(places);
 			    }
-			    //TODO: deal with no results separately because this isn't an error
+			    else if(places.status.equals("ZERO_RESULTS"))
+			    {
+			    	listener.onRequestComplete(places);
+			    }
 			    else
 			    {
 			    	listener.onRequestFail(new Exception(places.status));	
@@ -117,7 +118,10 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 		return Double.valueOf(twoDForm.format(value));
 	}
 	public static Integer getKey(double latitude, double longitude, String keyword) {
-		return new Double(Math.pow(2.0, get2DP(latitude))*Math.pow(3.0, get2DP(longitude))*Math.pow(5.0, keyword.hashCode())).hashCode();
+		int lat = (int)(1000*latitude);
+		int lng = (int)(1000*longitude);
+		int keyhash = keyword.hashCode();
+		return lat + lng + keyhash;
 	}
 
 }

@@ -16,8 +16,6 @@ public class User implements Serializable {
 	
 	//Properties
 	protected Long facebookUserId;
-	private float latitude = 1000.0f;
-	private float longitude = 1000.0f;
 	private int rank = 0;
 	
 	//Constructor
@@ -29,7 +27,6 @@ public class User implements Serializable {
 	{
 		readXmlForTransmission(userXmlElement);
 	}
-	
 	
 	//Encapsulation
 	public Long getUserId() 	{ return facebookUserId; }	
@@ -45,18 +42,6 @@ public class User implements Serializable {
 		{
 			return false;
 		}
-	}
-	
-	public double[] getLocation()
-	{
-		if(longitude!=1000.0f&&latitude!=1000.0f)
-		{
-			double[] returnValue = new double[2];
-			returnValue[0] = longitude;
-			returnValue[1] = latitude;
-			return returnValue;
-		}
-		else return null;
 	}
 	
 	public void setRank(int rank) {this.rank = rank;}
@@ -78,8 +63,9 @@ public class User implements Serializable {
 		 */
 		
 		Element user = new Element("User");
-		user.addContent(facebookUserId.toString());
 		
+		user.setText(facebookUserId.toString());
+
 		return user;
 	}
 	
@@ -106,5 +92,6 @@ public class User implements Serializable {
 	public int History = 0;
 	public int PhotosLiked = 0;
 	public int PhotosComments = 0;
+	public int CallLogTotal = 0;
 
 }

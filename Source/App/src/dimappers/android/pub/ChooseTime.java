@@ -9,12 +9,14 @@ import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
@@ -22,6 +24,8 @@ import dimappers.android.PubData.PubEvent;
 public class ChooseTime extends Activity implements OnClickListener{
 	private PubEvent event;
 	private DatePicker date_picker;
+	
+	boolean host = true;
 	
 	//TimePicker:
 		private Button currenthour;
@@ -37,10 +41,21 @@ public class ChooseTime extends Activity implements OnClickListener{
     	button_save_date_time.setOnClickListener(this);
     	
     	bindService(new Intent(getApplicationContext(), PubService.class), connection, 0);
+    	
+    	Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
+    	((TextView)findViewById(R.id.choose_time)).setTypeface(font);
+    	((TextView)findViewById(R.id.choose_date)).setTypeface(font);
         
+		host = getIntent().getExtras().getBoolean(Constants.HostOrNot);
+    	
     	// Date
         date_picker = (DatePicker)findViewById(R.id.datePicker);
-        date_picker.setOnClickListener(this);
+        if(host) {date_picker.setOnClickListener(this);}
+        else
+        {
+        	date_picker.setVisibility(View.GONE);
+        	findViewById(R.id.choose_date).setVisibility(View.INVISIBLE);
+        }
         
         // Time
         findViewById(R.id.hour_add).setOnClickListener(this);
@@ -87,7 +102,8 @@ public class ChooseTime extends Activity implements OnClickListener{
     	Calendar c = Calendar.getInstance();
     	return event.GetStartTime().getTimeInMillis() - c.getTimeInMillis() > 604800000; //number of milliseconds in a week
     }
-    public void onClick(View v) {
+    public void onClick(View v) 
+    {
     	switch(v.getId())
     	{
     		case R.id.save_date_and_time : {
@@ -246,7 +262,8 @@ public class ChooseTime extends Activity implements OnClickListener{
     }
     private void returnTime() {
     	Bundle b = new Bundle();
-		b.putInt(Constants.CurrentWorkingEvent,event.GetEventId());
+		if(host){b.putInt(Constants.CurrentWorkingEvent,event.GetEventId());}
+		else {b.putLong(Constants.ChosenTime, event.GetStartTime().getTimeInMillis());}
 		Intent returnIntent = new Intent();
 		returnIntent.putExtras(b);
 		this.setResult(RESULT_OK,returnIntent);
@@ -299,7 +316,9 @@ public class ChooseTime extends Activity implements OnClickListener{
 		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
 		{
 			IPubService serviceInterface = (IPubService)serviceBinder;
+			
 			event = serviceInterface.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			if(!host) {event = new PubEvent(event.writeXml());}
 			
 			Calendar startTime = event.GetStartTime();
 			

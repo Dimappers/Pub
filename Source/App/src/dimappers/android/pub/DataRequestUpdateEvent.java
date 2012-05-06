@@ -6,13 +6,16 @@ import java.util.HashMap;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.output.XMLOutputter;
 
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
+import dimappers.android.PubData.RefreshEventResponseMessage;
 import dimappers.android.PubData.UpdateData;
+import dimappers.android.PubData.UpdateType;
 
 public class DataRequestUpdateEvent implements IDataRequest<Long, PubEvent> {
 
@@ -35,42 +38,38 @@ public class DataRequestUpdateEvent implements IDataRequest<Long, PubEvent> {
 		Document xmlDoc = new Document();
 		Element root= new Element("Message");
 		
-		Element messageTypeElement = new Element("MessageType");
+		Element messageTypeElement = new Element(MessageType.class.getSimpleName());
 		messageTypeElement.addContent(MessageType.updateMessage.toString());
 		root.addContent(messageTypeElement);
 	
 		root.addContent(data.writeXml());
 		
+		xmlDoc.setRootElement(root);
 		//TODO: Put port in stream here
 		
+		Document returnDocument;
+		
 		try {
-			DataSender.sendDocument(xmlDoc);
+			returnDocument = DataSender.sendReceiveDocument(xmlDoc);
 		} catch (IOException e) {
 			listener.onRequestFail(e);
 			return;
-		}
-		
-		listener.onRequestComplete(null); //TODO: Should get latest info about specific event and pass back
-		return; 
-		//TODO: Possibly get server to send back latest details
-		/*SAXBuilder xmlBuilder = new SAXBuilder();
-		Document returnDocument;
-		try
-		{
-			returnDocument = xmlBuilder.build(System.in);
-		} catch (Exception e)
-		{
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
 			listener.onRequestFail(e);
 			return;
 		}
 		
-		RefreshResponse response = new RefreshResponse(returnDocument.getRootElement());
-		if(response.getEvents().length > 0)
-		{
-			service.NewEventsRecieved(response.getEvents());
-		}
-		//Maybe return the latest event if an update?
-		listener.onRequestComplete(null);		*/
+		RefreshEventResponseMessage returnMessage = new RefreshEventResponseMessage(returnDocument.getRootElement().
+				getChild(RefreshEventResponseMessage.class.getSimpleName()));
+		
+		PubEvent event = returnMessage.getEvent();
+		
+		HashMap<PubEvent, UpdateType> update = new HashMap<PubEvent, UpdateType>();
+		update.put(event,  returnMessage.getUpdateType());
+		service.NewEventsRecieved(new PubEventArray(update));
+		
+		listener.onRequestComplete(event);	
 	}
 
 	

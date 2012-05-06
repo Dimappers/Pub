@@ -19,6 +19,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.EditText;
 import android.widget.TextView;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
@@ -73,12 +74,6 @@ public class Pending extends Activity implements OnClickListener {
 
 	public PubEvent createEvent() {
 		updateText("Creating Event");
-
-		Bundle b = getIntent().getExtras();
-		if (b == null) {
-			Debug.waitForDebugger();
-		}
-
 		return new PubEvent(new TimeFinder(service.getHistoryStore()).chooseTime(), service.GetActiveUser());
 	}
 
@@ -86,8 +81,8 @@ public class Pending extends Activity implements OnClickListener {
 		if (v.getId() == R.id.cancelbutton) {finish();}
 	}
 
-	public void onFinish(PubEvent createdEvent, Location currentLocation) {
-		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle(createdEvent, currentLocation)));
+	public void onFinish(PubEvent createdEvent) {
+		setResult(Activity.RESULT_OK, new Intent().putExtras(fillBundle(createdEvent)));
 		finish();
 	}
 	
@@ -99,15 +94,11 @@ public class Pending extends Activity implements OnClickListener {
 		unbindService(connection);
 	}
 
-	private Bundle fillBundle(PubEvent createdEvent, Location currentLocation) {
+	private Bundle fillBundle(PubEvent createdEvent) {
 		service.GiveNewSavedEvent(createdEvent);
 		Bundle eventBundle = new Bundle();
 		eventBundle.putInt(Constants.CurrentWorkingEvent, createdEvent.GetEventId());
-		eventBundle.putBoolean(Constants.IsSavedEventFlag, true);
-		eventBundle.putDouble(Constants.CurrentLatitude,
-				currentLocation.getLatitude());
-		eventBundle.putDouble(Constants.CurrentLongitude,
-				currentLocation.getLongitude());
+		eventBundle.putBoolean(Constants.IsSavedEventFlag, false);
 		return eventBundle;
 	}
 
@@ -162,30 +153,17 @@ public class Pending extends Activity implements OnClickListener {
 		{
 			locationManager.removeUpdates(locationListener);
 			currentLocation = location;
+			
+			double[] locationarray = new double[2];
+			locationarray[0] = location.getLatitude();
+			locationarray[1] = location.getLongitude();
+			service.GetActiveUser().setLocation(locationarray);
+			
 			//Start tasks: Get people & get pubs
-			PersonFinder personFinder = new PersonFinder(service);
+			PersonFinder personFinder = new PersonFinder(service, getApplicationContext());
 			Pending.this.updateText("Finding friends");
 			
-			DataRequestPubFinder pubFinder = new DataRequestPubFinder(currentLocation.getLatitude(), currentLocation.getLongitude());
-			service.addDataRequest(pubFinder, new IRequestListener<PlacesList>(){
-
-				public void onRequestComplete(PlacesList data) {
-					pubFound = true;
-					pubs = data.results;
-					if(peopleFound)
-					{
-						rankThings(pubs);
-					}
-					else
-					{
-						Pending.this.updateText("Finding people");
-					}
-				}
-
-				public void onRequestFail(Exception e) {
-					Log.d(Constants.MsgError, e.getMessage());
-					Pending.this.errorOccurred();
-				}});
+			findPubs();
 			
 			
 			personFinder.getFriends(new IRequestListener<AppUserArray>() {
@@ -208,23 +186,87 @@ public class Pending extends Activity implements OnClickListener {
 				
 			});
 		}
+		private void findPubs()
+		{
+			DataRequestPubFinder pubFinder = new DataRequestPubFinder(currentLocation.getLatitude(), currentLocation.getLongitude());
+			service.addDataRequest(pubFinder, new IRequestListener<PlacesList>(){
+
+				public void onRequestComplete(PlacesList data) {
+					if(data.status.equals("ZERO_RESULTS"))
+					{
+						changeLocation();
+					}
+					else
+					{
+						pubFound = true;
+						pubs = data.results;
+						if(peopleFound)
+						{
+							rankThings(pubs);
+						}
+						else
+						{
+							Pending.this.updateText("Finding people");
+						}
+					}
+				}
+
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, e.getMessage());
+					Pending.this.errorOccurred();
+				}});
+		}
+		private void changeLocation()
+		{
+			runOnUiThread(new Runnable()
+			{
+				
+				public void run()
+				{
+					final EditText loc = new EditText(getApplicationContext());
+					new AlertDialog.Builder(Pending.this).setMessage("Enter a different location:")  
+					.setTitle("There are no pubs in this location.")  
+					.setCancelable(true)  
+					.setPositiveButton("Use this location", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							
+							DataRequestReverseGeocoder reverseGeocoder = new DataRequestReverseGeocoder(getApplicationContext(), loc.getText().toString());
+							service.addDataRequest(reverseGeocoder, new IRequestListener<XmlableDoubleArray>(){
 		
+								public void onRequestFail(Exception e) {
+									Pending.this.errorOccurred();
+								}
+		
+								public void onRequestComplete(XmlableDoubleArray data) {
+									
+									currentLocation.setLatitude(data.getArray()[0]);
+									currentLocation.setLongitude(data.getArray()[1]);
+									findPubs();
+									
+								}});
+							dialog.cancel();
+						}
+					})
+					.setView(loc)
+					.show(); 
+				}});
+		}
 		private void rankThings(final List<Place> pubs)
 		{
 			//Start next batch of requests
 			PubEvent event = createEvent();
-			PersonRanker p = new PersonRanker(event, Pending.this, currentLocation, allFriends, new IRequestListener<PubEvent>() {
+			new PersonRanker(event, Pending.this, currentLocation, allFriends, new IRequestListener<PubEvent>() {
 
 				public void onRequestComplete(PubEvent data) {
 					data.SetPubLocation(new PubRanker(pubs, data, Pending.this.service.getHistoryStore()).returnBest());
-					Pending.this.onFinish(data, currentLocation);
+					Pending.this.onFinish(data);
 				}
 
 				public void onRequestFail(Exception e) {
 					errorOccurred();
 				}
 				
-			});
+			}, getContentResolver());
 		}
 
 		public void onProviderDisabled(String provider) {

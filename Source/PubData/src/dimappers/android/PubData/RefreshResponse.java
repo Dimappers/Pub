@@ -1,14 +1,19 @@
 package dimappers.android.PubData;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jdom.Element;
 
 public class RefreshResponse implements IXmlable {
-
-	private PubEvent[] newEvents;
 	
-	public RefreshResponse(PubEvent[] events)
+	private final String EventTag = "Event";
+	
+	//private PubEvent[] newEvents;
+	private Set<Integer> newEvents;
+	
+	public RefreshResponse(Set<Integer> events)
 	{
 		newEvents = events;
 	}
@@ -18,27 +23,31 @@ public class RefreshResponse implements IXmlable {
 		readXml(element);
 	}
 	
-	public PubEvent[] getEvents()
+	public Set<Integer> getEvents()
 	{
 		return newEvents;
 	}
 	
 	public Element writeXml() {
 		Element rootElement = new Element(getClass().getSimpleName());
-		for(PubEvent event : newEvents)
+		for(Integer eventEntry : newEvents)
 		{
-			rootElement.addContent(event.writeXml());
+			Element entryElement = new Element(EventTag); 
+			
+			entryElement.setText(eventEntry.toString());
+			
+			rootElement.addContent(entryElement);
 		}
 		return rootElement;
 	}
 
 	public void readXml(Element element) {
-		List<Element> eventElements = element.getChildren(PubEvent.class.getSimpleName()); 
-		newEvents = new PubEvent[eventElements.size()];
-		int i = 0;
-		for(Element eventElement : eventElements)
+		List<Element> eventElements = element.getChildren(); 
+		newEvents = new HashSet<Integer>();
+		for(Element eventEntryElement : eventElements)
 		{
-			newEvents[i++] = new PubEvent(eventElement);			
+			Integer event = new Integer(eventEntryElement.getText());
+			newEvents.add(event);
 		}
 	}
 }

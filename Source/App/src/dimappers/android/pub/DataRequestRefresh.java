@@ -2,11 +2,14 @@ package dimappers.android.pub;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
@@ -17,7 +20,10 @@ import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.RefreshData;
+import dimappers.android.PubData.RefreshEventMessage;
+import dimappers.android.PubData.RefreshEventResponseMessage;
 import dimappers.android.PubData.RefreshResponse;
+import dimappers.android.PubData.UpdateType;
 import dimappers.android.PubData.User;
 
 public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
@@ -41,32 +47,56 @@ public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
 		Element root = new Element("Message");
 		xmlRequest.setRootElement(root);
 		
-		Element messageTypeElement = new Element("MessageType");
+		Element messageTypeElement = new Element(MessageType.class.getSimpleName());
 		messageTypeElement.addContent(MessageType.refreshMessage.toString());
 		root.addContent(messageTypeElement);
 		
 		RefreshData refreshMessage = new RefreshData(service.GetActiveUser(), fullRefresh);
 		root.addContent(refreshMessage.writeXml());
 		
-		Socket socket;
-		try {
-			socket = DataSender.sendDocument(xmlRequest);
-		} catch (IOException e) {
-			listener.onRequestFail(e);
-			return;
-		}  
+		
 		Document returnDocument;
-		try
-		{
-			returnDocument = DataSender.readTillEndOfMessage(socket.getInputStream());
-		} catch (Exception e)
-		{
+		
+		try {
+			returnDocument = DataSender.sendReceiveDocument(xmlRequest);
+		} catch (Exception e) {
 			listener.onRequestFail(e);
 			return;
 		}
 		
 		RefreshResponse response = new RefreshResponse(returnDocument.getRootElement().getChild(RefreshResponse.class.getSimpleName()));
-		listener.onRequestComplete(new PubEventArray(response.getEvents()));	
+		
+		HashMap<PubEvent, UpdateType> events = new HashMap<PubEvent, UpdateType>();
+		
+		for(Integer eventUpdate : response.getEvents())
+		{
+			RefreshEventMessage refreshEventMessage = new RefreshEventMessage(eventUpdate, service.GetActiveUser());
+			Element rootElement = new Element("Message");
+			
+			Element messageTElement = new Element(MessageType.class.getSimpleName());
+			messageTElement.addContent(MessageType.refreshEventMessage.toString());
+			rootElement.addContent(messageTElement);
+			
+			rootElement.addContent(refreshEventMessage.writeXml());
+			Document refreshEventDocToSend = new Document(rootElement);
+			
+			try {
+				Document pubReturnDocument = DataSender.sendReceiveDocument(refreshEventDocToSend);
+				RefreshEventResponseMessage returnMessage = new RefreshEventResponseMessage(pubReturnDocument.getRootElement().
+						getChild(RefreshEventResponseMessage.class.getSimpleName()));
+				
+				events.put(returnMessage.getEvent(), returnMessage.getUpdateType());
+				//events.put(new PubEvent(pubReturnDocument.getRootElement().getChild(PubEvent.class.getSimpleName())), eventUpdate.getValue());
+			} catch (Exception e) {
+				listener.onRequestFail(e);
+			}
+		}
+		
+		PubEventArray pubArray = new PubEventArray(events);
+		
+		service.NewEventsRecieved(pubArray);
+		
+		listener.onRequestComplete(pubArray);
 	}
 
 	public String getStoredDataId() {

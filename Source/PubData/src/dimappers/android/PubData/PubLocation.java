@@ -1,6 +1,7 @@
 package dimappers.android.PubData;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 
 import org.jdom.Element;
 
@@ -83,6 +84,17 @@ public class PubLocation implements Serializable, IXmlable
 		latitudeCoordinate = Float.parseFloat(element.getChildText(latTag));
 		longitudeCoordinate= Float.parseFloat(element.getChildText(longTag));
 		pubName = element.getChildText(nameTag);
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return new Double(Math.pow(2.0, get2DP(latitudeCoordinate))*Math.pow(3.0, get2DP(longitudeCoordinate))*Math.pow(5.0, pubName.hashCode())).hashCode();
+	}
+	
+	private static double get2DP(double value) {
+		DecimalFormat twoDForm = new DecimalFormat("#.##");
+		return Double.valueOf(twoDForm.format(value));
 	}
 }
 

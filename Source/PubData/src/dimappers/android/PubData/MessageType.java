@@ -14,24 +14,40 @@ public enum MessageType {
 	 * Use: 							Gets new events and updates information about events 
 	 * 									this user has already retrieved
 	 * Class to send to the server: 	RefreshData which contains the user & whether to do a full refresh
-	 * Class the server will send back: RefreshResponse which contains an array of PubEvents which are  
-	 * 									either new or need updating 
+	 * Class the server will send back: RefreshResponse which contains an array of PubEvent ids which are  
+	 * 									either new or need updating  along with type of change
 	 */
-	refreshMessage, 
+	refreshMessage,
+	
+	/* 						refreshEventMessage
+	 * Use: 							Gets latest about specific events 
+	 * Class to send to the server: 	RefreshEventData which contains the user & id of event
+	 * Class the server will send back: RefreshEventResponseMessage 
+	 */
+	refreshEventMessage,
+	
 	/* 						respondMessage
 	 * Use: 							Tells the server the respond to a specific event
 	 * Class to send to the server: 	EventResponse - containing true if going and the global 
 	 * 									id of the event
-	 * Class the server will send back: Nothing
+	 * Class the server will send back: RefreshEventResponseMessage
 	 */
 	respondMessage,
+	
 	/* 						updateMessage
 	 * Use: 							Tells the server to update information of an event 
 	 * 									(eg change in time) 
 	 * Class to send to the server: 	UpdateData 
-	 * Class the server will send back: Nothing
+	 * Class the server will send back: RefreshEventResponseMessage
 	 */
 	updateMessage,
+	
+	/*						confirmMessage		
+	 * User:							Tells the invitees if the event 'is on' or not
+	 * Class to send to the server:		Confirm Message
+	 * Class the server will send back:	RefreshEventResponseMessage
+	 */
+	confirmMessage,
 	
 	unknownMessageType
 }

@@ -1,12 +1,17 @@
 package dimappers.android.pub;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.json.JSONException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -22,30 +27,38 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.GoingStatus;
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.UpdateData;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
 
-public class UserInvites extends Activity implements OnClickListener, OnLongClickListener 
+public class UserInvites extends Activity implements OnClickListener, OnLongClickListener, OnMenuItemClickListener 
 {
 
 	PubEvent event;
 	AppUser facebookUser;
 	
 	IPubService service;
+	
+	GuestAdapter gAdapter;
 	
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -65,6 +78,45 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     	button_decline.setOnClickListener(this);
 	}
 	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) 
+	{
+		if(event!=null)
+		{
+			//FIXME: should refresh when sent is hit.			
+			MenuItem refresh = menu.add(0,R.id.refresh_event, 2, "Refresh");
+			refresh.setOnMenuItemClickListener(this);
+		}
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onMenuItemClick(MenuItem arg0) {
+		switch(arg0.getItemId())
+		{
+			case R.id.refresh_event:
+			{
+				service.addDataRequest(new DataRequestGetLatestAboutPubEvent(event.GetEventId()), new IRequestListener<PubEvent>(){
+
+					public void onRequestFail(Exception e) {
+						Log.d(Constants.MsgError, "Error when refreshing event: " + e.getMessage());
+					}
+
+					public void onRequestComplete(PubEvent data) {
+						event = data;
+						runOnUiThread(new Runnable(){
+
+							public void run() {
+								updateScreen();
+							}});
+					}});
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	public void onClick(View v)
 	{	
 		switch (v.getId()) {
@@ -73,15 +125,15 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	    	
 	    	findViewById(R.id.going).setBackgroundColor(Color.GREEN);
 	    	findViewById(R.id.decline).setBackgroundResource(android.R.drawable.btn_default);
-	    	
-			break;
+	    	sendResponse(true,event.GetStartTime(),"");
+	    	break;
 		}
 		case R.id.decline :
 		{
 	    	
 	    	findViewById(R.id.decline).setBackgroundColor(Color.RED);
 	    	findViewById(R.id.going).setBackgroundResource(android.R.drawable.btn_default);
-
+	    	sendResponse(false,event.GetStartTime(),"");
 			break;
 		}
 		}
@@ -99,6 +151,8 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		return false;
 	}
 	
+	TextView timeText;
+	
 	private void showAddDialog() 
 	{
 		 final Dialog commentDialog = new Dialog(UserInvites.this);
@@ -106,27 +160,82 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
          commentDialog.setTitle("Do you want to make a comment?");
          commentDialog.setCancelable(true);
 		
-        TextView text = (TextView) commentDialog.findViewById(R.id.comment_text_box);
 
 		Button attachButton = (Button) commentDialog.findViewById(R.id.attach); 
-		Button cancelButton = (Button) commentDialog.findViewById(R.id.cancel); 
-
-		attachButton.setOnClickListener(new OnClickListener() { 
-		// @Override 
-		public void onClick(View v) { 
-
-		Toast.makeText(getBaseContext(), "Make a comment", Toast.LENGTH_LONG).show(); 
-		} 
-		}); 
-
-		cancelButton.setOnClickListener(new OnClickListener() { 
-		// @Override 
-		public void onClick(View v) { 
-		commentDialog.dismiss(); 
-		} 
-		});
+		Button cancelButton = (Button) commentDialog.findViewById(R.id.cancel);
 		
-		commentDialog.show();
+		timeText = (TextView) commentDialog.findViewById(R.id.changeTime);
+		Calendar startTime = event.GetStartTime();
+		String ampm="AM";
+		if (startTime.get(Calendar.AM_PM)==1) {ampm = "PM";}
+		String min = Integer.toString(startTime.get(Calendar.MINUTE));
+		if(startTime.get(Calendar.MINUTE)==0) {min = "00";}
+		timeText.setText(startTime.get(Calendar.HOUR) + ":" + min + " " + ampm);
+	    timeText.setOnClickListener(new OnClickListener() {
+	    	public void onClick(View v) {
+	    		Intent i = new Intent(UserInvites.this, ChooseTime.class);
+	    		Bundle b = new Bundle();
+	    		b.putBoolean(Constants.HostOrNot, false);
+	    		b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
+	    		i.putExtras(b);
+	    		startActivityForResult(i, Constants.MessageTimeSetter);
+	    	}
+	    });
+
+	    attachButton.setOnClickListener(new OnClickListener() {  
+	    	public void onClick(View v) 
+	    	{ 
+	    		TextView text = (TextView) commentDialog.findViewById(R.id.comment_text_box);
+
+	    		String commentMade = text.getText().toString();
+
+	    		if(commentMade!="")
+	    		{
+	    			Toast.makeText(getBaseContext(), commentMade, Toast.LENGTH_LONG).show();
+	    		} 
+
+	    		if(timeSet==0||timeSet==event.GetStartTime().getTimeInMillis())
+	    		{
+	    			sendResponse(true,event.GetStartTime(),commentMade);
+	    		}
+	    		else 
+	    		{
+	    			Calendar time = Calendar.getInstance();
+	    			time.setTime(new Date(timeSet));
+	    			sendResponse(true, time, commentMade);
+	    		}
+
+	    		commentDialog.dismiss();
+	    	} 
+	    }); 
+
+	    cancelButton.setOnClickListener(new OnClickListener() {  
+	    	public void onClick(View v) 
+	    	{ 
+	    		commentDialog.dismiss(); 
+	    	} 
+	    });
+
+	    commentDialog.show();
+	}
+	
+	long timeSet = 0;
+	
+	public void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+		if(resultCode==RESULT_OK)
+		{
+			timeSet = data.getExtras().getLong(Constants.ChosenTime);
+			Date date = new Date(timeSet);
+			int hour = date.getHours();
+			String ampm;
+			if(hour>12) {hour -= 12; ampm = "PM";}
+			else {ampm = "AM";}
+			String minutes = Integer.toString(date.getMinutes());
+			if(date.getMinutes()==0) {minutes = "00";}
+			timeText.setText(hour + ":" + minutes + " " + ampm);
+		}
 	}
 	
 	private ServiceConnection connection = new ServiceConnection()
@@ -137,34 +246,84 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			
 			event = service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
 			
-			TextView pubNameText = (TextView) findViewById(R.id.userInvitesPubNameText);
-	    	pubNameText.setText(event.GetPubLocation().toString());
-	    	
-	    	TextView startTime = (TextView) findViewById(R.id.userInviteStartTimeText);
-	    	startTime.setText(event.GetFormattedStartTime());
-			
+			service.addDataRequest(new DataRequestGetLatestAboutPubEvent(event.GetEventId()), new IRequestListener<PubEvent>(){
+
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, "Error when refreshing event: " + e.getMessage());
+				}
+
+				public void onRequestComplete(PubEvent data) {
+					event = data;
+					runOnUiThread(new Runnable(){
+
+						public void run() {
+							updateScreen();
+						}});
+				}});
+					
 			facebookUser = service.GetActiveUser();
 			
-			ListView list = (ListView) findViewById(R.id.listView2);   
-			list.setAdapter(new GuestAdapter(event, service));
+			ListView list = (ListView) findViewById(R.id.listView2);
+			gAdapter = new GuestAdapter(event, service); 
+			list.setAdapter(gAdapter);
+			
+			updateScreen();
 		}
 
-		public void onServiceDisconnected(ComponentName arg0)
-		{			
-		}
+		public void onServiceDisconnected(ComponentName arg0){}
 		
 	};
 	
-	//TODO: Connect this method to button presses
+
+	private void updateScreen()
+	{
+		switch(event.GetUserGoingStatus(service.GetActiveUser()))
+		{
+			case going : {findViewById(R.id.going).setBackgroundColor(Color.GREEN); break;}
+			case notGoing : {findViewById(R.id.decline).setBackgroundColor(Color.RED); break;}
+		}
+		
+		TextView pubNameText = (TextView) findViewById(R.id.userInvitesPubNameText);
+    	pubNameText.setText(event.GetPubLocation().toString());
+    	
+    	TextView startTime = (TextView) findViewById(R.id.userInviteStartTimeText);
+    	startTime.setText(event.GetFormattedStartTime());
+    	
+    	try {
+			((TextView)findViewById(R.id.userInviteHostNameText)).setText(
+					getString(R.string.host_name)
+					+ " " +
+					AppUser.AppUserFromUser(event.GetHost(), service.GetFacebook()).toString());
+		} catch (Exception e) {
+			((TextView)findViewById(R.id.userInviteHostNameText)).setText(getString(R.string.host_name)+" unknown");
+			e.printStackTrace();
+		}
+    	
+		ListView list = (ListView) findViewById(R.id.listView2);
+		gAdapter = new GuestAdapter(event, service); 
+		list.setAdapter(gAdapter);
+	}
+	
 	private void sendResponse(boolean going, Calendar freeFromWhen, String msgToHost)
 	{
 		DataRequestSendResponse response = new DataRequestSendResponse(going, event.GetEventId(), freeFromWhen, msgToHost);
+		
+		//Work around: we should get updated event back from the server and refresh from that 
+		event.UpdateUserStatus(new ResponseData(service.GetActiveUser(), event.GetEventId(), going, freeFromWhen, msgToHost));
+		updateScreen();
 		service.addDataRequest(response, new IRequestListener<PubEvent>() {
 					public void onRequestComplete(PubEvent data) {
 						if(data != null)
 						{
 							event = data;
-							//TODO: Update screen as we have received new information
+							runOnUiThread(new Runnable()
+							{
+								public void run() {
+									updateScreen();
+									
+								}
+								
+							});
 						}
 					}
 
@@ -185,7 +344,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			mylist = new ArrayList<UserUserStatus>();
 			
 			Set<Entry<User, UserStatus>> asd = event.GetGoingStatusMap().entrySet();
-			for(final Entry<User, UserStatus> userResponse : event.GetGoingStatusMap().entrySet())
+			for(final Entry<User, UserStatus> userResponse : asd)
 	    	{	    
 	    		if(userResponse.getKey() instanceof AppUser)
 	    		{
@@ -237,8 +396,32 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			userName.setText(mylist.get(position).user.toString());
 			
 			TextView freeFromText = (TextView) v.findViewById(R.id.user_time);
-			freeFromText.setText(PubEvent.GetFormattedDate(mylist.get(position).status.freeFrom));
-			
+			UserStatus userStatus =  mylist.get(position).status;
+			switch(userStatus.goingStatus)
+			{
+			case notGoing :
+			{
+				freeFromText.setText("Nah");
+				break;
+			}
+			case going :
+			{
+				if(userStatus.freeFrom.equals(event.GetStartTime()) || userStatus.freeFrom.before(event.GetStartTime()))
+				{
+					//The user has either said this time or an earlier time and hence is free
+					freeFromText.setText("Up for it");
+				}
+				else
+				{
+					freeFromText.setText(PubEvent.GetFormattedDate(userStatus.freeFrom));
+				}
+				break;
+			}
+			case maybeGoing : {
+				freeFromText.setText("");
+				break;
+			}
+			}
 			return v;
 		}
 		

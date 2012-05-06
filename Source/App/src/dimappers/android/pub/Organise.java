@@ -2,6 +2,7 @@ package dimappers.android.pub;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -12,8 +13,12 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -30,6 +35,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,15 +44,17 @@ import com.facebook.android.Facebook;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
+import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.User;
+import dimappers.android.PubData.UserStatus;
 
-public class Organise extends ListActivity implements OnClickListener, OnMenuItemClickListener{
+public class Organise extends LocationRequiringActivity implements OnClickListener, OnMenuItemClickListener{
 
 	private Button cur_pub;
 	private Button cur_time;
 	private TextView cur_loc;
-
-	private PubEvent event;
+	public ProgressBar progbar;
+	MenuItem edit;
 	
 	private ArrayList<String> listItems=new ArrayList<String>();
 	private ArrayAdapter<String> adapter;
@@ -56,13 +64,11 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 	private boolean eventSavedAlready;
 	private double latSet;
 	private double lngSet;
-	
-	double latitude;
-	double longitude;
 
 	private AppUser[] facebookFriends;
-
-	IPubService service;
+	//private Calendar originalTime;
+	boolean changed;
+	PubEvent oldEvent = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -77,67 +83,40 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		eventSavedAlready = getIntent().getExtras().getBoolean(Constants.IsSavedEventFlag);
 		if(eventSavedAlready)
 		{
-			Log.d(Constants.MsgInfo, "Event has been created before");	    			
+			Log.d(Constants.MsgInfo, "Event has been created before");	   
+			changed = false;
 		}
 		else
 		{
 			Log.d(Constants.MsgInfo, "Event has just been generated");
+			changed = true;
 		}
+		
+		Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
 
+		//Always available buttons
 		cur_pub = (Button)findViewById(R.id.pub_button);
 		cur_time = (Button)findViewById(R.id.time_button);
+		cur_loc=(TextView)findViewById(R.id.current_location);
+    	cur_pub.setTypeface(font);
+    	cur_time.setTypeface(font);
+    	cur_loc.setTypeface(font);
+		cur_pub.setOnClickListener(this);
+		cur_time.setOnClickListener(this);
+		cur_loc.setOnClickListener(this);
+		
+		//Always visible text
+    	((TextView)findViewById(R.id.time_title)).setTypeface(font);
+    	((TextView)findViewById(R.id.pub_title)).setTypeface(font);
+    	((TextView)findViewById(R.id.guest_title)).setTypeface(font);
+    	//Progress bar
+		progbar = (ProgressBar)findViewById(R.id.progressBar);
 
+		//Guest list
 		guest_list = (ListView)findViewById(android.R.id.list);
 		adapter = new ArrayAdapter<String>(this, android.R.layout.test_list_item, listItems);
-
 		setListAdapter(adapter);
 
-		cur_pub.setOnClickListener(this);
-
-		guest_list.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
-				
-				if(true)
-				{
-					Intent i = new Intent(getBaseContext(), Guests.class);
-					Bundle b = new Bundle();
-					b.putAll(getIntent().getExtras());
-					b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
-					i.putExtras(b);
-					startActivityForResult(i, Constants.GuestReturn);
-				}
-				else 
-				{
-					String name = (String) parent.getItemAtPosition(position);
-					AppUser person = null;
-					for(AppUser friend : facebookFriends)
-					{
-						if(friend.toString().equals(name)) {person = friend; break;}
-					}
-					if(person==null) {Log.d(Constants.MsgWarning, "friend is not a friend");}
-					else
-					{
-						Intent i = new Intent(getBaseContext(), RankBreakDown.class);
-						i.putExtra("person", person);
-						i.putExtras(getIntent().getExtras());
-						startActivityForResult(i, Constants.GuestReturn);
-					}
-				}
-			}
-		});
-
-
-		cur_time.setOnClickListener(this);
-
-		Button button_save_event = (Button)findViewById(R.id.save_event);
-		button_save_event.setOnClickListener(this);
-		Button button_send_invites = (Button)findViewById(R.id.send_invites_event);
-		button_send_invites.setOnClickListener(this);
-		cur_loc=(TextView)findViewById(R.id.current_location);
-		cur_loc.setOnClickListener(this);
-
-		latitude = getIntent().getExtras().getDouble(Constants.CurrentLatitude);
-		longitude = getIntent().getExtras().getDouble(Constants.CurrentLongitude);
 	}
 	
 	class TextUpdater implements Runnable {
@@ -159,53 +138,74 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		unbindService(connection);
 	}
 
+	void packageLocForActivity(double[] loc, Bundle b, Intent i)
+	{
+		b.putDouble(Constants.CurrentLatitude, loc[0]);
+		b.putDouble(Constants.CurrentLongitude, loc[1]);
+		i.putExtras(b);
+		startActivityForResult(i, Constants.PubLocationReturn);
+	}
+	
 	public void onClick(View v)
 	{
-		Intent i;
-		Bundle b = new Bundle();
+		final Intent i;
+		final Bundle b = new Bundle();
 		b.putAll(getIntent().getExtras()); 
 		b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 		switch (v.getId()){
+		case R.id.current_location : {
+			setLocation();
+		}
 			case R.id.pub_button : {
 				i = new Intent(this, ChoosePub.class);
 				if(locSet){
 					b.putDouble(Constants.CurrentLatitude, latSet);
 					b.putDouble(Constants.CurrentLongitude, lngSet);
+					i.putExtras(b);
+					startActivityForResult(i, Constants.PubLocationReturn);
 				}
-				i.putExtras(b);
-				startActivityForResult(i, Constants.PubLocationReturn);
+				else if (service!=null)
+				{
+					double[] loc = service.GetActiveUser().getLocation();
+
+					if(loc!=null)
+					{
+						packageLocForActivity(loc, b, i);
+					}
+					else
+					{
+					final LocationManager locMan = (LocationManager)getSystemService(LOCATION_SERVICE);
+					new LocationFinder(locMan).findLocation(new LocationListener(){
+
+						public void onLocationChanged(Location arg0) {
+							double[] location = new double[2];
+							location[0] = arg0.getLatitude();
+							location[1] = arg0.getLongitude();
+							service.GetActiveUser().setLocation(location);
+							locMan.removeUpdates(this);
+							packageLocForActivity(location, b, i);
+						}
+						public void onProviderDisabled(String provider) {
+							runOnUiThread(new Runnable(){
+
+								public void run() {
+									Toast.makeText(getApplicationContext(), "Cannot find your current location.", Toast.LENGTH_LONG).show();
+								}});
+						}
+						public void onProviderEnabled(String provider) {}
+						public void onStatusChanged(String provider,int status, Bundle extras) {}});
+					}
+				}
 				break;
 			}
 			case R.id.time_button : {
 				i = new Intent(this, ChooseTime.class);
+				b.putBoolean(Constants.HostOrNot, true);
 				i.putExtras(b);
 				startActivityForResult(i,Constants.StartingTimeReturn);
 				break;
 			}
 			case R.id.save_event : {
-				if(!eventSavedAlready)
-				{
-					//TODO: This may not be in the correct position, kind of needs issue 120
-					DataRequestUpdateEvent updateRequest = new DataRequestUpdateEvent(event);
-					service.addDataRequest(updateRequest, new IRequestListener<PubEvent>(){
-
-						
-						public void onRequestComplete(PubEvent data) {
-							if(data != null)
-							{
-								event = data;
-								UpdateFromEvent();
-							}
-						}
-
-						
-						public void onRequestFail(Exception e) {
-							// TODO Auto-generated method stub
-							
-						}
-						
-					});
-				}
 				i = new Intent();
 				service.GiveNewSavedEvent(event);
 				b.putBoolean(Constants.IsSavedEventFlag, true);
@@ -219,32 +219,138 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 					
 					public void onRequestFail(Exception e) {
 						Log.d(Constants.MsgError, "Could not send event");
+						e.printStackTrace();
+						runOnUiThread(new Runnable(){
+
+							public void run() {
+								progbar.setVisibility(View.GONE);
+								Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
+								//FIXME: probably should make it more obvious when this fails
+							}});
 					}
 					
 					public void onRequestComplete(PubEvent data) {
-						Log.d(Constants.MsgInfo, "PubEvent sent, event id: " + data.GetEventId());
-						Intent intent = new Intent();
-						Bundle b = new Bundle();
-						b.putAll(getIntent().getExtras()); 
-						b.putSerializable(Constants.CurrentWorkingEvent, data.GetEventId());
-						b.putBoolean(Constants.IsSavedEventFlag, false);
-						intent.putExtras(b);
-						setResult(RESULT_OK, intent);
-						finish();						
+							onSendSuccess(data);
 					}
 				});
 				
 				
 				// Inflating the loading bar
-				LayoutInflater inflater = (LayoutInflater) getLayoutInflater();
+				/*LayoutInflater inflater = (LayoutInflater) getLayoutInflater();
 				ViewGroup parent = (ViewGroup) findViewById(R.id.organise_screen);
 
 				View pBar = inflater.inflate(R.layout.loading_bar, parent, false);
-				parent.addView(pBar);
+				parent.addView(pBar);*/
+				progbar.setVisibility(View.VISIBLE);
 				break;
 			}
 		}
 	}
+	
+	@Override
+	public void onBackPressed() {
+	    //Handle the back button
+	        //Ask the user if they want to quit
+		if(changed)
+		{
+			if(event.GetEventId() < 0) //is a local event
+			{
+		        new AlertDialog.Builder(this)
+		        .setIcon(android.R.drawable.ic_dialog_alert)
+		        .setTitle("Save or discard?")
+		        .setMessage("Would you like to save before exiting")
+		        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+	
+		            public void onClick(DialogInterface dialog, int which) {
+	
+		                service.GiveNewSavedEvent(event);
+		                finish();    
+		            }
+	
+		        })
+		        .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
+					
+					public void onClick(DialogInterface dialog, int which)
+					{
+						if(oldEvent == null) //then this is a fresh event
+						{
+							service.RemoveEventFromStoredDataAndCancelNotification(event);
+						}
+						else //this is an event being edited, we should revert to last version
+						{
+							event = new PubEvent(oldEvent.writeXml());
+							service.GiveNewSavedEvent(event);
+							Intent i = new Intent();
+							Bundle b = new Bundle();
+							b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
+							i.putExtras(b);
+							setResult(RESULT_OK, i);
+						}
+						finish();					
+					}
+				})
+		        .show();
+			}
+			else
+			{
+				new AlertDialog.Builder(this)
+		        .setIcon(android.R.drawable.ic_dialog_alert)
+		        .setTitle("Update or abandon changes?")
+		        .setMessage("Would you like to update the event")
+		        .setPositiveButton("Update", new DialogInterface.OnClickListener() {
+	
+		            public void onClick(DialogInterface dialog, int which) {
+	
+		            	//Update the event on the server
+		                updateEvent();
+		                finish();    
+		            }
+	
+		        })
+		        .setNegativeButton("Abandon", new DialogInterface.OnClickListener() {
+					
+					public void onClick(DialogInterface dialog, int which)
+					{
+						if(oldEvent != null) //abandon changes
+						{
+							event = new PubEvent(oldEvent.writeXml());
+							service.UpdatePubEvent(event);
+							Intent i = new Intent();
+							Bundle b = new Bundle();
+							b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
+							i.putExtras(b);
+							setResult(RESULT_OK, i);
+						}
+						else //This should never be true - this is the dialog for a sent event 
+						{
+							Log.d(Constants.MsgError, "Should always been an old event");
+						}
+						finish();					
+					}
+				})
+		        .show();
+			}
+		}
+		else
+		{
+			finish();
+		}
+
+	}
+	
+	private void onSendSuccess(PubEvent data)
+	{
+		Log.d(Constants.MsgInfo, "PubEvent sent, event id: " + data.GetEventId());
+		Intent intent = new Intent();
+		Bundle b = new Bundle();
+		b.putAll(getIntent().getExtras()); 
+		b.putSerializable(Constants.CurrentWorkingEvent, data.GetEventId());
+		b.putBoolean(Constants.IsSavedEventFlag, false);
+		intent.putExtras(b);
+		setResult(RESULT_OK, intent);
+		finish();		
+	}
+	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -253,80 +359,65 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			//We don't actually care what we are returning from, always get the latest event and update the screen
 			event = service.getEvent(data.getExtras().getInt(Constants.CurrentWorkingEvent));
 			UpdateFromEvent();
+			changed = true;
 		}
 	}
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) 
-	{
-		MenuItem edit = menu.add(0, Menu.NONE, 0, "Change Location");
-		edit.setOnMenuItemClickListener(this);
 
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		edit = menu.add(0, Menu.NONE, 0, "Change Location");
 		return super.onCreateOptionsMenu(menu);
 	}
-
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu)
+	{
+		if(service!=null)
+		{
+			edit.setOnMenuItemClickListener(Organise.this); 
+			//don't let people change the location before we have connected to the service, as we need the service to find pubs etc. from current location
+		}
+		return super.onPrepareOptionsMenu(menu);
+	}
+	
 	public boolean onMenuItemClick(MenuItem item) {
 		switch(item.getItemId()){
 			case Menu.NONE : {
-				final EditText loc = new EditText(getApplicationContext());
-				new AlertDialog.Builder(this).setMessage("Enter your current location:")  
-				.setTitle("Change Location")  
-				.setCancelable(true)  
-				.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						Geocoder geocoder = new Geocoder(getApplicationContext());
-						try {
-							List<Address> addresses = geocoder.getFromLocationName(loc.getText().toString(), 5);
-							double lat = 0;
-							double latsum = 0;
-							double lng = 0;
-							double lngsum = 0;
-							if(addresses!=null) {
-								for(int i=0; i<addresses.size(); i++) {
-									Address a = addresses.get(i);
-									if(a!=null) 
-									{
-										if(lat==0) {lat = a.getLatitude();}
-										else {
-											latsum+=a.getLatitude();
-											lat=latsum/i;
-										}
-										if(lng==0) {lng = a.getLongitude();}
-										else {
-											lngsum+=a.getLongitude();
-											lng=lngsum/i;
-										}
-									}
-								}
-							}
-							if(lat!=0&&lng!=0&&findNewNearestPub(lat,lng)){
-								latSet=lat;
-								lngSet=lng;
-								locSet=true;
-								cur_loc.setText(loc.getText()); 
-								UpdateFromEvent();
-							}
-							else {Toast.makeText(getApplicationContext(), "Unrecognised location", Toast.LENGTH_SHORT).show();}
-						} 
-						catch (IOException e) 
-						{
-							Log.d(Constants.MsgError,"Error in finding latitude & longitude from given location.");
-							e.printStackTrace();
-						}
-						dialog.cancel();
-					}
-				})
-				.setNegativeButton("Discard", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				})
-				.setView(loc)
-				.show(); 
+				setLocation();
 				return true;
 			}
 		}
 		return false;
-	} 
+	}
+	
+	void setLocation()
+	{
+		LocationChanger.changeLocation(this);
+	}
+	
+	void success(double lat, double lng, final String loc)
+	{
+		latSet=lat;
+		lngSet=lng;
+		locSet=true; 
+		runOnUiThread(new Runnable(){
+			public void run() {
+				cur_loc.setText(loc);
+				UpdateFromEvent();
+				removeProgBar();
+			}});
+	}
+	
+	void removeProgBar()
+	{
+		runOnUiThread(new Runnable(){
+
+			public void run() {
+				progbar.setVisibility(View.GONE);
+			}});
+	}
 
 
 	private void UpdateFromEvent()
@@ -335,7 +426,9 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 		cur_time.setText(event.GetFormattedStartTime());
 
 		listItems.clear();
-		for(User user : event.GetUsers()) {
+		adapter.notifyDataSetChanged();
+		for(User user : event.GetUsers()) 
+		{
 			if(user instanceof AppUser)
 			{
 				listItems.add(user.toString());
@@ -344,38 +437,28 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			else
 			{
 				DataRequestGetFacebookUser request = new DataRequestGetFacebookUser(user.getUserId());
-				service.addDataRequest(request, new IRequestListener<AppUser>() {
-
-					public void onRequestComplete(AppUser data) {
-						listItems.add(data.toString());
-						Organise.this.runOnUiThread(new Runnable() {
-							public void run() {
+				service.addDataRequest(request, new IRequestListener<AppUser>() 
+				{
+					public void onRequestComplete(final AppUser data) 
+					{
+						Organise.this.runOnUiThread(new Runnable() 
+						{
+							public void run() 
+							{
+								listItems.add(data.toString());
 								adapter.notifyDataSetChanged();					
 							}
 						});
 					}
 
-					public void onRequestFail(Exception e) {
+					public void onRequestFail(Exception e) 
+					{
 						// TODO Auto-generated method stub
 						Log.d(Constants.MsgError, e.getMessage());
 					}
 					
-				} );
+				});
 			}
-		}
-	}
-	private boolean findNewNearestPub(double lat, double lng) {
-		PubFinder finder = new PubFinder(lat,lng);
-		try {
-			List<Place> list = finder.performSearch();
-			PubLocation best = new PubRanker(list, event, service.getHistoryStore()).returnBest();
-			if(best==null) {return false;}
-			event.SetPubLocation(best);
-			return true;
-		} catch (Exception e) {
-			Log.d(Constants.MsgError, "Cannot find pubs based on this location.");
-			e.printStackTrace();
-			return false;
 		}
 	}
 
@@ -395,6 +478,45 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 
 	}*/
 
+	private void updateEvent()
+	{
+		progbar.setVisibility(View.VISIBLE);
+		DataRequestUpdateEvent update = new DataRequestUpdateEvent(event);
+		Organise.this.service.addDataRequest(update, new IRequestListener<PubEvent>()
+		{
+			public void onRequestComplete(PubEvent data) 
+			{
+				if(data==null) 
+				{
+					onSendSuccess(event);
+				}
+				else 
+				{
+					onSendSuccess(data);
+				}
+			}
+
+			public void onRequestFail(Exception e) 
+			{
+				Log.d(Constants.MsgError,"Failed to update event: " + e.getMessage());
+				runOnUiThread(new Runnable()
+				{
+					public void run() 
+					{
+						progbar.setVisibility(View.GONE);
+						Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
+					}
+				});
+			}
+		});
+			
+				
+		//Set the host as up for this time
+		UserStatus userStatus = event.GetGoingStatusMap().get(event.GetHost());
+		userStatus.freeFrom = event.GetStartTime();
+		event.GetGoingStatusMap().put(event.GetHost(), userStatus);
+	}
+	
 	private ServiceConnection connection = new ServiceConnection()
 	{
 
@@ -403,8 +525,53 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 			//Give the interface to the app
 			Organise.this.service = (IPubService)service;
 			event=Organise.this.service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			if(eventSavedAlready)
+			{
+				oldEvent = new PubEvent(event.writeXml()); //duplicate the old event
+			}
 			
-			Organise.this.service.addDataRequest(new DataRequestGetFriends(), new IRequestListener<AppUserArray>(){
+			/*originalTime = Calendar.getInstance();
+			originalTime.setTimeInMillis(event.GetStartTime().getTimeInMillis());*/
+			
+			guest_list.setOnItemClickListener(new OnItemClickListener() {
+				public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
+					Intent i = new Intent(getBaseContext(), Guests.class);
+					Bundle b = new Bundle();
+					b.putAll(getIntent().getExtras());
+					b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
+					i.putExtras(b);
+					startActivityForResult(i, Constants.GuestReturn);
+				}
+			});
+
+			//Get user's current location
+			double[] location = Organise.this.service.GetActiveUser().getLocation();
+			if(location==null)
+			{
+				final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+				LocationFinder lc = new LocationFinder(locationManager);
+				lc.findLocation(new LocationListener(){
+
+					public void onLocationChanged(Location loc) {
+						locationManager.removeUpdates(this);
+						geocode(loc.getLatitude(), loc.getLongitude());
+					}
+
+					public void onProviderDisabled(String arg0) {
+						Log.d(Constants.MsgError, arg0 + " is disabled.");
+					}
+
+					public void onProviderEnabled(String arg0) {}
+
+					public void onStatusChanged(String arg0, int arg1,Bundle arg2) {}});
+			}
+			else
+			{
+				geocode(location[0], location[1]);
+			}
+						
+			//get list of facebook friends
+			Organise.this.service.addDataRequest(new DataRequestGetFriends(getApplicationContext()), new IRequestListener<AppUserArray>(){
 
 				public void onRequestComplete(AppUserArray data) {
 					facebookFriends = data.getArray();
@@ -414,8 +581,42 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 					Log.d(Constants.MsgError, "FAIL");
 				}});
 			
-			UpdateFromEvent();
+
+			//update text on save/send buttons depending on whether the event is sent or not
+			Button button_save_event = (Button)findViewById(R.id.save_event);
+			Button button_send_invites = (Button)findViewById(R.id.send_invites_event);
 			
+			if(event.GetEventId()<0)
+			{
+				button_save_event.setOnClickListener(Organise.this);
+				button_send_invites.setOnClickListener(Organise.this);
+			}
+			else
+			{
+				button_save_event.setVisibility(View.INVISIBLE);
+				button_send_invites.setText(R.string.update);
+				
+				button_send_invites.setOnClickListener(new OnClickListener()
+				{
+
+					public void onClick(View arg0) 
+					{
+						updateEvent();
+					}
+				});
+			}
+			
+			//update screen from event
+			UpdateFromEvent();
+		}
+
+		public void onServiceDisconnected(ComponentName className)
+		{
+		}
+		
+		private void geocode(double latitude, double longitude)
+		{			
+			//find name of location based on lat/long of user's location
 			DataRequestGeocoder geoCoder = new DataRequestGeocoder(latitude, longitude, getApplicationContext());
 			Organise.this.service.addDataRequest(geoCoder, new IRequestListener<XmlableString>(){
 
@@ -428,12 +629,8 @@ public class Organise extends ListActivity implements OnClickListener, OnMenuIte
 					Log.d(Constants.MsgError,"Exception thrown by Geocoder in Organise.");
 					e.printStackTrace();
 					runOnUiThread(new TextUpdater("Unknown"));
-				}});
+				}
+			});
 		}
-
-		public void onServiceDisconnected(ComponentName className)
-		{
-		}
-
 	};
 }

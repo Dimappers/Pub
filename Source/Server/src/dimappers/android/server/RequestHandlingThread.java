@@ -14,7 +14,10 @@ import java.io.StringBufferInputStream;
 import java.io.StringReader;
 import java.net.Socket;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -23,13 +26,19 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
 import dimappers.android.PubData.AcknoledgementData;
+import dimappers.android.PubData.ConfirmMessage;
+import dimappers.android.PubData.GoingStatus;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.RefreshData;
+import dimappers.android.PubData.RefreshEventMessage;
+import dimappers.android.PubData.RefreshEventResponseMessage;
 import dimappers.android.PubData.RefreshResponse;
 import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.UpdateData;
+import dimappers.android.PubData.UpdateType;
 import dimappers.android.PubData.User;
+import dimappers.android.PubData.UserStatus;
 
 public class RequestHandlingThread extends Thread{
 
@@ -60,7 +69,7 @@ public class RequestHandlingThread extends Thread{
 		}
 		
 		if (doc != null) {
-			message = MessageType.valueOf(doc.getRootElement().getChild("MessageType").getText());
+			message = MessageType.valueOf(doc.getRootElement().getChild(MessageType.class.getSimpleName()).getText());
 		}
 		
 		
@@ -95,6 +104,18 @@ public class RequestHandlingThread extends Thread{
 			}
 			break;
 		}
+		
+		case refreshEventMessage : {
+			try
+			{
+				System.out.println("Refresh individual event recieved");
+				RefreshEventMessageReceived(doc, clientSocket);
+			} catch (ServerException e)
+			{
+				HandleException(e);
+			}
+			break;
+		}
 
 		case respondMessage:
 		{
@@ -124,6 +145,17 @@ public class RequestHandlingThread extends Thread{
 			break;
 		}
 
+		case confirmMessage:
+			try
+			{
+				System.out.println("Confirm/Deny received");
+				ItsOnMessageReceived(doc, clientSocket);
+			}
+			catch(ServerException e)
+			{
+				HandleException(e);
+			}
+			break;
 		case unknownMessageType:
 		default:
 			HandleException(new ServerException(ExceptionType.UnknownMessageTypeError));
@@ -207,7 +239,7 @@ public class RequestHandlingThread extends Thread{
 		RefreshData refresh;
 		refresh = new RefreshData(doc.getRootElement().getChild(RefreshData.class.getSimpleName()));
 
-		LinkedList<Integer> refreshEventIds;
+		Set<Integer> refreshEventIds;
 		if (refresh.isFullUpdate()) {
 			// If true, returns all the events, otherwise just the events that need refreshing
 			refreshEventIds = UserManager.getFullUpdate(refresh.getUser());
@@ -215,20 +247,8 @@ public class RequestHandlingThread extends Thread{
 		else {
 			refreshEventIds = UserManager.getUpdate(refresh.getUser());
 		}
-		
-		UserManager.markAllAsUpToDate(refresh.getUser());
-		
-		// Create an array to fit all needed events in
-		PubEvent[] refreshEvents = new PubEvent[refreshEventIds.size()];
-		int eventCounter = 0;
 
-		// Create an Iterator and iterate through each eventId, adding the appropriate event to the array
-		for(int event : refreshEventIds)
-		{
-			refreshEvents[eventCounter++] = EventManager.GetPubEvent(event);
-		}
-
-		RefreshResponse response = new RefreshResponse(refreshEvents);
+		RefreshResponse response = new RefreshResponse(refreshEventIds);
 		
 		// Creates the XML Document tree that is being returned
 		Element root = new Element("Message");
@@ -250,6 +270,37 @@ public class RequestHandlingThread extends Thread{
 			throw new ServerException(ExceptionType.RefreshUnknownError, e);
 		}
 	}
+	
+	private static void RefreshEventMessageReceived(Document doc, Socket clientSocket) throws ServerException
+	{
+		RefreshEventMessage refreshEventMessage;
+		refreshEventMessage = new RefreshEventMessage(doc.getRootElement().getChild(RefreshEventMessage.class.getSimpleName()));
+			
+		UpdateType updateType = UserManager.getUpdateType(refreshEventMessage.getUser(), refreshEventMessage.getEventId());
+		PubEvent eventToReturn = EventManager.GetPubEvent(refreshEventMessage.getEventId());
+		RefreshEventResponseMessage returnMessage = new RefreshEventResponseMessage(eventToReturn, updateType);
+		
+		Element root = new Element("Message");
+		Document returnDoc = new Document(root);
+		root.addContent(returnMessage.writeXml());
+		
+		XMLOutputter outputter = new XMLOutputter();
+		
+		// Return the latest info about the specified event
+		try
+		{
+			outputter.output(returnDoc, clientSocket.getOutputStream());
+		} catch (Exception e)
+		{
+			if(e instanceof IOException) {
+				//Error reading object
+				throw new ServerException(ExceptionType.RefreshReadingObject, e);
+			}
+			throw new ServerException(ExceptionType.RefreshUnknownError, e);
+		}
+		
+		UserManager.markAsUpToDate(refreshEventMessage.getUser(), refreshEventMessage.getEventId());
+	}
 
 	private static void RespondMessageReceived(Document doc, Socket clientSocket) throws ServerException
 	{
@@ -265,9 +316,34 @@ public class RequestHandlingThread extends Thread{
 			if(!user.equals(response.GetUser()))
 			{
 				//Tell that user they need an update
-				UserManager.markForUpdate(user, response.GetEventId());
+				UserManager.markForUserResponse(user, response.GetEventId());
 			}
 		}
+		
+		UpdateType updateType = UserManager.getUpdateType(response.GetUser(), event.GetEventId());
+		
+		RefreshEventResponseMessage latestEventReturnMessage = new RefreshEventResponseMessage(event, updateType);
+		
+		Element root = new Element("Message");
+		Document returnDoc = new Document(root);
+		root.addContent(latestEventReturnMessage.writeXml());
+		
+		XMLOutputter outputter = new XMLOutputter();
+		
+		// Return the latest info about the specified event
+		try
+		{
+			outputter.output(returnDoc, clientSocket.getOutputStream());
+		} catch (Exception e)
+		{
+			if(e instanceof IOException) {
+				//Error reading object
+				throw new ServerException(ExceptionType.RefreshReadingObject, e);
+			}
+			throw new ServerException(ExceptionType.RefreshUnknownError, e);
+		}
+		
+		UserManager.markAsUpToDate(response.GetUser(), event.GetEventId());		
 	}
 
 	private static void UpdateMessageReceived(Document doc, Socket clientSocket) throws ServerException
@@ -276,10 +352,23 @@ public class RequestHandlingThread extends Thread{
 		UpdateData update;
 		update = new UpdateData(doc.getRootElement().getChild(UpdateData.class.getSimpleName()));
 
+		EventChange eventChange = EventChange.timeNotChanged;
+		Calendar oldEventTime;
+		
 		PubEvent event = EventManager.GetPubEvent(update.getEventId());
 
+		oldEventTime = event.GetStartTime();
 		// Checks if the start time needs amending
 		if (update.getStartTime() != null) {
+			if(event.GetStartTime().after(update.getStartTime()))
+			{
+				//original event time is after the new time, there for the new time is earlier
+				eventChange = EventChange.earlierTime;
+			}
+			else if(event.GetStartTime().before(update.getStartTime()))
+			{
+				eventChange = EventChange.laterTime;
+			}
 			event.SetStartTime(update.getStartTime());
 		}
 
@@ -309,7 +398,79 @@ public class RequestHandlingThread extends Thread{
 			{
 				UserManager.markForUpdate(user, event.GetEventId());
 			}
+			else
+			{
+				//We are the host, so we are obviously free for this time
+				ResponseData response = new ResponseData(user, event.GetEventId(), true, event.GetStartTime(), "");
+				event.UpdateUserStatus(response);
+			}
 		}
+		
+		UpdateType updateType = UserManager.getUpdateType(event.GetHost(), event.GetEventId());
+		
+		RefreshEventResponseMessage latestEventReturnMessage = new RefreshEventResponseMessage(event, updateType);
+		
+		Element root = new Element("Message");
+		Document returnDoc = new Document(root);
+		root.addContent(latestEventReturnMessage.writeXml());
+		
+		XMLOutputter outputter = new XMLOutputter();
+		
+		// Return the latest info about the specified event
+		try
+		{
+			outputter.output(returnDoc, clientSocket.getOutputStream());
+		} catch (Exception e)
+		{
+			if(e instanceof IOException) {
+				//Error reading object
+				throw new ServerException(ExceptionType.RefreshReadingObject, e);
+			}
+			throw new ServerException(ExceptionType.RefreshUnknownError, e);
+		}
+		
+		UserManager.markAsUpToDate(event.GetHost(), event.GetEventId());
+	}
+	
+	private static void ItsOnMessageReceived(Document doc, Socket clientSocket) throws ServerException
+	{
+		ConfirmMessage message = new ConfirmMessage(doc.getRootElement().getChild(ConfirmMessage.class.getSimpleName()));
+		
+		EventManager.ConfirmTrip(message.getEventId(), message.getEventStatus());
+		
+		PubEvent event = EventManager.GetPubEvent(message.getEventId());
+		for(User user : event.GetUsers())
+		{
+			if(!user.equals(event.GetHost()))
+			{
+				UserManager.markForConfirmed(user, message.getEventId());
+			}
+		}
+		
+		UpdateType updateType = UserManager.getUpdateType(event.GetHost(), event.GetEventId());
+		
+		RefreshEventResponseMessage latestEventReturnMessage = new RefreshEventResponseMessage(event, updateType);
+		
+		Element root = new Element("Message");
+		Document returnDoc = new Document(root);
+		root.addContent(latestEventReturnMessage.writeXml());
+		
+		XMLOutputter outputter = new XMLOutputter();
+		
+		// Return the latest info about the specified event
+		try
+		{
+			outputter.output(returnDoc, clientSocket.getOutputStream());
+		} catch (Exception e)
+		{
+			if(e instanceof IOException) {
+				//Error reading object
+				throw new ServerException(ExceptionType.RefreshReadingObject, e);
+			}
+			throw new ServerException(ExceptionType.RefreshUnknownError, e);
+		}
+		
+		UserManager.markAsUpToDate(event.GetHost(), event.GetEventId());
 	}
 	
 	private static void HandleException(ServerException e)
@@ -431,5 +592,12 @@ public class RequestHandlingThread extends Thread{
 		System.out.println(sBuilder.toString());
 		StringReader reader = new StringReader(sBuilder.toString());
 		return docBuilder.build(reader);
+	}
+	
+	enum EventChange
+	{
+		laterTime,
+		earlierTime,
+		timeNotChanged
 	}
 }

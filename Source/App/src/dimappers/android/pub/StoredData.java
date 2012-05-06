@@ -34,11 +34,17 @@ import dimappers.android.PubData.PubEvent;
 public class StoredData implements Serializable
 {	
 	//Names of hash maps
+	public static final String loggedInUserTag = "LUser";
+	private static final String fbAuthStringTag ="FbAuth";
+	private static final String fbExpiryTag = "FbExp";
 	public static final String hostSavedTag = "HostSaved";
 	public static final String hostSentTag = "HostSent";
 	public static final String invitedTag = "Invited";
 	public static final String genericStoresTag = "GenericStores";
 	private static final String historyStoreTag = "HistoryStore";
+	
+	public static final String sentEventsStore = "PubEvent";
+	
 	//private final int HistoryDepth = 15;
 	
 	private HashMap<Integer, PubEvent> savedEvents; //Events the users has created and saved
@@ -52,6 +58,10 @@ public class StoredData implements Serializable
 	
 	private Dictionary<String, HashMap<?,? extends IXmlable>> dataStores;
 	private HistoryStore historyStore;
+	
+	private AppUser loggedInUser;
+	private String authKey;
+	private long expiryDate;
 	
 	public StoredData()
 	{
@@ -67,9 +77,36 @@ public class StoredData implements Serializable
 		
 		dataStores = new Hashtable<String, HashMap<?,? extends IXmlable>>();
 		historyStore = new HistoryStore();
-		
+	
+		loggedInUser =null;
 	}
 	
+	public void setActiveUser(AppUser user)
+	{
+		loggedInUser = user;
+	}
+	
+	public AppUser getActiveUser()
+	{
+		return loggedInUser;
+	}
+	
+	public String getAuthKey() {
+		return authKey;
+	}
+
+	public void setAuthKey(String authKey) {
+		this.authKey = authKey;
+	}
+
+	public long getExpiryDate() {
+		return expiryDate;
+	}
+
+	public void setExpiryDate(long expiryDate) {
+		this.expiryDate = expiryDate;
+	}
+
 	public <K, V  extends IXmlable> HashMap<K, V> GetGenericStore(IDataRequest<K, V> dataRequest)
 	{
 		if(dataRequest.getStoredDataId() == Constants.NoDictionaryForGenericDataStore)
@@ -156,7 +193,7 @@ public class StoredData implements Serializable
 			}
 			else
 			{
-				return (PubEvent)dataStores.get("PubEvent").get(eventId);
+				return (PubEvent)dataStores.get(sentEventsStore).get(eventId);
 			}
 		}
 		else
@@ -186,13 +223,26 @@ public class StoredData implements Serializable
 		invitedEvents.put(invitedEvent.GetEventId(), invitedEvent);
 	}
 	
-	public void DeleteSavedEvent(PubEvent event)
+	public void DeleteSavedEvent(int eventId)
 	{
-		if(event.GetEventId() >= 0)
+		if(eventId >= 0)
 		{
 			Log.d(Constants.MsgWarning, "This does not appear to be a saved event");
 		}
-		savedEvents.remove(event.GetEventId());
+		savedEvents.remove(eventId);
+	}
+	
+	//This method does not remove from the server, only deletes the data locally
+	public void DeleteSentEvent(int eventId)
+	{
+		if(invitedEvents.containsKey(eventId))
+		{
+			invitedEvents.remove(eventId);
+		}
+		else
+		{
+			dataStores.get(sentEventsStore).remove(eventId);
+		}
 	}
 	
 	/*public void notifySentEventHasId(int eventId)
@@ -211,6 +261,18 @@ public class StoredData implements Serializable
 	public String save() {
 		Document saveDoc = new Document();
 		Element root = new Element("PubSaveData");
+		
+		Element loggedInUserElement = new Element(loggedInUserTag);
+		loggedInUserElement.addContent(loggedInUser.writeXml());
+		root.addContent(loggedInUserElement);
+		
+		Element facebookAuthTokenElement = new Element(fbAuthStringTag);
+		facebookAuthTokenElement.setText(authKey);
+		root.addContent(facebookAuthTokenElement);
+		
+		Element facebookExpiryElement = new Element(fbExpiryTag);
+		facebookExpiryElement.setText(Long.toString(expiryDate));
+		root.addContent(facebookExpiryElement);
 		
 		Element rootSaved = new Element(hostSavedTag);
 		for(PubEvent event : savedEvents.values())
@@ -300,6 +362,11 @@ public class StoredData implements Serializable
 		}
 
 		Element root = loadedDoc.getRootElement();
+		
+		loggedInUser = new AppUser(root.getChild(loggedInUserTag).getChild(AppUser.class.getSimpleName()));
+		authKey = root.getChildText(fbAuthStringTag);
+		expiryDate = Long.parseLong(root.getChildText(fbExpiryTag));
+		
 		Element hostSavedElement = root.getChild(hostSavedTag);
 		List<Element> elements = hostSavedElement.getChildren(PubEvent.class.getSimpleName());
 		for(Element savedEventElement : elements)

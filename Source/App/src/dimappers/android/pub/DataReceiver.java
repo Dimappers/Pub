@@ -65,15 +65,11 @@ public class DataReceiver
 
 
 				public void onRequestComplete(PubEventArray data) {
-					if(data.getEvents().length > 0)
-					{
-						service.NewEventsRecieved(data.getEvents());
-					}
 				}
 
 
 				public void onRequestFail(Exception e) {
-					//Don't know?					
+					//TODO: Don't know?					
 				}
 				
 			});

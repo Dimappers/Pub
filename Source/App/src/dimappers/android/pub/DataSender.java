@@ -39,7 +39,7 @@ public class DataSender {
 	private SenderThread senderThread;
 	
 	DataSender(){
-		queue = new ArrayBlockingQueue<Request<?, ?>>(100);
+		queue = new ArrayBlockingQueue<Request<?, ?>>(500);
 		senderThread = new SenderThread();
 		senderThread.execute(new Object[]{});
 	}
@@ -135,5 +135,12 @@ public class DataSender {
 		System.out.println(sBuilder.toString());
 		StringReader reader = new StringReader(sBuilder.toString());
 		return docBuilder.build(reader);
+	}
+	
+	public static Document sendReceiveDocument(Document docToSend) throws UnknownHostException, IOException, JDOMException
+	{
+		Socket s = sendDocument(docToSend);
+		
+		return readTillEndOfMessage(s.getInputStream());
 	}
 }

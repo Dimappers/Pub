@@ -2,7 +2,9 @@ package dimappers.android.server;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Set;
 
+import dimappers.android.PubData.UpdateType;
 import dimappers.android.PubData.User;
 
 public class UserManager {
@@ -62,6 +64,28 @@ public class UserManager {
 		sUser.NotifyEventUpdated(eventId);
 	}
 	
+	public static void markForConfirmed(User user, int eventId) throws ServerException {
+		/*Marks this event for the user as having been confirmed or denied*/
+		if(!users.containsKey(user.getUserId()))
+		{
+			throw new ServerException(ExceptionType.UserManagerNoSuchUser);
+		}
+		
+		ServerUser sUser = users.get(user.getUserId());
+		sUser.NotifyEventConfirmed(eventId);
+	}
+	
+	public static void markForUserResponse(User user, int eventId) throws ServerException {
+		/*Marks the event as having someone replied */
+		if(!users.containsKey(user.getUserId()))
+		{
+			throw new ServerException(ExceptionType.UserManagerNoSuchUser);
+		}
+		
+		ServerUser sUser = users.get(user.getUserId());
+		sUser.NotifyPersonResponded(eventId);
+	}
+	
 	public static void markAsUpToDate(User user, int eventId) throws ServerException
 	{
 		if(!users.containsKey(user.getUserId()))
@@ -70,7 +94,7 @@ public class UserManager {
 		}
 		
 		ServerUser sUser = users.get(user.getUserId());
-		sUser.setUpdate(eventId, true);
+		sUser.NotifyUpdateSent(eventId);
 	}
 	
 	public static void markAllAsUpToDate(User user) throws ServerException
@@ -84,9 +108,9 @@ public class UserManager {
 		sUser.NotifyUpdateSent();
 	}
 	
-	public static LinkedList<Integer> getUpdate(User user) throws ServerException {
+	public static Set<Integer> getUpdate(User user) throws ServerException {
 		/* Returns a Linked List of events that need to be refreshed for the given user. If the
-		 * user doesn't exist, returns null
+		 * user doesn't exist, throws an exception
 		 */
 		if(!users.containsKey(user.getUserId()))
 		{
@@ -97,7 +121,7 @@ public class UserManager {
 		return sUser.getOutOfDateEvents();
 	}
 	
-	public static LinkedList<Integer> getFullUpdate(User user) throws ServerException {
+	public static Set<Integer> getFullUpdate(User user) throws ServerException {
 		if(!users.containsKey(user.getUserId()))
 		{
 			throw new ServerException(ExceptionType.UserManagerNoSuchUser);
@@ -105,5 +129,16 @@ public class UserManager {
 		
 		ServerUser sUser = users.get(user.getUserId());
 		return sUser.getAllEvents();
+	}
+	
+	public static UpdateType getUpdateType(User user, int eventId) throws ServerException
+	{
+		if(!users.containsKey(user.getUserId()))
+		{
+			throw new ServerException(ExceptionType.UserManagerNoSuchUser);
+		}
+		
+		ServerUser sUser = users.get(user.getUserId());
+		return sUser.getUpdateType(eventId);
 	}
 }

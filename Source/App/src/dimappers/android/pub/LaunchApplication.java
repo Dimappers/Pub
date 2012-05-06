@@ -13,12 +13,16 @@ import org.json.JSONObject;
 
 import net.awl.appgarden.sdk.AppGardenAgent;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -50,6 +54,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	
+    	
     	if(getIntent().getExtras() != null)
     	{
 	    	if(getIntent().getExtras().containsKey(Constants.CurrentWorkingEvent))
@@ -68,7 +73,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
        		Intent i = new Intent(this, NoInternet.class); 
        		startActivityForResult(i,Constants.NoInternet);
        	}
-    	
+    	else {
     	//Orientate the screen - currently just using standard rotation for everything
         /*if(getWindowManager().getDefaultDisplay().getRotation()==Surface.ROTATION_90||getWindowManager().getDefaultDisplay().getRotation()==Surface.ROTATION_270)
         {
@@ -82,15 +87,21 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	AppGardenAgent.startSchoolYear(this, "3c7b17c9-5ee0-4b3e-8edb-94a5ccaa7fe2");
     	
     	authoriseFacebook();
+    	
+    	Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf"); 
+    	
     	Button button_organise = (Button)findViewById(R.id.organise_button);
-    	button_organise.setOnClickListener(this);
     	button_organise.setVisibility(View.GONE);
+    	button_organise.setOnClickListener(this);
+    	button_organise.setTypeface(font);
     	
     	Button button_invites = (Button)findViewById(R.id.invites_button);
     	button_invites.setOnClickListener(this);
     	button_invites.setVisibility(View.GONE);
+    	button_invites.setTypeface(font);
+    	    	
     	
-    	findViewById(android.R.id.list).setVisibility(View.GONE);
+    	findViewById(android.R.id.list).setVisibility(View.GONE); }
     }
     
     private void authoriseFacebook()
@@ -110,7 +121,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		/* Only call authorise if the access_token has expired */
 		if(!facebook.isSessionValid()) {
 			Log.d(Constants.MsgInfo, "No valid token found - authorising with Facebook");
-			facebook.authorize(this, new String[] { "email", "publish_checkins", "user_location", "friends_location", "user_photos", "read_stream" }, Constants.FromFacebookLogin, new DialogListener() {
+			facebook.authorize(this, new String[] { "email", "user_location", "friends_location", "user_photos", "read_stream" }, Constants.FromFacebookLogin, new DialogListener() {
 				public void onComplete(Bundle values) {
 					SharedPreferences.Editor editor = mPrefs.edit();
 					editor.putString("access_token", facebook.getAccessToken());
@@ -156,7 +167,18 @@ public class LaunchApplication extends Activity implements OnClickListener{
 			}
 
 			public void onRequestFail(Exception e) {
-				finish();
+				new AlertDialog.Builder(LaunchApplication.this)
+						.setCancelable(true)  
+						.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,	int which) 
+							{
+								dialog.cancel();
+								LaunchApplication.this.finish();
+							}
+						})
+						.setTitle("An error has occurred trying to authenticate with Facebook")
+						.show();
 			}};
 	    array[1] = facebook;
     	new GetPerson().execute(array);
@@ -248,6 +270,11 @@ public class LaunchApplication extends Activity implements OnClickListener{
     
     private boolean isNetworkAvailable() {
         return ((ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo()!=null;
+    }
+    
+    public void runHere(Runnable r)
+    {
+    	runOnUiThread(r);
     }
     
 }

@@ -20,6 +20,8 @@
   	<string name="test">Test</string>
   	<string name="add_guest">Add guest</string>  	
   	<string name="show_sent_invites">Show Sent Invites</string>
+  	<string name="it_is_on">It\'s on!</string>
+  	<string name="update">Update event</string>
   	
   	<string name="current_events">Current Events</string>
   	
@@ -36,6 +38,8 @@
   	<string name="guests">Guests:</string>
   	
   	<string name="confirm">Confirm</string>
+  	
+  	<string name="host_name">from</string>
   	
   	<string name="make_a_comment">Make a comment?</string>
   	

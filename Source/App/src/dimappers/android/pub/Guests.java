@@ -8,12 +8,22 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 import com.facebook.android.Facebook;
 
@@ -26,12 +36,18 @@ public class Guests extends ListActivity implements OnClickListener{
 	ArrayAdapter<AppUser> adapter;
 	ListView guest_list;
 	PubEvent event;
+	PubEvent eventPreEdit;
 	
-	User[] allFriends;
+	boolean isSent;
+	
+	AppUser[] allFriends;
 	
 	IPubService service;
 	
 	Facebook facebook;
+	
+	private boolean searching = false;
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
@@ -43,6 +59,20 @@ public class Guests extends ListActivity implements OnClickListener{
     	
     	guest_list = (ListView)findViewById(android.R.id.list);
     	guest_list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+    	
+    	guest_list.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				
+				AppUser user = (AppUser)arg0.getItemAtPosition(arg2);
+				Intent i = new Intent(getBaseContext(), RankBreakDown.class);
+				i.putExtra("person", user);
+				startActivity(i);
+				
+				return true;
+			}
+		});
 		
 		adapter = new ArrayAdapter<AppUser>(this, android.R.layout.simple_list_item_multiple_choice, listItems);
 		setListAdapter(adapter);
@@ -53,13 +83,103 @@ public class Guests extends ListActivity implements OnClickListener{
 
 	}
 	
+	@Override
+	public boolean onSearchRequested()
+	{
+		searching = true;
+		TextView searchBox = (TextView)findViewById(R.id.search_friends);
+		searchBox.setText("");
+		searchBox.setVisibility(View.VISIBLE);
+		searchBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+		    public void onFocusChange(View v, boolean hasFocus) {
+
+		        if (hasFocus) {
+		                    Guests.this.getWindow().setSoftInputMode(
+
+		                            WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
+		        }
+
+		    }
+
+		});
+		searchBox.requestFocus();
+		searchBox.addTextChangedListener(new TextWatcher() {
+			
+			public void onTextChanged(CharSequence searchTerm, int start, int before, int count) {
+				searchTerm = searchTerm.toString().toLowerCase();
+				if(searchTerm.equals(""))
+				{
+					UpdateListView(allFriends);
+				}
+				else
+				{
+					ArrayList<AppUser> usersToKeep = new ArrayList<AppUser>();
+					for(AppUser user : allFriends)
+					{
+						if(user.toString().toLowerCase().contains(searchTerm))
+						{
+							usersToKeep.add(user);
+						}
+					}
+					AppUser[] array = new AppUser[usersToKeep.size()];
+					UpdateListView(usersToKeep.toArray(array));
+					
+					//Experimental feature: auto select if just one user
+					if(usersToKeep.size() == 1)
+					{
+						if(!guest_list.isItemChecked(0))
+						{
+							guest_list.setItemChecked(0, true);
+							AppUser newlyAddedUser = usersToKeep.get(0); 
+							event.AddUser(newlyAddedUser);
+						}
+					}
+				}				
+			}
+			
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		return true;
+	}
+	
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event)  {
+	    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+	        if(searching)
+	        {
+	        	TextView searchBox = (TextView)findViewById(R.id.search_friends);
+	    		searchBox.setVisibility(View.INVISIBLE);
+	    		UpdateListView(allFriends);
+	        	return true;	
+	        }
+	        else
+	        {
+	        	return super.onKeyDown(keyCode, event);
+	        }
+	    }
+
+	    return super.onKeyDown(keyCode, event);
+	}
+
+	
 	public void onResume(View v){
 		super.onResume();
 		adapter.notifyDataSetChanged();
 	}
 	
 	public void onClick(View v){
-		Intent i;
 		switch(v.getId())
 		{
 		case R.id.save : {
@@ -68,7 +188,7 @@ public class Guests extends ListActivity implements OnClickListener{
 			Intent returnIntent = new Intent();
 			returnIntent.putExtras(b);
 			this.setResult(RESULT_OK,returnIntent);
-			
+			DataRequestGetFriends.UpdateOrdering(allFriends, service);
 			finish();
 			break;
 		}
@@ -76,18 +196,26 @@ public class Guests extends ListActivity implements OnClickListener{
 	}
 	
 	public void onListItemClick(ListView l, View v, int pos, long id) 
-	{
-		super.onListItemClick(l, v, pos, id);
-		
+	{	
 		//Add/Remove guest from
-		User modifedUser = listItems.get(pos);
-		if(event.DoesContainUser(modifedUser))
+		AppUser modifiedUser = listItems.get(pos);
+		if(event.DoesContainUser(modifiedUser))
 		{
-			event.RemoveUser(modifedUser);		}
+			if(isSent&&eventPreEdit.DoesContainUser(modifiedUser))
+			{
+				guest_list.setItemChecked(pos, true);
+				Toast.makeText(getApplicationContext(), "Cannot uninvite a guest!", Toast.LENGTH_LONG).show();
+			}
+			else
+			{
+					event.RemoveUser(modifiedUser);
+			}
+		}
 		else
 		{
-			event.AddUser(modifedUser);
+			event.AddUser(modifiedUser);
 		}
+		
 	}
 	
 	@Override
@@ -108,13 +236,19 @@ public class Guests extends ListActivity implements OnClickListener{
 		{
 			//Give the interface to the app
 			service = (IPubService)bService;
-			event =  service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			int eventId = getIntent().getExtras().getInt(Constants.CurrentWorkingEvent);
+			event =  service.getEvent(eventId);
+			eventPreEdit = new PubEvent(event.writeXml());
 			facebook = service.GetFacebook();
 			
-			DataRequestGetFriends getFriends = new DataRequestGetFriends();
+			if(eventId>=0) {isSent = true;}
+			else {isSent = false;}
+			
+			DataRequestGetFriends getFriends = new DataRequestGetFriends(getApplicationContext());
 			service.addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
 
 				public void onRequestComplete(AppUserArray data) {
+					allFriends = data.getArray();
 					UpdateListView(data.getArray());
 				}
 
@@ -142,14 +276,33 @@ public class Guests extends ListActivity implements OnClickListener{
 		public void run() {
 			listItems.clear();
 	    	
+			ArrayList<AppUser> checkedUsers = new ArrayList<AppUser>();
+			ArrayList<AppUser> uncheckedUsers = new ArrayList<AppUser>();
+			
+			
 			for(AppUser user : sortedArray) {
-	    		listItems.add(user);
+	    		if(event.DoesContainUser(user))
+	    		{
+	    			checkedUsers.add(user);
+	    		}
+	    		else
+	    		{
+	    			uncheckedUsers.add(user);
+	    		}
 	    	}
 			
-			for(int i  = 0; i < listItems.size()/*guest_list.getCount()*/; ++i)
+			int i = 0;
+			for(AppUser checkedUser: checkedUsers)
 			{
-				User listUser = listItems.get(i);
-				guest_list.setItemChecked(i, event.DoesContainUser(listUser));
+				listItems.add(checkedUser);
+				guest_list.setItemChecked(i, true);
+				++i;
+			}
+			for(AppUser uncheckedUser : uncheckedUsers)
+			{
+				listItems.add(uncheckedUser);
+				guest_list.setItemChecked(i, false);
+				++i;
 			}
 			
 			adapter.notifyDataSetChanged();			

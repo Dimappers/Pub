@@ -25,18 +25,22 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-	<Button
-	    android:id="@+id/organise_button"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:layout_weight="1"
-	    android:layout_marginTop="20sp"
-	    android:layout_marginBottom="20sp"
-	    android:layout_marginLeft="20sp"
-	    android:layout_marginRight="20sp"
-	    android:layout_alignParentLeft="true"
-	    android:layout_alignParentTop="true"
-	    android:background="@drawable/organise"/>
+
+        <Button
+            android:id="@+id/organise_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="20sp"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:layout_marginTop="20sp"
+            android:layout_weight="1"
+            android:layout_alignParentLeft="true"
+	   	 	android:layout_alignParentTop="true"
+            android:textColor="#FFFFFF" 
+            android:text="@string/organise"
+            android:textSize="45sp"
+            android:background="@drawable/buttonback" />
 	    
 	<Button
 	    android:id="@+id/invites_button"
@@ -49,7 +53,10 @@
 	    android:layout_weight="1"
 	    android:layout_alignParentLeft="true"
 	    android:layout_alignParentTop="true"
-	    android:background="@drawable/invites"/>
+	    android:textColor="#FFFFFF"
+	    android:text="@string/invites"
+	    android:textSize="45sp"
+	    android:background="@drawable/buttonback"/>
     
 	<Button
 	    android:id="@+id/logoutfb_button"

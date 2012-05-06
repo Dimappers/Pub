@@ -9,10 +9,11 @@ public class UserStatus implements Serializable
 {
 	private final String freeFromTag = "FreeFrom";
 	private final String goingTag = "GoingStatus";
+	private final String msgTag = "Msg";
+
 	
 	public GoingStatus goingStatus;
 	public Calendar freeFrom;
-	
 	public String messageToHost;
 	
 	public UserStatus(GoingStatus goingStatus, Calendar freeFrom, String messageToHost)
@@ -39,6 +40,10 @@ public class UserStatus implements Serializable
 		goingElement.addContent(goingStatus.toString());
 		userStatusElement.addContent(goingElement);
 		
+		Element messageElement = new Element(msgTag);
+		messageElement.addContent(messageToHost);
+		userStatusElement.addContent(messageElement);
+		
 		return userStatusElement;
 	}
 	
@@ -47,5 +52,15 @@ public class UserStatus implements Serializable
 		goingStatus = GoingStatus.valueOf(element.getChildText(goingTag));
 		freeFrom = Calendar.getInstance();
 		freeFrom.setTimeInMillis(Long.parseLong(element.getChildText(freeFromTag)));
+		Element msgElement = element.getChild(msgTag);
+		if(msgElement != null)
+		{
+			messageToHost = msgElement.getText();
+			System.out.println("HELLO");
+		}
+		else
+		{
+			messageToHost = "";
+		}
 	}
 }

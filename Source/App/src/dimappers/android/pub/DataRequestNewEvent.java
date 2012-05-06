@@ -35,25 +35,15 @@ public class DataRequestNewEvent implements IDataRequest<Integer, PubEvent>
 		Element root = new Element("Message");
 		Document xmlDoc = new Document(root);
 
-
-		Element messageTypeElement = new Element("MessageType");
+		Element messageTypeElement = new Element(MessageType.class.getSimpleName());
 		messageTypeElement.addContent(MessageType.newPubEventMessage.toString());
 		root.addContent(messageTypeElement);
 		root.addContent(eventToSend.writeXml());
 		
-		Socket s;
-		try {
-			s = DataSender.sendDocument(xmlDoc);
-		} catch (Exception e) {
-			listener.onRequestFail(e);
-			return;
-		}
-		
 		Document readDoc;
 		try {
-			readDoc = DataSender.readTillEndOfMessage(s.getInputStream());
+			readDoc = DataSender.sendReceiveDocument(xmlDoc);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			listener.onRequestFail(e);
 			return;
 		}
@@ -68,7 +58,7 @@ public class DataRequestNewEvent implements IDataRequest<Integer, PubEvent>
 
 	public String getStoredDataId()
 	{
-		return "PubEvent";
+		return StoredData.sentEventsStore;
 	}
 
 }

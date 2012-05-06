@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+     android:background="@drawable/orgmain" >
 
     <RelativeLayout
         android:id="@+id/relativeLayout1"
@@ -15,7 +16,9 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/use_pub_button"
-            android:hint="Input pub here" />
+            android:hint="Input pub here" 
+            android:layout_marginLeft="20sp"
+            android:layout_marginTop="30sp"/>
 
         <Button
             android:id="@+id/use_pub_button"
@@ -23,21 +26,32 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:text="@string/search" />
+            android:text="@string/search"
+            android:layout_marginRight="20sp"
+            android:layout_marginTop="30sp" />
 
     </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" />
 
         <ListView 
             android:id="@android:id/list"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25sp"
+            android:layout_marginRight="25sp"
+            android:layout_marginBottom="30sp">
 
              </ListView>
-    
+    
        <ImageView
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
+           android:layout_gravity="center_horizontal"
            android:gravity="center"
            android:src="@drawable/powered_by_google_on_non_white" />
 

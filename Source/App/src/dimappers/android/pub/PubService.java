@@ -2,17 +2,14 @@ package dimappers.android.pub;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.Map.Entry;
 
+import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
@@ -24,13 +21,14 @@ import android.util.Log;
 import com.facebook.android.Facebook;
 
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.EventStatus;
 import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.User;
+import dimappers.android.PubData.UpdateType;
 
 public class PubService extends IntentService
 {
-	AppUser user;
+	//AppUser user;
 	
 	public PubService() {
 		super("PubService");
@@ -39,6 +37,9 @@ public class PubService extends IntentService
 
 	//ServiceBinder is our interface to communicate with the service
 	public class ServiceBinder extends Binder implements IPubService {
+		
+		long hostReminderTime = 7200000; //currently set to milliseconds in 2 hours
+		
         PubService getService() {
             // Return this instance of LocalService so clients can call public methods
             return PubService.this;
@@ -51,7 +52,20 @@ public class PubService extends IntentService
 
 		public void GiveNewSentEvent(PubEvent event, final IRequestListener<PubEvent> listener) {
 			DataRequestNewEvent r = new DataRequestNewEvent(event);
-			PubService.this.addDataRequest(r, listener);
+			final int savedEventId = event.GetEventId();
+			PubService.this.addDataRequest(r, new IRequestListener<PubEvent>() {
+
+					public void onRequestComplete(PubEvent data) {
+						storedData.DeleteSavedEvent(savedEventId);
+						makeNotification(data, NotificationAlarmManager.NotificationType.EventAboutToStart);
+						makeNotification(data, NotificationAlarmManager.NotificationType.HostClickItsOnReminder);
+						listener.onRequestComplete(data);
+					}
+
+					public void onRequestFail(Exception e) {
+						listener.onRequestFail(e);
+					}
+				});
 		}
 
 		public Collection<PubEvent> GetSavedEvents() {
@@ -67,7 +81,6 @@ public class PubService extends IntentService
 			}
 			
 			return eventsArray;
-			
 		}
 		
 		public Collection<PubEvent> GetInvitedEvents() {
@@ -83,18 +96,33 @@ public class PubService extends IntentService
 			return null;
 		}
 
-		public void RemoveSavedEvent(PubEvent event) {
-			PubService.this.storedData.DeleteSavedEvent(event);
+		public void RemoveEventFromStoredDataAndCancelNotification(PubEvent event) {
+			PubService.this.storedData.DeleteSavedEvent(event.GetEventId());
+			/////////////////////////////////////////////////((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancel(event.GetEventId());
+		}
+		
+		public void CancelEvent(final PubEvent event)
+		{
+			event.setCurrentStatus(EventStatus.itsOff);
 			
+			DataRequestConfirmDeny cancel = new DataRequestConfirmDeny(event);
+			addDataRequest(cancel, new IRequestListener<PubEvent>(){
+				public void onRequestComplete(PubEvent data)
+				{
+					//PubService.this.storedData.DeleteSentEvent(event.GetEventId());
+					//TODO: Remove notifications for the future
+				}
+				public void onRequestFail(Exception e)
+				{
+					// TODO Auto-generated method stub
+					
+				}
+				
+			});
 		}
 
 		public void PerformUpdate(boolean fullUpdate) {
 			PubService.this.receiver.forceUpdate(fullUpdate);
-		}
-
-		public boolean SendingMessage() {
-			//TODO: Should check to see if a new event has been created but hasn't yet been sent
-			return false;
 		}
 
 		public Facebook GetFacebook() {
@@ -113,43 +141,59 @@ public class PubService extends IntentService
 		}
 
 		public AppUser GetActiveUser() {
-			return user;
+			return storedData.getActiveUser();
 		}
 
-		public void NewEventsRecieved(PubEvent[] newEvents) {
-			for(PubEvent event : newEvents)
+		public void NewEventsRecieved(PubEventArray events) {
+			
+			ArrayList<Notification> notifications = new ArrayList<Notification>();
+			
+					
+			for(Entry<PubEvent, UpdateType> eventEntry : events.getEvents().entrySet())
 			{
-				storedData.AddNewInvitedEvent(event);
+				if(eventEntry.getValue()!=UpdateType.noChangeSinceLastUpdate)
+				{
+					makeNotification(eventEntry.getKey(), NotificationAlarmManager.NotificationType.EventAboutToStart);
+				}
+				//If either the event hasn't been updated (ie this user has already got this data before and this is a full refresh caused by restarting the app
+				PubEvent event = eventEntry.getKey();
+				if(event.GetHost().equals(GetActiveUser()))
+				{
+					storedData.GetGenericStore("PubEvent").put(event.GetEventId(), event);
+				}
+				else
+				{
+					storedData.AddNewInvitedEvent(eventEntry.getKey());
+				}
+				Context context = getApplicationContext();
+				Notification newNotification = NotificationCreator.createNotification(eventEntry.getValue(), event, context, GetActiveUser(), GetFacebook());
+				if(newNotification != null)
+				{
+					notifications.add(newNotification);
+				}
+				
+				//If the event has been cancelled, then remove
+				//TODO: Needs some consideration
+				/*if(eventEntry.getValue() == UpdateType.confirmed || 
+						eventEntry.getValue() == UpdateType.confirmedUpdated || 
+						eventEntry.getValue() == UpdateType.updatedConfirmed ||
+						eventEntry.getValue() == UpdateType.newEventConfirmed)
+				{
+					if(eventEntry.getKey().getCurrentStatus() == EventStatus.itsOff)
+					{
+						storedData.DeleteSentEvent(eventEntry.getKey().GetEventId());
+					}
+				}*/
+				
 			}			
 			
-			NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-			Context context = PubService.this.getApplicationContext();
-			if(newEvents.length == 1)
+			//TODO: This is still using the old notifcations, want to use the above array lists and fill in the method in NotificationCreator
+			
+			NotificationManager nManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+			
+			for(Notification n : notifications)
 			{
-				Notification newNotification = new Notification(R.drawable.icon, "New pub event", System.currentTimeMillis());
-				newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
-				newNotification.defaults |= Notification.DEFAULT_VIBRATE;
-				Intent notificationIntent = new Intent(context, LaunchApplication.class);
-				Bundle b = new Bundle();
-				b.putSerializable(Constants.CurrentWorkingEvent, newEvents[0].GetEventId());
-				notificationIntent.putExtras(b);
-				PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-				
-				newNotification.setLatestEventInfo(context, "New Pub Event", newEvents[0].toString(), contentIntent);
-				
-				nManager.notify(1, newNotification);
-			}
-			else
-			{
-				Notification newNotification = new Notification(R.drawable.icon, newEvents.length + " new events", System.currentTimeMillis());
-				newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
-				newNotification.defaults |= Notification.DEFAULT_VIBRATE;
-				Intent notificationIntent = new Intent(context, CurrentEvents.class);
-				PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-				
-				newNotification.setLatestEventInfo(context, newEvents.length + " new events", newEvents.length + " new events", contentIntent);
-				
-				nManager.notify(1, newNotification);
+				nManager.notify(1, n);
 			}
 		}
 
@@ -159,8 +203,57 @@ public class PubService extends IntentService
 
 		public PubEvent getEvent(int eventId) {
 			return storedData.getEvent(eventId);
+		} 
+    
+		private void makeNotification(PubEvent event, NotificationAlarmManager.NotificationType type)
+		{
+			Intent notificationAlarmIntent = new Intent(getApplicationContext(), NotificationAlarmManager.class);
+			Bundle b = new Bundle();
+			b.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
+			b.putSerializable(Constants.RequiredNotificationType, type);
+			notificationAlarmIntent.putExtras(b);
+			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			
+			switch (type)
+			{
+				case EventAboutToStart :
+				{
+					((AlarmManager) getSystemService(Context.ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis(), contentIntent);
+					break;
+				}
+				case HostClickItsOnReminder :
+				{
+					long time = event.GetStartTime().getTimeInMillis();
+					time -= hostReminderTime;
+					((AlarmManager) getSystemService(Context.ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, time, contentIntent);
+					break;
+				}
+			}
 		}
-    }
+
+		public <K, V extends IXmlable> HashMap<K, V> GetGenericStore(String key) {
+			// TODO Auto-generated method stub
+			return storedData.GetGenericStore(key);
+		}
+
+		public void UpdatePubEvent(PubEvent newEvent)
+		{
+			if(newEvent.GetEventId() < 0)
+			{
+				GiveNewSavedEvent(newEvent);
+			}
+			else
+			{
+				storedData.GetGenericStore(StoredData.sentEventsStore).put(newEvent.GetEventId(), newEvent);
+			}
+		}
+
+		public void EventHasHappenened(PubEvent event) {
+			HistoryStore hStore = getHistoryStore();
+			hStore.addEvent(event);
+			storedData.DeleteSentEvent(event.GetEventId());
+		}
+	}
 
 	
 	private final IPubService binder = new ServiceBinder();
@@ -189,22 +282,30 @@ public class PubService extends IntentService
 				storedData.Load(storedDataString);
 			}
 			
-			//TODO: this causes null pointers
-			user = (AppUser)intent.getExtras().getSerializable(Constants.CurrentFacebookUser);
-			
+			if(intent!=null && intent.getExtras()!=null && intent.getExtras().containsKey(Constants.CurrentFacebookUser))
+			{
+				storedData.setActiveUser((AppUser)intent.getExtras().getSerializable(Constants.CurrentFacebookUser));
+				storedData.setAuthKey(intent.getExtras().getString(Constants.AuthToken));
+				storedData.setExpiryDate(intent.getExtras().getLong(Constants.Expires));
+				//Editor e = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).edit();
+				//e.putString(Constants.CurrentFacebookUser, Long.toString(user.getUserId());
+				//e.commit();
+			}			
+			AppUser user = binder.GetActiveUser();
 			storedData.GetGenericStore("AppUser").put(user.getUserId(), user);
 			
 			sender = new DataSender();
 			receiver = new DataReceiver(binder);
 			
+			//FIXME: this causes null pointers
 			authenticatedFacebook = new Facebook(Constants.FacebookAppId);
-			authenticatedFacebook.setAccessToken(intent.getExtras().getString(Constants.AuthToken));
-			authenticatedFacebook.setAccessExpires(intent.getExtras().getLong(Constants.Expires));
+			authenticatedFacebook.setAccessToken(storedData.getAuthKey());
+			authenticatedFacebook.setAccessExpires(storedData.getExpiryDate());
 			
 			hasStarted = true;
 			
 			// Begin retrieving friends
-			DataRequestGetFriends getFriends = new DataRequestGetFriends();
+			DataRequestGetFriends getFriends = new DataRequestGetFriends(getApplicationContext());
 			addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
 
 				public void onRequestComplete(AppUserArray data) {
@@ -260,11 +361,6 @@ public class PubService extends IntentService
 		super.onDestroy();
 	}
 	
-	public User getUser()
-	{
-		return user;
-	}
-	
 	public StoredData getDataStore()
 	{
 		return storedData;
@@ -293,4 +389,7 @@ public class PubService extends IntentService
 		}
 		hasStarted = true;
 	}
+	
+	
+	
 }
