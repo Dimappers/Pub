@@ -98,7 +98,7 @@ import dimappers.android.PubData.UserStatus;
 					 "Pub event at " + event.GetPubLocation().toString(), 
 					 "This event is now starting.", 
 					 contentIntent);
-			 
+			 service.EventHasHappenened(event);
 		}
 		
 		private void hostClickItsOn()
