@@ -90,7 +90,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		return super.onCreateOptionsMenu(menu);
 	}
 	
-	@Override
+	
 	public boolean onMenuItemClick(MenuItem arg0) {
 		switch(arg0.getItemId())
 		{
