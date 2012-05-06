@@ -13,7 +13,8 @@
     		    android:layout_marginLeft="25sp"
             	android:layout_marginRight="25sp"
             	android:layout_marginBottom="30sp"
-            	android:layout_marginTop="30sp">
+            	android:layout_marginTop="30sp"
+>
     		</ListView>
 
 </LinearLayout>
