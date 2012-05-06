@@ -25,6 +25,7 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -391,9 +392,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			convertView = inflater.inflate(R.layout.hosted_row, parent, false);
 			
 			ImageView comment = (ImageView) convertView.findViewById(R.id.envelope);
-			//glView.comment = (ImageView) convertView.findViewById(R.id.envelope);
-			//glView.guest = (TextView)convertView.findViewById(R.id.guest);
-			//glView.time = (TextView)convertView.findViewById(R.id.time);
 			TextView guest = (TextView)convertView.findViewById(R.id.guest);
 			TextView time = (TextView)convertView.findViewById(R.id.time);
 
@@ -444,13 +442,11 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		private void showAddDialog(int position, View view) 
 		{
 			final Dialog commentDialog = new Dialog(context);
+			commentDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			commentDialog.setContentView(R.layout.received_comment);
 			TextView title = (TextView) commentDialog.findViewById(R.id.name);  //After this should have the user name who sent message 
 			
-			//ImageButton cancelButton = (ImageButton) commentDialog.findViewById(R.id.cancel_dialog); 
-
 			TextView text = (TextView) commentDialog.findViewById(R.id.messageText);
-			//text.setClickable(false);
 			GuestList guestList = mData.get(position);
 			
 						
@@ -463,12 +459,6 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 				}
 					
 			}
-			/*cancelButton.setOnClickListener(new OnClickListener() { 
-				// @Override 
-				public void onClick(View v) { 
-					commentDialog.dismiss(); 
-				} 
-			});*/
 
 			commentDialog.show();
 		}
