@@ -94,7 +94,7 @@ public class PersonRanker {
 
 		this.currentEvent = currentEvent;
 		trips = historyStore.getPubTrips();
-		if(!Constants.debug) {removeTooFarAwayFriends();}
+		removeTooFarAwayFriends();
 
 		DataRequestGetFacebookPosts posts = new DataRequestGetFacebookPosts();
 		service.addDataRequest(posts, new IRequestListener<XmlJasonObject>() {
@@ -151,19 +151,16 @@ public class PersonRanker {
 			rankFromCallHistory();
 
 			facebookFriends = MergeSort(facebookFriends);
-			if(!Constants.debug)
+			AppUser[] allFriends = new AppUser[facebookFriends.length + removedFriendsList.length];
+			for(int i = 0; i<facebookFriends.length; i++)
 			{
-				AppUser[] allFriends = new AppUser[facebookFriends.length + removedFriendsList.length];
-				for(int i = 0; i<facebookFriends.length; i++)
-				{
-					allFriends[i] = facebookFriends[i];
-				}
-				for(int i = 0; i<removedFriendsList.length; i++)
-				{
-					allFriends[i+facebookFriends.length] = removedFriendsList[i];
-				}
-				facebookFriends = allFriends;
+				allFriends[i] = facebookFriends[i];
 			}
+			for(int i = 0; i<removedFriendsList.length; i++)
+			{
+				allFriends[i+facebookFriends.length] = removedFriendsList[i];
+			}
+			facebookFriends = allFriends;
 			
 			DataRequestGetFriends.UpdateOrdering(facebookFriends, service);
 
