@@ -108,6 +108,9 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			{
 				MenuItem cancel = menu.add(0, R.id.cancel, 1, "Cancel");
 				cancel.setOnMenuItemClickListener(this);
+				
+				MenuItem refresh = menu.add(0,R.id.refresh_event, 2, "Refresh");
+				refresh.setOnMenuItemClickListener(this);
 			}
 		}
 		return super.onCreateOptionsMenu(menu);
@@ -118,10 +121,14 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	{
 		menu.removeItem(R.id.cancel);
 		menu.removeItem(R.id.delete_event);
+		menu.removeItem(R.id.refresh_event);
 		if(sent||(event!=null&&event.GetEventId()>=0))
 		{ 
 			MenuItem cancel = menu.add(0, R.id.cancel, 1, "Cancel");
 			cancel.setOnMenuItemClickListener(this);
+			
+			MenuItem refresh = menu.add(0,R.id.refresh_event, 2, "Refresh");
+			refresh.setOnMenuItemClickListener(this);
 		}
 		else
 		{
@@ -159,6 +166,32 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		{
 			displayCancelAlert();
 			break;
+		}
+		
+		case(R.id.refresh_event):
+		{
+			DataRequestGetLatestAboutPubEvent refresher = new DataRequestGetLatestAboutPubEvent(event.GetEventId());
+			service.addDataRequest(refresher, new IRequestListener<PubEvent>(){
+
+				public void onRequestComplete(PubEvent data) {
+					
+					event = data;
+					runOnUiThread(new Runnable(){
+
+						public void run() {
+							UpdateDataFromEvent();			
+						}
+				
+					});					
+					
+				}
+
+				public void onRequestFail(Exception e) {
+					// TODO Auto-generated method stub
+					e.printStackTrace();
+				}
+				
+			});
 		}
 		}
 		return false;
@@ -222,6 +255,11 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 					if(data != null)
 					{
 						event = data;
+						runOnUiThread(new Runnable(){
+							public void run() {
+								UpdateDataFromEvent();			
+							}
+						});	
 					}
 					
 				}

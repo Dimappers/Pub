@@ -12,10 +12,15 @@ import dimappers.android.PubData.ConfirmMessage;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.RefreshEventResponseMessage;
+import dimappers.android.PubData.UpdateType;
 
 public class DataRequestConfirmDeny implements IDataRequest<Integer, PubEvent> {
 
 	PubEvent event;
+	
+	IPubService service;
+	
 	public DataRequestConfirmDeny(PubEvent event)
 	{
 		this.event = event;
@@ -23,7 +28,7 @@ public class DataRequestConfirmDeny implements IDataRequest<Integer, PubEvent> {
 	
 	public void giveConnection(IPubService connectionInterface) {
 		// TODO Auto-generated method stub
-		
+		service = connectionInterface;
 	}
 
 	public void performRequest(IRequestListener<PubEvent> listener,
@@ -39,24 +44,25 @@ public class DataRequestConfirmDeny implements IDataRequest<Integer, PubEvent> {
 		
 		docToSend.setRootElement(root);
 		
+		Document returnDocument;
+		
 		try {
-			DataSender.sendDocument(docToSend);
+			returnDocument = DataSender.sendReceiveDocument(docToSend);
 		} catch (Exception e) {
 			listener.onRequestFail(e);
 			return;
 		}
 		
-		listener.onRequestComplete(null);
-		/*Document receivedDoc;
+		RefreshEventResponseMessage returnMessage = new RefreshEventResponseMessage(returnDocument.getRootElement().
+				getChild(RefreshEventResponseMessage.class.getSimpleName()));
 		
-		try {
-			receivedDoc = DataSender.sendReceiveDocument(docToSend);
-		} catch (Exception e) {
-			listener.onRequestFail(e);
-			return;
-		}*/
+		PubEvent event = returnMessage.getEvent();
 		
+		HashMap<PubEvent, UpdateType> update = new HashMap<PubEvent, UpdateType>();
+		update.put(event,  returnMessage.getUpdateType());
+		service.NewEventsRecieved(new PubEventArray(update));
 		
+		listener.onRequestComplete(event);	
 	}
 
 	public String getStoredDataId() {
