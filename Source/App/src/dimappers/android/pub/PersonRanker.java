@@ -158,7 +158,6 @@ public class PersonRanker {
 							{
 								doRanking();
 							}
-							Log.d(Constants.MsgInfo, friend.toString() + " is at " + friend.getLocationName() + " (" + loc[0] + "," + loc[1]);
 						}						
 					}
 
