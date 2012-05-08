@@ -546,7 +546,9 @@ public class PersonRanker {
 
 	private void removeTooFarAwayFriends() {
 		int removedFriends = 0;
+		Log.d(Constants.MsgInfo, "Starting removeTooFarAwayFriends()...");
 		removedFriendsList = new AppUser[facebookFriends.length];
+		Log.d(Constants.MsgInfo, "In removeTooFarAwayFriends(), we have created removedFriendsList of length" + facebookFriends.length +".");
 		for (int i = 0; i < facebookFriends.length; i++) {
 			if (isTooFarAway(facebookFriends[i].getLocation())) {
 				AppUser friend = facebookFriends[i];
@@ -555,6 +557,7 @@ public class PersonRanker {
 				removedFriends++;
 			}
 		}
+		Log.d(Constants.MsgInfo, "In removeTooFarAwayFriends(), we have removed " + removedFriends + " friends.");
 		int j = 0;
 		AppUser[] tmp = new AppUser[facebookFriends.length - removedFriends];
 		AppUser[] tmp2 = new AppUser[removedFriends];
