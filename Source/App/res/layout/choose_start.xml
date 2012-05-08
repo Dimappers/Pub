@@ -12,7 +12,8 @@
         android:layout_gravity="center_horizontal"
         android:text="@string/choose_date"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_marginTop="30sp" />
+        android:layout_marginTop="30sp"
+        android:textSize="30sp" />
 
     <DatePicker
         android:id="@+id/datePicker"
@@ -26,7 +27,8 @@
         android:layout_gravity="center_horizontal"
         android:text="@string/choose_time"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_marginTop="5sp" />
+        android:layout_marginTop="5sp" 
+        android:textSize="30sp"/>
 
     <RelativeLayout
         android:id="@+id/relativeLayout1"
@@ -90,10 +92,10 @@
             android:text="PM" />
 
     </RelativeLayout>
-
+
     <Button
         android:id="@+id/save_date_and_time"
-        android:layout_width="67dp"
+        android:layout_width="90dp"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:layout_marginRight="25sp"

@@ -117,16 +117,17 @@
                 android:text="@string/guest_title"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textSize="20sp" />
-
+
             <ListView
                 android:id="@+id/@android:id/list"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 android:layout_gravity="center"
                 android:layout_marginLeft="25sp"
-                android:layout_marginRight="25sp"               
+                android:layout_marginRight="25sp"
                 android:scrollbars="vertical"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:cacheColorHint="#00000000" />
 
             <LinearLayout
                 android:id="@+id/linearLayout2"
@@ -138,7 +139,7 @@
                     android:id="@+id/send_invites_event"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginBottom="5dp"
                     android:layout_marginLeft="22dp"
                     android:layout_weight="1"
                     android:layout_alignParentLeft="true"
@@ -149,7 +150,7 @@
                     android:id="@+id/save_event"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginBottom="5dp"
                     android:layout_marginRight="22dp"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentBottom="true"

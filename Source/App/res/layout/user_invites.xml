@@ -12,7 +12,8 @@
             android:layout_gravity="center_horizontal"
             android:text="@string/pub_name"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginTop="30sp" />
+            android:layout_marginTop="30sp"
+            android:textSize="25sp"  />
 
         <TextView
             android:id="@+id/userInviteStartTimeText"
@@ -20,7 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/current_start_time"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="25sp"  />
 			
 		<TextView
 		android:id="@+id/userInviteHostNameText"
@@ -28,7 +30,8 @@
 		android:layout_height="wrap_content"
 		android:layout_gravity="center_horizontal"
 		android:text="@string/host_name"
-		android:textAppearance="?android:attr/textAppearanceMedium" />
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:textSize="25sp"  />
 
         <TextView
             android:id="@+id/guestHeader"
@@ -36,7 +39,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/guests"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="25sp"  />
 
     <ListView
         android:id="@+id/listView2"
@@ -46,7 +50,8 @@
         android:layout_marginLeft="25sp"
         android:layout_marginRight="25sp"
         android:layout_weight="1"
-        android:scrollbars="vertical" >
+        android:scrollbars="vertical"
+        android:cacheColorHint="#00000000" >
 
     </ListView>
 

@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.DataSetObserver;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -67,7 +68,8 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		bindService(new Intent(this, PubService.class), connection, 0);
 		
 		setContentView(R.layout.user_invites);
-		    	
+		Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
+		
     	Button button_going = (Button)findViewById(R.id.going);
     	button_going.setOnClickListener(this);
     	
@@ -76,6 +78,11 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     	
     	Button button_decline = (Button) findViewById(R.id.decline);
     	button_decline.setOnClickListener(this);
+    	
+    	((TextView)findViewById(R.id.userInvitesPubNameText)).setTypeface(font);
+    	((TextView)findViewById(R.id.userInviteStartTimeText)).setTypeface(font);
+    	((TextView)findViewById(R.id.userInviteHostNameText)).setTypeface(font);
+    	((TextView)findViewById(R.id.guestHeader)).setTypeface(font);
 	}
 	
 	@Override
