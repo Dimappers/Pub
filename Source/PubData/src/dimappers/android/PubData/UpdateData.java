@@ -23,6 +23,7 @@ public class UpdateData implements Serializable, IXmlable {
 		this.startTime = 	startTime;
 		this.pubLocation = 	pubLocation;
 		this.users = 		new LinkedList<User>();
+		this.eventId = eventId;
 	}
 	
 	public UpdateData(Element element)
