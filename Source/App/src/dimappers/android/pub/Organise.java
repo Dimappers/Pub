@@ -481,7 +481,16 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 	private void updateEvent()
 	{
 		progbar.setVisibility(View.VISIBLE);
-		DataRequestUpdateEvent update = new DataRequestUpdateEvent(event);
+		ArrayList<User> addedUsers = new ArrayList<User>();
+		for(User newUser : event.GetUsers())
+		{
+			if(!oldEvent.GetUsers().contains(newUser))
+			{
+				addedUsers.add(newUser);
+			}
+		}
+		
+		DataRequestUpdateEvent update = new DataRequestUpdateEvent(event, addedUsers);
 		Organise.this.service.addDataRequest(update, new IRequestListener<PubEvent>()
 		{
 			public void onRequestComplete(PubEvent data) 
@@ -524,7 +533,8 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		{
 			//Give the interface to the app
 			Organise.this.service = (IPubService)service;
-			event=Organise.this.service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			int eventId = getIntent().getExtras().getInt(Constants.CurrentWorkingEvent);
+			event=Organise.this.service.getEvent(eventId);
 			if(eventSavedAlready)
 			{
 				oldEvent = new PubEvent(event.writeXml()); //duplicate the old event

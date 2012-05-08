@@ -386,6 +386,7 @@ public class RequestHandlingThread extends Thread{
 			// Add the guests to the event and the event to the guests arrays
 			for(User user : users)
 			{
+				UserManager.addUser(user);
 				event.AddUser(user);
 				UserManager.addEvent(user, update.getEventId());
 			}
