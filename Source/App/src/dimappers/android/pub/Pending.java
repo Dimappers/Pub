@@ -155,7 +155,7 @@ public class Pending extends Activity implements OnClickListener {
 	class ErrorDialog implements Runnable
 	{
 		public void run() {
-			new AlertDialog.Builder(Pending.this)
+			new AlertDialog.Builder(Pending.this.getApplicationContext())
 			.setMessage(
 					"An unexpected error has occurred. Please try again.")
 			.setTitle("Error").setCancelable(false)
