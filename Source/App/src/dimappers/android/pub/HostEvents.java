@@ -459,6 +459,14 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 									showAddDialog(position, v);
 								}
 							});	
+							
+							convertView.setClickable(true);
+							convertView.setOnClickListener(new OnClickListener() {
+								public void onClick(View v)
+								{
+									showAddDialog(position,v);
+								}
+							});
 							break;
 						}
 						else

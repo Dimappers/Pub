@@ -40,7 +40,7 @@ public class PersonRanker {
 	JSONObject myPhotos = null;
 	boolean gotPosts = false;
 	boolean gotPhotos = false;
-	boolean gotLocations = false; //true once all of the facebook friends have attempted to be geocoded
+	boolean gotLocations = true; //true once all of the facebook friends have attempted to be geocoded
 	int gotLocationsOfSomeForm = 0; //stores the number of friends who have either been geocoded or don't have a location to geocode
 	
 	// Constants for ranking people
@@ -134,7 +134,7 @@ public class PersonRanker {
 			}
 		});
 		
-		for(final AppUser friend : getFacebookFriends())
+		/*for(final AppUser friend : getFacebookFriends())
 		{
 			if(friend.getLocationName() != null)
 			{
@@ -161,7 +161,7 @@ public class PersonRanker {
 						}						
 					}
 
-					@Override
+					//@Override
 					public void onRequestFail(Exception e) {
 						if(e instanceof IOException)
 						{
@@ -188,7 +188,7 @@ public class PersonRanker {
 			{
 				++gotLocationsOfSomeForm; //we can't get a location
 			}
-		}
+		}*/
 
 	}
 
