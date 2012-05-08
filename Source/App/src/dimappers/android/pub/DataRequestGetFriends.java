@@ -65,7 +65,8 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 				//Getting location
 				if(jason.has("location"))
 				{
-					JSONObject location = jason.getJSONObject("location");
+					friends[i].setLocationName(jason.getJSONObject("location").getString("name"));
+					/*JSONObject location = jason.getJSONObject("location");
 					final String name = location.getString("name");
 					final AppUser friend = friends[i];
 					try{
@@ -93,7 +94,7 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 					catch(IllegalStateException e)
 					{
 						Log.d(Constants.MsgWarning, "Data Request Queue is full.");
-					}
+					}*/
 				}
 			}
 			AppUserArray friendsArray = new AppUserArray(friends);

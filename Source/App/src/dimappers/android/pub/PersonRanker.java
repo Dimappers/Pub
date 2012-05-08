@@ -1,14 +1,9 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,7 +11,6 @@ import org.json.JSONObject;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.location.Location;
-import android.provider.Contacts.People;
 import android.provider.ContactsContract;
 import android.util.Log;
 
@@ -31,7 +25,7 @@ public class PersonRanker {
 	IPubService service;
 	HistoryStore historyStore;
 	long me;
-	AppUser[] facebookFriends;
+	private AppUser[] facebookFriends;
 	AppUser[] removedFriendsList;
 	Location currentLocation;
 	List<PubEvent> trips;
@@ -40,7 +34,9 @@ public class PersonRanker {
 	JSONObject myPhotos = null;
 	boolean gotPosts = false;
 	boolean gotPhotos = false;
-
+	boolean gotLocations = false; //true once all of the facebook friends have attempted to be geocoded
+	int gotLocationsOfSomeForm = 0; //stores the number of friends who have either been geocoded or don't have a location to geocode
+	
 	// Constants for ranking people
 	private final static int photoValue = 1;
 	private final static int photoFromValue = 0;
@@ -88,7 +84,7 @@ public class PersonRanker {
 
 		this.facebook = service.GetFacebook();
 
-		this.facebookFriends = facebookFriends;
+		this.setFacebookFriends(facebookFriends);
 
 		me = service.GetActiveUser().getUserId();
 
@@ -102,7 +98,7 @@ public class PersonRanker {
 			public void onRequestComplete(XmlJasonObject data) {
 				myPosts = data;
 				gotPosts = true;
-				if (gotPhotos) {
+				if (gotPhotos && gotLocations) {
 					doRanking();
 				}
 			}
@@ -120,7 +116,7 @@ public class PersonRanker {
 			public void onRequestComplete(XmlJasonObject data) {
 				myPhotos = data;
 				gotPhotos = true;
-				if (gotPosts) {
+				if (gotPosts && gotLocations) {
 					doRanking();
 				}
 			}
@@ -131,17 +127,82 @@ public class PersonRanker {
 				pending.errorOccurred();
 			}
 		});
+		
+		for(final AppUser friend : getFacebookFriends())
+		{
+			if(friend.getLocationName() != null)
+			{
+				DataRequestReverseGeocoder geocodeName = new DataRequestReverseGeocoder(pending, friend.getLocationName());
+				
+				service.addDataRequest(geocodeName, new IRequestListener<XmlableDoubleArray>()
+				{
+					public void onRequestComplete(XmlableDoubleArray data) {
+						double[] loc = data.array;
+						if(loc.length==2)
+						{
+							friend.setLocation(loc);
+							++gotLocationsOfSomeForm;
+							
+							if(gotLocationsOfSomeForm == getFacebookFriends().length)
+							{
+								gotLocations = true;
+							}
+							
+							if(gotPhotos && gotPosts && gotLocations)
+							{
+								doRanking();
+							}
+						}						
+					}
+
+					public void onRequestFail(Exception e) {
+						if(e instanceof IOException)
+						{
+							Log.d(Constants.MsgError, "Error reverse geocoding peoples locations");
+							pending.errorOccurred();
+						}
+						
+						++gotLocationsOfSomeForm;
+						
+						if(gotLocationsOfSomeForm == getFacebookFriends().length)
+						{
+							gotLocations = true;
+						}
+						
+						if(gotPhotos && gotPosts && gotLocations)
+						{
+							doRanking();
+						}
+					}
+			
+				});
+			}
+			else
+			{
+				++gotLocationsOfSomeForm; //we can't get a location
+			}
+		}
 
 	}
 
 	
+	AppUser[] getFacebookFriends() {
+		return facebookFriends;
+	}
+
+
+	private void setFacebookFriends(AppUser[] facebookFriends) {
+		this.facebookFriends = facebookFriends;
+	}
+
+
 	private void doRanking() {
 		Log.d(Constants.MsgInfo, "Starting at: "
 				+ Calendar.getInstance().getTime().toString());
-		Log.d(Constants.MsgInfo, "Friend count: " + facebookFriends.length);
+		Log.d(Constants.MsgInfo, "Friend count: " + getFacebookFriends().length);
 
-		if (facebookFriends.length > 0) {
-			for(AppUser friend : facebookFriends)
+		if (getFacebookFriends().length > 0) {
+			for(AppUser friend : getFacebookFriends())
 			{
 				if(friend.getRank()!=0) {friend.setRank(0);}
 			}
@@ -150,25 +211,25 @@ public class PersonRanker {
 			rankFromHistory();
 			rankFromCallHistory();
 
-			facebookFriends = MergeSort(facebookFriends);
-			AppUser[] allFriends = new AppUser[facebookFriends.length + removedFriendsList.length];
-			for(int i = 0; i<facebookFriends.length; i++)
+			setFacebookFriends(MergeSort(getFacebookFriends()));
+			AppUser[] allFriends = new AppUser[getFacebookFriends().length + removedFriendsList.length];
+			for(int i = 0; i<getFacebookFriends().length; i++)
 			{
-				allFriends[i] = facebookFriends[i];
+				allFriends[i] = getFacebookFriends()[i];
 			}
 			for(int i = 0; i<removedFriendsList.length; i++)
 			{
-				allFriends[i+facebookFriends.length] = removedFriendsList[i];
+				allFriends[i+getFacebookFriends().length] = removedFriendsList[i];
 			}
-			facebookFriends = allFriends;
+			setFacebookFriends(allFriends);
 			
-			DataRequestGetFriends.UpdateOrdering(facebookFriends, service);
+			DataRequestGetFriends.UpdateOrdering(getFacebookFriends(), service);
 
 			int n = Math.min(historyStore.getAverageNumberOfFriends(),
-					facebookFriends.length);
+					getFacebookFriends().length);
 			currentEvent.emptyGuestList();
 			for (int i = 0; i < n; i++) {
-				currentEvent.AddUser(facebookFriends[i]);
+				currentEvent.AddUser(getFacebookFriends()[i]);
 			}
 		}
 
@@ -215,7 +276,7 @@ public class PersonRanker {
 				final String name = peopleCursor
 						.getString(peopleCursor
 								.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-				for (User friend : facebookFriends) {
+				for (User friend : getFacebookFriends()) {
 					if(friend instanceof AppUser)
 					{
 						AppUser data = (AppUser) friend;
@@ -423,7 +484,7 @@ public class PersonRanker {
 
 	private void addToRankOf(long facebookId, int amount, int fromWhere) {
 		if (facebookId != me) {
-			for (User person : facebookFriends) {
+			for (User person : getFacebookFriends()) {
 				if (person!=null && person.getUserId() == facebookId) {
 					person.setRank(person.getRank() + amount);
 					if (Constants.debug) {
@@ -525,7 +586,7 @@ public class PersonRanker {
 
 	private void rankFromHistory() {
 		for (PubEvent trip : trips) {
-			for (AppUser friend : facebookFriends) {
+			for (AppUser friend : getFacebookFriends()) {
 				friend.setRank(friend.getRank() + isInGuestList(trip, friend));
 				friend.History += isInGuestList(trip, friend);
 			}
@@ -546,35 +607,45 @@ public class PersonRanker {
 
 	private void removeTooFarAwayFriends() {
 		int removedFriends = 0;
-		Log.d(Constants.MsgInfo, "Starting removeTooFarAwayFriends()...");
-		removedFriendsList = new AppUser[facebookFriends.length];
-		Log.d(Constants.MsgInfo, "In removeTooFarAwayFriends(), we have created removedFriendsList of length" + facebookFriends.length +".");
-		for (int i = 0; i < facebookFriends.length; i++) {
-			if (isTooFarAway(facebookFriends[i].getLocation())) {
-				AppUser friend = facebookFriends[i];
-				removedFriendsList[removedFriends] = new AppUser(((AppUser) friend).writeXml());
-				facebookFriends[i] = null;
+		Log.d(Constants.MsgInfo, "Entering removeTooFarAwayFriends()...");
+		removedFriendsList = new AppUser[getFacebookFriends().length];
+		Log.d(Constants.MsgInfo, "Created removedFriendsList of size " + getFacebookFriends().length + ".");
+		//make a list of friends too far away
+		for (int i = 0; i < getFacebookFriends().length; i++) {
+			if (isTooFarAway(getFacebookFriends()[i].getLocation())) {
+				AppUser friend = getFacebookFriends()[i];
+				removedFriendsList[removedFriends] = new AppUser(((AppUser) friend).writeXml()); //duplicate the friend
+				getFacebookFriends()[i] = null;
 				removedFriends++;
 			}
 		}
 		Log.d(Constants.MsgInfo, "In removeTooFarAwayFriends(), we have removed " + removedFriends + " friends.");
-		int j = 0;
-		AppUser[] tmp = new AppUser[facebookFriends.length - removedFriends];
-		AppUser[] tmp2 = new AppUser[removedFriends];
-		for (int i = 0; i < removedFriends; i++) {
-			if(j<facebookFriends.length)
+
+		AppUser[] tmp = new AppUser[getFacebookFriends().length - removedFriends];
+		AppUser[] cleanedRemovedFriendsList = new AppUser[removedFriends];
+
+		//Clean up the null entries in facebookFriends and shorted the removed friends list down to the correct size
+		int j = 0; //stores where we are in the tmp array
+		int k = 0; //stores where we are in the removedFriendsList
+		for(AppUser user : getFacebookFriends())
+		{
+			if(user != null)
 			{
-				while (facebookFriends[j] == null) {
-					j++;
-					if(j>=facebookFriends.length) {break;}
-				}
+				tmp[j] = user;
+				++j;
 			}
-			if(j<facebookFriends.length) {tmp[i] = facebookFriends[j];}
-			tmp2[i] = removedFriendsList[i];
-			j++;
+			else
+			{
+				cleanedRemovedFriendsList[k] = removedFriendsList[k];
+				++k;
+			}
 		}
-		facebookFriends = tmp;
-		removedFriendsList = tmp2;
+
+		Log.d(Constants.MsgInfo, "facebookFriends: " + tmp.toString());
+		Log.d(Constants.MsgInfo, "cleanedRemovedFriendsList: " + cleanedRemovedFriendsList.length);
+		
+		setFacebookFriends(tmp);
+		removedFriendsList = cleanedRemovedFriendsList;
 	}
 
 	private boolean isTooFarAway(double[] location) {
