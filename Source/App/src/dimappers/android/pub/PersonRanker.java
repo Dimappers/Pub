@@ -1,14 +1,9 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,7 +11,6 @@ import org.json.JSONObject;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.location.Location;
-import android.provider.Contacts.People;
 import android.provider.ContactsContract;
 import android.util.Log;
 
@@ -40,7 +34,7 @@ public class PersonRanker {
 	JSONObject myPhotos = null;
 	boolean gotPosts = false;
 	boolean gotPhotos = false;
-	boolean gotLocations = true; //true once all of the facebook friends have attempted to be geocoded
+	boolean gotLocations = false; //true once all of the facebook friends have attempted to be geocoded
 	int gotLocationsOfSomeForm = 0; //stores the number of friends who have either been geocoded or don't have a location to geocode
 	
 	// Constants for ranking people
@@ -134,7 +128,7 @@ public class PersonRanker {
 			}
 		});
 		
-		/*for(final AppUser friend : getFacebookFriends())
+		for(final AppUser friend : getFacebookFriends())
 		{
 			if(friend.getLocationName() != null)
 			{
@@ -161,7 +155,6 @@ public class PersonRanker {
 						}						
 					}
 
-					//@Override
 					public void onRequestFail(Exception e) {
 						if(e instanceof IOException)
 						{
@@ -188,7 +181,7 @@ public class PersonRanker {
 			{
 				++gotLocationsOfSomeForm; //we can't get a location
 			}
-		}*/
+		}
 
 	}
 
@@ -614,8 +607,9 @@ public class PersonRanker {
 
 	private void removeTooFarAwayFriends() {
 		int removedFriends = 0;
+		Log.d(Constants.MsgInfo, "Entering removeTooFarAwayFriends()...");
 		removedFriendsList = new AppUser[getFacebookFriends().length];
-		
+		Log.d(Constants.MsgInfo, "Created removedFriendsList of size " + getFacebookFriends().length + ".");
 		//make a list of friends too far away
 		for (int i = 0; i < getFacebookFriends().length; i++) {
 			if (isTooFarAway(getFacebookFriends()[i].getLocation())) {
@@ -625,6 +619,7 @@ public class PersonRanker {
 				removedFriends++;
 			}
 		}
+		Log.d(Constants.MsgInfo, "In removeTooFarAwayFriends(), we have removed " + removedFriends + " friends.");
 
 		AppUser[] tmp = new AppUser[getFacebookFriends().length - removedFriends];
 		AppUser[] cleanedRemovedFriendsList = new AppUser[removedFriends];
@@ -645,6 +640,9 @@ public class PersonRanker {
 				++k;
 			}
 		}
+
+		Log.d(Constants.MsgInfo, "facebookFriends: " + tmp.toString());
+		Log.d(Constants.MsgInfo, "cleanedRemovedFriendsList: " + cleanedRemovedFriendsList.length);
 		
 		setFacebookFriends(tmp);
 		removedFriendsList = cleanedRemovedFriendsList;

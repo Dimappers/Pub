@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
@@ -70,6 +71,11 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		
 		Button button_itson = (Button) findViewById(R.id.it_is_on);
 		button_itson.setOnClickListener(this);
+		
+		Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
+		((TextView)findViewById(R.id.hostEventsPubName)).setTypeface(font);
+    	((TextView)findViewById(R.id.hostEventsCurrentStartTime)).setTypeface(font);
+    	((TextView)findViewById(R.id.guests)).setTypeface(font);
 
 		ListView list = (ListView) findViewById(R.id.listView1);
 
