@@ -1,5 +1,7 @@
 package dimappers.android.pub;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -33,7 +35,7 @@ public interface IPubService extends IBinder {
 	void									PerformUpdate(boolean fullUpdate);
 	
 	Facebook 								GetFacebook();
-	void									Logout();
+	void									Logout() throws MalformedURLException, IOException;
 	
 	AppUser									GetActiveUser();
 	
@@ -43,7 +45,8 @@ public interface IPubService extends IBinder {
 	
 	PubEvent								getEvent(int eventId);
 	
-	void 									EventHasHappenened(PubEvent event);
+	void 									AddEventToHistory(PubEvent event);
+	void									DeleteSentEvent(PubEvent event);
 	
 	<K, V  extends IXmlable> HashMap<K, V> 	GetGenericStore(String key);
 }
