@@ -6,6 +6,7 @@
     <string name="send_invites">Send Invites</string>
     <string name="save">Save</string>
   	<string name="organise">Organise</string>
+  	<string name="mainpubtitle">Pub?</string>
  	<string name="location">Your current location is:</string> 
  	<string name="default_location">Unknown</string> 
   	<string name="all_guests">View chosen guests</string> 
@@ -29,7 +30,7 @@
   	
   	<string name="waiting_for_response">Waiting For Response</string>
   	
-  	<string name="going">Going</string>
+  	<string name="going">Going - Hold for options</string>
   	
   	<string name="pub">Pub:</string>
   	
