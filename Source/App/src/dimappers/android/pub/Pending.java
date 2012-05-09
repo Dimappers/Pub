@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
@@ -32,6 +33,7 @@ public class Pending extends Activity implements OnClickListener {
 	private TextView progressText;
 	private LocationManager locationManager;
 	IPubService service;
+	PersonRanker personRanker;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -138,6 +140,7 @@ public class Pending extends Activity implements OnClickListener {
 		super.onDestroy();
 		if(locationManager!=null&&locationListener!=null) {locationManager.removeUpdates(locationListener);}
 		unbindService(connection);
+		if(personRanker!=null&&personRanker.t!=null){personRanker.t.cancel();}
 	}
 
 	private Bundle fillBundle(PubEvent createdEvent) {
@@ -149,23 +152,11 @@ public class Pending extends Activity implements OnClickListener {
 	}
 
 	public void errorOccurred() {
-		runOnUiThread(new ErrorDialog());
-	}
-	
-	class ErrorDialog implements Runnable
-	{
-		public void run() {
-			new AlertDialog.Builder(Pending.this.getApplicationContext())
-			.setMessage(
-					"An unexpected error has occurred. Please try again.")
-			.setTitle("Error").setCancelable(false)
-			.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					dialog.cancel();
-					finish();
-				}
-			}).show();
-		}
+		runOnUiThread(new Runnable(){
+
+			public void run() {
+				Toast.makeText(getApplicationContext(), "Unexpected error occurred: recommendations may not be accurate.", Toast.LENGTH_LONG).show();
+			}});
 	}
 	
 	private ServiceConnection connection = new ServiceConnection()
@@ -272,7 +263,7 @@ public class Pending extends Activity implements OnClickListener {
 		{
 			//Start next batch of requests
 			PubEvent event = createEvent();
-			new PersonRanker(event, Pending.this, currentLocation, allFriends, new IRequestListener<PubEvent>() {
+			personRanker = new PersonRanker(event, Pending.this, currentLocation, allFriends, new IRequestListener<PubEvent>() {
 
 				public void onRequestComplete(PubEvent data) {
 					data.SetPubLocation(new PubRanker(pubs, data, Pending.this.service.getHistoryStore()).returnBest());

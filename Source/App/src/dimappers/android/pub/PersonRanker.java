@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,6 +35,10 @@ public class PersonRanker {
 	Facebook facebook;
 	JSONObject myPosts = null;
 	JSONObject myPhotos = null;
+	
+	boolean cancelled = false;
+	public Timer t = null;
+	
 	boolean gotPosts = false;
 	boolean gotPhotos = false;
 	boolean gotLocations = false; //true once all of the facebook friends have attempted to be geocoded
@@ -91,56 +98,98 @@ public class PersonRanker {
 		this.currentEvent = currentEvent;
 		trips = historyStore.getPubTrips();
 		removeTooFarAwayFriends();
-
+		
 		DataRequestGetFacebookPosts posts = new DataRequestGetFacebookPosts();
 		service.addDataRequest(posts, new IRequestListener<XmlJasonObject>() {
 
 			public void onRequestComplete(XmlJasonObject data) {
-				myPosts = data;
-				gotPosts = true;
-				if (gotPhotos && gotLocations) {
-					doRanking();
+				if(!cancelled)
+				{
+					myPosts = data;
+				
+					gotPosts = true;
+					if (gotPhotos && gotLocations) {
+						doRanking();
+					}
 				}
 			}
 
 			public void onRequestFail(Exception e) {
-				Log.d(Constants.MsgError, "Error getting posts from Facebook: "
-						+ e.getMessage());
-				pending.errorOccurred();
+				if(!cancelled)
+				{
+					Log.d(Constants.MsgError, "Error getting posts from Facebook: "
+							+ e.getMessage());
+					pending.errorOccurred();
+				}
 			}
 		});
 
 		DataRequestGetPhotos photos = new DataRequestGetPhotos();
 		service.addDataRequest(photos, new IRequestListener<XmlJasonObject>() {
 
-			public void onRequestComplete(XmlJasonObject data) {
-				myPhotos = data;
-				gotPhotos = true;
-				if (gotPosts && gotLocations) {
-					doRanking();
+			public void onRequestComplete(XmlJasonObject data) 
+			{
+				if(!cancelled)
+				{
+					myPhotos = data;
+					gotPhotos = true;
+					if (gotPosts && gotLocations) {
+						doRanking();
+					}
 				}
 			}
 
-			public void onRequestFail(Exception e) {
-				Log.d(Constants.MsgError,
-						"Error getting photos from Facebook: " + e.getMessage());
-				pending.errorOccurred();
+			public void onRequestFail(Exception e) 
+			{
+				if(!cancelled)
+				{
+					Log.d(Constants.MsgError,"Error getting photos from Facebook: " + e.getMessage());
+					pending.errorOccurred();
+				}
 			}
 		});
 		
 		for(final AppUser friend : getFacebookFriends())
 		{
+			if(cancelled) {break;}
 			if(friend.getLocationName() != null)
 			{
 				DataRequestReverseGeocoder geocodeName = new DataRequestReverseGeocoder(pending, friend.getLocationName());
 				
 				service.addDataRequest(geocodeName, new IRequestListener<XmlableDoubleArray>()
 				{
-					public void onRequestComplete(XmlableDoubleArray data) {
-						double[] loc = data.array;
-						if(loc.length==2)
+					public void onRequestComplete(XmlableDoubleArray data) 
+					{
+						if(!cancelled)
 						{
-							friend.setLocation(loc);
+							double[] loc = data.array;
+							if(loc.length==2)
+							{
+								friend.setLocation(loc);
+								++gotLocationsOfSomeForm;
+								
+								if(gotLocationsOfSomeForm == getFacebookFriends().length)
+								{
+									gotLocations = true;
+								}
+								
+								if(gotPhotos && gotPosts && gotLocations)
+								{
+									doRanking();
+								}
+							}
+						}						
+					}
+
+					public void onRequestFail(Exception e) {
+						if(!cancelled)
+						{
+							if(e instanceof IOException)
+							{
+								Log.d(Constants.MsgError, "Error reverse geocoding peoples locations");
+							//	pending.errorOccurred();
+							}
+							
 							++gotLocationsOfSomeForm;
 							
 							if(gotLocationsOfSomeForm == getFacebookFriends().length)
@@ -152,26 +201,6 @@ public class PersonRanker {
 							{
 								doRanking();
 							}
-						}						
-					}
-
-					public void onRequestFail(Exception e) {
-						if(e instanceof IOException)
-						{
-							Log.d(Constants.MsgError, "Error reverse geocoding peoples locations");
-						//	pending.errorOccurred();
-						}
-						
-						++gotLocationsOfSomeForm;
-						
-						if(gotLocationsOfSomeForm == getFacebookFriends().length)
-						{
-							gotLocations = true;
-						}
-						
-						if(gotPhotos && gotPosts && gotLocations)
-						{
-							doRanking();
 						}
 					}
 			
@@ -182,7 +211,16 @@ public class PersonRanker {
 				++gotLocationsOfSomeForm; //we can't get a location
 			}
 		}
-
+		
+		t = new Timer();
+		t.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				cancelled = true;
+				pending.errorOccurred();
+				doRanking();
+			}
+		}, 1000 * 60);
 	}
 
 	
@@ -197,6 +235,8 @@ public class PersonRanker {
 
 
 	private void doRanking() {
+		t.cancel();
+		
 		Log.d(Constants.MsgInfo, "Starting at: "
 				+ Calendar.getInstance().getTime().toString());
 		Log.d(Constants.MsgInfo, "Friend count: " + getFacebookFriends().length);
@@ -323,7 +363,7 @@ public class PersonRanker {
 	}
 
 	private void rankFromPosts() {
-		if (myPosts.has("data")) {
+		if (myPosts!=null&&myPosts.has("data")) {
 			try {
 				JSONArray myPostsDataArray = myPosts.getJSONArray("data");
 				for (int i = 0; i < myPostsDataArray.length(); i++) {
@@ -424,7 +464,7 @@ public class PersonRanker {
 	}
 
 	private void rankFromPhotos() {
-		if (myPhotos.has("data")) {
+		if (myPhotos!=null&&myPhotos.has("data")) {
 			try {
 				JSONArray myPhotosDataArray = myPhotos.getJSONArray("data");
 
