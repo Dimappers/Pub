@@ -70,17 +70,20 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 		MenuItem refreshBtn = menu.add("Refresh");
 		refreshBtn.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
+			@Override
 			public boolean onMenuItemClick(MenuItem arg0) {
 				DataRequestRefresh refreshRequest = new DataRequestRefresh(true);
 				service.addDataRequest(refreshRequest,
 						new IRequestListener<PubEventArray>() {
 
+							@Override
 							public void onRequestComplete(PubEventArray data) {
 								// TODO: Probably shouldn't make notifications
 								if (data.getEvents().size() > 0) {
 									CurrentEvents.this
 											.runOnUiThread(new Runnable() {
 
+												@Override
 												public void run() {
 													refreshList();
 
@@ -89,6 +92,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 								}
 							}
 
+							@Override
 							public void onRequestFail(Exception e) {
 								Log.d(Constants.MsgError,
 										"Error getting refresh: "
@@ -162,19 +166,23 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 		        	Log.d(Constants.MsgInfo, "Send event");
 		        	service.GiveNewSentEvent(selectedEvent, new IRequestListener<PubEvent>() {
 						
+						@Override
 						public void onRequestFail(Exception e) {
 							Log.d(Constants.MsgError, "Could not sent invite: " + e.getMessage());
 							runOnUiThread(new Runnable(){
+								@Override
 								public void run() {
 									Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
 									//FIXME: probably should make it more obvious when this fails
 								}});
 						}
 						
+						@Override
 						public void onRequestComplete(PubEvent data) {
 							Log.d(Constants.MsgInfo, "PubEvent sent, event id: " + data.GetEventId());
 							CurrentEvents.this.runOnUiThread(new Runnable()
 							{
+								@Override
 								public void run() {
 									refreshList();
 								}
@@ -203,11 +211,13 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 					DataRequestConfirmDeny request = new DataRequestConfirmDeny(selectedEvent);
 					service.addDataRequest(request, new IRequestListener<PubEvent>() {
 
+						@Override
 						public void onRequestComplete(PubEvent data) {
 							if(data != null)
 							{
 								CurrentEvents.this.runOnUiThread(new Runnable()
 								{
+									@Override
 									public void run() {
 										refreshList();
 									}
@@ -217,6 +227,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 							
 						}
 
+						@Override
 						public void onRequestFail(Exception e) {
 							Log.d(Constants.MsgError, e.getMessage());					
 						}
@@ -236,9 +247,11 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 		        	selectedEvent.UpdateUserStatus(new ResponseData(service.GetActiveUser(), selectedEvent.GetEventId(), true, selectedEvent.GetStartTime(), ""));
 		    		refreshList();
 		    		service.addDataRequest(response, new IRequestListener<PubEvent>() {
-		    					public void onRequestComplete(PubEvent data) {
+		    					@Override
+								public void onRequestComplete(PubEvent data) {
 		    						runOnUiThread(new Runnable()
 		    						{
+										@Override
 										public void run()
 										{
 											refreshList();
@@ -246,7 +259,8 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 		    						});
 		    					}
 
-		    					public void onRequestFail(Exception e) {
+		    					@Override
+								public void onRequestFail(Exception e) {
 		    						Log.d(Constants.MsgError, e.getMessage());						
 		    					}
 		    				});
@@ -259,9 +273,11 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 		        	selectedEvent.UpdateUserStatus(new ResponseData(service.GetActiveUser(), selectedEvent.GetEventId(), false, selectedEvent.GetStartTime(), ""));
 		    		refreshList();
 		    		service.addDataRequest(negativeresponse, new IRequestListener<PubEvent>() {
-		    					public void onRequestComplete(PubEvent data) {
+		    					@Override
+								public void onRequestComplete(PubEvent data) {
 		    						runOnUiThread(new Runnable()
 		    						{
+										@Override
 										public void run()
 										{
 											refreshList();
@@ -269,7 +285,8 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 		    						});
 		    					}
 
-		    					public void onRequestFail(Exception e) {
+		    					@Override
+								public void onRequestFail(Exception e) {
 		    						Log.d(Constants.MsgError, e.getMessage());						
 		    					}
 		    				});
@@ -302,6 +319,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 		service = null;
 	}
 
+	@Override
 	public void onItemClick(AdapterView<?> parent, View convertView,
 			int position, long location) {
 		Intent i;
@@ -348,6 +366,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 
 	private ServiceConnection connection = new ServiceConnection() {
 
+		@Override
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			// Give the interface to the app
 			CurrentEvents.this.service = (IPubService) service;
@@ -383,19 +402,23 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 			
 			CurrentEvents.this.service.addDataRequest(new DataRequestRefresh(false), new IRequestListener<PubEventArray>(){
 
+				@Override
 				public void onRequestComplete(PubEventArray data) {
 					runOnUiThread(new Runnable(){
 
+						@Override
 						public void run() {
 							refreshList();
 						}});
 				}
 
+				@Override
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, e.getMessage());
 				}});
 		}
 
+		@Override
 		public void onServiceDisconnected(ComponentName className) {
 
 		}
@@ -464,6 +487,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 			this.sections.put(section, adapter);
 		}
 
+		@Override
 		public int getCount() {
 			// total together all sections, plus one for each section header
 			int total = 0;
@@ -472,10 +496,12 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 			return total;
 		}
 
+		@Override
 		public long getItemId(int position) {
 			return position;
 		}
 
+		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			int sectionnum = 0;
 			int oldPosition = position;
@@ -508,6 +534,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 		}
 
 		// Gets the PubEvent from the position, counting through the lists
+		@Override
 		public Object getItem(int position) {
 			// Identify section in
 			for (Adapter sectionAdapter : sections.values()) {

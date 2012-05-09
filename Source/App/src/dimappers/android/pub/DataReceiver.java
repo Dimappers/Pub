@@ -1,31 +1,7 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.XMLOutputter;
-
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-
-import dimappers.android.PubData.Constants;
-import dimappers.android.PubData.MessageType;
-import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.RefreshData;
-import dimappers.android.PubData.User;
 
 public class DataReceiver
 {
@@ -64,10 +40,12 @@ public class DataReceiver
 			DataReceiver.this.service.addDataRequest(refresh, new IRequestListener<PubEventArray>() {
 
 
+				@Override
 				public void onRequestComplete(PubEventArray data) {
 				}
 
 
+				@Override
 				public void onRequestFail(Exception e) {
 					//TODO: Don't know?					
 				}

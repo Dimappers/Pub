@@ -29,7 +29,6 @@
             android:layout_marginLeft="20sp"
             android:textSize="20sp"  />
 
-
         <TextView
             android:id="@+id/guests"
             android:layout_width="wrap_content"
@@ -39,27 +38,18 @@
             android:layout_marginLeft="20sp"
             android:textSize="20sp" />
 
-
-
-
-
-
-
      <LinearLayout
          android:layout_width="fill_parent"
-         android:layout_height="272dp"
+         android:layout_height="wrap_content"
+         android:layout_weight="1.98"
          android:orientation="horizontal"
          android:paddingBottom="6dip"
          android:paddingTop="4dip" >
-        
-
-
-
 
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="294dp"
         android:layout_marginBottom="22dp"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
@@ -89,19 +79,17 @@
          android:layout_marginLeft="25sp"
          android:layout_marginRight="25sp"
          android:orientation="horizontal" >
-
+
          <Button
              android:id="@+id/send_Invites"
-             android:layout_width="135dp"
+             android:layout_width="match_parent"
              android:layout_height="wrap_content"
              android:layout_alignParentBottom="true"
              android:layout_gravity="center_horizontal"
              android:layout_marginBottom="18dp"
              android:layout_marginRight="22dp"
-             android:background="@drawable/chalk_outline"
-             android:text="@string/send_invites"
-             android:textColor="#FFFFFF"
-             android:textSize="20sp" />
+             android:layout_weight="0.5"
+             android:text="@string/send_invites" />
 
          <Button
              android:id="@+id/edit_button"
@@ -113,10 +101,7 @@
              android:layout_marginBottom="18dp"
              android:layout_marginRight="22dp"
              android:layout_weight="0.5"
-             android:text="@string/edit" 
-             android:textSize="20sp"
-            android:background="@drawable/chalk_outline"
-        	android:textColor="#FFFFFF" />
+             android:text="@string/edit" />
 
          <TextView
              android:id="@+id/hostEventTimeTillPubText"
@@ -125,7 +110,6 @@
              android:layout_marginRight="2dp"
              android:layout_marginBottom="18dp"
              android:layout_weight="0.5"
-             android:layout_marginTop="5dp"
              android:gravity="center_horizontal"
              android:text="Time till pub"
              android:textAppearance="?android:attr/textAppearanceLarge"
@@ -139,11 +123,7 @@
              android:layout_marginBottom="18dp"
              android:layout_weight="0.5"
              android:text="@string/it_is_on"
-             android:layout_marginTop="5dp"
-             android:visibility="gone" 
-             android:textSize="20sp"
-             android:background="@drawable/chalk_outline"
-        	 android:textColor="#FFFFFF"/>
+             android:visibility="gone" />
      </LinearLayout>
 
 </LinearLayout>

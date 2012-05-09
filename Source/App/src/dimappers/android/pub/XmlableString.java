@@ -26,6 +26,7 @@ public class XmlableString implements IXmlable {
 	
 	public String getContents() {return contents;}
 	
+	@Override
 	public Element writeXml() {
 		Element rootElement = new Element(getClass().getSimpleName());
 		rootElement.addContent(new Element(contentstag).setText(contents));
@@ -33,6 +34,7 @@ public class XmlableString implements IXmlable {
 		return rootElement;
 	}
 
+	@Override
 	public void readXml(Element element) {
 		contents = element.getChildText(contentstag);
 		outOfDate = Calendar.getInstance();

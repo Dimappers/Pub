@@ -9,10 +9,6 @@ import com.facebook.android.Facebook;
 
 import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.PubEvent;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.IBinder;
 
 public interface IPubService extends IBinder {

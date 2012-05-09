@@ -2,9 +2,6 @@ package dimappers.android.pub;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-
-import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.User;

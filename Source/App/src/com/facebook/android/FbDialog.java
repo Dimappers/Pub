@@ -98,7 +98,8 @@ public class FbDialog extends Dialog {
         mCrossImage = new ImageView(getContext());
         // Dismiss the dialog when user click on the 'x'
         mCrossImage.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+            @Override
+			public void onClick(View v) {
                 mListener.onCancel();
                 FbDialog.this.dismiss();
             }

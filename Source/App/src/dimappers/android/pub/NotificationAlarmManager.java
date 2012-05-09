@@ -43,6 +43,7 @@ public class NotificationAlarmManager extends Activity {
 
 	ServiceConnection connection = new ServiceConnection(){
 
+		@Override
 		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder) {
 
 			service = (IPubService) serviceBinder;
@@ -78,6 +79,7 @@ public class NotificationAlarmManager extends Activity {
 			finish();
 		}
 
+		@Override
 		public void onServiceDisconnected(ComponentName name) {}};
 
 		private void eventAboutToStart()
@@ -130,6 +132,7 @@ public class NotificationAlarmManager extends Activity {
 					contentIntent);
 		}
 
+		@Override
 		public void onDestroy()
 		{
 			super.onDestroy();

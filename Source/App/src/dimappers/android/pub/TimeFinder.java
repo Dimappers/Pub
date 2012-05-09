@@ -32,7 +32,7 @@ public class TimeFinder {
 				hour += pubEvent.GetStartTime().get(Calendar.HOUR_OF_DAY);
 				minutes += pubEvent.GetStartTime().get(Calendar.MINUTE);
 			}
-			hour = (int)(hour/pubEvents.size());
+			hour = (hour/pubEvents.size());
 			minutes = roundToNearestQuarter();
 		}
 	}
