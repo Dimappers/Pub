@@ -166,7 +166,7 @@ public class PubEvent implements Serializable, IXmlable
 	@Override
 	public String toString()
 	{
-		return pubLocation.pubName + " : " + GetFormattedStartTime();
+		return pubLocation.getName() + " : " + GetFormattedStartTime();
 	}
 	
 	public String GetFormattedStartTime()
