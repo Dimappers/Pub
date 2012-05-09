@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:background="@drawable/orgmain" >
+    android:background="@drawable/orgmain"
+    android:weightSum="2" >
 
 
 
@@ -63,12 +64,13 @@
                 android:id="@+id/pub_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.10"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="10dp"
                 android:text="@string/pub_location"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textSize="20dp" />
+                android:textSize="20dp" />  //20
 
 		<RelativeLayout
 		    android:id="@+id/publocationlinear"
@@ -107,11 +109,12 @@
                 android:id="@+id/time_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.10"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:text="@string/time_title"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textSize="20dp" />
+                android:textSize="20dp" />  //20
 
             <RelativeLayout android:id="@+id/starttimerelative"
 		    android:layout_width="match_parent"
@@ -131,7 +134,7 @@
                 android:textColor="#FFFFFF"
                 android:layout_marginLeft="20dp"
                 android:layout_toLeftOf="@+id/editTime"
-                android:textSize="25dp" />
+                android:textSize="25dp" />  //25
                 
             <ImageButton
 		        android:id="@+id/editTime"
@@ -155,7 +158,8 @@
                 android:layout_marginRight="20dp"
                 android:text="@string/guest_title"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textSize="20dp" />
+                android:textSize="20dp" 
+                android:layout_weight="0.05"/>  //20
 
             <ListView
                 android:id="@+id/@android:id/list"
@@ -166,7 +170,8 @@
                 android:layout_marginRight="25dp"
                 android:cacheColorHint="#00000000"
                 android:scrollbars="vertical"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:layout_weight="0.60" />
 
             <LinearLayout
                 android:id="@+id/linearLayout2"
@@ -178,9 +183,9 @@
                     android:id="@+id/send_invites_event"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
+                    android:layout_marginBottom="22dp"
                     android:layout_marginLeft="22dp"
-                    android:layout_weight="1"
+                    android:layout_weight="0.5"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentBottom="true"
                     android:text="@string/send_invites" />
@@ -189,11 +194,11 @@
                     android:id="@+id/save_event"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
+                    android:layout_marginBottom="22dp"
                     android:layout_marginRight="22dp"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentBottom="true"
-                    android:layout_weight="1"
+                    android:layout_weight="0.5"
                     android:text="@string/save" />
             </LinearLayout>
         </LinearLayout>
