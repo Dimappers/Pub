@@ -40,9 +40,12 @@ public class ChooseTime extends Activity implements OnClickListener{
     	Button button_save_date_time = (Button)findViewById(R.id.save_date_and_time);
     	button_save_date_time.setOnClickListener(this);
     	
+    	Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
+    	((Button)findViewById(R.id.save_date_and_time)).setTypeface(font);
+    	
     	bindService(new Intent(getApplicationContext(), PubService.class), connection, 0);
     	
-    	Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
+    	
     	((TextView)findViewById(R.id.choose_time)).setTypeface(font);
     	((TextView)findViewById(R.id.choose_date)).setTypeface(font);
         

@@ -8,6 +8,7 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -59,6 +60,8 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 	private ArrayList<String> listItems=new ArrayList<String>();
 	private ArrayAdapter<String> adapter;
 	private ListView guest_list;
+	
+	private String add_guest = "+ ADD GUEST";
 
 	private boolean locSet = false;
 	private boolean eventSavedAlready;
@@ -454,6 +457,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		cur_time.setText(event.GetFormattedStartTime());
 
 		listItems.clear();
+		listItems.add(add_guest);
 		adapter.notifyDataSetChanged();
 		for(User user : event.GetUsers()) 
 		{
@@ -581,12 +585,20 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 			guest_list.setOnItemClickListener(new OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
-					Intent i = new Intent(getBaseContext(), Guests.class);
-					Bundle b = new Bundle();
-					b.putAll(getIntent().getExtras());
-					b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
-					i.putExtras(b);
-					startActivityForResult(i, Constants.GuestReturn);
+					if(position==0)
+					{
+						Intent i = new Intent(getBaseContext(), Guests.class);
+						Bundle b = new Bundle();
+						b.putAll(getIntent().getExtras());
+						b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
+						i.putExtras(b);
+						startActivityForResult(i, Constants.GuestReturn);
+					}
+					else
+					{
+						String userName = adapter.getItem(position);
+						//TODO: make this delete people
+					}
 				}
 			});
 

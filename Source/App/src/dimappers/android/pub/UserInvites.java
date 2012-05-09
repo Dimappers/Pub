@@ -84,6 +84,8 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     	((TextView)findViewById(R.id.userInviteStartTimeText)).setTypeface(font);
     	((TextView)findViewById(R.id.userInviteHostNameText)).setTypeface(font);
     	((TextView)findViewById(R.id.guestHeader)).setTypeface(font);
+    	((Button)findViewById(R.id.decline)).setTypeface(font);
+    	((Button)findViewById(R.id.going)).setTypeface(font);
 	}
 	
 	@Override
@@ -136,16 +138,16 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		case R.id.going : 
 		{
 	    	
-	    	findViewById(R.id.going).setBackgroundColor(Color.GREEN);
-	    	findViewById(R.id.decline).setBackgroundResource(android.R.drawable.btn_default);
+	    	//findViewById(R.id.going).setBackgroundColor(Color.GREEN);
+	    	//findViewById(R.id.decline).setBackgroundResource(android.R.drawable.btn_default);
 	    	sendResponse(true,event.GetStartTime(),"");
 	    	break;
 		}
 		case R.id.decline :
 		{
 	    	
-	    	findViewById(R.id.decline).setBackgroundColor(Color.RED);
-	    	findViewById(R.id.going).setBackgroundResource(android.R.drawable.btn_default);
+	    	//findViewById(R.id.decline).setBackgroundColor(Color.RED);
+	    	//findViewById(R.id.going).setBackgroundResource(android.R.drawable.btn_default);
 	    	sendResponse(false,event.GetStartTime(),"");
 			break;
 		}
@@ -295,11 +297,11 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 
 	private void updateScreen()
 	{
-		switch(event.GetUserGoingStatus(service.GetActiveUser()))
+		/*switch(event.GetUserGoingStatus(service.GetActiveUser()))
 		{
 			case going : {findViewById(R.id.going).setBackgroundColor(Color.GREEN); break;}
 			case notGoing : {findViewById(R.id.decline).setBackgroundColor(Color.RED); break;}
-		}
+		}*/
 		
 		TextView pubNameText = (TextView) findViewById(R.id.userInvitesPubNameText);
     	//pubNameText.setText(event.GetPubLocation().toString());
@@ -341,7 +343,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 								@Override
 								public void run() {
 									updateScreen();
-						    		if(msgToHost!=null||msgToHost!="")
+						    		if(msgToHost!=null&&msgToHost.equals(""))
 						    		{
 						    			try {
 											Toast.makeText(

@@ -77,6 +77,8 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		((TextView)findViewById(R.id.hostEventsPubName)).setTypeface(font);
     	((TextView)findViewById(R.id.hostEventsCurrentStartTime)).setTypeface(font);
     	((TextView)findViewById(R.id.guests)).setTypeface(font);
+    	((Button)findViewById(R.id.edit_button)).setTypeface(font);
+    	((Button)findViewById(R.id.send_Invites)).setTypeface(font);
 
 		ListView list = (ListView) findViewById(R.id.listView1);
 

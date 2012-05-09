@@ -361,7 +361,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
 			LaunchApplication.this.service = (IPubService)service;
 		}
 
-		@Override
 		public void onServiceDisconnected(ComponentName arg0) {
 			// TODO Auto-generated method stub
 			
