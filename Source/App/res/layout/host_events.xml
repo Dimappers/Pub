@@ -36,19 +36,18 @@
             android:textAppearance="?android:attr/textAppearanceMedium" 
             android:layout_marginLeft="20sp"
             android:textSize="30sp" />
-
+
      <LinearLayout
          android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:layout_weight="1.98"
+         android:layout_height="272dp"
          android:orientation="horizontal"
          android:paddingBottom="6dip"
          android:paddingTop="4dip" >
-        
+        
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
-        android:layout_height="294dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="22dp"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
