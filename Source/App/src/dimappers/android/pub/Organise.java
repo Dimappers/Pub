@@ -112,6 +112,8 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
     	((TextView)findViewById(R.id.time_title)).setTypeface(font);
     	((TextView)findViewById(R.id.pub_title)).setTypeface(font);
     	((TextView)findViewById(R.id.guest_title)).setTypeface(font);
+    	((Button)findViewById(R.id.send_invites_event)).setTypeface(font);
+    	((Button)findViewById(R.id.save_event)).setTypeface(font);
     	//Progress bar
 		progbar = (ProgressBar)findViewById(R.id.progressBar);
 

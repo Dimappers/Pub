@@ -101,7 +101,7 @@
 		        android:layout_marginRight="18dp"
 		        android:gravity="right"
 		        android:layout_centerVertical="true"
-		        android:src="@android:drawable/ic_menu_edit" />
+		        android:background="@drawable/edit_dash" />
 
 		</RelativeLayout>
 
@@ -183,23 +183,27 @@
                     android:id="@+id/send_invites_event"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="22dp"
+                    android:layout_marginBottom="25dp"
                     android:layout_marginLeft="22dp"
                     android:layout_weight="0.5"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentBottom="true"
-                    android:text="@string/send_invites" />
+                    android:text="@string/send_invites" 
+                    android:background="@drawable/chalk_outline"
+                    android:textColor="#FFFFFF"/>
 
                 <Button
                     android:id="@+id/save_event"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="22dp"
+                    android:layout_marginBottom="25dp"
                     android:layout_marginRight="22dp"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentBottom="true"
                     android:layout_weight="0.5"
-                    android:text="@string/save" />
+                    android:text="@string/save"
+                    android:background="@drawable/chalk_outline"
+                    android:textColor="#FFFFFF" />
             </LinearLayout>
         </LinearLayout>
 
