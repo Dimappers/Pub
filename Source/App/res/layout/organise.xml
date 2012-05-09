@@ -86,14 +86,14 @@
 		        android:text="Unknown Pub..."
 		        android:textAppearance="?android:attr/textAppearanceSmall"
 		        android:textColor="#FFFFFF"
-		        android:textSize="35sp"
+		        android:textSize="25sp"
 		        android:layout_toLeftOf="@+id/editPubLocation"
 		        android:layout_marginLeft="20dp" />
 
 		    <ImageButton
 		        android:id="@+id/editPubLocation"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
+		        android:layout_width="48dp"
+		        android:layout_height="48dp"
 		        android:layout_alignParentRight="true"
 		        android:layout_alignParentTop="true"
 		        android:layout_marginRight="18dp"
@@ -131,12 +131,12 @@
                 android:textColor="#FFFFFF"
                 android:layout_marginLeft="20dp"
                 android:layout_toLeftOf="@+id/editTime"
-                android:textSize="35sp" />
+                android:textSize="25sp" />
                 
             <ImageButton
 		        android:id="@+id/editTime"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
+		        android:layout_width="48dp"
+		        android:layout_height="48dp"
 		        android:layout_alignParentRight="true"
 		        android:layout_alignParentTop="true"
 		        android:layout_marginRight="18dp"
