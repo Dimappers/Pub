@@ -101,6 +101,8 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	button_organise.setOnClickListener(this);
     	button_organise.setTypeface(font);
     	
+    	findViewById(R.id.progressbar).setVisibility(View.GONE);
+    	
     	Button button_invites = (Button)findViewById(R.id.invites_button);
     	button_invites.setOnClickListener(this);
     	button_invites.setVisibility(View.GONE);
@@ -248,7 +250,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     class ShowButtonsHideProgBar implements Runnable 
     {
 		public void run() {
-			findViewById(R.id.progressbar).setVisibility(View.GONE);
+			//findViewById(R.id.progressbar).setVisibility(View.GONE);
 	    	findViewById(R.id.organise_button).setVisibility(View.VISIBLE);
 	    	findViewById(R.id.invites_button).setVisibility(View.VISIBLE);
 	    	findViewById(android.R.id.list).setVisibility(View.VISIBLE);
