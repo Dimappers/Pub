@@ -82,7 +82,9 @@ public class ChooseTime extends Activity implements OnClickListener{
 
 	private String getMinute(int minute) {
 		if(minute<=7) {return "00";}
-		else return "15";
+		else if(minute<=22) {return "15";}
+		else if(minute<=37) {return "30";}
+		else {return "45";}
 	}
 	
 	private String getAmPm(int ampm) {
@@ -284,7 +286,7 @@ public class ChooseTime extends Activity implements OnClickListener{
         public void onClick(DialogInterface dialog, int id) {dialog.cancel();}}).show(); 
     }
     private void ask() {
-    	new AlertDialog.Builder(this).setMessage("You have selected " + event.GetFormattedStartTime() + ". Are you sure you want to use this time?")  
+    	new AlertDialog.Builder(this).setMessage("You have selected " + event.GetFormattedStartTime().toLowerCase() + ". Are you sure you want to use this time?")  
         .setTitle("Strange Time")  
         .setCancelable(false)  
         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {

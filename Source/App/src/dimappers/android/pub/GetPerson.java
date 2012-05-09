@@ -46,6 +46,7 @@ public class GetPerson extends AsyncTask<Object, Void, AppUser> {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			Log.d(Constants.MsgError, "Jason error in reading info about current user: " + e.getMessage());
+			return null;
 		}
     	
 		Log.d(Constants.MsgInfo, "Logged in as user: " + name + " with ID: " + id);
