@@ -180,6 +180,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		if(!facebook.isSessionValid()) {
 			Log.d(Constants.MsgInfo, "No valid token found - authorising with Facebook");
 			facebook.authorize(this, new String[] { "email", "user_location", "friends_location", "user_photos", "read_stream" }, Constants.FromFacebookLogin, new DialogListener() {
+				@Override
 				public void onComplete(Bundle values) {
 					SharedPreferences.Editor editor = mPrefs.edit();
 					editor.putString("access_token", facebook.getAccessToken());
@@ -189,10 +190,13 @@ public class LaunchApplication extends Activity implements OnClickListener{
 					runOnUiThread(new ShowButtonsHideProgBar());
 				}
 
+				@Override
 				public void onFacebookError(FacebookError error) { Log.d(Constants.MsgError, "Error authenticating Facebook: " + error.getMessage());}
 
+				@Override
 				public void onError(DialogError e) { Log.d(Constants.MsgError, "Error from dialog: " + e.getMessage()); }
 
+				@Override
 				public void onCancel() {}
 			});
 
@@ -208,6 +212,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	Object[] array = new Object[2];
     	array[0] = new IRequestListener<AppUser>(){
 
+			@Override
 			public void onRequestComplete(AppUser appUser) {
 		    	
 				facebookUser = appUser;
@@ -226,11 +231,13 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		    	runOnUiThread(new ShowButtonsHideProgBar());
 			}
 
+			@Override
 			public void onRequestFail(Exception e) {
 				new AlertDialog.Builder(LaunchApplication.this)
 						.setCancelable(true)  
 						.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
 
+							@Override
 							public void onClick(DialogInterface dialog,	int which) 
 							{
 								dialog.cancel();
@@ -247,6 +254,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     
     class ShowButtonsHideProgBar implements Runnable 
     {
+		@Override
 		public void run() {
 			findViewById(R.id.progressbar).setVisibility(View.GONE);
 	    	findViewById(R.id.organise_button).setVisibility(View.VISIBLE);
@@ -257,7 +265,8 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	
     }
     
-    public void onClick(View v)
+    @Override
+	public void onClick(View v)
     {
     	Intent i;
     	Bundle b = new Bundle();
@@ -279,23 +288,29 @@ public class LaunchApplication extends Activity implements OnClickListener{
     		case R.id.logoutfb_button : {
     			
     			mAsyncRunner.logout(getBaseContext(), new RequestListener() {
-    				  public void onComplete(String response, Object state) {}
+    				  @Override
+					public void onComplete(String response, Object state) {}
     				  
-    				  public void onIOException(IOException e, Object state) {}
+    				  @Override
+					public void onIOException(IOException e, Object state) {}
     				  
-    				  public void onFileNotFoundException(FileNotFoundException e,
+    				  @Override
+					public void onFileNotFoundException(FileNotFoundException e,
     				        Object state) {}
     				  
-    				  public void onMalformedURLException(MalformedURLException e,
+    				  @Override
+					public void onMalformedURLException(MalformedURLException e,
     				        Object state) {}
     				  
-    				  public void onFacebookError(FacebookError e, Object state) {}
+    				  @Override
+					public void onFacebookError(FacebookError e, Object state) {}
     				});
     		}
     	}
     }
     
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
     	AppGardenAgent.onActivityResult(requestCode, resultCode, data);
 
@@ -341,6 +356,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     
     private ServiceConnection connection = new ServiceConnection() {
 
+		@Override
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			LaunchApplication.this.service = (IPubService)service;
 		}

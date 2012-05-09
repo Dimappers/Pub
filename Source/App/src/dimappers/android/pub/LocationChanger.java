@@ -1,6 +1,5 @@
 package dimappers.android.pub;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.View;
@@ -29,6 +28,7 @@ public class LocationChanger {
 		builder
 		.setCancelable(true)  
 		.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+			@Override
 			public void onClick(DialogInterface dialog, int id) {
 				
 				if(a instanceof Organise) {((Organise)a).progbar.setVisibility(View.VISIBLE);}
@@ -36,11 +36,13 @@ public class LocationChanger {
 				DataRequestReverseGeocoder request1 = new DataRequestReverseGeocoder(a.getApplicationContext(), loc.getText().toString());
 				a.service.addDataRequest(request1, new IRequestListener<XmlableDoubleArray>(){
 
+					@Override
 					public void onRequestFail(Exception e) {
 						if(a instanceof Organise) {((Organise) a).removeProgBar();}
 						a.failure(2);
 					}
 
+					@Override
 					public void onRequestComplete(XmlableDoubleArray data) {
 						
 						final double lat = data.getArray()[0];
@@ -49,6 +51,7 @@ public class LocationChanger {
 						DataRequestPubFinder request2 = new DataRequestPubFinder(lat, lng);
 						a.service.addDataRequest(request2, new IRequestListener<PlacesList>(){
 
+							@Override
 							public void onRequestComplete(PlacesList data) {
 								PubLocation best = new PubRanker(data.results, a.event, a.service.getHistoryStore()).returnBest();
 								if(best==null)
@@ -63,6 +66,7 @@ public class LocationChanger {
 								}
 								}
 
+							@Override
 							public void onRequestFail(Exception e) {
 								if(a instanceof Organise) {((Organise) a).removeProgBar();}
 								a.failure(1);

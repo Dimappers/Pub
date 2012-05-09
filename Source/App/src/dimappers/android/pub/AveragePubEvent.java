@@ -60,6 +60,7 @@ public class AveragePubEvent extends PubEvent {
 		readXml(element);
 	}
 
+	@Override
 	public Element writeXml()
 	{
 		Element element = super.writeXml();
@@ -79,6 +80,7 @@ public class AveragePubEvent extends PubEvent {
 		return element;
 	}
 	
+	@Override
 	public void readXml(Element element)
 	{
 		//super.readXml(element);

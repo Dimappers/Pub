@@ -7,7 +7,6 @@ import org.jdom.Element;
 
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.IXmlable;
-import dimappers.android.PubData.User;
 
 public class AppUserArray implements IXmlable {
 	
@@ -44,6 +43,7 @@ public class AppUserArray implements IXmlable {
 		return Calendar.getInstance().after(weekAfterUpdate); //if we are after a week after the last update, we need updating
 	}
 	
+	@Override
 	public Element writeXml() {
 		Element rootElement = new Element(getClass().getSimpleName());
 		
@@ -61,6 +61,7 @@ public class AppUserArray implements IXmlable {
 		return rootElement;
 	}
 
+	@Override
 	public void readXml(Element element) {
 		lastUpdated = Calendar.getInstance();
 		lastUpdated.setTimeInMillis(Long.parseLong(element.getChildText(lastUpdateTag)));

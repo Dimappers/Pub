@@ -19,6 +19,7 @@ public class NoInternet extends Activity implements OnClickListener {
     	((TextView)findViewById(R.id.nointernettext)).setTypeface(font);
     	((Button)findViewById(R.id.nointernetokbutton)).setOnClickListener(this);
 	}
+			@Override
 			public void onClick(View v) {
 				switch(v.getId())
 				{

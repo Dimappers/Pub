@@ -25,6 +25,7 @@ public class DeleteOldEventActivity extends Activity {
 	
 	ServiceConnection connection = new ServiceConnection()
 	{
+		@Override
 		public void onServiceConnected(ComponentName arg0, IBinder binder) {
 			service = (IPubService)binder;
 			
@@ -33,6 +34,7 @@ public class DeleteOldEventActivity extends Activity {
 			finish();
 		}
 		
+		@Override
 		public void onServiceDisconnected(ComponentName arg0) {
 			// TODO Auto-generated method stub
 			
@@ -40,6 +42,7 @@ public class DeleteOldEventActivity extends Activity {
 		
 	};
 	
+	@Override
 	public void onDestroy()
 	{
 		super.onDestroy();

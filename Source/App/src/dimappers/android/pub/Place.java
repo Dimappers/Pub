@@ -62,6 +62,7 @@ public class Place implements IXmlable {
 	 return (new Double(Math.pow(2.0, geometry.location.lat)*Math.pow(3.0, geometry.location.lng))).hashCode();
  }
 
+@Override
 public Element writeXml() {
 	Element rootElement = new Element(getClass().getSimpleName());
 	rootElement.addContent(new Element(idkey).setText(id));
@@ -81,6 +82,7 @@ public Element writeXml() {
 	return rootElement;
 }
 
+@Override
 public void readXml(Element element) {
 	id = element.getChildText(idkey);
 	name = element.getChildText(namekey);

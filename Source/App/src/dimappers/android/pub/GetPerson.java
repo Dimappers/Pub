@@ -10,7 +10,6 @@ import com.facebook.android.Facebook;
 
 import dimappers.android.PubData.Constants;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
 
 public class GetPerson extends AsyncTask<Object, Void, AppUser> {

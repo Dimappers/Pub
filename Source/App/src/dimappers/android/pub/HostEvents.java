@@ -56,6 +56,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	IPubService service;
 	
 
+	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
@@ -145,6 +146,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		
 	}
 	
+	@Override
 	public boolean onMenuItemClick(MenuItem item) {
 
 		Intent i;	 
@@ -179,11 +181,13 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			DataRequestGetLatestAboutPubEvent refresher = new DataRequestGetLatestAboutPubEvent(event.GetEventId());
 			service.addDataRequest(refresher, new IRequestListener<PubEvent>(){
 
+				@Override
 				public void onRequestComplete(PubEvent data) {
 					
 					event = data;
 					runOnUiThread(new Runnable(){
 
+						@Override
 						public void run() {
 							UpdateDataFromEvent();			
 						}
@@ -192,6 +196,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 					
 				}
 
+				@Override
 				public void onRequestFail(Exception e) {
 					// TODO Auto-generated method stub
 					e.printStackTrace();
@@ -204,6 +209,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 
 	} 
 	
+	@Override
 	public void onClick(View v)
 	{
 		Intent i;
@@ -213,20 +219,24 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		{
 			service.GiveNewSentEvent(event, new IRequestListener<PubEvent>() {
 				
+				@Override
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, "Could not sent invite: " + e.getMessage());
 					runOnUiThread(new Runnable(){
+						@Override
 						public void run() {
 							Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
 							//FIXME: probably should make it more obvious when this fails
 						}});
 				}
 				
+				@Override
 				public void onRequestComplete(PubEvent data) {
 					Log.d(Constants.MsgInfo, "PubEvent sent, event id: " + data.GetEventId());
 					sent = true;
 					HostEvents.this.runOnUiThread(new Runnable()
 					{
+						@Override
 						public void run() {
 							findViewById(R.id.send_Invites).setVisibility(View.GONE);
 							findViewById(R.id.edit_button).setVisibility(View.GONE);
@@ -257,11 +267,13 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			DataRequestConfirmDeny request = new DataRequestConfirmDeny(event);
 			service.addDataRequest(request, new IRequestListener<PubEvent>() {
 
+				@Override
 				public void onRequestComplete(PubEvent data) {
 					if(data != null)
 					{
 						event = data;
 						runOnUiThread(new Runnable(){
+							@Override
 							public void run() {
 								UpdateDataFromEvent();			
 							}
@@ -270,6 +282,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 					
 				}
 
+				@Override
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, e.getMessage());					
 				}
@@ -285,6 +298,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 
 		}
 	}
+	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
     	if(resultCode==RESULT_OK)
     	{
@@ -310,6 +324,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		.setTitle("Alert")  
 		.setCancelable(true)  
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			@Override
 			public void onClick(DialogInterface dialog, int id) {
 				service.RemoveEventFromStoredDataAndCancelNotification(event);
 				finish();
@@ -317,6 +332,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			}
 		})
 		.setNegativeButton("No", new DialogInterface.OnClickListener() {
+			@Override
 			public void onClick(DialogInterface dialog, int id) {
 				dialog.cancel();
 			}
@@ -331,12 +347,14 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		.setTitle("Alert")  
 		.setCancelable(true)  
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			@Override
 			public void onClick(DialogInterface dialog, int id) {
 				service.CancelEvent(event);
 				finish();
 			}
 		})
 		.setNegativeButton("No", new DialogInterface.OnClickListener() {
+			@Override
 			public void onClick(DialogInterface dialog, int id) {
 				dialog.cancel();
 			}
@@ -371,6 +389,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	
 	private ServiceConnection connection = new ServiceConnection()
 	{
+		@Override
 		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
 		{
 			service = (IPubService)serviceBinder;
@@ -383,11 +402,13 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			DataRequestGetLatestAboutPubEvent refresher = new DataRequestGetLatestAboutPubEvent(event.GetEventId());
 			service.addDataRequest(refresher, new IRequestListener<PubEvent>(){
 
+				@Override
 				public void onRequestComplete(PubEvent data) {
 					
 					event = data;
 					runOnUiThread(new Runnable(){
 
+						@Override
 						public void run() {
 							UpdateDataFromEvent();			
 						}
@@ -396,6 +417,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 					
 				}
 
+				@Override
 				public void onRequestFail(Exception e) {
 					// TODO Auto-generated method stub
 					e.printStackTrace();
@@ -404,6 +426,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			});
 		}
 
+		@Override
 		public void onServiceDisconnected(ComponentName arg0)
 		{			
 		}
@@ -419,18 +442,22 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			mData = new ArrayList<GuestList>();
 			this.context = context;
 		}
+		@Override
 		public int getCount() {
 			return mData.size();
 		}
 
+		@Override
 		public Object getItem(int position) {
 			return mData.get(position);
 		}
+		@Override
 		public long getItemId(int position) {
 			return position;
 		}
 
 
+		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) 
 		{
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -460,6 +487,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 							comment.setImageLevel(R.drawable.email_open);
 							comment.setClickable(true);
 							comment.setOnClickListener(new OnClickListener() {
+								@Override
 								public void onClick(View v) 
 								{
 									showAddDialog(position, v);
@@ -468,6 +496,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 							
 							convertView.setClickable(true);
 							convertView.setOnClickListener(new OnClickListener() {
+								@Override
 								public void onClick(View v)
 								{
 									showAddDialog(position,v);
@@ -564,11 +593,13 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 					DataRequestGetFacebookUser getUser = new DataRequestGetFacebookUser(userResponse.getKey().getUserId());
 	    			service.addDataRequest(getUser, new IRequestListener<AppUser>() {
 
+						@Override
 						public void onRequestComplete(AppUser data) {
 							
 							HostEvents.this.runOnUiThread(new UpdateList(data, freeFromWhen, message));
 						}
 
+						@Override
 						public void onRequestFail(Exception e) {
 							// TODO Auto-generated method stub
 							
@@ -582,6 +613,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 								glEntry = new GuestList(data, freeFromWhen, message);
 							}
 							
+							@Override
 							public void run() {
 								// TODO Auto-generated method stub
 								mData.add(glEntry);
@@ -677,7 +709,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			millisUntilFinished -= seconds * 1000;
 			miliseconds = (int)millisUntilFinished;
 			
-			int microSeconds = (int)(miliseconds / 10);
+			int microSeconds = (miliseconds / 10);
 			String formattedMicroseconds;
 			if(microSeconds < 10)
 			{

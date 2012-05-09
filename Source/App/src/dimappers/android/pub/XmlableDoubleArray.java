@@ -17,6 +17,7 @@ public class XmlableDoubleArray implements IXmlable {
 		readXml(element);
 	}
 	
+	@Override
 	public Element writeXml() {
 		Element rootElement = new Element(getClass().getSimpleName());
 		
@@ -29,6 +30,7 @@ public class XmlableDoubleArray implements IXmlable {
 		return rootElement;
 	}
 
+	@Override
 	public void readXml(Element element) {
 		Element locationElement = element.getChild("location");
 		

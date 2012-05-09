@@ -1,6 +1,5 @@
 package dimappers.android.pub;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public interface IDataRequest<K, T> {

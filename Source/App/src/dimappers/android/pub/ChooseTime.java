@@ -104,7 +104,8 @@ public class ChooseTime extends Activity implements OnClickListener{
     	Calendar c = Calendar.getInstance();
     	return event.GetStartTime().getTimeInMillis() - c.getTimeInMillis() > 604800000; //number of milliseconds in a week
     }
-    public void onClick(View v) 
+    @Override
+	public void onClick(View v) 
     {
     	switch(v.getId())
     	{
@@ -276,27 +277,32 @@ public class ChooseTime extends Activity implements OnClickListener{
         .setTitle("Error")  
         .setCancelable(false)  
         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int id) {dialog.cancel();}}).show(); 
+        @Override
+		public void onClick(DialogInterface dialog, int id) {dialog.cancel();}}).show(); 
     }
     private void alertFuture() {
     	new AlertDialog.Builder(this).setMessage("Cannot plan a trip for more than a week in the future.")  
         .setTitle("Error")  
         .setCancelable(false)  
         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int id) {dialog.cancel();}}).show(); 
+        @Override
+		public void onClick(DialogInterface dialog, int id) {dialog.cancel();}}).show(); 
     }
     private void ask() {
     	new AlertDialog.Builder(this).setMessage("You have selected " + event.GetFormattedStartTime().toLowerCase() + ". Are you sure you want to use this time?")  
         .setTitle("Strange Time")  
         .setCancelable(false)  
         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-        	public void onClick(DialogInterface dialog, int id) {returnTime(); dialog.cancel();}})
+        	@Override
+			public void onClick(DialogInterface dialog, int id) {returnTime(); dialog.cancel();}})
         .setNegativeButton("No", new DialogInterface.OnClickListener() {
-        	public void onClick(DialogInterface dialog, int id) {dialog.cancel();} 
+        	@Override
+			public void onClick(DialogInterface dialog, int id) {dialog.cancel();} 
         }).show(); 
     }
     
     private DatePicker.OnDateChangedListener onDateChangedListener = new DatePicker.OnDateChangedListener() {
+		@Override
 		public void onDateChanged(DatePicker view, int newYear, int newMonth, int newDay) {
 			Calendar currentDate = event.GetStartTime();
 			currentDate.set(Calendar.YEAR, newYear);
@@ -306,7 +312,8 @@ public class ChooseTime extends Activity implements OnClickListener{
 	};
 	
 	private TimePicker.OnTimeChangedListener onTimeChangedListener = new TimePicker.OnTimeChangedListener() {
-    	public void onTimeChanged(TimePicker view, int newHour, int newMinute) {   		
+    	@Override
+		public void onTimeChanged(TimePicker view, int newHour, int newMinute) {   		
     		Calendar currentDate = event.GetStartTime();
     		currentDate.set(Calendar.HOUR_OF_DAY, newHour);
     		currentDate.set(Calendar.MINUTE, newMinute);
@@ -315,6 +322,7 @@ public class ChooseTime extends Activity implements OnClickListener{
     
     private ServiceConnection connection = new ServiceConnection()
 	{
+		@Override
 		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
 		{
 			IPubService serviceInterface = (IPubService)serviceBinder;
@@ -331,6 +339,7 @@ public class ChooseTime extends Activity implements OnClickListener{
 	        ampm.setText(""+getAmPm(startTime.get(Calendar.AM_PM)));
 		}
 
+		@Override
 		public void onServiceDisconnected(ComponentName arg0)
 		{			
 		}

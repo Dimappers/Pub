@@ -1,16 +1,9 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.XMLOutputter;
-
 import dimappers.android.PubData.AcknoledgementData;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
@@ -24,11 +17,13 @@ public class DataRequestNewEvent implements IDataRequest<Integer, PubEvent>
 		eventToSend = event;
 	}
 	
+	@Override
 	public void giveConnection(IPubService connectionInterface)
 	{
 		service = connectionInterface;
 	}
 
+	@Override
 	public void performRequest(IRequestListener<PubEvent> listener,
 			HashMap<Integer, PubEvent> storedData)
 	{
@@ -56,6 +51,7 @@ public class DataRequestNewEvent implements IDataRequest<Integer, PubEvent>
 		listener.onRequestComplete(eventToSend);
 	}
 
+	@Override
 	public String getStoredDataId()
 	{
 		return StoredData.sentEventsStore;

@@ -296,7 +296,8 @@ public class Facebook {
         CookieSyncManager.createInstance(activity);
         dialog(activity, LOGIN, params, new DialogListener() {
 
-            public void onComplete(Bundle values) {
+            @Override
+			public void onComplete(Bundle values) {
                 // ensure any cookies set by the dialog are saved
                 CookieSyncManager.getInstance().sync();
                 setAccessToken(values.getString(TOKEN));
@@ -312,17 +313,20 @@ public class Facebook {
                 }
             }
 
-            public void onError(DialogError error) {
+            @Override
+			public void onError(DialogError error) {
                 Log.d("Facebook-authorize", "Login failed: " + error);
                 mAuthDialogListener.onError(error);
             }
 
-            public void onFacebookError(FacebookError error) {
+            @Override
+			public void onFacebookError(FacebookError error) {
                 Log.d("Facebook-authorize", "Login failed: " + error);
                 mAuthDialogListener.onFacebookError(error);
             }
 
-            public void onCancel() {
+            @Override
+			public void onCancel() {
                 Log.d("Facebook-authorize", "Login canceled");
                 mAuthDialogListener.onCancel();
             }

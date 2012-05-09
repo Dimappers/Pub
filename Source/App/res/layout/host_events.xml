@@ -29,7 +29,6 @@
             android:layout_marginLeft="20sp"
             android:textSize="20sp"  />
 
-
         <TextView
             android:id="@+id/guests"
             android:layout_width="wrap_content"
@@ -39,27 +38,18 @@
             android:layout_marginLeft="20sp"
             android:textSize="20sp" />
 
-
-
-
-
-
-
      <LinearLayout
          android:layout_width="fill_parent"
-         android:layout_height="272dp"
+         android:layout_height="wrap_content"
+         android:layout_weight="1.98"
          android:orientation="horizontal"
          android:paddingBottom="6dip"
          android:paddingTop="4dip" >
-        
-
-
-
 
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="294dp"
         android:layout_marginBottom="22dp"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
