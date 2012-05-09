@@ -180,7 +180,8 @@ public class LaunchApplication extends Activity implements OnClickListener{
 								LaunchApplication.this.finish();
 							}
 						})
-						.setTitle("An error has occurred trying to authenticate with Facebook")
+						.setTitle("Error")
+						.setMessage("An error has occurred trying to authenticate with Facebook")
 						.show();
 			}};
 	    array[1] = facebook;
