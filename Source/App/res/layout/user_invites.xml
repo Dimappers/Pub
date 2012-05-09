@@ -76,19 +76,21 @@
             android:layout_marginBottom="20dp"
             android:layout_marginLeft="22dp"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true" />
-
+            android:layout_alignParentBottom="true" 
+            android:textSize="20sp"
+            android:background="@drawable/chalk_outline"
+        	android:textColor="#FFFFFF" />
+
         <Button
             android:id="@+id/going"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/going" 
-            android:layout_weight="0.7"
             android:layout_marginBottom="20dp"
             android:layout_marginRight="22dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"/>
+            android:background="@drawable/chalk_outline"
+            android:text="@string/going"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp" />
 
     </LinearLayout>
 

@@ -10,6 +10,7 @@ import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -45,7 +46,8 @@ public class ChoosePub extends LocationRequiringActivity implements OnClickListe
 		    	longitude = getIntent().getExtras().getDouble(Constants.CurrentLongitude);
 		    	
 		    	pub_input = (EditText)findViewById(R.id.input_pub);
-		    	
+		    	Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
+		    	((Button)findViewById(R.id.use_pub_button)).setTypeface(font);
 		    	pub_list = (ListView)findViewById(android.R.id.list);
 				adapter = new ArrayAdapter<Place>(this, android.R.layout.simple_list_item_1, listItems);
 				setListAdapter(adapter);

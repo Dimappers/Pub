@@ -89,17 +89,19 @@
          android:layout_marginLeft="25sp"
          android:layout_marginRight="25sp"
          android:orientation="horizontal" >
-
+
          <Button
              android:id="@+id/send_Invites"
-             android:layout_width="match_parent"
+             android:layout_width="135dp"
              android:layout_height="wrap_content"
              android:layout_alignParentBottom="true"
              android:layout_gravity="center_horizontal"
              android:layout_marginBottom="18dp"
              android:layout_marginRight="22dp"
-             android:layout_weight="0.5"
-             android:text="@string/send_invites" />
+             android:background="@drawable/chalk_outline"
+             android:text="@string/send_invites"
+             android:textColor="#FFFFFF"
+             android:textSize="20sp" />
 
          <Button
              android:id="@+id/edit_button"
@@ -111,7 +113,10 @@
              android:layout_marginBottom="18dp"
              android:layout_marginRight="22dp"
              android:layout_weight="0.5"
-             android:text="@string/edit" />
+             android:text="@string/edit" 
+             android:textSize="20sp"
+            android:background="@drawable/chalk_outline"
+        	android:textColor="#FFFFFF" />
 
          <TextView
              android:id="@+id/hostEventTimeTillPubText"
@@ -120,6 +125,7 @@
              android:layout_marginRight="2dp"
              android:layout_marginBottom="18dp"
              android:layout_weight="0.5"
+             android:layout_marginTop="5dp"
              android:gravity="center_horizontal"
              android:text="Time till pub"
              android:textAppearance="?android:attr/textAppearanceLarge"
@@ -133,7 +139,11 @@
              android:layout_marginBottom="18dp"
              android:layout_weight="0.5"
              android:text="@string/it_is_on"
-             android:visibility="gone" />
+             android:layout_marginTop="5dp"
+             android:visibility="gone" 
+             android:textSize="20sp"
+             android:background="@drawable/chalk_outline"
+        	 android:textColor="#FFFFFF"/>
      </LinearLayout>
 
 </LinearLayout>

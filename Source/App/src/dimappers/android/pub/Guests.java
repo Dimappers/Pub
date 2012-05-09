@@ -6,6 +6,7 @@ import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Editable;
@@ -59,7 +60,8 @@ public class Guests extends ListActivity implements OnClickListener{
     	
     	guest_list = (ListView)findViewById(android.R.id.list);
     	guest_list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-    	
+    	Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
+    	((Button)findViewById(R.id.save)).setTypeface(font);
     	guest_list.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,

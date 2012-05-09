@@ -145,7 +145,7 @@
 		        android:layout_marginRight="18dp"
 		        android:gravity="right"
 		        android:layout_centerVertical="true"
-		        android:src="@android:drawable/ic_menu_edit" />
+		        android:background="@drawable/edit_dash"  />
 
             
 
@@ -188,7 +188,8 @@
                     android:layout_weight="0.5"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentBottom="true"
-                    android:text="@string/send_invites" 
+                    android:text="@string/send_invites"
+                    android:textSize="20sp"
                     android:background="@drawable/chalk_outline"
                     android:textColor="#FFFFFF"/>
 
@@ -202,6 +203,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_weight="0.5"
                     android:text="@string/save"
+                    android:textSize="20sp"
                     android:background="@drawable/chalk_outline"
                     android:textColor="#FFFFFF" />
             </LinearLayout>
