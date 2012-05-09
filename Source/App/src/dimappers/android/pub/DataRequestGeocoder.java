@@ -68,8 +68,7 @@ public class DataRequestGeocoder implements IDataRequest<long[], XmlableString> 
 	}
 	
 	private long get2DP(double value) {
-		DecimalFormat twoDForm = new DecimalFormat("#.##");
-		return Double.valueOf(twoDForm.format(value)).longValue();
+		return (long)(value*100);
 	}
 
 }

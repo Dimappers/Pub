@@ -136,7 +136,7 @@ public class Pending extends Activity implements OnClickListener {
 	public void onDestroy()
 	{
 		super.onDestroy();
-		locationManager.removeUpdates(locationListener);
+		if(locationManager!=null&&locationListener!=null) {locationManager.removeUpdates(locationListener);}
 		unbindService(connection);
 	}
 

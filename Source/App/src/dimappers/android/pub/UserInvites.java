@@ -196,11 +196,6 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 
 	    		String commentMade = text.getText().toString();
 
-	    		if(commentMade!="")
-	    		{
-	    			Toast.makeText(getBaseContext(), commentMade, Toast.LENGTH_LONG).show();
-	    		} 
-
 	    		if(timeSet==0||timeSet==event.GetStartTime().getTimeInMillis())
 	    		{
 	    			sendResponse(true,event.GetStartTime(),commentMade);
@@ -312,7 +307,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		list.setAdapter(gAdapter);
 	}
 	
-	private void sendResponse(boolean going, Calendar freeFromWhen, String msgToHost)
+	private void sendResponse(boolean going, Calendar freeFromWhen, final String msgToHost)
 	{
 		DataRequestSendResponse response = new DataRequestSendResponse(going, event.GetEventId(), freeFromWhen, msgToHost);
 		
@@ -328,7 +323,22 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 							{
 								public void run() {
 									updateScreen();
-									
+						    		if(msgToHost!=null||msgToHost!="")
+						    		{
+						    			try {
+											Toast.makeText(
+													getBaseContext(), 
+													"Sent message \"" + msgToHost + "\" to " + AppUser.AppUserFromUser(event.GetHost(), service.GetFacebook()).toString() + ".", 
+													Toast.LENGTH_LONG
+													).show();
+										} catch (Exception e) {
+											Toast.makeText(
+													getBaseContext(), 
+													"Sent message \"" + msgToHost + "\" to host.", 
+													Toast.LENGTH_LONG
+													).show();
+										}
+						    		} 
 								}
 								
 							});
@@ -336,7 +346,13 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 					}
 
 					public void onRequestFail(Exception e) {
-						Log.d(Constants.MsgError, e.getMessage());						
+						Log.d(Constants.MsgError, e.getMessage());	
+						runOnUiThread(new Runnable(){
+
+							public void run() {
+								Toast.makeText(getApplicationContext(), "Sending failed.", Toast.LENGTH_LONG).show();
+								updateScreen();
+							}});
 					}
 				});
 	}

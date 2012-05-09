@@ -159,7 +159,7 @@ public class PersonRanker {
 						if(e instanceof IOException)
 						{
 							Log.d(Constants.MsgError, "Error reverse geocoding peoples locations");
-							pending.errorOccurred();
+						//	pending.errorOccurred();
 						}
 						
 						++gotLocationsOfSomeForm;
@@ -640,9 +640,7 @@ public class PersonRanker {
 				++k;
 			}
 		}
-
-		Log.d(Constants.MsgInfo, "facebookFriends: " + tmp.toString());
-		Log.d(Constants.MsgInfo, "cleanedRemovedFriendsList: " + cleanedRemovedFriendsList.length);
+		Log.d(Constants.MsgInfo, "created a removed friends list");
 		
 		setFacebookFriends(tmp);
 		removedFriendsList = cleanedRemovedFriendsList;
