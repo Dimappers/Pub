@@ -15,6 +15,7 @@ import net.awl.appgarden.sdk.AppGardenAgent;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,11 +29,14 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Surface;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.User;
 
@@ -49,6 +53,8 @@ public class LaunchApplication extends Activity implements OnClickListener{
 	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
 	String FILENAME = "AndroidSSO_data";
 	private SharedPreferences mPrefs;
+	
+	IPubService service;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,6 +112,55 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	
     	findViewById(android.R.id.list).setVisibility(View.GONE); }
     }
+    
+    @Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+    	return super.onCreateOptionsMenu(menu);
+    	/*
+		MenuItem edit = menu.add(0, Menu.NONE, 0, "Log out of Facebook");
+		edit.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+			
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				new AlertDialog.Builder(LaunchApplication.this).setMessage("Are you sure you want to log out of Facebook?")  
+				.setTitle("Alert")  
+				.setCancelable(true)  
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						mAsyncRunner.logout(getBaseContext(), new RequestListener() {
+		    				  public void onComplete(String response, Object state) {
+		    					Editor e = mPrefs.edit();
+		    					e.remove("access_token");
+		    					e.remove("access_expires");
+		    					e.commit();
+		    					authoriseFacebook();
+		    				  }
+		    				  
+		    				  public void onIOException(IOException e, Object state) {}
+		    				  
+		    				  public void onFileNotFoundException(FileNotFoundException e,
+		    				        Object state) {}
+		    				  
+		    				  public void onMalformedURLException(MalformedURLException e,
+		    				        Object state) {}
+		    				  
+		    				  public void onFacebookError(FacebookError e, Object state) {}
+		    				});
+					}
+				})
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				})
+				.show(); 
+				
+				return true;
+			}
+		});
+		return super.onCreateOptionsMenu(menu);*/
+	}
     
     private void authoriseFacebook()
     {
@@ -165,6 +220,8 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		    	
 		    	startServiceIntent.putExtras(b);
 		    	startService(startServiceIntent);
+		    	
+				bindService(new Intent(LaunchApplication.this, PubService.class), connection, 0);
 		    	
 		    	runOnUiThread(new ShowButtonsHideProgBar());
 			}
@@ -281,4 +338,17 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	runOnUiThread(r);
     }
     
+    private ServiceConnection connection = new ServiceConnection() {
+
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			LaunchApplication.this.service = (IPubService)service;
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+    };
 }
