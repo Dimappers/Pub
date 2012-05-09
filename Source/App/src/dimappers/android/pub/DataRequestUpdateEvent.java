@@ -1,30 +1,33 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
-import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.output.XMLOutputter;
 
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.RefreshEventResponseMessage;
 import dimappers.android.PubData.UpdateData;
 import dimappers.android.PubData.UpdateType;
+import dimappers.android.PubData.User;
 
 public class DataRequestUpdateEvent implements IDataRequest<Long, PubEvent> {
 
 	private IPubService service;	
 	private UpdateData data;
 	
-	public DataRequestUpdateEvent(PubEvent updatedEvent)
+	public DataRequestUpdateEvent(PubEvent updatedEvent, Collection<User> newUsers)
 	{
 		data = new UpdateData(updatedEvent.GetEventId(), updatedEvent.GetStartTime(), updatedEvent.GetPubLocation());
+		for(User u : newUsers)
+		{
+				data.addUser(u);
+		}
 	}
 	
 	

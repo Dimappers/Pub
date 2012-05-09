@@ -10,7 +10,7 @@
     <ImageButton
         android:id="@+id/envelope"
         android:layout_width="30dp"
-        android:layout_height="39dp"
+        android:layout_height="20dp"
         android:layout_weight="0.01"
         android:background="#80000000"
         android:padding="2dip"

@@ -105,6 +105,9 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		cur_time.setOnClickListener(this);
 		cur_loc.setOnClickListener(this);
 		
+		findViewById(R.id.editTime).setOnClickListener(this);
+		findViewById(R.id.editPubLocation).setOnClickListener(this);
+		
 		//Always visible text
     	((TextView)findViewById(R.id.time_title)).setTypeface(font);
     	((TextView)findViewById(R.id.pub_title)).setTypeface(font);
@@ -155,8 +158,11 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		switch (v.getId()){
 		case R.id.current_location : {
 			setLocation();
+			break;
 		}
-			case R.id.pub_button : {
+			case R.id.pub_button :
+			case R.id.editPubLocation:
+			{
 				i = new Intent(this, ChoosePub.class);
 				if(locSet){
 					b.putDouble(Constants.CurrentLatitude, latSet);
@@ -198,7 +204,9 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 				}
 				break;
 			}
-			case R.id.time_button : {
+			case R.id.time_button : 
+			case R.id.editTime: 
+			{
 				i = new Intent(this, ChooseTime.class);
 				b.putBoolean(Constants.HostOrNot, true);
 				i.putExtras(b);
@@ -481,7 +489,16 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 	private void updateEvent()
 	{
 		progbar.setVisibility(View.VISIBLE);
-		DataRequestUpdateEvent update = new DataRequestUpdateEvent(event);
+		ArrayList<User> addedUsers = new ArrayList<User>();
+		for(User newUser : event.GetUsers())
+		{
+			if(!oldEvent.GetUsers().contains(newUser))
+			{
+				addedUsers.add(newUser);
+			}
+		}
+		
+		DataRequestUpdateEvent update = new DataRequestUpdateEvent(event, addedUsers);
 		Organise.this.service.addDataRequest(update, new IRequestListener<PubEvent>()
 		{
 			public void onRequestComplete(PubEvent data) 
@@ -524,7 +541,8 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		{
 			//Give the interface to the app
 			Organise.this.service = (IPubService)service;
-			event=Organise.this.service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			int eventId = getIntent().getExtras().getInt(Constants.CurrentWorkingEvent);
+			event=Organise.this.service.getEvent(eventId);
 			if(eventSavedAlready)
 			{
 				oldEvent = new PubEvent(event.writeXml()); //duplicate the old event

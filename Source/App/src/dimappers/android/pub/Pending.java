@@ -1,6 +1,8 @@
 package dimappers.android.pub;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
@@ -28,8 +31,9 @@ import dimappers.android.PubData.PubLocation;
 public class Pending extends Activity implements OnClickListener {
 
 	private TextView progressText;
-	public IPubService service;
 	private LocationManager locationManager;
+	IPubService service;
+	PersonRanker personRanker;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,50 @@ public class Pending extends Activity implements OnClickListener {
 		
 		//Find the users current location - required for all other tasks
 		lc.findLocation(locationListener);
+		
+		Timer t = new Timer();
+		t.schedule(new TimerTask() {
+			
+			@Override
+			public void run() {
+				if(!locationListener.locationFound())
+				{
+					locationManager.removeUpdates(locationListener);
+					final PersonFinder personFinder = new PersonFinder(service, getApplicationContext());
+					Pending.this.updateText("Finding friends");
+					runOnUiThread(new Runnable()
+					{
+						public void run()
+						{
+							personFinder.getFriends(new IRequestListener<AppUserArray>() {
+							public void onRequestComplete(final AppUserArray data) {
+								
+										locationListener.peopleFound = true;
+										locationListener.allFriends = data.getArray();
+										if(locationListener.pubFound)
+										{
+											locationListener.rankThings(locationListener.pubs);
+										}
+										else
+										{
+											Pending.this.updateText("Finding pubs");
+										}
+								
+							}
+	
+							public void onRequestFail(Exception e) {
+								Pending.this.errorOccurred();
+							}
+								
+							});
+						}
+					});
+				
+					
+					changeLocation("Could not find location");
+				}
+			}
+		}, 1000 * 10); //wait 10 seconds
 	}
 	
 	public void updateText(String s) {
@@ -90,8 +138,9 @@ public class Pending extends Activity implements OnClickListener {
 	public void onDestroy()
 	{
 		super.onDestroy();
-		locationManager.removeUpdates(locationListener);
+		if(locationManager!=null&&locationListener!=null) {locationManager.removeUpdates(locationListener);}
 		unbindService(connection);
+		if(personRanker!=null&&personRanker.t!=null){personRanker.t.cancel();}
 	}
 
 	private Bundle fillBundle(PubEvent createdEvent) {
@@ -103,23 +152,11 @@ public class Pending extends Activity implements OnClickListener {
 	}
 
 	public void errorOccurred() {
-		runOnUiThread(new ErrorDialog());
-	}
-	
-	class ErrorDialog implements Runnable
-	{
-		public void run() {
-			new AlertDialog.Builder(Pending.this)
-			.setMessage(
-					"An unexpected error has occurred. Please try again.")
-			.setTitle("Error").setCancelable(false)
-			.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					dialog.cancel();
-					finish();
-				}
-			}).show();
-		}
+		runOnUiThread(new Runnable(){
+
+			public void run() {
+				Toast.makeText(getApplicationContext(), "Unexpected error occurred: recommendations may not be accurate.", Toast.LENGTH_LONG).show();
+			}});
 	}
 	
 	private ServiceConnection connection = new ServiceConnection()
@@ -139,7 +176,7 @@ public class Pending extends Activity implements OnClickListener {
 		
 	};
 	
-	private LocationListener locationListener = new LocationListener()
+	private class OurLocationListener implements LocationListener
 	{
 		private boolean peopleFound = false;
 		private boolean pubFound = false;
@@ -147,11 +184,16 @@ public class Pending extends Activity implements OnClickListener {
 		private List<Place> pubs = null;
 		private AppUser[] allFriends = null;
 		
-		Location currentLocation;
+		public Location currentLocation = null;
+		
+		public boolean locationFound()
+		{
+			return currentLocation != null;
+		}
 		
 		public void onLocationChanged(Location location) //we get the location
 		{
-			locationManager.removeUpdates(locationListener);
+			locationManager.removeUpdates(this);
 			currentLocation = location;
 			
 			double[] locationarray = new double[2];
@@ -194,7 +236,7 @@ public class Pending extends Activity implements OnClickListener {
 				public void onRequestComplete(PlacesList data) {
 					if(data.status.equals("ZERO_RESULTS"))
 					{
-						changeLocation();
+						changeLocation("Could not find any pubs at this location");
 					}
 					else
 					{
@@ -216,46 +258,12 @@ public class Pending extends Activity implements OnClickListener {
 					Pending.this.errorOccurred();
 				}});
 		}
-		private void changeLocation()
-		{
-			runOnUiThread(new Runnable()
-			{
-				
-				public void run()
-				{
-					final EditText loc = new EditText(getApplicationContext());
-					new AlertDialog.Builder(Pending.this).setMessage("Enter a different location:")  
-					.setTitle("There are no pubs in this location.")  
-					.setCancelable(true)  
-					.setPositiveButton("Use this location", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							
-							DataRequestReverseGeocoder reverseGeocoder = new DataRequestReverseGeocoder(getApplicationContext(), loc.getText().toString());
-							service.addDataRequest(reverseGeocoder, new IRequestListener<XmlableDoubleArray>(){
 		
-								public void onRequestFail(Exception e) {
-									Pending.this.errorOccurred();
-								}
-		
-								public void onRequestComplete(XmlableDoubleArray data) {
-									
-									currentLocation.setLatitude(data.getArray()[0]);
-									currentLocation.setLongitude(data.getArray()[1]);
-									findPubs();
-									
-								}});
-							dialog.cancel();
-						}
-					})
-					.setView(loc)
-					.show(); 
-				}});
-		}
 		private void rankThings(final List<Place> pubs)
 		{
 			//Start next batch of requests
 			PubEvent event = createEvent();
-			new PersonRanker(event, Pending.this, currentLocation, allFriends, new IRequestListener<PubEvent>() {
+			personRanker = new PersonRanker(event, Pending.this, currentLocation, allFriends, new IRequestListener<PubEvent>() {
 
 				public void onRequestComplete(PubEvent data) {
 					data.SetPubLocation(new PubRanker(pubs, data, Pending.this.service.getHistoryStore()).returnBest());
@@ -284,5 +292,47 @@ public class Pending extends Activity implements OnClickListener {
 				Pending.this.errorOccurred();
 			}
 		}
-	};
+	}
+	
+	private OurLocationListener locationListener = new OurLocationListener();
+
+	private void changeLocation(final String message)
+	{
+		runOnUiThread(new Runnable()
+		{
+			
+			public void run()
+			{
+				final EditText loc = new EditText(getApplicationContext());
+				new AlertDialog.Builder(Pending.this).setMessage("Enter a different location:")  
+				.setTitle(message)
+				.setCancelable(true)  
+				.setPositiveButton("Use this location", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						
+						DataRequestReverseGeocoder reverseGeocoder = new DataRequestReverseGeocoder(getApplicationContext(), loc.getText().toString());
+						service.addDataRequest(reverseGeocoder, new IRequestListener<XmlableDoubleArray>(){
+	
+							public void onRequestFail(Exception e) {
+								Pending.this.errorOccurred();
+							}
+	
+							public void onRequestComplete(XmlableDoubleArray data) {
+								if(locationListener.currentLocation == null)
+								{
+									locationListener.currentLocation = new Location("UserEntered");
+								}
+								locationListener.currentLocation.setLatitude(data.getArray()[0]);
+								locationListener.currentLocation.setLongitude(data.getArray()[1]);
+								service.GetActiveUser().setLocation(data.getArray());
+								locationListener.findPubs();
+								
+							}});
+						dialog.cancel();
+					}
+				})
+				.setView(loc)
+				.show(); 
+			}});
+	}
 }

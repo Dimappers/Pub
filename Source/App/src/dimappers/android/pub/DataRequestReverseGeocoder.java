@@ -7,6 +7,7 @@ import java.util.List;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+import android.media.AudioRecord.OnRecordPositionUpdateListener;
 import android.util.Log;
 import android.widget.Toast;
 import dimappers.android.PubData.Constants;
@@ -27,7 +28,10 @@ public class DataRequestReverseGeocoder implements IDataRequest<String, XmlableD
 	}
 
 	public void performRequest(IRequestListener<XmlableDoubleArray> listener, HashMap<String, XmlableDoubleArray> storedData) {
-		if(storedData.containsKey(loc)) {listener.onRequestComplete(storedData.get(loc));}
+		if(storedData.containsKey(loc)) 
+		{
+			listener.onRequestComplete(storedData.get(loc));
+		}
 		else
 		{
 			Geocoder geocoder = new Geocoder(context);

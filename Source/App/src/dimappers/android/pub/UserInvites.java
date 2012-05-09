@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.DataSetObserver;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -67,7 +68,8 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		bindService(new Intent(this, PubService.class), connection, 0);
 		
 		setContentView(R.layout.user_invites);
-		    	
+		Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
+		
     	Button button_going = (Button)findViewById(R.id.going);
     	button_going.setOnClickListener(this);
     	
@@ -76,6 +78,11 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     	
     	Button button_decline = (Button) findViewById(R.id.decline);
     	button_decline.setOnClickListener(this);
+    	
+    	((TextView)findViewById(R.id.userInvitesPubNameText)).setTypeface(font);
+    	((TextView)findViewById(R.id.userInviteStartTimeText)).setTypeface(font);
+    	((TextView)findViewById(R.id.userInviteHostNameText)).setTypeface(font);
+    	((TextView)findViewById(R.id.guestHeader)).setTypeface(font);
 	}
 	
 	@Override
@@ -189,11 +196,6 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 
 	    		String commentMade = text.getText().toString();
 
-	    		if(commentMade!="")
-	    		{
-	    			Toast.makeText(getBaseContext(), commentMade, Toast.LENGTH_LONG).show();
-	    		} 
-
 	    		if(timeSet==0||timeSet==event.GetStartTime().getTimeInMillis())
 	    		{
 	    			sendResponse(true,event.GetStartTime(),commentMade);
@@ -284,7 +286,8 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		}
 		
 		TextView pubNameText = (TextView) findViewById(R.id.userInvitesPubNameText);
-    	pubNameText.setText(event.GetPubLocation().toString());
+    	//pubNameText.setText(event.GetPubLocation().toString());
+    	pubNameText.setText(event.GetPubLocation().getName());
     	
     	TextView startTime = (TextView) findViewById(R.id.userInviteStartTimeText);
     	startTime.setText(event.GetFormattedStartTime());
@@ -304,7 +307,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		list.setAdapter(gAdapter);
 	}
 	
-	private void sendResponse(boolean going, Calendar freeFromWhen, String msgToHost)
+	private void sendResponse(boolean going, Calendar freeFromWhen, final String msgToHost)
 	{
 		DataRequestSendResponse response = new DataRequestSendResponse(going, event.GetEventId(), freeFromWhen, msgToHost);
 		
@@ -320,7 +323,22 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 							{
 								public void run() {
 									updateScreen();
-									
+						    		if(msgToHost!=null||msgToHost!="")
+						    		{
+						    			try {
+											Toast.makeText(
+													getBaseContext(), 
+													"Sent message \"" + msgToHost + "\" to " + AppUser.AppUserFromUser(event.GetHost(), service.GetFacebook()).toString() + ".", 
+													Toast.LENGTH_LONG
+													).show();
+										} catch (Exception e) {
+											Toast.makeText(
+													getBaseContext(), 
+													"Sent message \"" + msgToHost + "\" to host.", 
+													Toast.LENGTH_LONG
+													).show();
+										}
+						    		} 
 								}
 								
 							});
@@ -328,7 +346,13 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 					}
 
 					public void onRequestFail(Exception e) {
-						Log.d(Constants.MsgError, e.getMessage());						
+						Log.d(Constants.MsgError, e.getMessage());	
+						runOnUiThread(new Runnable(){
+
+							public void run() {
+								Toast.makeText(getApplicationContext(), "Sending failed.", Toast.LENGTH_LONG).show();
+								updateScreen();
+							}});
 					}
 				});
 	}

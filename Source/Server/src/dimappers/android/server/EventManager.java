@@ -26,7 +26,7 @@ public class EventManager
 	public static void InitFromScratch()
 	{
 		events = new HashMap<Integer, PubEvent>();
-		eventsCounter = 0;
+		eventsCounter = 1;
 	}
 	
 	public static void InitFromFile(String loadFile)
