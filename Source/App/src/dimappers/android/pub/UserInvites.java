@@ -325,7 +325,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 							{
 								public void run() {
 									updateScreen();
-						    		if(msgToHost!=null||msgToHost!="")
+						    		if(msgToHost!=null&&msgToHost.equals(""))
 						    		{
 						    			try {
 											Toast.makeText(
