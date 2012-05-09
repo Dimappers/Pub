@@ -26,14 +26,31 @@
     android:layout_height="fill_parent"
     >
 
-        <Button
-            android:id="@+id/organise_button"
+         <TextView
+            android:id="@+id/main_pub_title"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_marginBottom="20sp"
             android:layout_marginLeft="20sp"
             android:layout_marginRight="20sp"
             android:layout_marginTop="20sp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+        	android:gravity="center"
+            android:layout_alignParentLeft="true"
+	   	 	android:layout_alignParentTop="true"
+            android:textColor="#FFFFFF" 
+            android:text="@string/mainpubtitle"
+            android:textSize="80sp"/>
+        
+        <Button
+            android:id="@+id/organise_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="10sp"
+            android:layout_marginLeft="20sp"
+            android:layout_marginRight="20sp"
+            android:layout_marginTop="10sp"
             android:layout_weight="1"
             android:layout_alignParentLeft="true"
 	   	 	android:layout_alignParentTop="true"
@@ -46,8 +63,8 @@
 	    android:id="@+id/invites_button"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
-	    android:layout_marginTop="20sp"
-	    android:layout_marginBottom="20sp"
+	    android:layout_marginTop="5sp"
+	    android:layout_marginBottom="10sp"
 	    android:layout_marginLeft="20sp"
 	    android:layout_marginRight="20sp"
 	    android:layout_weight="1"

@@ -99,7 +99,10 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	button_invites.setOnClickListener(this);
     	button_invites.setVisibility(View.GONE);
     	button_invites.setTypeface(font);
-    	    	
+    	    
+    	TextView pub_title = (TextView)findViewById(R.id.main_pub_title);
+    	pub_title.setTypeface(font);
+    	pub_title.setVisibility(View.GONE);
     	
     	findViewById(android.R.id.list).setVisibility(View.GONE); }
     }
@@ -191,6 +194,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 	    	findViewById(R.id.organise_button).setVisibility(View.VISIBLE);
 	    	findViewById(R.id.invites_button).setVisibility(View.VISIBLE);
 	    	findViewById(android.R.id.list).setVisibility(View.VISIBLE);
+	    	findViewById(R.id.main_pub_title).setVisibility(View.VISIBLE);
 		}
     	
     }

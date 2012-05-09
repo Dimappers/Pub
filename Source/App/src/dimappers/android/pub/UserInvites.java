@@ -291,7 +291,8 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		}
 		
 		TextView pubNameText = (TextView) findViewById(R.id.userInvitesPubNameText);
-    	pubNameText.setText(event.GetPubLocation().toString());
+    	//pubNameText.setText(event.GetPubLocation().toString());
+    	pubNameText.setText(event.GetPubLocation().getName());
     	
     	TextView startTime = (TextView) findViewById(R.id.userInviteStartTimeText);
     	startTime.setText(event.GetFormattedStartTime());
