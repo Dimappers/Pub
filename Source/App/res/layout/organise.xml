@@ -58,7 +58,7 @@
                     android:text="@string/default_location"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
             </RelativeLayout>
-
+      
             <TextView
                 android:id="@+id/pub_title"
                 android:layout_width="wrap_content"
@@ -69,20 +69,39 @@
                 android:text="@string/pub_location"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textSize="20sp" />
+
+		<RelativeLayout
+		    android:id="@+id/publocationlinear"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content" >
 
-            <Button
-                android:id="@+id/pub_button"
-                style="?android:attr/editTextStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="22dp"
-                android:layout_marginRight="22dp"
-                android:background="@android:color/transparent"
-                android:gravity="center|center_horizontal"
-                android:text="test_data"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#FFFFFF"
-                android:textSize="35sp" />
+		    <Button
+		        android:id="@+id/pub_button"
+		        style="?android:attr/editTextStyle"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_centerVertical="true"
+		        android:background="@android:color/transparent"
+		        android:gravity="left"
+		        android:text="Unknown Pub..."
+		        android:textAppearance="?android:attr/textAppearanceSmall"
+		        android:textColor="#FFFFFF"
+		        android:textSize="25sp"
+		        android:layout_toLeftOf="@+id/editPubLocation"
+		        android:layout_marginLeft="20dp" />
+
+		    <ImageButton
+		        android:id="@+id/editPubLocation"
+		        android:layout_width="48dp"
+		        android:layout_height="48dp"
+		        android:layout_alignParentRight="true"
+		        android:layout_alignParentTop="true"
+		        android:layout_marginRight="18dp"
+		        android:gravity="right"
+		        android:layout_centerVertical="true"
+		        android:src="@android:drawable/ic_menu_edit" />
+
+		</RelativeLayout>
 
             <TextView
                 android:id="@+id/time_title"
@@ -94,20 +113,40 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textSize="20sp" />
 
-            <Button
+            <RelativeLayout android:id="@+id/starttimerelative"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content" >
+            
+                <Button
                 android:id="@+id/time_button"
                 style="?android:attr/editTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="22dp"
-                android:layout_marginRight="22dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
                 android:background="@android:color/transparent"
-                android:gravity="center"
-                android:text="test_data"
+                android:gravity="left"
+                android:text="Unknown time"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="#FFFFFF"
-                android:textSize="35sp" />
+                android:layout_marginLeft="20dp"
+                android:layout_toLeftOf="@+id/editTime"
+                android:textSize="25sp" />
+                
+            <ImageButton
+		        android:id="@+id/editTime"
+		        android:layout_width="48dp"
+		        android:layout_height="48dp"
+		        android:layout_alignParentRight="true"
+		        android:layout_alignParentTop="true"
+		        android:layout_marginRight="18dp"
+		        android:gravity="right"
+		        android:layout_centerVertical="true"
+		        android:src="@android:drawable/ic_menu_edit" />
 
+            
+
+			</RelativeLayout>
             <TextView
                 android:id="@+id/guest_title"
                 android:layout_width="wrap_content"
