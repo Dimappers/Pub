@@ -155,6 +155,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		switch (v.getId()){
 		case R.id.current_location : {
 			setLocation();
+			break;
 		}
 			case R.id.pub_button : {
 				i = new Intent(this, ChoosePub.class);
