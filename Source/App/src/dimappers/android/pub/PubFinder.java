@@ -38,7 +38,8 @@ public class PubFinder {
  
  public static HttpRequestFactory createRequestFactory(final HttpTransport transport) {
 	 return transport.createRequestFactory(new HttpRequestInitializer() {
-		  public void initialize(HttpRequest request) {
+		  @Override
+		public void initialize(HttpRequest request) {
 			  GoogleHeaders headers = new GoogleHeaders();
 			  headers.setApplicationName("Pub");
 			  request.setHeaders(headers);

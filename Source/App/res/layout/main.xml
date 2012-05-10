@@ -41,7 +41,8 @@
 	   	 	android:layout_alignParentTop="true"
             android:textColor="#FFFFFF" 
             android:text="@string/mainpubtitle"
-            android:textSize="80sp"/>
+            android:textSize="80sp"
+            android:paddingTop="0px"/>
         
         <Button
             android:id="@+id/organise_button"

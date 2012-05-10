@@ -1,11 +1,8 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
-
 import android.util.Log;
 
 import com.google.api.client.googleapis.GoogleHeaders;
@@ -13,7 +10,6 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.http.json.JsonHttpParser;
@@ -44,10 +40,12 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 		 this.keyword = "";
 	 }
 	 
+	@Override
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
+	@Override
 	public void performRequest(IRequestListener<PlacesList> listener,HashMap<Integer, PlacesList> storedData) {
 		if(storedData.containsKey(DataRequestPubFinder.getKey(longitude, latitude, keyword)) && 
 				!storedData.get(DataRequestPubFinder.getKey(longitude, latitude, keyword)).isOutOfDate()) //if we already have some pubs and they are not out of date
@@ -59,7 +57,8 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 			Log.d(Constants.MsgInfo, "Getting pubs from Google.");
 			try {
 				HttpRequestFactory httpRequestFactory = transport.createRequestFactory(new HttpRequestInitializer() {
-					  public void initialize(HttpRequest request) {
+					  @Override
+					public void initialize(HttpRequest request) {
 						  GoogleHeaders headers = new GoogleHeaders();
 						  headers.setApplicationName("Pub");
 						  request.setHeaders(headers);
@@ -109,6 +108,7 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 		}
 	}
 
+	@Override
 	public String getStoredDataId() {
 		return "PubLists";
 	}

@@ -23,12 +23,14 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 	IPubService service;
 	Context context;
 	
+	@Override
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 	
 	public DataRequestGetFriends(Context context) {this.context = context;}
 	
+	@Override
 	public void performRequest(IRequestListener<AppUserArray> listener,
 			HashMap<Long, AppUserArray> storedData) {
 		Facebook facebook = service.GetFacebook();
@@ -111,7 +113,7 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 	private AppUser[] MergeSort(AppUser[] list)
 	{
 		if (list.length<=1) return list;
-		AppUser[] lista = new AppUser[(int) list.length/2];
+		AppUser[] lista = new AppUser[list.length/2];
 		AppUser[] listb = new AppUser[list.length-lista.length];
 		for(int i = 0; i<list.length; i++)
 		{
@@ -142,6 +144,7 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 		return temp;
 	}
 
+	@Override
 	public String getStoredDataId() {
 		return "AppUsers";
 	}

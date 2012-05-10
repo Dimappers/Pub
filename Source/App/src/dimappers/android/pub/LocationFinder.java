@@ -1,12 +1,9 @@
 package dimappers.android.pub;
 
 import dimappers.android.PubData.Constants;
-import android.content.Context;
-import android.location.GpsStatus.Listener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Bundle;
 
 public class LocationFinder {
 	
