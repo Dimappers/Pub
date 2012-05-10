@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -42,8 +43,9 @@ public class Pending extends Activity implements OnClickListener {
 		
 		//Bind to service
     	bindService(new Intent(this, PubService.class), connection, 0);
-		
+    	Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
 		progressText = (TextView) findViewById(R.id.location_error);
+		((TextView)findViewById(R.id.location_error)).setTypeface(font);
 		((TextView) findViewById(R.id.cancelbutton)).setOnClickListener(this);
 	}
 

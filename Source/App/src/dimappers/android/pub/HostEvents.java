@@ -79,7 +79,9 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
     	((TextView)findViewById(R.id.guests)).setTypeface(font);
     	((Button)findViewById(R.id.edit_button)).setTypeface(font);
     	((Button)findViewById(R.id.send_Invites)).setTypeface(font);
-
+    	((Button)findViewById(R.id.it_is_on)).setTypeface(font);
+    	((TextView)findViewById(R.id.hostEventTimeTillPubText)).setTypeface(font);
+    	
 		ListView list = (ListView) findViewById(R.id.listView1);
 
 		sent = !getIntent().getExtras().getBoolean(Constants.IsSavedEventFlag); //if we have saved the event, it has not been sent
