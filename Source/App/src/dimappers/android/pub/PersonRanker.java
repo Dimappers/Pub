@@ -102,6 +102,7 @@ public class PersonRanker {
 		DataRequestGetFacebookPosts posts = new DataRequestGetFacebookPosts();
 		service.addDataRequest(posts, new IRequestListener<XmlJasonObject>() {
 
+			
 			public void onRequestComplete(XmlJasonObject data) {
 				if(!cancelled)
 				{
@@ -114,6 +115,7 @@ public class PersonRanker {
 				}
 			}
 
+			
 			public void onRequestFail(Exception e) {
 				if(!cancelled)
 				{
@@ -127,6 +129,7 @@ public class PersonRanker {
 		DataRequestGetPhotos photos = new DataRequestGetPhotos();
 		service.addDataRequest(photos, new IRequestListener<XmlJasonObject>() {
 
+			
 			public void onRequestComplete(XmlJasonObject data) 
 			{
 				if(!cancelled)
@@ -139,6 +142,7 @@ public class PersonRanker {
 				}
 			}
 
+			
 			public void onRequestFail(Exception e) 
 			{
 				if(!cancelled)
@@ -158,6 +162,7 @@ public class PersonRanker {
 				
 				service.addDataRequest(geocodeName, new IRequestListener<XmlableDoubleArray>()
 				{
+					
 					public void onRequestComplete(XmlableDoubleArray data) 
 					{
 						if(!cancelled)
@@ -181,6 +186,7 @@ public class PersonRanker {
 						}						
 					}
 
+					
 					public void onRequestFail(Exception e) {
 						if(!cancelled)
 						{
@@ -214,7 +220,7 @@ public class PersonRanker {
 		
 		t = new Timer();
 		t.schedule(new TimerTask() {
-			@Override
+			
 			public void run() {
 				cancelled = true;
 				pending.errorOccurred();
@@ -584,7 +590,7 @@ public class PersonRanker {
 	private AppUser[] MergeSort(AppUser[] list) {
 		if (list.length <= 1)
 			return list;
-		AppUser[] lista = new AppUser[(int) list.length / 2];
+		AppUser[] lista = new AppUser[list.length / 2];
 		AppUser[] listb = new AppUser[list.length - lista.length];
 		for (int i = 0; i < list.length; i++) {
 			if (i < lista.length) {
@@ -654,7 +660,7 @@ public class PersonRanker {
 		for (int i = 0; i < getFacebookFriends().length; i++) {
 			if (isTooFarAway(getFacebookFriends()[i].getLocation())) {
 				AppUser friend = getFacebookFriends()[i];
-				removedFriendsList[removedFriends] = new AppUser(((AppUser) friend).writeXml()); //duplicate the friend
+				removedFriendsList[removedFriends] = new AppUser(friend.writeXml()); //duplicate the friend
 				getFacebookFriends()[i] = null;
 				removedFriends++;
 			}

@@ -10,15 +10,17 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class NoInternet extends Activity implements OnClickListener {
-	@Override
+	
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
     	setContentView(R.layout.no_internet);
     	Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
     	((TextView)findViewById(R.id.nointernettext)).setTypeface(font);
+    	((Button)findViewById(R.id.nointernetokbutton)).setTypeface(font);
     	((Button)findViewById(R.id.nointernetokbutton)).setOnClickListener(this);
 	}
+			
 			public void onClick(View v) {
 				switch(v.getId())
 				{

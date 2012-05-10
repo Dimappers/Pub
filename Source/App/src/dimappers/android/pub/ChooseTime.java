@@ -32,7 +32,7 @@ public class ChooseTime extends Activity implements OnClickListener{
 		private Button currentminute;
 		private Button ampm;
 	
-	@Override
+	
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.choose_start);
@@ -40,9 +40,12 @@ public class ChooseTime extends Activity implements OnClickListener{
     	Button button_save_date_time = (Button)findViewById(R.id.save_date_and_time);
     	button_save_date_time.setOnClickListener(this);
     	
+    	Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
+    	((Button)findViewById(R.id.save_date_and_time)).setTypeface(font);
+    	
     	bindService(new Intent(getApplicationContext(), PubService.class), connection, 0);
     	
-    	Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
+    	
     	((TextView)findViewById(R.id.choose_time)).setTypeface(font);
     	((TextView)findViewById(R.id.choose_date)).setTypeface(font);
         
@@ -72,7 +75,7 @@ public class ChooseTime extends Activity implements OnClickListener{
         ampm.setOnClickListener(this);
 	}
 	
-	@Override
+	
 	public void onDestroy()
 	{
 		super.onDestroy();
@@ -82,7 +85,9 @@ public class ChooseTime extends Activity implements OnClickListener{
 
 	private String getMinute(int minute) {
 		if(minute<=7) {return "00";}
-		else return "15";
+		else if(minute<=22) {return "15";}
+		else if(minute<=37) {return "30";}
+		else {return "45";}
 	}
 	
 	private String getAmPm(int ampm) {
@@ -102,7 +107,8 @@ public class ChooseTime extends Activity implements OnClickListener{
     	Calendar c = Calendar.getInstance();
     	return event.GetStartTime().getTimeInMillis() - c.getTimeInMillis() > 604800000; //number of milliseconds in a week
     }
-    public void onClick(View v) 
+    
+	public void onClick(View v) 
     {
     	switch(v.getId())
     	{
@@ -274,27 +280,32 @@ public class ChooseTime extends Activity implements OnClickListener{
         .setTitle("Error")  
         .setCancelable(false)  
         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int id) {dialog.cancel();}}).show(); 
+        
+		public void onClick(DialogInterface dialog, int id) {dialog.cancel();}}).show(); 
     }
     private void alertFuture() {
     	new AlertDialog.Builder(this).setMessage("Cannot plan a trip for more than a week in the future.")  
         .setTitle("Error")  
         .setCancelable(false)  
         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int id) {dialog.cancel();}}).show(); 
+        
+		public void onClick(DialogInterface dialog, int id) {dialog.cancel();}}).show(); 
     }
     private void ask() {
-    	new AlertDialog.Builder(this).setMessage("You have selected " + event.GetFormattedStartTime() + ". Are you sure you want to use this time?")  
+    	new AlertDialog.Builder(this).setMessage("You have selected " + event.GetFormattedStartTime().toLowerCase() + ". Are you sure you want to use this time?")  
         .setTitle("Strange Time")  
         .setCancelable(false)  
         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-        	public void onClick(DialogInterface dialog, int id) {returnTime(); dialog.cancel();}})
+        	
+			public void onClick(DialogInterface dialog, int id) {returnTime(); dialog.cancel();}})
         .setNegativeButton("No", new DialogInterface.OnClickListener() {
-        	public void onClick(DialogInterface dialog, int id) {dialog.cancel();} 
+        	
+			public void onClick(DialogInterface dialog, int id) {dialog.cancel();} 
         }).show(); 
     }
     
     private DatePicker.OnDateChangedListener onDateChangedListener = new DatePicker.OnDateChangedListener() {
+		
 		public void onDateChanged(DatePicker view, int newYear, int newMonth, int newDay) {
 			Calendar currentDate = event.GetStartTime();
 			currentDate.set(Calendar.YEAR, newYear);
@@ -304,7 +315,8 @@ public class ChooseTime extends Activity implements OnClickListener{
 	};
 	
 	private TimePicker.OnTimeChangedListener onTimeChangedListener = new TimePicker.OnTimeChangedListener() {
-    	public void onTimeChanged(TimePicker view, int newHour, int newMinute) {   		
+    	
+		public void onTimeChanged(TimePicker view, int newHour, int newMinute) {   		
     		Calendar currentDate = event.GetStartTime();
     		currentDate.set(Calendar.HOUR_OF_DAY, newHour);
     		currentDate.set(Calendar.MINUTE, newMinute);
@@ -313,6 +325,7 @@ public class ChooseTime extends Activity implements OnClickListener{
     
     private ServiceConnection connection = new ServiceConnection()
 	{
+		
 		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
 		{
 			IPubService serviceInterface = (IPubService)serviceBinder;
@@ -329,6 +342,7 @@ public class ChooseTime extends Activity implements OnClickListener{
 	        ampm.setText(""+getAmPm(startTime.get(Calendar.AM_PM)));
 		}
 
+		
 		public void onServiceDisconnected(ComponentName arg0)
 		{			
 		}

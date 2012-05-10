@@ -10,14 +10,13 @@ import com.facebook.android.Facebook;
 
 import dimappers.android.PubData.Constants;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
 
 public class GetPerson extends AsyncTask<Object, Void, AppUser> {
 
 	IRequestListener<AppUser> listener;
 	
-	@Override
+	
 	protected AppUser doInBackground(Object... bundle) {
 		listener = (IRequestListener<AppUser>) bundle[0];
 		Facebook facebook = (Facebook) bundle[1];
@@ -46,6 +45,7 @@ public class GetPerson extends AsyncTask<Object, Void, AppUser> {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			Log.d(Constants.MsgError, "Jason error in reading info about current user: " + e.getMessage());
+			return null;
 		}
     	
 		Log.d(Constants.MsgInfo, "Logged in as user: " + name + " with ID: " + id);
@@ -61,7 +61,7 @@ public class GetPerson extends AsyncTask<Object, Void, AppUser> {
     	}
 	}
 	
-	@Override
+	
 	protected void onPostExecute(AppUser appUser)
 	{
 		if(appUser!=null) {listener.onRequestComplete(appUser);}

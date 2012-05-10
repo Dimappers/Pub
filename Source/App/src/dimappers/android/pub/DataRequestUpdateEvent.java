@@ -31,10 +31,12 @@ public class DataRequestUpdateEvent implements IDataRequest<Long, PubEvent> {
 	}
 	
 	
+	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
+	
 	
 	public void performRequest(IRequestListener<PubEvent> listener,
 			HashMap<Long, PubEvent> storedData) {
@@ -75,6 +77,7 @@ public class DataRequestUpdateEvent implements IDataRequest<Long, PubEvent> {
 		listener.onRequestComplete(event);	
 	}
 
+	
 	
 	public String getStoredDataId() {
 		return Constants.NoDictionaryForGenericDataStore;

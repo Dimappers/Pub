@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -35,15 +36,16 @@ public class Pending extends Activity implements OnClickListener {
 	IPubService service;
 	PersonRanker personRanker;
 
-	@Override
+	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pending_guests);
 		
 		//Bind to service
     	bindService(new Intent(this, PubService.class), connection, 0);
-		
+    	Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
 		progressText = (TextView) findViewById(R.id.location_error);
+		((TextView)findViewById(R.id.location_error)).setTypeface(font);
 		((TextView) findViewById(R.id.cancelbutton)).setOnClickListener(this);
 	}
 
@@ -60,7 +62,7 @@ public class Pending extends Activity implements OnClickListener {
 		Timer t = new Timer();
 		t.schedule(new TimerTask() {
 			
-			@Override
+			
 			public void run() {
 				if(!locationListener.locationFound())
 				{
@@ -69,9 +71,11 @@ public class Pending extends Activity implements OnClickListener {
 					Pending.this.updateText("Finding friends");
 					runOnUiThread(new Runnable()
 					{
+						
 						public void run()
 						{
 							personFinder.getFriends(new IRequestListener<AppUserArray>() {
+							
 							public void onRequestComplete(final AppUserArray data) {
 								
 										locationListener.peopleFound = true;
@@ -87,6 +91,7 @@ public class Pending extends Activity implements OnClickListener {
 								
 							}
 	
+							
 							public void onRequestFail(Exception e) {
 								Pending.this.errorOccurred();
 							}
@@ -110,6 +115,7 @@ public class Pending extends Activity implements OnClickListener {
 	{
 		String s;
 
+		
 		public void run() {
 			progressText.setText(s);
 		}
@@ -125,6 +131,7 @@ public class Pending extends Activity implements OnClickListener {
 		return new PubEvent(new TimeFinder(service.getHistoryStore()).chooseTime(), service.GetActiveUser());
 	}
 
+	
 	public void onClick(View v) {
 		if (v.getId() == R.id.cancelbutton) {finish();}
 	}
@@ -134,7 +141,7 @@ public class Pending extends Activity implements OnClickListener {
 		finish();
 	}
 	
-	@Override
+	
 	public void onDestroy()
 	{
 		super.onDestroy();
@@ -154,6 +161,7 @@ public class Pending extends Activity implements OnClickListener {
 	public void errorOccurred() {
 		runOnUiThread(new Runnable(){
 
+			
 			public void run() {
 				Toast.makeText(getApplicationContext(), "Unexpected error occurred: recommendations may not be accurate.", Toast.LENGTH_LONG).show();
 			}});
@@ -161,6 +169,7 @@ public class Pending extends Activity implements OnClickListener {
 	
 	private ServiceConnection connection = new ServiceConnection()
 	{
+		
 		public void onServiceConnected(ComponentName className, IBinder pubService)
 		{
 			//Give the interface to the app
@@ -170,6 +179,7 @@ public class Pending extends Activity implements OnClickListener {
  			findLocation();
 		}
 
+		
 		public void onServiceDisconnected(ComponentName className)
 		{
 		}
@@ -191,6 +201,7 @@ public class Pending extends Activity implements OnClickListener {
 			return currentLocation != null;
 		}
 		
+		
 		public void onLocationChanged(Location location) //we get the location
 		{
 			locationManager.removeUpdates(this);
@@ -209,6 +220,7 @@ public class Pending extends Activity implements OnClickListener {
 			
 			
 			personFinder.getFriends(new IRequestListener<AppUserArray>() {
+				
 				public void onRequestComplete(AppUserArray data) {
 					peopleFound = true;
 					allFriends = data.getArray();
@@ -222,6 +234,7 @@ public class Pending extends Activity implements OnClickListener {
 					}
 				}
 
+				
 				public void onRequestFail(Exception e) {
 					Pending.this.errorOccurred();
 				}
@@ -233,6 +246,7 @@ public class Pending extends Activity implements OnClickListener {
 			DataRequestPubFinder pubFinder = new DataRequestPubFinder(currentLocation.getLatitude(), currentLocation.getLongitude());
 			service.addDataRequest(pubFinder, new IRequestListener<PlacesList>(){
 
+				
 				public void onRequestComplete(PlacesList data) {
 					if(data.status.equals("ZERO_RESULTS"))
 					{
@@ -253,6 +267,7 @@ public class Pending extends Activity implements OnClickListener {
 					}
 				}
 
+				
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, e.getMessage());
 					Pending.this.errorOccurred();
@@ -265,11 +280,13 @@ public class Pending extends Activity implements OnClickListener {
 			PubEvent event = createEvent();
 			personRanker = new PersonRanker(event, Pending.this, currentLocation, allFriends, new IRequestListener<PubEvent>() {
 
+				
 				public void onRequestComplete(PubEvent data) {
 					data.SetPubLocation(new PubRanker(pubs, data, Pending.this.service.getHistoryStore()).returnBest());
 					Pending.this.onFinish(data);
 				}
 
+				
 				public void onRequestFail(Exception e) {
 					errorOccurred();
 				}
@@ -277,15 +294,18 @@ public class Pending extends Activity implements OnClickListener {
 			}, getContentResolver());
 		}
 
+		
 		public void onProviderDisabled(String provider) {
 			Log.d(Constants.MsgWarning, provider + " is not avaliable");
 			Pending.this.errorOccurred();
 		}
 
+		
 		public void onProviderEnabled(String provider) {
 			Log.d(Constants.MsgInfo, provider + " is avaliable");
 		}
 
+		
 		public void onStatusChanged(String provider, int status, Bundle extras) {
 			if(status==LocationProvider.OUT_OF_SERVICE) //i.e. location will not be able to be provided for a while
 			{
@@ -301,6 +321,7 @@ public class Pending extends Activity implements OnClickListener {
 		runOnUiThread(new Runnable()
 		{
 			
+			
 			public void run()
 			{
 				final EditText loc = new EditText(getApplicationContext());
@@ -308,15 +329,18 @@ public class Pending extends Activity implements OnClickListener {
 				.setTitle(message)
 				.setCancelable(true)  
 				.setPositiveButton("Use this location", new DialogInterface.OnClickListener() {
+					
 					public void onClick(DialogInterface dialog, int id) {
 						
 						DataRequestReverseGeocoder reverseGeocoder = new DataRequestReverseGeocoder(getApplicationContext(), loc.getText().toString());
 						service.addDataRequest(reverseGeocoder, new IRequestListener<XmlableDoubleArray>(){
 	
+							
 							public void onRequestFail(Exception e) {
 								Pending.this.errorOccurred();
 							}
 	
+							
 							public void onRequestComplete(XmlableDoubleArray data) {
 								if(locationListener.currentLocation == null)
 								{

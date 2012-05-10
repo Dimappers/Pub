@@ -19,16 +19,19 @@
             android:hint="Input pub here" 
             android:layout_marginLeft="20sp"
             android:layout_marginTop="30sp"/>
-
+
         <Button
             android:id="@+id/use_pub_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:text="@string/search"
             android:layout_marginRight="20sp"
-            android:layout_marginTop="30sp" />
+            android:layout_marginTop="30sp"
+            android:background="@drawable/chalk_outline"
+            android:text="@string/search"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
 
     </RelativeLayout>
 
@@ -44,7 +47,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="25sp"
             android:layout_marginRight="25sp"
-            android:layout_marginBottom="30sp">
+            android:layout_marginBottom="30sp"
+            android:cacheColorHint="#00000000">
 
              </ListView>
     

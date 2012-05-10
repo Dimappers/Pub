@@ -1,16 +1,11 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.facebook.android.Facebook;
 
-import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.User;
 
 public class DataRequestGetFacebookUser implements
@@ -32,11 +27,13 @@ public class DataRequestGetFacebookUser implements
 		facebookIdToGet = -1;
 	}
 	
+	
 	public void giveConnection(IPubService connectionInterface)
 	{
 		service = connectionInterface;
 	}
 
+	
 	public void performRequest(IRequestListener<AppUser> listener,
 			HashMap<Long, AppUser> storedData)
 	{
@@ -88,6 +85,7 @@ public class DataRequestGetFacebookUser implements
 		listener.onRequestComplete(appUser);		
 	}
 
+	
 	public String getStoredDataId() {
 		return "AppUser";
 	}	

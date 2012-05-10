@@ -41,12 +41,12 @@ public class Place implements IXmlable {
  
  public Place() {}
 
-@Override
+
  public String toString() {
   return name;
  }
  
- @Override
+ 
  public boolean equals(Object place2)
  {
 	 if(place2 instanceof Place)
@@ -56,11 +56,12 @@ public class Place implements IXmlable {
 	 else return false;
  }
  
- @Override
+ 
  public int hashCode()
  {
 	 return (new Double(Math.pow(2.0, geometry.location.lat)*Math.pow(3.0, geometry.location.lng))).hashCode();
  }
+
 
 public Element writeXml() {
 	Element rootElement = new Element(getClass().getSimpleName());
@@ -80,6 +81,7 @@ public Element writeXml() {
 	
 	return rootElement;
 }
+
 
 public void readXml(Element element) {
 	id = element.getChildText(idkey);

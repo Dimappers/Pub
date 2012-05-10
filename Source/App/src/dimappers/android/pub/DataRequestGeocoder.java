@@ -1,7 +1,6 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,10 +22,12 @@ public class DataRequestGeocoder implements IDataRequest<long[], XmlableString> 
 		applicationContext = appContext;
 	}
 	
+	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
+	
 	public void performRequest(IRequestListener<XmlableString> listener,HashMap<long[], XmlableString> storedData) {
 		
 		long[] key = new long[2];
@@ -63,6 +64,7 @@ public class DataRequestGeocoder implements IDataRequest<long[], XmlableString> 
 		}
 	}
 
+	
 	public String getStoredDataId() {
 		return "Place";
 	}

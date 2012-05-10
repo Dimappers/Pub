@@ -31,12 +31,12 @@
   	<string name="waiting_for_response">Waiting For Response</string>
   	
   	<string name="going">Going - Hold for options</string>
-  	
+  	<string name="hold_for_options">Hold for options</string>
   	<string name="pub">Pub:</string>
   	
   	<string name="current_start_time">Current Start Time:</string>
   	
-  	<string name="guests">Guests:</string>
+  	<string name="guests">Mates:</string>
   	
   	<string name="confirm">Confirm</string>
   	
@@ -63,7 +63,7 @@
   	
   	<string name="time_title">Time:</string>
   	
-  	<string name="guest_title">Guests:</string>
+  	<string name="guest_title">Mates:</string>
   	
   	<string name="search">Search</string>
 

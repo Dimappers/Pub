@@ -76,21 +76,6 @@ public class NotificationCreator {
 	
 	private static Notification newEventNotification(PubEvent event, Context context)
 	{
-		/*
-		 * Notification newNotification = new Notification(R.drawable.icon, "New pub event", System.currentTimeMillis());
-				newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
-				newNotification.defaults |= Notification.DEFAULT_VIBRATE;
-				Intent notificationIntent = new Intent(context, LaunchApplication.class);
-				Bundle b = new Bundle();
-				PubEvent event = events.getEvents().keySet().iterator().next();
-				b.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
-				notificationIntent.putExtras(b);
-				PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-				
-				newNotification.setLatestEventInfo(context, "New Pub Event", event.toString(), contentIntent);
-				
-				nManager.notify(1, newNotification);
-		 */
 		Notification newNotification = new Notification(R.drawable.icon, "New pub event", System.currentTimeMillis());
 		newNotification.defaults |= Notification.DEFAULT_VIBRATE;
 		newNotification.flags |= Notification.FLAG_AUTO_CANCEL;

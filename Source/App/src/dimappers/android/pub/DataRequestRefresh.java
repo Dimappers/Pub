@@ -1,30 +1,18 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Map.Entry;
-
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.XMLOutputter;
-
 import android.util.Log;
 
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.RefreshData;
 import dimappers.android.PubData.RefreshEventMessage;
 import dimappers.android.PubData.RefreshEventResponseMessage;
 import dimappers.android.PubData.RefreshResponse;
 import dimappers.android.PubData.UpdateType;
-import dimappers.android.PubData.User;
 
 public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
 
@@ -36,10 +24,12 @@ public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
 		this.fullRefresh = fullRefresh;
 	}
 	
+	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
+	
 	public void performRequest(IRequestListener<PubEventArray> listener, HashMap<Long, PubEventArray> storedData) {
 		Log.d(Constants.MsgInfo, "Running refresh");
 		
@@ -99,6 +89,7 @@ public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
 		listener.onRequestComplete(pubArray);
 	}
 
+	
 	public String getStoredDataId() {
 		return Constants.NoDictionaryForGenericDataStore;
 	}

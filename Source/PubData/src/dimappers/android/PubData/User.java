@@ -31,7 +31,7 @@ public class User implements Serializable {
 	//Encapsulation
 	public Long getUserId() 	{ return facebookUserId; }	
 	
-	@Override
+	
 	public boolean equals(Object otherUser)
 	{
 		if(otherUser instanceof User)
@@ -47,7 +47,7 @@ public class User implements Serializable {
 	public void setRank(int rank) {this.rank = rank;}
 	public int getRank() {return rank;}
 	
-	@Override
+	
 	public int hashCode()
 	{
 		return facebookUserId.hashCode();
@@ -74,7 +74,7 @@ public class User implements Serializable {
 		facebookUserId = Long.parseLong(userXmlElement.getText());
 	}
 
-	@Override
+	
 	public String toString()
 	{
 		return facebookUserId.toString();

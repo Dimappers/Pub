@@ -1,5 +1,7 @@
 package dimappers.android.pub;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,39 +41,58 @@ public class PubService extends IntentService
 	public class ServiceBinder extends Binder implements IPubService {
 		
 		long hostReminderTime = 7200000; //currently set to milliseconds in 2 hours
+		final long deleteAfterEventTime = 6 * 60 * 60 * 1000; //currently set to 6 hours
 		
         PubService getService() {
             // Return this instance of LocalService so clients can call public methods
             return PubService.this;
         }
 
+		
 		public int GiveNewSavedEvent(PubEvent event) {
 			PubService.this.storedData.AddNewSavedEvent(event);
 			return event.GetEventId();
 		}
 
+		
 		public void GiveNewSentEvent(PubEvent event, final IRequestListener<PubEvent> listener) {
 			DataRequestNewEvent r = new DataRequestNewEvent(event);
 			final int savedEventId = event.GetEventId();
 			PubService.this.addDataRequest(r, new IRequestListener<PubEvent>() {
 
+					
 					public void onRequestComplete(PubEvent data) {
 						storedData.DeleteSavedEvent(savedEventId);
 						makeNotification(data, NotificationAlarmManager.NotificationType.EventAboutToStart);
 						makeNotification(data, NotificationAlarmManager.NotificationType.HostClickItsOnReminder);
+						
+						//Register to have the event deleted
+						Intent notificationAlarmIntent = new Intent(getApplicationContext(), DeleteOldEventActivity.class);
+						Bundle b = new Bundle();
+						b.putSerializable(Constants.CurrentWorkingEvent, data.GetEventId());
+						notificationAlarmIntent.putExtras(b);
+						
+						PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+						((AlarmManager) getSystemService(Context.ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, data.GetStartTime().getTimeInMillis() + deleteAfterEventTime, contentIntent);
+						
+						
 						listener.onRequestComplete(data);
 					}
 
+					
 					public void onRequestFail(Exception e) {
 						listener.onRequestFail(e);
 					}
 				});
 		}
 
+		
 		public Collection<PubEvent> GetSavedEvents() {
 			return PubService.this.storedData.GetSavedEvents();
 		}
 
+		
 		public Collection<PubEvent> GetSentEvents() {
 			HashMap<?, ? extends IXmlable> events = PubService.this.storedData.GetGenericStore("PubEvent");
 			Collection<PubEvent> eventsArray = new ArrayList<PubEvent>();
@@ -83,6 +104,7 @@ public class PubService extends IntentService
 			return eventsArray;
 		}
 		
+		
 		public Collection<PubEvent> GetInvitedEvents() {
 			return PubService.this.storedData.GetInvitedEvents();
 		}
@@ -91,15 +113,18 @@ public class PubService extends IntentService
 			return PubService.this.storedData.GetAllEvents();
 		}
 
+		
 		public PubEvent GetNextEvent() {
 			Log.d(Constants.MsgError, "Not implemented get next event message yet");
 			return null;
 		}
 
+		
 		public void RemoveEventFromStoredDataAndCancelNotification(PubEvent event) {
 			PubService.this.storedData.DeleteSavedEvent(event.GetEventId());
 			/////////////////////////////////////////////////((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancel(event.GetEventId());
 		}
+		
 		
 		public void CancelEvent(final PubEvent event)
 		{
@@ -107,11 +132,13 @@ public class PubService extends IntentService
 			
 			DataRequestConfirmDeny cancel = new DataRequestConfirmDeny(event);
 			addDataRequest(cancel, new IRequestListener<PubEvent>(){
+				
 				public void onRequestComplete(PubEvent data)
 				{
 					//PubService.this.storedData.DeleteSentEvent(event.GetEventId());
 					//TODO: Remove notifications for the future
 				}
+				
 				public void onRequestFail(Exception e)
 				{
 					// TODO Auto-generated method stub
@@ -121,33 +148,39 @@ public class PubService extends IntentService
 			});
 		}
 
+		
 		public void PerformUpdate(boolean fullUpdate) {
 			PubService.this.receiver.forceUpdate(fullUpdate);
 		}
 
+		
 		public Facebook GetFacebook() {
 			return PubService.this.authenticatedFacebook;
 		}
 
-		public void Logout() {
+		
+		public void Logout() throws MalformedURLException, IOException {
 			//TODO: Implement facebook logout
-			
+			GetFacebook().logout(getApplicationContext());
 		}
 
+		
 		public <K, T extends IXmlable> void addDataRequest(IDataRequest<K, T> request,
 				IRequestListener<T> listener)
 		{
 			PubService.this.addDataRequest(request, listener);			
 		}
 
+		
 		public AppUser GetActiveUser() {
 			return storedData.getActiveUser();
 		}
 
+		
 		public void NewEventsRecieved(PubEventArray events) {
 			
 			ArrayList<Notification> notifications = new ArrayList<Notification>();
-			
+			ArrayList<Integer> notificationIds = new ArrayList<Integer>();
 					
 			for(Entry<PubEvent, UpdateType> eventEntry : events.getEvents().entrySet())
 			{
@@ -170,37 +203,24 @@ public class PubService extends IntentService
 				if(newNotification != null)
 				{
 					notifications.add(newNotification);
+					notificationIds.add(event.GetEventId());
 				}
-				
-				//If the event has been cancelled, then remove
-				//TODO: Needs some consideration
-				/*if(eventEntry.getValue() == UpdateType.confirmed || 
-						eventEntry.getValue() == UpdateType.confirmedUpdated || 
-						eventEntry.getValue() == UpdateType.updatedConfirmed ||
-						eventEntry.getValue() == UpdateType.newEventConfirmed)
-				{
-					if(eventEntry.getKey().getCurrentStatus() == EventStatus.itsOff)
-					{
-						storedData.DeleteSentEvent(eventEntry.getKey().GetEventId());
-					}
-				}*/
-				
 			}			
-			
-			//TODO: This is still using the old notifcations, want to use the above array lists and fill in the method in NotificationCreator
 			
 			NotificationManager nManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 			
-			for(Notification n : notifications)
+			for(int i = 0; i < notifications.size(); ++i)
 			{
-				nManager.notify(1, n);
+				nManager.notify(notificationIds.get(i), notifications.get(i));
 			}
 		}
 
+		
 		public HistoryStore getHistoryStore() {
 			return storedData.getHistoryStore();
 		}
 
+		
 		public PubEvent getEvent(int eventId) {
 			return storedData.getEvent(eventId);
 		} 
@@ -226,16 +246,19 @@ public class PubService extends IntentService
 					long time = event.GetStartTime().getTimeInMillis();
 					time -= hostReminderTime;
 					((AlarmManager) getSystemService(Context.ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, time, contentIntent);
+					
 					break;
 				}
 			}
 		}
 
+		
 		public <K, V extends IXmlable> HashMap<K, V> GetGenericStore(String key) {
 			// TODO Auto-generated method stub
 			return storedData.GetGenericStore(key);
 		}
 
+		
 		public void UpdatePubEvent(PubEvent newEvent)
 		{
 			if(newEvent.GetEventId() < 0)
@@ -248,9 +271,15 @@ public class PubService extends IntentService
 			}
 		}
 
-		public void EventHasHappenened(PubEvent event) {
+		
+		public void AddEventToHistory(PubEvent event) {
 			HistoryStore hStore = getHistoryStore();
 			hStore.addEvent(event);
+		}
+		
+		
+		public void DeleteSentEvent(PubEvent event)
+		{
 			storedData.DeleteSentEvent(event.GetEventId());
 		}
 	}
@@ -265,7 +294,7 @@ public class PubService extends IntentService
 	private Facebook authenticatedFacebook;
 	//private HistoryStore historyStore;
  
-	@Override
+	
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
 		if(!hasStarted)
@@ -308,6 +337,7 @@ public class PubService extends IntentService
 			DataRequestGetFriends getFriends = new DataRequestGetFriends(getApplicationContext());
 			addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
 
+				
 				public void onRequestComplete(AppUserArray data) {
 					for(AppUser user : data.getArray())
 					{
@@ -315,6 +345,7 @@ public class PubService extends IntentService
 					}
 				}
 
+				
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, "Error getting friends: " + e.getMessage());
 				}
@@ -328,14 +359,14 @@ public class PubService extends IntentService
 	}
 
 	
-	@Override
+	
 	public IBinder onBind(Intent intent) {
 		super.onBind(intent);
 		Log.d(Constants.MsgInfo, "Service bound too");
 		return binder;
 	}
 	
-	@Override
+	
 	public boolean onUnbind(Intent intent)
 	{
 		super.onUnbind(intent);
@@ -348,7 +379,7 @@ public class PubService extends IntentService
 		return false;
 	}
 	
-	@Override
+	
 	public void onDestroy()
 	{
 		Log.d(Constants.MsgError, "onDestroy() in PubService called");
@@ -381,7 +412,7 @@ public class PubService extends IntentService
 	}
 	
 
-	@Override
+	
 	protected void onHandleIntent(Intent intent) {
 		if(hasStarted)
 		{

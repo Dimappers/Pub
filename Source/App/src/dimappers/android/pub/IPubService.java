@@ -1,5 +1,7 @@
 package dimappers.android.pub;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -7,10 +9,6 @@ import com.facebook.android.Facebook;
 
 import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.PubEvent;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.IBinder;
 
 public interface IPubService extends IBinder {
@@ -33,7 +31,7 @@ public interface IPubService extends IBinder {
 	void									PerformUpdate(boolean fullUpdate);
 	
 	Facebook 								GetFacebook();
-	void									Logout();
+	void									Logout() throws MalformedURLException, IOException;
 	
 	AppUser									GetActiveUser();
 	
@@ -43,7 +41,8 @@ public interface IPubService extends IBinder {
 	
 	PubEvent								getEvent(int eventId);
 	
-	void 									EventHasHappenened(PubEvent event);
+	void 									AddEventToHistory(PubEvent event);
+	void									DeleteSentEvent(PubEvent event);
 	
 	<K, V  extends IXmlable> HashMap<K, V> 	GetGenericStore(String key);
 }

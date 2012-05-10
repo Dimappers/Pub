@@ -7,13 +7,11 @@ import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.jdom.Document;
-import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
@@ -21,15 +19,7 @@ import org.jdom.output.XMLOutputter;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import dimappers.android.PubData.AcknoledgementData;
 import dimappers.android.PubData.Constants;
-import dimappers.android.PubData.MessageType;
-import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.PubLocation;
-import dimappers.android.PubData.RefreshData;
-import dimappers.android.PubData.ResponseData;
-import dimappers.android.PubData.UpdateData;
-import dimappers.android.PubData.User;
 
 public class DataSender {
 	
@@ -72,7 +62,7 @@ public class DataSender {
 	class SenderThread extends AsyncTask<Object, Object, Object>
 	{
 		boolean running = true;
-		@Override
+		
 		protected Object doInBackground(Object... params) {
 			while(running || DataSender.this.queue.size() > 0 )
 			{				
@@ -90,7 +80,7 @@ public class DataSender {
 			return null;
 		}
 		
-		@Override
+		
 		protected void onPostExecute(Object result) {
 			super.onPostExecute(result);
 			if(queue.size() > 0)

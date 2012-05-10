@@ -29,6 +29,7 @@ public class XmlJasonObject extends JSONObject implements IXmlable {
 		lastUpdated = Calendar.getInstance();
 	}
 	
+	
 	public Element writeXml() {
 		Element e = new Element(getClass().getSimpleName());
 		
@@ -43,6 +44,7 @@ public class XmlJasonObject extends JSONObject implements IXmlable {
 		return e;
 	}
 
+	
 	public void readXml(Element element) {
 		Log.d(Constants.MsgError, "Don't use me!");
 	}
