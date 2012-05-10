@@ -22,6 +22,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -81,6 +82,10 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.organise);
 
+		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		 PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "Organise");
+		 wl.acquire();
+		
 		//Bind to service
 		bindService(new Intent(this, PubService.class), connection, 0);
 
@@ -130,6 +135,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 				listItems);
 		setListAdapter(adapter);
 
+		 wl.release();
 	}
 	
 	class GuestListAdapter extends ArrayAdapter<String> {
