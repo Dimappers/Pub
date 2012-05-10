@@ -16,7 +16,7 @@ public class GetPerson extends AsyncTask<Object, Void, AppUser> {
 
 	IRequestListener<AppUser> listener;
 	
-	@Override
+	
 	protected AppUser doInBackground(Object... bundle) {
 		listener = (IRequestListener<AppUser>) bundle[0];
 		Facebook facebook = (Facebook) bundle[1];
@@ -61,7 +61,7 @@ public class GetPerson extends AsyncTask<Object, Void, AppUser> {
     	}
 	}
 	
-	@Override
+	
 	protected void onPostExecute(AppUser appUser)
 	{
 		if(appUser!=null) {listener.onRequestComplete(appUser);}

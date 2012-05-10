@@ -56,7 +56,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 	
 	IPubService service;
 	
-    @Override
+    
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	
@@ -115,7 +115,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	findViewById(android.R.id.list).setVisibility(View.GONE); }
     }
     
-    @Override
+    
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
     	return super.onCreateOptionsMenu(menu);
@@ -123,7 +123,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		MenuItem edit = menu.add(0, Menu.NONE, 0, "Log out of Facebook");
 		edit.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 			
-			@Override
+			
 			public boolean onMenuItemClick(MenuItem item) {
 				new AlertDialog.Builder(LaunchApplication.this).setMessage("Are you sure you want to log out of Facebook?")  
 				.setTitle("Alert")  
@@ -182,7 +182,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		if(!facebook.isSessionValid()) {
 			Log.d(Constants.MsgInfo, "No valid token found - authorising with Facebook");
 			facebook.authorize(this, new String[] { "email", "user_location", "friends_location", "user_photos", "read_stream" }, Constants.FromFacebookLogin, new DialogListener() {
-				@Override
+				
 				public void onComplete(Bundle values) {
 					SharedPreferences.Editor editor = mPrefs.edit();
 					editor.putString("access_token", facebook.getAccessToken());
@@ -192,13 +192,13 @@ public class LaunchApplication extends Activity implements OnClickListener{
 					runOnUiThread(new ShowButtonsHideProgBar());
 				}
 
-				@Override
+				
 				public void onFacebookError(FacebookError error) { Log.d(Constants.MsgError, "Error authenticating Facebook: " + error.getMessage());}
 
-				@Override
+				
 				public void onError(DialogError e) { Log.d(Constants.MsgError, "Error from dialog: " + e.getMessage()); }
 
-				@Override
+				
 				public void onCancel() {}
 			});
 
@@ -214,7 +214,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	Object[] array = new Object[2];
     	array[0] = new IRequestListener<AppUser>(){
 
-			@Override
+			
 			public void onRequestComplete(AppUser appUser) {
 		    	
 				facebookUser = appUser;
@@ -233,13 +233,13 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		    	runOnUiThread(new ShowButtonsHideProgBar());
 			}
 
-			@Override
+			
 			public void onRequestFail(Exception e) {
 				new AlertDialog.Builder(LaunchApplication.this)
 						.setCancelable(true)  
 						.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
 
-							@Override
+							
 							public void onClick(DialogInterface dialog,	int which) 
 							{
 								dialog.cancel();
@@ -256,7 +256,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     
     class ShowButtonsHideProgBar implements Runnable 
     {
-		@Override
+		
 		public void run() {
 			//findViewById(R.id.progressbar).setVisibility(View.GONE);
 	    	findViewById(R.id.organise_button).setVisibility(View.VISIBLE);
@@ -267,7 +267,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     	
     }
     
-    @Override
+    
 	public void onClick(View v)
     {
     	Intent i;
@@ -290,28 +290,28 @@ public class LaunchApplication extends Activity implements OnClickListener{
     		case R.id.logoutfb_button : {
     			
     			mAsyncRunner.logout(getBaseContext(), new RequestListener() {
-    				  @Override
+    				  
 					public void onComplete(String response, Object state) {}
     				  
-    				  @Override
+    				  
 					public void onIOException(IOException e, Object state) {}
     				  
-    				  @Override
+    				  
 					public void onFileNotFoundException(FileNotFoundException e,
     				        Object state) {}
     				  
-    				  @Override
+    				  
 					public void onMalformedURLException(MalformedURLException e,
     				        Object state) {}
     				  
-    				  @Override
+    				  
 					public void onFacebookError(FacebookError e, Object state) {}
     				});
     		}
     	}
     }
     
-    @Override
+    
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
     	AppGardenAgent.onActivityResult(requestCode, resultCode, data);
@@ -341,7 +341,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     		}
     	}
     }
-    @Override
+    
     public void onDestroy() {
     	super.onDestroy();
         AppGardenAgent.summerBreak();
@@ -358,7 +358,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
     
     private ServiceConnection connection = new ServiceConnection() {
 
-		@Override
+		
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			LaunchApplication.this.service = (IPubService)service;
 		}

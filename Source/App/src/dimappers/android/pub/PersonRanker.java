@@ -102,7 +102,7 @@ public class PersonRanker {
 		DataRequestGetFacebookPosts posts = new DataRequestGetFacebookPosts();
 		service.addDataRequest(posts, new IRequestListener<XmlJasonObject>() {
 
-			@Override
+			
 			public void onRequestComplete(XmlJasonObject data) {
 				if(!cancelled)
 				{
@@ -115,7 +115,7 @@ public class PersonRanker {
 				}
 			}
 
-			@Override
+			
 			public void onRequestFail(Exception e) {
 				if(!cancelled)
 				{
@@ -129,7 +129,7 @@ public class PersonRanker {
 		DataRequestGetPhotos photos = new DataRequestGetPhotos();
 		service.addDataRequest(photos, new IRequestListener<XmlJasonObject>() {
 
-			@Override
+			
 			public void onRequestComplete(XmlJasonObject data) 
 			{
 				if(!cancelled)
@@ -142,7 +142,7 @@ public class PersonRanker {
 				}
 			}
 
-			@Override
+			
 			public void onRequestFail(Exception e) 
 			{
 				if(!cancelled)
@@ -162,7 +162,7 @@ public class PersonRanker {
 				
 				service.addDataRequest(geocodeName, new IRequestListener<XmlableDoubleArray>()
 				{
-					@Override
+					
 					public void onRequestComplete(XmlableDoubleArray data) 
 					{
 						if(!cancelled)
@@ -186,7 +186,7 @@ public class PersonRanker {
 						}						
 					}
 
-					@Override
+					
 					public void onRequestFail(Exception e) {
 						if(!cancelled)
 						{
@@ -220,7 +220,7 @@ public class PersonRanker {
 		
 		t = new Timer();
 		t.schedule(new TimerTask() {
-			@Override
+			
 			public void run() {
 				cancelled = true;
 				pending.errorOccurred();

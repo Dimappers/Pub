@@ -40,12 +40,12 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 		 this.keyword = "";
 	 }
 	 
-	@Override
+	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
-	@Override
+	
 	public void performRequest(IRequestListener<PlacesList> listener,HashMap<Integer, PlacesList> storedData) {
 		if(storedData.containsKey(DataRequestPubFinder.getKey(longitude, latitude, keyword)) && 
 				!storedData.get(DataRequestPubFinder.getKey(longitude, latitude, keyword)).isOutOfDate()) //if we already have some pubs and they are not out of date
@@ -57,7 +57,7 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 			Log.d(Constants.MsgInfo, "Getting pubs from Google.");
 			try {
 				HttpRequestFactory httpRequestFactory = transport.createRequestFactory(new HttpRequestInitializer() {
-					  @Override
+					  
 					public void initialize(HttpRequest request) {
 						  GoogleHeaders headers = new GoogleHeaders();
 						  headers.setApplicationName("Pub");
@@ -108,7 +108,7 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 		}
 	}
 
-	@Override
+	
 	public String getStoredDataId() {
 		return "PubLists";
 	}

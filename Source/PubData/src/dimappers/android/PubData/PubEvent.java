@@ -163,7 +163,7 @@ public class PubEvent implements Serializable, IXmlable
 		return event.GetEventId() == globalEventId;
 	}
 	
-	@Override
+	
 	public String toString()
 	{
 		return pubLocation.getName() + " : " + GetFormattedStartTime();
@@ -277,7 +277,7 @@ public class PubEvent implements Serializable, IXmlable
 		users.put(host, new UserStatus(GoingStatus.going, startTime, null));
 	}
 	
-	@Override
+	
 	public int hashCode()
 	{
 		return globalEventId;

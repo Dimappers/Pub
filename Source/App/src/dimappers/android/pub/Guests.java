@@ -49,7 +49,7 @@ public class Guests extends ListActivity implements OnClickListener{
 	
 	private boolean searching = false;
 	
-	@Override
+	
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.guests);
@@ -64,7 +64,7 @@ public class Guests extends ListActivity implements OnClickListener{
     	((Button)findViewById(R.id.save)).setTypeface(font);
     	guest_list.setOnItemLongClickListener(new OnItemLongClickListener() {
 
-			@Override
+			
 			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
 				
@@ -86,7 +86,7 @@ public class Guests extends ListActivity implements OnClickListener{
 
 	}
 	
-	@Override
+	
 	public boolean onSearchRequested()
 	{
 		searching = true;
@@ -95,7 +95,7 @@ public class Guests extends ListActivity implements OnClickListener{
 		searchBox.setVisibility(View.VISIBLE);
 		searchBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
-		    @Override
+		    
 			public void onFocusChange(View v, boolean hasFocus) {
 
 		        if (hasFocus) {
@@ -111,7 +111,7 @@ public class Guests extends ListActivity implements OnClickListener{
 		searchBox.requestFocus();
 		searchBox.addTextChangedListener(new TextWatcher() {
 			
-			@Override
+			
 			public void onTextChanged(CharSequence searchTerm, int start, int before, int count) {
 				searchTerm = searchTerm.toString().toLowerCase();
 				if(searchTerm.equals(""))
@@ -144,14 +144,14 @@ public class Guests extends ListActivity implements OnClickListener{
 				}				
 			}
 			
-			@Override
+			
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
 				// TODO Auto-generated method stub
 				
 			}
 			
-			@Override
+			
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
 				
@@ -161,7 +161,7 @@ public class Guests extends ListActivity implements OnClickListener{
 	}
 	
 	
-	@Override
+	
 	public boolean onKeyDown(int keyCode, KeyEvent event)  {
 	    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
 	        if(searching)
@@ -186,7 +186,7 @@ public class Guests extends ListActivity implements OnClickListener{
 		adapter.notifyDataSetChanged();
 	}
 	
-	@Override
+	
 	public void onClick(View v){
 		switch(v.getId())
 		{
@@ -203,7 +203,7 @@ public class Guests extends ListActivity implements OnClickListener{
 		}
 	}
 	
-	@Override
+	
 	public void onListItemClick(ListView l, View v, int pos, long id) 
 	{	
 		//Add/Remove guest from
@@ -227,7 +227,7 @@ public class Guests extends ListActivity implements OnClickListener{
 		
 	}
 	
-	@Override
+	
 	public void onDestroy()
 	{
 		super.onDestroy();
@@ -241,7 +241,7 @@ public class Guests extends ListActivity implements OnClickListener{
 	
 	private ServiceConnection connection = new ServiceConnection()
 	{
-		@Override
+		
 		public void onServiceConnected(ComponentName className, IBinder bService)
 		{
 			//Give the interface to the app
@@ -257,13 +257,13 @@ public class Guests extends ListActivity implements OnClickListener{
 			DataRequestGetFriends getFriends = new DataRequestGetFriends(getApplicationContext());
 			service.addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
 
-				@Override
+				
 				public void onRequestComplete(AppUserArray data) {
 					allFriends = data.getArray();
 					UpdateListView(data.getArray());
 				}
 
-				@Override
+				
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, "Error getting friends: " + e.getMessage());
 					finish();
@@ -271,7 +271,7 @@ public class Guests extends ListActivity implements OnClickListener{
 			});
 		}
 
-		@Override
+		
 		public void onServiceDisconnected(ComponentName className)
 		{
 		}
@@ -286,7 +286,7 @@ public class Guests extends ListActivity implements OnClickListener{
 			this.sortedArray = sortedArray;
 		}
 
-		@Override
+		
 		public void run() {
 			listItems.clear();
 	    	
