@@ -3,11 +3,15 @@ package dimappers.android.pub;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.GoingStatus;
+import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.User;
+import dimappers.android.PubData.UserStatus;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -15,28 +19,21 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import dimappers.android.PubData.Constants;
-import dimappers.android.PubData.GoingStatus;
-import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.User;
-import dimappers.android.PubData.UserStatus;
 
-public class NotificationAlarmManager extends Activity {
-
-	Notification newNotification; 
-	PubEvent event;
+public class NotificationTimerConfirmEventReminder extends Activity {
 	IPubService service;
 	int eventId;
-	Bundle extras;
-
+	PubEvent event;
+	Notification newNotification;
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		Log.d(Constants.MsgWarning, "NotificationAlarmManager has been fired");
-		extras = getIntent().getExtras();
 
-		eventId = extras.getInt(Constants.CurrentWorkingEvent);
+		eventId = getIntent().getExtras().getInt(Constants.CurrentWorkingEvent);
 
 		bindService(new Intent(this, PubService.class), connection, 0);
 	}
@@ -49,23 +46,10 @@ public class NotificationAlarmManager extends Activity {
 			event = service.getEvent(eventId);
 			if(event!=null)
 			{
-				NotificationType type = (NotificationType)(extras.getSerializable(Constants.RequiredNotificationType));
 
 				NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-				switch(type)
-				{
-				case EventAboutToStart :
-				{
-					eventAboutToStart();
-					break;
-				}
-				case HostClickItsOnReminder :
-				{
-					hostClickItsOn();
-					break;
-				}
-				}
+				hostClickItsOn();
 
 				if(newNotification!=null)
 				{
@@ -135,11 +119,4 @@ public class NotificationAlarmManager extends Activity {
 			super.onDestroy();
 			unbindService(connection);
 		}
-
-		public enum NotificationType implements Serializable
-		{
-			HostClickItsOnReminder,
-			EventAboutToStart,
-		}
 }
-

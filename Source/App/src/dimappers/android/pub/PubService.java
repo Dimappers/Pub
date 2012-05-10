@@ -60,19 +60,8 @@ public class PubService extends IntentService
 
 					public void onRequestComplete(PubEvent data) {
 						storedData.DeleteSavedEvent(savedEventId);
-						makeNotification(data, NotificationAlarmManager.NotificationType.EventAboutToStart);
-						makeNotification(data, NotificationAlarmManager.NotificationType.HostClickItsOnReminder);
 						
-						//Register to have the event deleted
-						Intent notificationAlarmIntent = new Intent(getApplicationContext(), DeleteOldEventActivity.class);
-						Bundle b = new Bundle();
-						b.putSerializable(Constants.CurrentWorkingEvent, data.GetEventId());
-						notificationAlarmIntent.putExtras(b);
-						
-						PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-						((AlarmManager) getSystemService(Context.ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, data.GetStartTime().getTimeInMillis() + deleteAfterEventTime, contentIntent);
-						
+						eventIntentMap.put(data.GetEventId(), new AssociatedPendingIntents(data, true, getApplicationContext()));
 						
 						listener.onRequestComplete(data);
 					}
@@ -124,8 +113,10 @@ public class PubService extends IntentService
 			addDataRequest(cancel, new IRequestListener<PubEvent>(){
 				public void onRequestComplete(PubEvent data)
 				{
-					//PubService.this.storedData.DeleteSentEvent(event.GetEventId());
-					//TODO: Remove notifications for the future
+					if(eventIntentMap.containsKey(data.GetEventId()))
+					{
+						eventIntentMap.get(data.GetEventId()).UpdateFromEvent(data);
+					}
 				}
 				public void onRequestFail(Exception e)
 				{
@@ -166,9 +157,15 @@ public class PubService extends IntentService
 					
 			for(Entry<PubEvent, UpdateType> eventEntry : events.getEvents().entrySet())
 			{
-				if(eventEntry.getValue()!=UpdateType.noChangeSinceLastUpdate)
+				boolean contains = eventIntentMap.containsKey(eventEntry.getKey().GetEventId());
+				if(eventIntentMap.containsKey(eventEntry.getKey().GetEventId()))
 				{
-					makeNotification(eventEntry.getKey(), NotificationAlarmManager.NotificationType.EventAboutToStart);
+					eventIntentMap.get(eventEntry.getKey().GetEventId()).UpdateFromEvent(eventEntry.getKey());
+				}
+				else
+				{
+					boolean isHost = eventEntry.getKey().GetHost().equals(GetActiveUser());
+					eventIntentMap.put(eventEntry.getKey().GetEventId(), new AssociatedPendingIntents(eventEntry.getKey(), isHost, getApplicationContext()));
 				}
 				//If either the event hasn't been updated (ie this user has already got this data before and this is a full refresh caused by restarting the app
 				PubEvent event = eventEntry.getKey();
@@ -204,33 +201,6 @@ public class PubService extends IntentService
 		public PubEvent getEvent(int eventId) {
 			return storedData.getEvent(eventId);
 		} 
-    
-		private void makeNotification(PubEvent event, NotificationAlarmManager.NotificationType type)
-		{
-			Intent notificationAlarmIntent = new Intent(getApplicationContext(), NotificationAlarmManager.class);
-			Bundle b = new Bundle();
-			b.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
-			b.putSerializable(Constants.RequiredNotificationType, type);
-			notificationAlarmIntent.putExtras(b);
-			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-			
-			switch (type)
-			{
-				case EventAboutToStart :
-				{
-					((AlarmManager) getSystemService(Context.ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis(), contentIntent);
-					break;
-				}
-				case HostClickItsOnReminder :
-				{
-					long time = event.GetStartTime().getTimeInMillis();
-					time -= hostReminderTime;
-					((AlarmManager) getSystemService(Context.ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, time, contentIntent);
-					
-					break;
-				}
-			}
-		}
 
 		public <K, V extends IXmlable> HashMap<K, V> GetGenericStore(String key) {
 			// TODO Auto-generated method stub
@@ -246,6 +216,16 @@ public class PubService extends IntentService
 			else
 			{
 				storedData.GetGenericStore(StoredData.sentEventsStore).put(newEvent.GetEventId(), newEvent);
+				
+				if(eventIntentMap.containsKey(newEvent.GetEventId()))
+				{
+					eventIntentMap.get(newEvent.GetEventId()).UpdateFromEvent(newEvent);
+				}
+				else
+				{
+					boolean isHost = newEvent.GetHost().equals(GetActiveUser());
+					eventIntentMap.put(newEvent.GetEventId(), new AssociatedPendingIntents(newEvent, isHost, getApplicationContext()));
+				}
 			}
 		}
 
@@ -269,6 +249,8 @@ public class PubService extends IntentService
 	private	DataSender sender;
 	private Facebook authenticatedFacebook;
 	//private HistoryStore historyStore;
+	
+	HashMap<Integer, AssociatedPendingIntents> eventIntentMap;
  
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
@@ -277,6 +259,7 @@ public class PubService extends IntentService
 		{
 			Log.d(Constants.MsgInfo, "Service started");
 			storedData = new StoredData();
+			eventIntentMap = new HashMap<Integer, AssociatedPendingIntents>();
 			
 			//Load previously stored data
 			
