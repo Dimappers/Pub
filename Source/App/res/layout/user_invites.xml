@@ -65,28 +65,31 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal" >
-
+
         <Button
             android:id="@+id/decline"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/decline"
-            android:layout_weight="0.7"
-            android:layout_marginBottom="20dp"
-            android:layout_marginLeft="22dp"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true" 
-            android:textSize="20sp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="18dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="-2dp"
             android:background="@drawable/chalk_outline"
-        	android:textColor="#FFFFFF" />
+            android:text="@string/decline"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/going"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:layout_marginRight="22dp"
+            android:layout_marginBottom="18dp"
+            android:layout_marginRight="12dp"
+            android:layout_alignParentLeft="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_weight="0.5"
             android:background="@drawable/chalk_outline"
             android:text="@string/going"
             android:textColor="#FFFFFF"

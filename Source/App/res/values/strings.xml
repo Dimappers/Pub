@@ -30,8 +30,8 @@
   	
   	<string name="waiting_for_response">Waiting For Response</string>
   	
-  	<string name="going">Going: Hold for options</string>
-  	
+  	<string name="going">Going - Hold for options</string>
+  	<string name="hold_for_options">Hold for options</string>
   	<string name="pub">Pub:</string>
   	
   	<string name="current_start_time">Current Start Time:</string>
