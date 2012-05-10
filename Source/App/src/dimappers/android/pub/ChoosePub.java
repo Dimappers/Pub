@@ -10,6 +10,7 @@ import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -34,7 +35,7 @@ public class ChoosePub extends LocationRequiringActivity implements OnClickListe
 		double latitude;
 		double longitude;
 	
-		 @Override
+		 
 		    public void onCreate(Bundle savedInstanceState) {
 		    	super.onCreate(savedInstanceState);
 		    	setContentView(R.layout.pub_choose);
@@ -45,7 +46,8 @@ public class ChoosePub extends LocationRequiringActivity implements OnClickListe
 		    	longitude = getIntent().getExtras().getDouble(Constants.CurrentLongitude);
 		    	
 		    	pub_input = (EditText)findViewById(R.id.input_pub);
-		    	
+		    	Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
+		    	((Button)findViewById(R.id.use_pub_button)).setTypeface(font);
 		    	pub_list = (ListView)findViewById(android.R.id.list);
 				adapter = new ArrayAdapter<Place>(this, android.R.layout.simple_list_item_1, listItems);
 				setListAdapter(adapter);
@@ -54,7 +56,8 @@ public class ChoosePub extends LocationRequiringActivity implements OnClickListe
 		    	use_pub.setOnClickListener(this);
 		 }	 
 		 
-		 public void onClick(View v) {
+		 
+		public void onClick(View v) {
 			 switch(v.getId()) {
 				 case R.id.use_pub_button : {
 					 getPubs(pub_input.getText().toString().trim());
@@ -63,7 +66,8 @@ public class ChoosePub extends LocationRequiringActivity implements OnClickListe
 			 }
 		 }
 		 
-		 public void onListItemClick(ListView l, View v, int pos, long id) {
+		 
+		public void onListItemClick(ListView l, View v, int pos, long id) {
 			 super.onListItemClick(l,v,pos,id);
 			 Place place = listItems.get(pos);
 			 event.SetPubLocation(
@@ -88,7 +92,7 @@ public class ChoosePub extends LocationRequiringActivity implements OnClickListe
 			 finish();
 		 }
 		 
-		@Override
+		
 		public void onDestroy()
 		{
 			super.onDestroy();
@@ -107,11 +111,13 @@ public class ChoosePub extends LocationRequiringActivity implements OnClickListe
 	    	else {pubFinder = new DataRequestPubFinder(latitude, longitude, keyword);}
 	    	service.addDataRequest(pubFinder, new IRequestListener<PlacesList>() {
 
+				
 				public void onRequestComplete(PlacesList data) {
 					if(data.status.equals("ZERO_RESULTS")) //this is when no places have been found
 					{
 						runOnUiThread(new Runnable(){
 
+							
 							public void run() {
 								LocationChanger.changeLocation(ChoosePub.this);
 							}});
@@ -123,9 +129,11 @@ public class ChoosePub extends LocationRequiringActivity implements OnClickListe
 					}
 				}
 
+				
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, "Pubs not returned from DataRequest: " + e.getMessage());
 					runOnUiThread(new Runnable(){
+						
 						
 						public void run()
 						{
@@ -136,7 +144,8 @@ public class ChoosePub extends LocationRequiringActivity implements OnClickListe
 				}});
 	    }
 		
-	    void success(double lat, double lng, final String loc)
+	    
+		void success(double lat, double lng, final String loc)
 	    {
 	    	latitude = lat;
 	    	longitude = lng;
@@ -149,6 +158,7 @@ public class ChoosePub extends LocationRequiringActivity implements OnClickListe
 	    	
 	    	AdapterUpdater(List<Place> places) {this.places = places;}
 
+			
 			public void run() {
 				listItems.clear();
 				for(Place p: places) {
@@ -162,14 +172,16 @@ public class ChoosePub extends LocationRequiringActivity implements OnClickListe
 		
 	    private ServiceConnection connection = new ServiceConnection()
 	    {
-	    	public void onServiceConnected(ComponentName className, IBinder pubService)
+	    	
+			public void onServiceConnected(ComponentName className, IBinder pubService)
 	    	{
 	    		service = (IPubService)pubService;
 	    		event = service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
 	    		getPubs();
     		}
 
-    		public void onServiceDisconnected(ComponentName className)
+    		
+			public void onServiceDisconnected(ComponentName className)
     		{
     		}
     		

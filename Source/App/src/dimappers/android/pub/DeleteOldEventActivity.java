@@ -13,7 +13,7 @@ public class DeleteOldEventActivity extends Activity {
 	private int eventId; //event to delete
 	IPubService service;	
 	
-	@Override
+	
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -25,6 +25,7 @@ public class DeleteOldEventActivity extends Activity {
 	
 	ServiceConnection connection = new ServiceConnection()
 	{
+		
 		public void onServiceConnected(ComponentName arg0, IBinder binder) {
 			service = (IPubService)binder;
 			
@@ -33,12 +34,14 @@ public class DeleteOldEventActivity extends Activity {
 			finish();
 		}
 		
+		
 		public void onServiceDisconnected(ComponentName arg0) {
 			// TODO Auto-generated method stub
 			
 		}
 		
 	};
+	
 	
 	public void onDestroy()
 	{

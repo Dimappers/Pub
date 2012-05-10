@@ -48,16 +48,19 @@ public class PubService extends IntentService
             return PubService.this;
         }
 
+		
 		public int GiveNewSavedEvent(PubEvent event) {
 			PubService.this.storedData.AddNewSavedEvent(event);
 			return event.GetEventId();
 		}
 
+		
 		public void GiveNewSentEvent(PubEvent event, final IRequestListener<PubEvent> listener) {
 			DataRequestNewEvent r = new DataRequestNewEvent(event);
 			final int savedEventId = event.GetEventId();
 			PubService.this.addDataRequest(r, new IRequestListener<PubEvent>() {
 
+					
 					public void onRequestComplete(PubEvent data) {
 						storedData.DeleteSavedEvent(savedEventId);
 						
@@ -66,16 +69,19 @@ public class PubService extends IntentService
 						listener.onRequestComplete(data);
 					}
 
+					
 					public void onRequestFail(Exception e) {
 						listener.onRequestFail(e);
 					}
 				});
 		}
 
+		
 		public Collection<PubEvent> GetSavedEvents() {
 			return PubService.this.storedData.GetSavedEvents();
 		}
 
+		
 		public Collection<PubEvent> GetSentEvents() {
 			HashMap<?, ? extends IXmlable> events = PubService.this.storedData.GetGenericStore("PubEvent");
 			Collection<PubEvent> eventsArray = new ArrayList<PubEvent>();
@@ -87,6 +93,7 @@ public class PubService extends IntentService
 			return eventsArray;
 		}
 		
+		
 		public Collection<PubEvent> GetInvitedEvents() {
 			return PubService.this.storedData.GetInvitedEvents();
 		}
@@ -95,15 +102,18 @@ public class PubService extends IntentService
 			return PubService.this.storedData.GetAllEvents();
 		}
 
+		
 		public PubEvent GetNextEvent() {
 			Log.d(Constants.MsgError, "Not implemented get next event message yet");
 			return null;
 		}
 
+		
 		public void RemoveEventFromStoredDataAndCancelNotification(PubEvent event) {
 			PubService.this.storedData.DeleteSavedEvent(event.GetEventId());
 			/////////////////////////////////////////////////((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancel(event.GetEventId());
 		}
+		
 		
 		public void CancelEvent(final PubEvent event)
 		{
@@ -111,6 +121,7 @@ public class PubService extends IntentService
 			
 			DataRequestConfirmDeny cancel = new DataRequestConfirmDeny(event);
 			addDataRequest(cancel, new IRequestListener<PubEvent>(){
+				
 				public void onRequestComplete(PubEvent data)
 				{
 					if(eventIntentMap.containsKey(data.GetEventId()))
@@ -118,6 +129,7 @@ public class PubService extends IntentService
 						eventIntentMap.get(data.GetEventId()).UpdateFromEvent(data);
 					}
 				}
+				
 				public void onRequestFail(Exception e)
 				{
 					// TODO Auto-generated method stub
@@ -127,29 +139,35 @@ public class PubService extends IntentService
 			});
 		}
 
+		
 		public void PerformUpdate(boolean fullUpdate) {
 			PubService.this.receiver.forceUpdate(fullUpdate);
 		}
 
+		
 		public Facebook GetFacebook() {
 			return PubService.this.authenticatedFacebook;
 		}
 
+		
 		public void Logout() throws MalformedURLException, IOException {
 			//TODO: Implement facebook logout
 			GetFacebook().logout(getApplicationContext());
 		}
 
+		
 		public <K, T extends IXmlable> void addDataRequest(IDataRequest<K, T> request,
 				IRequestListener<T> listener)
 		{
 			PubService.this.addDataRequest(request, listener);			
 		}
 
+		
 		public AppUser GetActiveUser() {
 			return storedData.getActiveUser();
 		}
 
+		
 		public void NewEventsRecieved(PubEventArray events) {
 			
 			ArrayList<Notification> notifications = new ArrayList<Notification>();
@@ -194,19 +212,23 @@ public class PubService extends IntentService
 			}
 		}
 
+		
 		public HistoryStore getHistoryStore() {
 			return storedData.getHistoryStore();
 		}
 
+		
 		public PubEvent getEvent(int eventId) {
 			return storedData.getEvent(eventId);
 		} 
 
+		
 		public <K, V extends IXmlable> HashMap<K, V> GetGenericStore(String key) {
 			// TODO Auto-generated method stub
 			return storedData.GetGenericStore(key);
 		}
 
+		
 		public void UpdatePubEvent(PubEvent newEvent)
 		{
 			if(newEvent.GetEventId() < 0)
@@ -229,10 +251,12 @@ public class PubService extends IntentService
 			}
 		}
 
+		
 		public void AddEventToHistory(PubEvent event) {
 			HistoryStore hStore = getHistoryStore();
 			hStore.addEvent(event);
 		}
+		
 		
 		public void DeleteSentEvent(PubEvent event)
 		{
@@ -252,7 +276,7 @@ public class PubService extends IntentService
 	
 	HashMap<Integer, AssociatedPendingIntents> eventIntentMap;
  
-	@Override
+	
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
 		if(!hasStarted)
@@ -296,6 +320,7 @@ public class PubService extends IntentService
 			DataRequestGetFriends getFriends = new DataRequestGetFriends(getApplicationContext());
 			addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
 
+				
 				public void onRequestComplete(AppUserArray data) {
 					for(AppUser user : data.getArray())
 					{
@@ -303,6 +328,7 @@ public class PubService extends IntentService
 					}
 				}
 
+				
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, "Error getting friends: " + e.getMessage());
 				}
@@ -316,14 +342,14 @@ public class PubService extends IntentService
 	}
 
 	
-	@Override
+	
 	public IBinder onBind(Intent intent) {
 		super.onBind(intent);
 		Log.d(Constants.MsgInfo, "Service bound too");
 		return binder;
 	}
 	
-	@Override
+	
 	public boolean onUnbind(Intent intent)
 	{
 		super.onUnbind(intent);
@@ -336,7 +362,7 @@ public class PubService extends IntentService
 		return false;
 	}
 	
-	@Override
+	
 	public void onDestroy()
 	{
 		Log.d(Constants.MsgError, "onDestroy() in PubService called");
@@ -369,7 +395,7 @@ public class PubService extends IntentService
 	}
 	
 
-	@Override
+	
 	protected void onHandleIntent(Intent intent) {
 		if(hasStarted)
 		{

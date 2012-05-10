@@ -27,7 +27,7 @@ public class NotificationTimerEventStarting extends Activity{
 	Notification newNotification;
 	
 	
-	@Override
+	
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -40,6 +40,7 @@ public class NotificationTimerEventStarting extends Activity{
 
 	ServiceConnection connection = new ServiceConnection(){
 
+		
 		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder) {
 
 			service = (IPubService) serviceBinder;
@@ -62,6 +63,7 @@ public class NotificationTimerEventStarting extends Activity{
 			finish();
 		}
 
+		
 		public void onServiceDisconnected(ComponentName name) {}};
 
 		private void eventAboutToStart()
@@ -86,6 +88,7 @@ public class NotificationTimerEventStarting extends Activity{
 			service.AddEventToHistory(event);
 		}
 
+		
 		public void onDestroy()
 		{
 			super.onDestroy();

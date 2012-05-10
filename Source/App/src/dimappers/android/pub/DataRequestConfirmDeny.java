@@ -1,13 +1,9 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-
 import dimappers.android.PubData.ConfirmMessage;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.MessageType;
@@ -26,11 +22,13 @@ public class DataRequestConfirmDeny implements IDataRequest<Integer, PubEvent> {
 		this.event = event;
 	}
 	
+	
 	public void giveConnection(IPubService connectionInterface) {
 		// TODO Auto-generated method stub
 		service = connectionInterface;
 	}
 
+	
 	public void performRequest(IRequestListener<PubEvent> listener,
 			HashMap<Integer, PubEvent> storedData) {
 		ConfirmMessage cMessage = new ConfirmMessage(event.getCurrentStatus(), event.GetEventId());
@@ -65,6 +63,7 @@ public class DataRequestConfirmDeny implements IDataRequest<Integer, PubEvent> {
 		listener.onRequestComplete(event);	
 	}
 
+	
 	public String getStoredDataId() {
 		return Constants.NoDictionaryForGenericDataStore;
 	}

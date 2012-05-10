@@ -19,10 +19,12 @@ public class DataRequestGetLatestAboutPubEvent implements IDataRequest<Integer, 
 	
 	public DataRequestGetLatestAboutPubEvent(int eventId) {this.eventId = eventId;}
 	
+	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
+	
 	public void performRequest(IRequestListener<PubEvent> listener,	HashMap<Integer, PubEvent> storedData) {
 		
 		RefreshEventMessage refreshEventMessage = new RefreshEventMessage(eventId, service.GetActiveUser());
@@ -55,6 +57,7 @@ public class DataRequestGetLatestAboutPubEvent implements IDataRequest<Integer, 
 		}
 	}
 
+	
 	public String getStoredDataId() {
 		return Constants.NoDictionaryForGenericDataStore;
 	}

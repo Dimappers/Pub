@@ -26,6 +26,9 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -61,6 +64,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	
 	GuestAdapter gAdapter;
 	
+	
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
@@ -83,9 +87,20 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     	((TextView)findViewById(R.id.userInviteStartTimeText)).setTypeface(font);
     	((TextView)findViewById(R.id.userInviteHostNameText)).setTypeface(font);
     	((TextView)findViewById(R.id.guestHeader)).setTypeface(font);
+    	((Button)findViewById(R.id.decline)).setTypeface(font);
+    	((Button)findViewById(R.id.going)).setTypeface(font);
+    	
+    	
+    	String firstString = "Going";
+    	String secondString = "\nhold for options";
+    	
+    	SpannableStringBuilder stringBuilder = new SpannableStringBuilder(firstString + secondString);
+    	stringBuilder.setSpan(new TextAppearanceSpan(button_going.getContext(), android.R.style.TextAppearance_Medium), 0, firstString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+    	stringBuilder.setSpan(new TextAppearanceSpan(button_going.getContext(), android.R.style.TextAppearance_Small), 0, secondString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+    	button_going.setText(stringBuilder);
 	}
 	
-	@Override
+	
 	public boolean onCreateOptionsMenu(Menu menu) 
 	{
 		if(event!=null)
@@ -98,6 +113,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	}
 	
 	
+	
 	public boolean onMenuItemClick(MenuItem arg0) {
 		switch(arg0.getItemId())
 		{
@@ -105,14 +121,17 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			{
 				service.addDataRequest(new DataRequestGetLatestAboutPubEvent(event.GetEventId()), new IRequestListener<PubEvent>(){
 
+					
 					public void onRequestFail(Exception e) {
 						Log.d(Constants.MsgError, "Error when refreshing event: " + e.getMessage());
 					}
 
+					
 					public void onRequestComplete(PubEvent data) {
 						event = data;
 						runOnUiThread(new Runnable(){
 
+							
 							public void run() {
 								updateScreen();
 							}});
@@ -124,27 +143,29 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		return false;
 	}
 	
+	
 	public void onClick(View v)
 	{	
 		switch (v.getId()) {
 		case R.id.going : 
 		{
 	    	
-	    	findViewById(R.id.going).setBackgroundColor(Color.GREEN);
-	    	findViewById(R.id.decline).setBackgroundResource(android.R.drawable.btn_default);
+	    	//findViewById(R.id.going).setBackgroundColor(Color.GREEN);
+	    	//findViewById(R.id.decline).setBackgroundResource(android.R.drawable.btn_default);
 	    	sendResponse(true,event.GetStartTime(),"");
 	    	break;
 		}
 		case R.id.decline :
 		{
 	    	
-	    	findViewById(R.id.decline).setBackgroundColor(Color.RED);
-	    	findViewById(R.id.going).setBackgroundResource(android.R.drawable.btn_default);
+	    	//findViewById(R.id.decline).setBackgroundColor(Color.RED);
+	    	//findViewById(R.id.going).setBackgroundResource(android.R.drawable.btn_default);
 	    	sendResponse(false,event.GetStartTime(),"");
 			break;
 		}
 		}
     }
+	
 	
 	public boolean onLongClick(View v)
 	{
@@ -179,7 +200,8 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		if(startTime.get(Calendar.MINUTE)==0) {min = "00";}
 		timeText.setText(startTime.get(Calendar.HOUR) + ":" + min + " " + ampm);
 	    timeText.setOnClickListener(new OnClickListener() {
-	    	public void onClick(View v) {
+	    	
+			public void onClick(View v) {
 	    		Intent i = new Intent(UserInvites.this, ChooseTime.class);
 	    		Bundle b = new Bundle();
 	    		b.putBoolean(Constants.HostOrNot, false);
@@ -190,7 +212,8 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	    });
 
 	    attachButton.setOnClickListener(new OnClickListener() {  
-	    	public void onClick(View v) 
+	    	
+			public void onClick(View v) 
 	    	{ 
 	    		TextView text = (TextView) commentDialog.findViewById(R.id.comment_text_box);
 
@@ -212,7 +235,8 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	    }); 
 
 	    cancelButton.setOnClickListener(new OnClickListener() {  
-	    	public void onClick(View v) 
+	    	
+			public void onClick(View v) 
 	    	{ 
 	    		commentDialog.dismiss(); 
 	    	} 
@@ -222,6 +246,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	}
 	
 	long timeSet = 0;
+	
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
@@ -242,6 +267,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	
 	private ServiceConnection connection = new ServiceConnection()
 	{
+		
 		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
 		{
 			service = (IPubService)serviceBinder;
@@ -250,14 +276,17 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			
 			service.addDataRequest(new DataRequestGetLatestAboutPubEvent(event.GetEventId()), new IRequestListener<PubEvent>(){
 
+				
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, "Error when refreshing event: " + e.getMessage());
 				}
 
+				
 				public void onRequestComplete(PubEvent data) {
 					event = data;
 					runOnUiThread(new Runnable(){
 
+						
 						public void run() {
 							updateScreen();
 						}});
@@ -272,6 +301,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			updateScreen();
 		}
 
+		
 		public void onServiceDisconnected(ComponentName arg0){}
 		
 	};
@@ -279,11 +309,11 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 
 	private void updateScreen()
 	{
-		switch(event.GetUserGoingStatus(service.GetActiveUser()))
+		/*switch(event.GetUserGoingStatus(service.GetActiveUser()))
 		{
 			case going : {findViewById(R.id.going).setBackgroundColor(Color.GREEN); break;}
 			case notGoing : {findViewById(R.id.decline).setBackgroundColor(Color.RED); break;}
-		}
+		}*/
 		
 		TextView pubNameText = (TextView) findViewById(R.id.userInvitesPubNameText);
     	//pubNameText.setText(event.GetPubLocation().toString());
@@ -315,12 +345,14 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		event.UpdateUserStatus(new ResponseData(service.GetActiveUser(), event.GetEventId(), going, freeFromWhen, msgToHost));
 		updateScreen();
 		service.addDataRequest(response, new IRequestListener<PubEvent>() {
+					
 					public void onRequestComplete(PubEvent data) {
 						if(data != null)
 						{
 							event = data;
 							runOnUiThread(new Runnable()
 							{
+								
 								public void run() {
 									updateScreen();
 						    		if(msgToHost!=null&&msgToHost.equals(""))
@@ -345,10 +377,12 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 						}
 					}
 
+					
 					public void onRequestFail(Exception e) {
 						Log.d(Constants.MsgError, e.getMessage());	
 						runOnUiThread(new Runnable(){
 
+							
 							public void run() {
 								Toast.makeText(getApplicationContext(), "Sending failed.", Toast.LENGTH_LONG).show();
 								updateScreen();
@@ -379,11 +413,13 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	    			DataRequestGetFacebookUser getUser = new DataRequestGetFacebookUser(userResponse.getKey().getUserId());
 	    			service.addDataRequest(getUser, new IRequestListener<AppUser>() {
 
+						
 						public void onRequestComplete(AppUser data) {
 							UpdateList updater = new UpdateList(new UserUserStatus(data, userResponse.getValue()));
 							UserInvites.this.runOnUiThread(updater);
 						}
 
+						
 						public void onRequestFail(Exception e) {
 							// TODO Auto-generated method stub
 							
@@ -394,19 +430,23 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 	    	}
 		}
 		
+		
 		public int getCount() {
 			return mylist.size();
 		}
 
+		
 		public Object getItem(int position) {
 			return mylist.get(position);
 		}
 
+		
 		public long getItemId(int position) {
 			// TODO Auto-generated method stub
 			return 0;
 		}
 
+		
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
 			ViewGroup p = parent;            
@@ -457,6 +497,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 				this.data = data;
 			}
 			
+			
 			public void run() {
 				// TODO Auto-generated method stub
 				mylist.add(data);
@@ -478,7 +519,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 		}
 	}
 	
-	@Override
+	
 	public void onDestroy()
 	{
 		super.onDestroy();

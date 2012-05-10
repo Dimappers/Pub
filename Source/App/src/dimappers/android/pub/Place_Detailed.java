@@ -36,6 +36,7 @@ public class Place_Detailed extends Place implements IXmlable{
 	public String url;
 	private final static String urlkey = "url";
 	
+	
 	public Element writeXml()
 	{
 		Element rootElement = super.writeXml();
@@ -45,6 +46,7 @@ public class Place_Detailed extends Place implements IXmlable{
 		rootElement.addContent(new Element(urlkey).setText(url));
 		return rootElement;
 	}
+	
 	public void readXml(Element element)
 	{
 		super.readXml(element);

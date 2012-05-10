@@ -1,23 +1,16 @@
 package dimappers.android.pub;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.util.Calendar;
 import java.util.HashMap;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.XMLOutputter;
-
-import android.media.AudioRecord.OnRecordPositionUpdateListener;
-
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.MessageType;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.RefreshEventResponseMessage;
-import dimappers.android.PubData.RefreshResponse;
 import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.UpdateType;
 
@@ -43,10 +36,12 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 	}
 	
 	
+	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
+	
 	
 	public void performRequest(IRequestListener<PubEvent> listener,
 			HashMap<Long, PubEvent> storedData) {
@@ -86,6 +81,7 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 		
 	}
 
+	
 	
 	public String getStoredDataId() {
 		return Constants.NoDictionaryForGenericDataStore;

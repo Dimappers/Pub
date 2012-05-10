@@ -1,11 +1,6 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.HashMap;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.util.Log;
 
@@ -15,10 +10,12 @@ public class DataRequestGetPhotos implements IDataRequest<String, XmlJasonObject
 
 	IPubService service;
 
+	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
+	
 	public void performRequest(IRequestListener<XmlJasonObject> listener,
 			HashMap<String, XmlJasonObject> storedData) {
 			
@@ -47,6 +44,7 @@ public class DataRequestGetPhotos implements IDataRequest<String, XmlJasonObject
 		listener.onRequestComplete(myPhotos);
 	}
 
+	
 	public String getStoredDataId() {
 		return "JSONObject";
 	}

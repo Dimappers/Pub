@@ -9,7 +9,8 @@ public class LocationGoogle {
 	 @Key 
 	 double lng;
 	 
-	 public String toString() {
+	 
+	public String toString() {
 		 return lat + "," + lng;
 	 }
 }
