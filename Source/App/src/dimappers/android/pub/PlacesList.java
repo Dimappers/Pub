@@ -31,7 +31,7 @@ public class PlacesList implements IXmlable{
 	 return (currentTime.compareTo(outOfDate)>=0);
  }
  
-@Override
+
 public Element writeXml() {
 	Element rootElement = new Element(getClass().getSimpleName());
 	
@@ -52,7 +52,7 @@ public Element writeXml() {
 	return rootElement;
 }
 
-@Override
+
 public void readXml(Element element) {
 	status = element.getChildText(statuskey);
 	

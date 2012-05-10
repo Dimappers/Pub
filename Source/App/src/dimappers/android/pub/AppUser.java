@@ -77,13 +77,13 @@ public class AppUser extends User implements IXmlable
 		readXml(element);
 	}
 	
-	@Override
+	
 	public String toString()
 	{
 		return facebookName;
 	}
 	
-	@Override
+	
 	public Element writeXml()
 	{	
 		Element userElement = new Element("AppUser");
@@ -109,7 +109,7 @@ public class AppUser extends User implements IXmlable
 		return userElement;
 	}
 	
-	@Override
+	
 	public void readXml(Element userXmlElement)
 	{
 		if(facebookUserId == null || facebookUserId == 0)
@@ -152,7 +152,7 @@ public class AppUser extends User implements IXmlable
 		return getUserId().toString();
 	}
 	
-	@Override
+	
 	public String toString()
 	{
 		return "Id: " + GetRealFacebookName();		

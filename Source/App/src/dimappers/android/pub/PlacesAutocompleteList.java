@@ -16,7 +16,7 @@ public class PlacesAutocompleteList {
  		@Key String reference;
  		@Key List<Term> terms;
  		
- 		@Override
+ 		
  		public String toString()
  		{
  			return description + ": " + reference;

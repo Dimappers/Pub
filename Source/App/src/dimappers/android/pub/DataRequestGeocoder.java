@@ -22,12 +22,12 @@ public class DataRequestGeocoder implements IDataRequest<long[], XmlableString> 
 		applicationContext = appContext;
 	}
 	
-	@Override
+	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
-	@Override
+	
 	public void performRequest(IRequestListener<XmlableString> listener,HashMap<long[], XmlableString> storedData) {
 		
 		long[] key = new long[2];
@@ -64,7 +64,7 @@ public class DataRequestGeocoder implements IDataRequest<long[], XmlableString> 
 		}
 	}
 
-	@Override
+	
 	public String getStoredDataId() {
 		return "Place";
 	}

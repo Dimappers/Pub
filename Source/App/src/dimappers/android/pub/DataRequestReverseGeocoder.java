@@ -21,12 +21,12 @@ public class DataRequestReverseGeocoder implements IDataRequest<String, XmlableD
 		this.loc = loc;
 	}
 	
-	@Override
+	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
-	@Override
+	
 	public void performRequest(IRequestListener<XmlableDoubleArray> listener, HashMap<String, XmlableDoubleArray> storedData) {
 		if(storedData.containsKey(loc)) 
 		{
@@ -79,7 +79,7 @@ public class DataRequestReverseGeocoder implements IDataRequest<String, XmlableD
 		}
 	}
 
-	@Override
+	
 	public String getStoredDataId() {
 		return "Location";
 	}

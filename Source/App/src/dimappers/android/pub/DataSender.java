@@ -62,7 +62,7 @@ public class DataSender {
 	class SenderThread extends AsyncTask<Object, Object, Object>
 	{
 		boolean running = true;
-		@Override
+		
 		protected Object doInBackground(Object... params) {
 			while(running || DataSender.this.queue.size() > 0 )
 			{				
@@ -80,7 +80,7 @@ public class DataSender {
 			return null;
 		}
 		
-		@Override
+		
 		protected void onPostExecute(Object result) {
 			super.onPostExecute(result);
 			if(queue.size() > 0)

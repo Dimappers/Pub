@@ -23,14 +23,14 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 	IPubService service;
 	Context context;
 	
-	@Override
+	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 	
 	public DataRequestGetFriends(Context context) {this.context = context;}
 	
-	@Override
+	
 	public void performRequest(IRequestListener<AppUserArray> listener,
 			HashMap<Long, AppUserArray> storedData) {
 		Facebook facebook = service.GetFacebook();
@@ -144,7 +144,7 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 		return temp;
 	}
 
-	@Override
+	
 	public String getStoredDataId() {
 		return "AppUsers";
 	}

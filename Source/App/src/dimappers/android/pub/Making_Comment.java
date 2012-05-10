@@ -7,7 +7,7 @@ import android.view.View.OnClickListener;
 
 public class Making_Comment extends Activity implements OnClickListener{
 
-	@Override
+	
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
@@ -16,7 +16,7 @@ public class Making_Comment extends Activity implements OnClickListener{
 		
 
 	}
-	@Override
+	
 	public void onClick(View v) {
 		// TODO: Write comment creator
 		

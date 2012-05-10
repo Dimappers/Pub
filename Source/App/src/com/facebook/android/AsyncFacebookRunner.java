@@ -78,7 +78,7 @@ public class AsyncFacebookRunner {
                        final RequestListener listener,
                        final Object state) {
         new Thread() {
-            @Override public void run() {
+             public void run() {
                 try {
                     String response = fb.logout(context);
                     if (response.length() == 0 || response.equals("false")){
@@ -248,7 +248,7 @@ public class AsyncFacebookRunner {
                         final RequestListener listener,
                         final Object state) {
         new Thread() {
-            @Override public void run() {
+             public void run() {
                 try {
                     String resp = fb.request(graphPath, parameters, httpMethod);
                     listener.onComplete(resp, state);

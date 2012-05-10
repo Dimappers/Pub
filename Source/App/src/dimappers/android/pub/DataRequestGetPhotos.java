@@ -10,12 +10,12 @@ public class DataRequestGetPhotos implements IDataRequest<String, XmlJasonObject
 
 	IPubService service;
 
-	@Override
+	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
-	@Override
+	
 	public void performRequest(IRequestListener<XmlJasonObject> listener,
 			HashMap<String, XmlJasonObject> storedData) {
 			
@@ -44,7 +44,7 @@ public class DataRequestGetPhotos implements IDataRequest<String, XmlJasonObject
 		listener.onRequestComplete(myPhotos);
 	}
 
-	@Override
+	
 	public String getStoredDataId() {
 		return "JSONObject";
 	}

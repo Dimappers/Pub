@@ -25,13 +25,13 @@ public class PubEventArray implements IXmlable {
 		return pubEvents;
 	}
 	
-	@Override
+	
 	public Element writeXml() {
 		Log.d(Constants.MsgWarning, "SHOULD NOT USE THIS METHOD");
 		return new Element("PubEventArray");
 	}
 
-	@Override
+	
 	public void readXml(Element element) {
 		//Do nothing since we won't be saving these arrays - they are used for DataRequestRefresh
 		Log.d(Constants.MsgWarning, "SHOULD NOT USE THIS METHOD");

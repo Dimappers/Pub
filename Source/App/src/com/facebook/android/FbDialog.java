@@ -65,7 +65,7 @@ public class FbDialog extends Dialog {
         mListener = listener;
     }
 
-    @Override
+    
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSpinner = new ProgressDialog(getContext());
@@ -98,7 +98,7 @@ public class FbDialog extends Dialog {
         mCrossImage = new ImageView(getContext());
         // Dismiss the dialog when user click on the 'x'
         mCrossImage.setOnClickListener(new View.OnClickListener() {
-            @Override
+            
 			public void onClick(View v) {
                 mListener.onCancel();
                 FbDialog.this.dismiss();
@@ -130,7 +130,7 @@ public class FbDialog extends Dialog {
 
     private class FbWebViewClient extends WebViewClient {
 
-        @Override
+        
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             Log.d("Facebook-WebView", "Redirect URL: " + url);
             if (url.startsWith(Facebook.REDIRECT_URI)) {
@@ -165,7 +165,7 @@ public class FbDialog extends Dialog {
             return true;
         }
 
-        @Override
+        
         public void onReceivedError(WebView view, int errorCode,
                 String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
@@ -174,14 +174,14 @@ public class FbDialog extends Dialog {
             FbDialog.this.dismiss();
         }
 
-        @Override
+        
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             Log.d("Facebook-WebView", "Webview loading URL: " + url);
             super.onPageStarted(view, url, favicon);
             mSpinner.show();
         }
 
-        @Override
+        
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             mSpinner.dismiss();
