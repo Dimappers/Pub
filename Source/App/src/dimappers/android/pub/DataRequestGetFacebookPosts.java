@@ -14,13 +14,13 @@ public class DataRequestGetFacebookPosts implements IDataRequest<String, XmlJaso
 	
 	public DataRequestGetFacebookPosts() {}
 	
-	@Override
+	
 	public void giveConnection(IPubService connectionInterface)
 	{
 		service = connectionInterface;
 	}
 
-	@Override
+	
 	public void performRequest(IRequestListener<XmlJasonObject> listener, HashMap<String, XmlJasonObject> storedData)
 	{
 		Facebook facebook = service.GetFacebook();
@@ -55,7 +55,7 @@ public class DataRequestGetFacebookPosts implements IDataRequest<String, XmlJaso
 		listener.onRequestComplete(xmlPosts);		
 	}
 
-	@Override
+	
 	public String getStoredDataId() {
 		return "JSONObject";
 	}	

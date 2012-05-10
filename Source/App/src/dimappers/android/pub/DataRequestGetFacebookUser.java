@@ -27,13 +27,13 @@ public class DataRequestGetFacebookUser implements
 		facebookIdToGet = -1;
 	}
 	
-	@Override
+	
 	public void giveConnection(IPubService connectionInterface)
 	{
 		service = connectionInterface;
 	}
 
-	@Override
+	
 	public void performRequest(IRequestListener<AppUser> listener,
 			HashMap<Long, AppUser> storedData)
 	{
@@ -85,7 +85,7 @@ public class DataRequestGetFacebookUser implements
 		listener.onRequestComplete(appUser);		
 	}
 
-	@Override
+	
 	public String getStoredDataId() {
 		return "AppUser";
 	}	

@@ -27,7 +27,7 @@ public class DataReceiver
 	
 	class PerformRefresh extends TimerTask
 	{
-		@Override
+		
 		public void run()
 		{
 			doUpdate(false);
@@ -40,12 +40,12 @@ public class DataReceiver
 			DataReceiver.this.service.addDataRequest(refresh, new IRequestListener<PubEventArray>() {
 
 
-				@Override
+				
 				public void onRequestComplete(PubEventArray data) {
 				}
 
 
-				@Override
+				
 				public void onRequestFail(Exception e) {
 					//TODO: Don't know?					
 				}

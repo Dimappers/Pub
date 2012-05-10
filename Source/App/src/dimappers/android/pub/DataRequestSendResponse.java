@@ -36,13 +36,13 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 	}
 	
 	
-	@Override
+	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
 	
-	@Override
+	
 	public void performRequest(IRequestListener<PubEvent> listener,
 			HashMap<Long, PubEvent> storedData) {
 		ResponseData rData = new ResponseData(service.GetActiveUser(), eventId, isGoing, freeFromWhen, msgToHost);
@@ -82,7 +82,7 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 	}
 
 	
-	@Override
+	
 	public String getStoredDataId() {
 		return Constants.NoDictionaryForGenericDataStore;
 	}

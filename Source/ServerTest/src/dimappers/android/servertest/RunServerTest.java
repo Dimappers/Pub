@@ -508,7 +508,7 @@ public class RunServerTest
 		try {
 			returnDoc = xmlBuilder.build(sendSocket.getInputStream());
 			RefreshResponse response = new RefreshResponse(returnDoc.getRootElement().getChild(RefreshResponse.class.getSimpleName()));
-			PubEvent[] outOfDateEvents = response.getEvents();
+			Set<Integer> outOfDateEvents = response.getEvents();
 			
 			for(int i = 0; i < outOfDateEvents.length; ++i)
 			{

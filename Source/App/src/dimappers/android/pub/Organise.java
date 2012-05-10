@@ -75,7 +75,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 	boolean changed;
 	PubEvent oldEvent = null;
 
-	@Override
+	
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -138,7 +138,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 			super(context, layout, id, list);
 		}
 		
-		@Override
+		
 		public View getView(int position, View convertView, ViewGroup parent)
 		{
 			if(convertView==null)
@@ -166,14 +166,13 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		
 		TextUpdater(String s) {this.s = s;}
 		
-		@Override
 		public void run() {
 			cur_loc.setText(s);
 		}
 		
 	}
 
-	@Override
+	
 	public void onDestroy()
 	{
 		super.onDestroy();
@@ -188,7 +187,6 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		startActivityForResult(i, Constants.PubLocationReturn);
 	}
 	
-	@Override
 	public void onClick(View v)
 	{
 		final Intent i;
@@ -223,7 +221,6 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 					final LocationManager locMan = (LocationManager)getSystemService(LOCATION_SERVICE);
 					new LocationFinder(locMan).findLocation(new LocationListener(){
 
-						@Override
 						public void onLocationChanged(Location arg0) {
 							double[] location = new double[2];
 							location[0] = arg0.getLatitude();
@@ -232,18 +229,18 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 							locMan.removeUpdates(this);
 							packageLocForActivity(location, b, i);
 						}
-						@Override
+						
 						public void onProviderDisabled(String provider) {
 							runOnUiThread(new Runnable(){
 
-								@Override
+								
 								public void run() {
 									Toast.makeText(getApplicationContext(), "Cannot find your current location.", Toast.LENGTH_LONG).show();
 								}});
 						}
-						@Override
+						
 						public void onProviderEnabled(String provider) {}
-						@Override
+						
 						public void onStatusChanged(String provider,int status, Bundle extras) {}});
 					}
 				}
@@ -270,13 +267,13 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 			case R.id.send_invites_event : {
 				service.GiveNewSentEvent(event, new IRequestListener<PubEvent>() {
 					
-					@Override
+					
 					public void onRequestFail(Exception e) {
 						Log.d(Constants.MsgError, "Could not send event");
 						e.printStackTrace();
 						runOnUiThread(new Runnable(){
 
-							@Override
+							
 							public void run() {
 								progbar.setVisibility(View.GONE);
 								Toast.makeText(getApplicationContext(),"Unable to send event, please try again later.",Toast.LENGTH_LONG).show();
@@ -284,7 +281,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 							}});
 					}
 					
-					@Override
+					
 					public void onRequestComplete(PubEvent data) {
 							onSendSuccess(data);
 					}
@@ -303,7 +300,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		}
 	}
 	
-	@Override
+	
 	public void onBackPressed() {
 	    //Handle the back button
 	        //Ask the user if they want to quit
@@ -317,7 +314,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		        .setMessage("Would you like to save before exiting")
 		        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
 	
-		            @Override
+		            
 					public void onClick(DialogInterface dialog, int which) {
 	
 		                service.GiveNewSavedEvent(event);
@@ -327,7 +324,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		        })
 		        .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
 					
-					@Override
+					
 					public void onClick(DialogInterface dialog, int which)
 					{
 						if(oldEvent == null) //then this is a fresh event
@@ -357,7 +354,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		        .setMessage("Would you like to update the event")
 		        .setPositiveButton("Update", new DialogInterface.OnClickListener() {
 	
-		            @Override
+		            
 					public void onClick(DialogInterface dialog, int which) {
 	
 		            	//Update the event on the server
@@ -368,7 +365,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		        })
 		        .setNegativeButton("Abandon", new DialogInterface.OnClickListener() {
 					
-					@Override
+					
 					public void onClick(DialogInterface dialog, int which)
 					{
 						if(oldEvent != null) //abandon changes
@@ -411,7 +408,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		finish();		
 	}
 	
-	@Override
+	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if(resultCode==RESULT_OK) //This line is so when the back button is pressed the data changed by an Activity isn't stored.
@@ -424,14 +421,14 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 	}
 
 	
-	@Override
+	
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		edit = menu.add(0, Menu.NONE, 0, "Change Location");
 		return super.onCreateOptionsMenu(menu);
 	}
 	
-	@Override
+	
 	public boolean onPrepareOptionsMenu(Menu menu)
 	{
 		if(service!=null)
@@ -442,7 +439,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		return super.onPrepareOptionsMenu(menu);
 	}
 	
-	@Override
+	
 	public boolean onMenuItemClick(MenuItem item) {
 		switch(item.getItemId()){
 			case Menu.NONE : {
@@ -458,14 +455,14 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		LocationChanger.changeLocation(this);
 	}
 	
-	@Override
+	
 	void success(double lat, double lng, final String loc)
 	{
 		latSet=lat;
 		lngSet=lng;
 		locSet=true; 
 		runOnUiThread(new Runnable(){
-			@Override
+			
 			public void run() {
 				cur_loc.setText(loc);
 				UpdateFromEvent();
@@ -477,7 +474,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 	{
 		runOnUiThread(new Runnable(){
 
-			@Override
+			
 			public void run() {
 				progbar.setVisibility(View.GONE);
 			}});
@@ -504,12 +501,12 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 				DataRequestGetFacebookUser request = new DataRequestGetFacebookUser(user.getUserId());
 				service.addDataRequest(request, new IRequestListener<AppUser>() 
 				{
-					@Override
+					
 					public void onRequestComplete(final AppUser data) 
 					{
 						Organise.this.runOnUiThread(new Runnable() 
 						{
-							@Override
+							
 							public void run() 
 							{
 								listItems.add(data.toString());
@@ -518,7 +515,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 						});
 					}
 
-					@Override
+					
 					public void onRequestFail(Exception e) 
 					{
 						// TODO Auto-generated method stub
@@ -561,7 +558,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		DataRequestUpdateEvent update = new DataRequestUpdateEvent(event, addedUsers);
 		Organise.this.service.addDataRequest(update, new IRequestListener<PubEvent>()
 		{
-			@Override
+			
 			public void onRequestComplete(PubEvent data) 
 			{
 				if(data==null) 
@@ -574,13 +571,13 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 				}
 			}
 
-			@Override
+			
 			public void onRequestFail(Exception e) 
 			{
 				Log.d(Constants.MsgError,"Failed to update event: " + e.getMessage());
 				runOnUiThread(new Runnable()
 				{
-					@Override
+					
 					public void run() 
 					{
 						progbar.setVisibility(View.GONE);
@@ -600,7 +597,6 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 	private ServiceConnection connection = new ServiceConnection()
 	{
 
-		@Override
 		public void onServiceConnected(ComponentName className, IBinder service)
 		{
 			//Give the interface to the app
@@ -616,7 +612,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 			originalTime.setTimeInMillis(event.GetStartTime().getTimeInMillis());*/
 			
 			guest_list.setOnItemClickListener(new OnItemClickListener() {
-				@Override
+				
 				public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 					if(position==0)
 					{
@@ -675,21 +671,21 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 				LocationFinder lc = new LocationFinder(locationManager);
 				lc.findLocation(new LocationListener(){
 
-					@Override
+					
 					public void onLocationChanged(Location loc) {
 						locationManager.removeUpdates(this);
 						geocode(loc.getLatitude(), loc.getLongitude());
 					}
 
-					@Override
+					
 					public void onProviderDisabled(String arg0) {
 						Log.d(Constants.MsgError, arg0 + " is disabled.");
 					}
 
-					@Override
+					
 					public void onProviderEnabled(String arg0) {}
 
-					@Override
+					
 					public void onStatusChanged(String arg0, int arg1,Bundle arg2) {}});
 			}
 			else
@@ -700,12 +696,12 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 			//get list of facebook friends
 			Organise.this.service.addDataRequest(new DataRequestGetFriends(getApplicationContext()), new IRequestListener<AppUserArray>(){
 
-				@Override
+				
 				public void onRequestComplete(AppUserArray data) {
 					facebookFriends = data.getArray();
 				}
 
-				@Override
+				
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, "FAIL");
 				}});
@@ -728,7 +724,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 				button_send_invites.setOnClickListener(new OnClickListener()
 				{
 
-					@Override
+					
 					public void onClick(View arg0) 
 					{
 						updateEvent();
@@ -740,7 +736,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 			UpdateFromEvent();
 		}
 
-		@Override
+		
 		public void onServiceDisconnected(ComponentName className)
 		{
 		}
@@ -751,13 +747,13 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 			DataRequestGeocoder geoCoder = new DataRequestGeocoder(latitude, longitude, getApplicationContext());
 			Organise.this.service.addDataRequest(geoCoder, new IRequestListener<XmlableString>(){
 
-				@Override
+				
 				public void onRequestComplete(XmlableString data) {
 					if(data!=null) {runOnUiThread(new TextUpdater(data.getContents()));}
 					else {runOnUiThread(new TextUpdater("Unknown"));}
 				}
 
-				@Override
+				
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError,"Exception thrown by Geocoder in Organise.");
 					e.printStackTrace();

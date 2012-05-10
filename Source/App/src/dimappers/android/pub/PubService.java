@@ -48,19 +48,19 @@ public class PubService extends IntentService
             return PubService.this;
         }
 
-		@Override
+		
 		public int GiveNewSavedEvent(PubEvent event) {
 			PubService.this.storedData.AddNewSavedEvent(event);
 			return event.GetEventId();
 		}
 
-		@Override
+		
 		public void GiveNewSentEvent(PubEvent event, final IRequestListener<PubEvent> listener) {
 			DataRequestNewEvent r = new DataRequestNewEvent(event);
 			final int savedEventId = event.GetEventId();
 			PubService.this.addDataRequest(r, new IRequestListener<PubEvent>() {
 
-					@Override
+					
 					public void onRequestComplete(PubEvent data) {
 						storedData.DeleteSavedEvent(savedEventId);
 						makeNotification(data, NotificationAlarmManager.NotificationType.EventAboutToStart);
@@ -80,19 +80,19 @@ public class PubService extends IntentService
 						listener.onRequestComplete(data);
 					}
 
-					@Override
+					
 					public void onRequestFail(Exception e) {
 						listener.onRequestFail(e);
 					}
 				});
 		}
 
-		@Override
+		
 		public Collection<PubEvent> GetSavedEvents() {
 			return PubService.this.storedData.GetSavedEvents();
 		}
 
-		@Override
+		
 		public Collection<PubEvent> GetSentEvents() {
 			HashMap<?, ? extends IXmlable> events = PubService.this.storedData.GetGenericStore("PubEvent");
 			Collection<PubEvent> eventsArray = new ArrayList<PubEvent>();
@@ -104,7 +104,7 @@ public class PubService extends IntentService
 			return eventsArray;
 		}
 		
-		@Override
+		
 		public Collection<PubEvent> GetInvitedEvents() {
 			return PubService.this.storedData.GetInvitedEvents();
 		}
@@ -113,32 +113,32 @@ public class PubService extends IntentService
 			return PubService.this.storedData.GetAllEvents();
 		}
 
-		@Override
+		
 		public PubEvent GetNextEvent() {
 			Log.d(Constants.MsgError, "Not implemented get next event message yet");
 			return null;
 		}
 
-		@Override
+		
 		public void RemoveEventFromStoredDataAndCancelNotification(PubEvent event) {
 			PubService.this.storedData.DeleteSavedEvent(event.GetEventId());
 			/////////////////////////////////////////////////((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancel(event.GetEventId());
 		}
 		
-		@Override
+		
 		public void CancelEvent(final PubEvent event)
 		{
 			event.setCurrentStatus(EventStatus.itsOff);
 			
 			DataRequestConfirmDeny cancel = new DataRequestConfirmDeny(event);
 			addDataRequest(cancel, new IRequestListener<PubEvent>(){
-				@Override
+				
 				public void onRequestComplete(PubEvent data)
 				{
 					//PubService.this.storedData.DeleteSentEvent(event.GetEventId());
 					//TODO: Remove notifications for the future
 				}
-				@Override
+				
 				public void onRequestFail(Exception e)
 				{
 					// TODO Auto-generated method stub
@@ -148,35 +148,35 @@ public class PubService extends IntentService
 			});
 		}
 
-		@Override
+		
 		public void PerformUpdate(boolean fullUpdate) {
 			PubService.this.receiver.forceUpdate(fullUpdate);
 		}
 
-		@Override
+		
 		public Facebook GetFacebook() {
 			return PubService.this.authenticatedFacebook;
 		}
 
-		@Override
+		
 		public void Logout() throws MalformedURLException, IOException {
 			//TODO: Implement facebook logout
 			GetFacebook().logout(getApplicationContext());
 		}
 
-		@Override
+		
 		public <K, T extends IXmlable> void addDataRequest(IDataRequest<K, T> request,
 				IRequestListener<T> listener)
 		{
 			PubService.this.addDataRequest(request, listener);			
 		}
 
-		@Override
+		
 		public AppUser GetActiveUser() {
 			return storedData.getActiveUser();
 		}
 
-		@Override
+		
 		public void NewEventsRecieved(PubEventArray events) {
 			
 			ArrayList<Notification> notifications = new ArrayList<Notification>();
@@ -215,12 +215,12 @@ public class PubService extends IntentService
 			}
 		}
 
-		@Override
+		
 		public HistoryStore getHistoryStore() {
 			return storedData.getHistoryStore();
 		}
 
-		@Override
+		
 		public PubEvent getEvent(int eventId) {
 			return storedData.getEvent(eventId);
 		} 
@@ -252,13 +252,13 @@ public class PubService extends IntentService
 			}
 		}
 
-		@Override
+		
 		public <K, V extends IXmlable> HashMap<K, V> GetGenericStore(String key) {
 			// TODO Auto-generated method stub
 			return storedData.GetGenericStore(key);
 		}
 
-		@Override
+		
 		public void UpdatePubEvent(PubEvent newEvent)
 		{
 			if(newEvent.GetEventId() < 0)
@@ -271,13 +271,13 @@ public class PubService extends IntentService
 			}
 		}
 
-		@Override
+		
 		public void AddEventToHistory(PubEvent event) {
 			HistoryStore hStore = getHistoryStore();
 			hStore.addEvent(event);
 		}
 		
-		@Override
+		
 		public void DeleteSentEvent(PubEvent event)
 		{
 			storedData.DeleteSentEvent(event.GetEventId());
@@ -294,7 +294,7 @@ public class PubService extends IntentService
 	private Facebook authenticatedFacebook;
 	//private HistoryStore historyStore;
  
-	@Override
+	
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
 		if(!hasStarted)
@@ -337,7 +337,7 @@ public class PubService extends IntentService
 			DataRequestGetFriends getFriends = new DataRequestGetFriends(getApplicationContext());
 			addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
 
-				@Override
+				
 				public void onRequestComplete(AppUserArray data) {
 					for(AppUser user : data.getArray())
 					{
@@ -345,7 +345,7 @@ public class PubService extends IntentService
 					}
 				}
 
-				@Override
+				
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, "Error getting friends: " + e.getMessage());
 				}
@@ -359,14 +359,14 @@ public class PubService extends IntentService
 	}
 
 	
-	@Override
+	
 	public IBinder onBind(Intent intent) {
 		super.onBind(intent);
 		Log.d(Constants.MsgInfo, "Service bound too");
 		return binder;
 	}
 	
-	@Override
+	
 	public boolean onUnbind(Intent intent)
 	{
 		super.onUnbind(intent);
@@ -379,7 +379,7 @@ public class PubService extends IntentService
 		return false;
 	}
 	
-	@Override
+	
 	public void onDestroy()
 	{
 		Log.d(Constants.MsgError, "onDestroy() in PubService called");
@@ -412,7 +412,7 @@ public class PubService extends IntentService
 	}
 	
 
-	@Override
+	
 	protected void onHandleIntent(Intent intent) {
 		if(hasStarted)
 		{

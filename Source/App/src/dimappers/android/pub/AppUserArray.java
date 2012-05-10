@@ -43,7 +43,7 @@ public class AppUserArray implements IXmlable {
 		return Calendar.getInstance().after(weekAfterUpdate); //if we are after a week after the last update, we need updating
 	}
 	
-	@Override
+	
 	public Element writeXml() {
 		Element rootElement = new Element(getClass().getSimpleName());
 		
@@ -61,7 +61,7 @@ public class AppUserArray implements IXmlable {
 		return rootElement;
 	}
 
-	@Override
+	
 	public void readXml(Element element) {
 		lastUpdated = Calendar.getInstance();
 		lastUpdated.setTimeInMillis(Long.parseLong(element.getChildText(lastUpdateTag)));

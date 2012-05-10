@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class NoInternet extends Activity implements OnClickListener {
-	@Override
+	
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -20,7 +20,7 @@ public class NoInternet extends Activity implements OnClickListener {
     	((Button)findViewById(R.id.nointernetokbutton)).setTypeface(font);
     	((Button)findViewById(R.id.nointernetokbutton)).setOnClickListener(this);
 	}
-			@Override
+			
 			public void onClick(View v) {
 				switch(v.getId())
 				{

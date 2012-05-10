@@ -31,13 +31,13 @@ public class DataRequestUpdateEvent implements IDataRequest<Long, PubEvent> {
 	}
 	
 	
-	@Override
+	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 
 	
-	@Override
+	
 	public void performRequest(IRequestListener<PubEvent> listener,
 			HashMap<Long, PubEvent> storedData) {
 		Document xmlDoc = new Document();
@@ -78,7 +78,7 @@ public class DataRequestUpdateEvent implements IDataRequest<Long, PubEvent> {
 	}
 
 	
-	@Override
+	
 	public String getStoredDataId() {
 		return Constants.NoDictionaryForGenericDataStore;
 	}

@@ -42,7 +42,7 @@ public class PubLocation implements Serializable, IXmlable
 		this.pubName = pubName;
 	}
 	
-	@Override
+	
 	public String toString()
 	{
 		return pubName + ": (" + latitudeCoordinate + ", " + longitudeCoordinate +")";
@@ -86,7 +86,7 @@ public class PubLocation implements Serializable, IXmlable
 		pubName = element.getChildText(nameTag);
 	}
 	
-	@Override
+	
 	public int hashCode()
 	{
 		return new Double(Math.pow(2.0, get2DP(latitudeCoordinate))*Math.pow(3.0, get2DP(longitudeCoordinate))*Math.pow(5.0, pubName.hashCode())).hashCode();
