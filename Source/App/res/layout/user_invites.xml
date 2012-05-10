@@ -90,7 +90,7 @@
             android:background="@drawable/chalk_outline"
             android:text="@string/going"
             android:textColor="#FFFFFF"
-            android:textSize="15sp" />
+            android:textSize="15dp" />
 
     </LinearLayout>
 

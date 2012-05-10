@@ -26,6 +26,9 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -86,6 +89,15 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     	((TextView)findViewById(R.id.guestHeader)).setTypeface(font);
     	((Button)findViewById(R.id.decline)).setTypeface(font);
     	((Button)findViewById(R.id.going)).setTypeface(font);
+    	
+    	
+    	String firstString = "Going";
+    	String secondString = "\nhold for options";
+    	
+    	SpannableStringBuilder stringBuilder = new SpannableStringBuilder(firstString + secondString);
+    	stringBuilder.setSpan(new TextAppearanceSpan(button_going.getContext(), android.R.style.TextAppearance_Medium), 0, firstString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+    	stringBuilder.setSpan(new TextAppearanceSpan(button_going.getContext(), android.R.style.TextAppearance_Small), 0, secondString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+    	button_going.setText(stringBuilder);
 	}
 	
 	@Override
