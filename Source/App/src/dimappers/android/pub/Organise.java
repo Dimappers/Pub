@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -58,10 +59,11 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 	MenuItem edit;
 	
 	private ArrayList<String> listItems=new ArrayList<String>();
-	private ArrayAdapter<String> adapter;
+	private GuestListAdapter adapter;
 	private ListView guest_list;
 	
 	private String add_guest = "+ ADD GUEST";
+	private int posOfLastClicked = -1;
 
 	private boolean locSet = false;
 	private boolean eventSavedAlready;
@@ -122,9 +124,40 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 
 		//Guest list
 		guest_list = (ListView)findViewById(android.R.id.list);
-		adapter = new ArrayAdapter<String>(this, android.R.layout.test_list_item, listItems);
+		adapter = new GuestListAdapter(this,
+				R.layout.delete_guest,
+				R.id.guestName,
+				listItems);
 		setListAdapter(adapter);
 
+	}
+	
+	class GuestListAdapter extends ArrayAdapter<String> {
+		public GuestListAdapter(Context context, int layout, int id,  ArrayList<String> list)
+		{
+			super(context, layout, id, list);
+		}
+		
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent)
+		{
+			if(convertView==null)
+			{
+				convertView = ((LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE)).inflate(R.layout.delete_guest, null);
+			}
+			if(position==posOfLastClicked)
+			{
+				convertView.findViewById(R.id.deleteicon).setVisibility(View.VISIBLE);
+				((TextView)convertView.findViewById(R.id.guestName)).setText(listItems.get(position));
+				return convertView;
+			}
+			else
+			{
+				convertView.findViewById(R.id.deleteicon).setVisibility(View.INVISIBLE);
+				((TextView)convertView.findViewById(R.id.guestName)).setText(listItems.get(position));
+				return convertView;
+			}
+		}
 	}
 	
 	class TextUpdater implements Runnable {
@@ -567,11 +600,43 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 						b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 						i.putExtras(b);
 						startActivityForResult(i, Constants.GuestReturn);
+						posOfLastClicked = -1;
 					}
 					else
 					{
 						String userName = adapter.getItem(position);
-						//TODO: make this delete people
+						if(posOfLastClicked==position)
+						{
+							for(User guest : event.GetUsers())
+							{
+								if(guest.equals(event.GetHost())) {continue;}
+								if(guest instanceof AppUser)
+								{
+									AppUser appGuest = (AppUser)guest;
+									if(appGuest.toString().equals(userName))
+									{
+										event.RemoveUser(guest);
+										break;
+									}
+								}
+								else
+								{
+									Log.d(Constants.MsgWarning, "An \"else\" that should never happen, has happened :'(");
+								}
+							}
+							posOfLastClicked=-1;
+						}
+						else
+						{
+							posOfLastClicked = position;
+						}
+						runOnUiThread(new Runnable()
+						{ 
+							public void run()
+							{
+								UpdateFromEvent();
+							}
+						});
 					}
 				}
 			});
