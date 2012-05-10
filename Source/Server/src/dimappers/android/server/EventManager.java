@@ -1,7 +1,5 @@
 package dimappers.android.server;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -21,11 +19,13 @@ public class EventManager
 		//Hidden constructor to make class static
 	}
 	
+	private static HashMap<Integer, PubEvent> events;
 	private static int eventsCounter;
 	private static final int maxEvents = 10000;
 	
 	public static void InitFromScratch()
 	{
+		events = new HashMap<Integer, PubEvent>();
 		eventsCounter = 1;
 	}
 	
@@ -39,12 +39,11 @@ public class EventManager
 		throw new UnsupportedOperationException("Saving to file not implemented");
 	}
 	
-	public static int AddNewEvent(PubEvent event) throws ServerException, SQLException
+	public static int AddNewEvent(PubEvent event) throws ServerException
 	{
 		//Find an empty event slot 
-		ArrayList<Integer> eventIds = DatabaseManager.getEventIds();
 		int startingCount = eventsCounter;
-		while(eventIds.contains(startingCount))
+		while(events.containsKey(eventsCounter))
 		{
 			eventsCounter = (eventsCounter + 1) % maxEvents;
 			if(eventsCounter == startingCount)
@@ -53,64 +52,40 @@ public class EventManager
 			}
 		}
 		
+		events.put(eventsCounter, event);
 		event.SetEventId(eventsCounter);
-		
-		DatabaseManager.addEvent(event);
 		
 		return eventsCounter++; //return the old value and increment
 	}
 	
-	public static PubEvent GetPubEvent(int pubEventId) throws ServerException, SQLException
+	public static PubEvent GetPubEvent(int pubEventId) throws ServerException
 	{
-		ArrayList<Integer> eventIds = DatabaseManager.getEventIds();
-		if(!eventIds.contains(pubEventId))
+		if(!events.containsKey(pubEventId))
 		{
 			throw new ServerException(ExceptionType.EventManagerNoSuchEvent);
 		}
 		
-		return DatabaseManager.getEvent(pubEventId);
+		return events.get(pubEventId);
 	}
 	
-	public static void UpdateEvent(PubEvent event) throws ServerException, SQLException
+	public void UpdateEvent(int pubEventId, PubEvent event) throws ServerException
 	{
-		ArrayList<Integer> eventIds = DatabaseManager.getEventIds();
-		
-		if(!eventIds.contains(event.GetEventId()))
+		if(!events.containsKey(pubEventId))
 		{
 			throw new ServerException(ExceptionType.EventManagerNoSuchEvent);
 		}
 		
-
-		DatabaseManager.removeEvent(event.GetEventId());
-		DatabaseManager.addEvent(event);
+		events.put(pubEventId, event);
 	}
 	
-	public static void removeEvent(int pubEventId) throws ServerException, SQLException {
-		ArrayList<Integer> eventIds = DatabaseManager.getEventIds();
-		
-		if (!eventIds.contains(pubEventId)) {
-			throw new ServerException(ExceptionType.EventManagerNoSuchEvent);
-		}
-		
-		DatabaseManager.removeEvent(pubEventId);
-	}
-	
-	public static ArrayList<PubEvent> getOldEvents() throws SQLException
-	{ 
-		return DatabaseManager.getOldEvents();
-		
-	}
-	public static void ConfirmTrip(int pubEventId, EventStatus status) throws ServerException, SQLException
+	public static void ConfirmTrip(int pubEventId, EventStatus status) throws ServerException
 	{
-		ArrayList<Integer> eventIds = DatabaseManager.getEventIds();
-		if(!eventIds.contains(pubEventId))
+		if(!events.containsKey(pubEventId))
 		{
 			throw new ServerException(ExceptionType.EventManagerNoSuchEvent);
 		}
-		
-		PubEvent event = DatabaseManager.getEvent(pubEventId);
+		PubEvent event = events.get(pubEventId);
 		event.setCurrentStatus(status);
-		UpdateEvent(event);
+		events.put(pubEventId, event);
 	}
-	
 }
