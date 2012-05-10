@@ -73,19 +73,20 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="20dp"
-            android:layout_marginLeft="18dp"
+            android:layout_marginBottom="18dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="-2dp"
             android:background="@drawable/chalk_outline"
             android:text="@string/decline"
             android:textColor="#FFFFFF"
-            android:textSize="20sp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/going"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:layout_marginRight="18dp"
+            android:layout_marginBottom="18dp"
+            android:layout_marginRight="12dp"
             android:layout_alignParentLeft="true"
                     android:layout_alignParentBottom="true"
                     android:layout_weight="0.5"
