@@ -20,7 +20,7 @@
 
         <TextView
             android:id="@+id/hostEventsCurrentStartTime"
-            android:layout_width="wrap_content"
+            android:layout_width="135dp"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
@@ -79,17 +79,19 @@
          android:layout_marginLeft="25sp"
          android:layout_marginRight="25sp"
          android:orientation="horizontal" >
-
+
          <Button
              android:id="@+id/send_Invites"
-             android:layout_width="match_parent"
+             android:layout_width="135dp"
              android:layout_height="wrap_content"
              android:layout_alignParentBottom="true"
              android:layout_gravity="center_horizontal"
-             android:layout_marginBottom="18dp"
+             android:layout_marginBottom="25dp"
              android:layout_marginRight="22dp"
-             android:layout_weight="0.5"
-             android:text="@string/send_invites" />
+             android:background="@drawable/chalk_outline"
+             android:text="@string/send_invites"
+             android:textColor="#FFFFFF"
+             android:textSize="20sp" />
 
          <Button
              android:id="@+id/edit_button"
@@ -98,10 +100,13 @@
              android:layout_alignParentBottom="true"
              android:layout_alignParentLeft="true"
              android:layout_gravity="center_horizontal"
-             android:layout_marginBottom="18dp"
+             android:layout_marginBottom="25dp"
              android:layout_marginRight="22dp"
              android:layout_weight="0.5"
-             android:text="@string/edit" />
+             android:text="@string/edit" 
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:background="@drawable/chalk_outline"/>
 
          <TextView
              android:id="@+id/hostEventTimeTillPubText"
@@ -120,10 +125,13 @@
              android:layout_width="match_parent"
              android:layout_height="wrap_content"
              android:layout_marginRight="2dp"
-             android:layout_marginBottom="18dp"
+             android:layout_marginBottom="22dp"
              android:layout_weight="0.5"
              android:text="@string/it_is_on"
-             android:visibility="gone" />
+             android:visibility="gone" 
+             android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:background="@drawable/chalk_outline"/>
      </LinearLayout>
 
 </LinearLayout>
