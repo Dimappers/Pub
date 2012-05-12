@@ -304,7 +304,14 @@ public class PubService extends IntentService
 				//e.commit();
 			}			
 			AppUser user = binder.GetActiveUser();
-			storedData.GetGenericStore("AppUser").put(user.getUserId(), user);
+			if(user != null)
+			{
+				storedData.GetGenericStore("AppUser").put(user.getUserId(), user);
+			}
+			else
+			{
+				Log.d(Constants.MsgError, "Could not find user");
+			}
 			
 			sender = new DataSender();
 			receiver = new DataReceiver(binder);

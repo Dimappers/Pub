@@ -1,5 +1,6 @@
 package dimappers.android.pub;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import dimappers.android.PubData.Constants;
@@ -44,25 +45,33 @@ public class AssociatedPendingIntents {
 		}
 		
 		//Create the start time reminder
+		if(event.GetStartTime().after(Calendar.getInstance()))
 		{
 			Intent notificationAlarmIntent = new Intent(context, NotificationTimerEventStarting.class);
 			Bundle remindBundle = new Bundle();
 			remindBundle.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
 			notificationAlarmIntent.putExtras(remindBundle);
 			remindHappening  = PendingIntent.getActivity(context, 0, notificationAlarmIntent, PendingIntent.FLAG_ONE_SHOT);
-			
+		
 			alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis(), remindHappening);
 		}
+		
 		if(isHost)
 		{
-			//Create the confirm reminder
-			Intent notificationConfirmAlarmIntent = new Intent(context, NotificationTimerConfirmEventReminder.class);
-			Bundle b = new Bundle();
-			b.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
-			notificationConfirmAlarmIntent.putExtras(b);
-			remindConfirm = PendingIntent.getActivity(context, 0, notificationConfirmAlarmIntent, PendingIntent.FLAG_ONE_SHOT);
-			
-			alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis() - hostReminderTime, remindConfirm);
+			if(event.GetStartTime().after(Calendar.getInstance()))
+			{
+				if(event.getCurrentStatus() == EventStatus.unknown)
+				{
+					//Create the confirm reminder
+					Intent notificationConfirmAlarmIntent = new Intent(context, NotificationTimerConfirmEventReminder.class);
+					Bundle b = new Bundle();
+					b.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
+					notificationConfirmAlarmIntent.putExtras(b);
+					remindConfirm = PendingIntent.getActivity(context, 0, notificationConfirmAlarmIntent, PendingIntent.FLAG_ONE_SHOT);
+					
+					alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis() - hostReminderTime, remindConfirm);
+				}
+			}
 		}
 	}
 	
@@ -73,9 +82,12 @@ public class AssociatedPendingIntents {
 		alarmManager.set(AlarmManager.RTC, event.GetStartTime().getTimeInMillis() + deleteAfterEventTime, deleteIntent);
 		
 		alarmManager.cancel(remindHappening);
-		if(event.getCurrentStatus() != EventStatus.itsOff)
+		if(event.GetStartTime().after(Calendar.getInstance()))
 		{
-			alarmManager.set(AlarmManager.RTC, event.GetStartTime().getTimeInMillis(), remindHappening);
+			if(event.getCurrentStatus() != EventStatus.itsOff)
+			{
+				alarmManager.set(AlarmManager.RTC, event.GetStartTime().getTimeInMillis(), remindHappening);
+			}
 		}
 		
 		if(isHost)
@@ -83,7 +95,13 @@ public class AssociatedPendingIntents {
 			alarmManager.cancel(remindConfirm);
 			if(event.getCurrentStatus() == EventStatus.unknown)
 			{
-				alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis() - hostReminderTime, remindConfirm);
+				if(event.GetStartTime().after(Calendar.getInstance()))
+				{
+					if(event.getCurrentStatus() == EventStatus.unknown)
+					{
+						alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis() - hostReminderTime, remindConfirm);
+					}
+				}
 			}
 		}
 	}
