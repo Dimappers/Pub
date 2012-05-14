@@ -260,7 +260,10 @@ public class PubService extends IntentService
 		
 		public void DeleteSentEvent(PubEvent event)
 		{
-			storedData.DeleteSentEvent(event.GetEventId());
+			if(event != null)
+			{
+				storedData.DeleteSentEvent(event.GetEventId());
+			}
 		}
 	}
 
@@ -324,7 +327,7 @@ public class PubService extends IntentService
 			hasStarted = true;
 			
 			// Begin retrieving friends
-			DataRequestGetFriends getFriends = new DataRequestGetFriends(getApplicationContext());
+			DataRequestGetFriends getFriends = new DataRequestGetFriends();
 			addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
 
 				

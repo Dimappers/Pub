@@ -67,7 +67,7 @@ public class Pending extends Activity implements OnClickListener {
 				if(!locationListener.locationFound())
 				{
 					locationManager.removeUpdates(locationListener);
-					final PersonFinder personFinder = new PersonFinder(service, getApplicationContext());
+					final PersonFinder personFinder = new PersonFinder(service);
 					Pending.this.updateText("Finding friends");
 					runOnUiThread(new Runnable()
 					{
@@ -213,7 +213,7 @@ public class Pending extends Activity implements OnClickListener {
 			service.GetActiveUser().setLocation(locationarray);
 			
 			//Start tasks: Get people & get pubs
-			PersonFinder personFinder = new PersonFinder(service, getApplicationContext());
+			PersonFinder personFinder = new PersonFinder(service);
 			Pending.this.updateText("Finding friends");
 			
 			findPubs();

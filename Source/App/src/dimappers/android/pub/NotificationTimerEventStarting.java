@@ -1,6 +1,7 @@
 package dimappers.android.pub;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import dimappers.android.PubData.Constants;
@@ -23,8 +24,8 @@ import android.util.Log;
 public class NotificationTimerEventStarting extends Activity{
 	IPubService service;
 	int eventId;
-	PubEvent event;
-	Notification newNotification;
+	/*PubEvent event;
+	Notification newNotification;*/
 	
 	
 	
@@ -44,13 +45,12 @@ public class NotificationTimerEventStarting extends Activity{
 		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder) {
 
 			service = (IPubService) serviceBinder;
-			event = service.getEvent(eventId);
+			PubEvent event = service.getEvent(eventId);
 			if(event!=null)
 			{
-
 				NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-				eventAboutToStart();
+				Notification newNotification = eventAboutToStart(event);
 
 				if(newNotification!=null)
 				{
@@ -59,6 +59,8 @@ public class NotificationTimerEventStarting extends Activity{
 
 					nManager.notify(event.GetEventId(), newNotification);
 				}
+				
+				service.AddEventToHistory(event);
 			}
 			finish();
 		}
@@ -66,26 +68,27 @@ public class NotificationTimerEventStarting extends Activity{
 		
 		public void onServiceDisconnected(ComponentName name) {}};
 
-		private void eventAboutToStart()
+		private Notification eventAboutToStart(PubEvent event)
 		{
-			newNotification = new Notification(
+			Notification newNotification = new Notification(
 					R.drawable.icon, 
-					"The pub trip to " + event.GetPubLocation().toString() + " is starting now.", 
+					"The pub trip to " + event.GetPubLocation().getName() + " is starting now.", 
 					event.GetStartTime().getTimeInMillis());
 			Intent notificationIntent;
 			if(event.GetHost().equals(service.GetActiveUser())) {notificationIntent = new Intent(getBaseContext(), HostEvents.class);}
 			else {notificationIntent = new Intent(getBaseContext(), UserInvites.class);}
 			Bundle b = new Bundle();
-			b.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
+			b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 			notificationIntent.putExtras(b);
-			PendingIntent contentIntent = PendingIntent.getActivity(getBaseContext(), 0, notificationIntent, PendingIntent.FLAG_ONE_SHOT);
+			PendingIntent contentIntent = PendingIntent.getActivity(getBaseContext(), event.GetEventId(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 			newNotification.setLatestEventInfo(
 					getBaseContext(), 
 					"Pub event at " + event.GetPubLocation().getName(), 
 					"This event is now starting.", 
 					contentIntent);
 			//service.EventHasHappenened(event);
-			service.AddEventToHistory(event);
+			
+			return newNotification;
 		}
 
 		

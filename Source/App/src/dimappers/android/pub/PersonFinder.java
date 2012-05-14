@@ -4,17 +4,15 @@ import android.content.Context;
 
 public class PersonFinder {
 	IPubService service;
-	Context context;
 	
-	PersonFinder(IPubService service, Context context)
+	PersonFinder(IPubService service)
 	{
 		this.service = service;
-		this.context = context;
 	}
 	
 	public void getFriends(final IRequestListener<AppUserArray> listener)
 	{	
-		DataRequestGetFriends friends = new DataRequestGetFriends(context);
+		DataRequestGetFriends friends = new DataRequestGetFriends();
 		service.addDataRequest(friends, listener);
 	}
 }

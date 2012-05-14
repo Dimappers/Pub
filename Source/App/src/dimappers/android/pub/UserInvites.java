@@ -278,6 +278,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			{
 				Toast.makeText(getApplicationContext(), "Could not find event", 2000).show();
 				finish();
+				return;
 			}
 			
 			service.addDataRequest(new DataRequestGetLatestAboutPubEvent(event.GetEventId()), new IRequestListener<PubEvent>(){

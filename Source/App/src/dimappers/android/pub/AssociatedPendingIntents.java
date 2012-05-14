@@ -37,9 +37,9 @@ public class AssociatedPendingIntents {
 		{
 			Intent delIntent = new Intent(context, DeleteOldEventActivity.class);
 			Bundle delBundle = new Bundle();
-			delBundle.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
+			delBundle.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 			delIntent.putExtras(delBundle);
-			deleteIntent = PendingIntent.getActivity(context, 0, delIntent, 0);
+			deleteIntent = PendingIntent.getActivity(context, event.GetEventId(), delIntent, 0);
 			
 			alarmManager.set(AlarmManager.RTC, event.GetStartTime().getTimeInMillis() + deleteAfterEventTime, deleteIntent);
 		}
@@ -49,9 +49,9 @@ public class AssociatedPendingIntents {
 		{
 			Intent notificationAlarmIntent = new Intent(context, NotificationTimerEventStarting.class);
 			Bundle remindBundle = new Bundle();
-			remindBundle.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
+			remindBundle.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 			notificationAlarmIntent.putExtras(remindBundle);
-			remindHappening  = PendingIntent.getActivity(context, 0, notificationAlarmIntent, PendingIntent.FLAG_ONE_SHOT);
+			remindHappening  = PendingIntent.getActivity(context, event.GetEventId(), notificationAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		
 			alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis(), remindHappening);
 		}
@@ -65,9 +65,9 @@ public class AssociatedPendingIntents {
 					//Create the confirm reminder
 					Intent notificationConfirmAlarmIntent = new Intent(context, NotificationTimerConfirmEventReminder.class);
 					Bundle b = new Bundle();
-					b.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
+					b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 					notificationConfirmAlarmIntent.putExtras(b);
-					remindConfirm = PendingIntent.getActivity(context, 0, notificationConfirmAlarmIntent, PendingIntent.FLAG_ONE_SHOT);
+					remindConfirm = PendingIntent.getActivity(context, event.GetEventId(), notificationConfirmAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 					
 					alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis() - hostReminderTime, remindConfirm);
 				}

@@ -254,7 +254,7 @@ public class Guests extends ListActivity implements OnClickListener{
 			if(eventId>=0) {isSent = true;}
 			else {isSent = false;}
 			
-			DataRequestGetFriends getFriends = new DataRequestGetFriends(getApplicationContext());
+			DataRequestGetFriends getFriends = new DataRequestGetFriends();
 			service.addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
 
 				
