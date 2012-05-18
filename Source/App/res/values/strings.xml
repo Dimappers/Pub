@@ -3,8 +3,8 @@
     <string name="start">\"Pub?\"</string>
     <string name="app_name">Pub</string>
     <string name="back">back</string>
-    <string name="send_invites">Send Invites</string>
-    <string name="save">Save</string>
+    <string name="send_invites">Send</string>
+    <string name="save">Save</string>	
   	<string name="organise">Organise</string>
   	<string name="mainpubtitle">Pub?</string>
  	<string name="location">Your current location is:</string> 

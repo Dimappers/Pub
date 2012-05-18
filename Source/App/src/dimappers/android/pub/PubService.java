@@ -3,7 +3,9 @@ package dimappers.android.pub;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -195,12 +197,19 @@ public class PubService extends IntentService
 				{
 					storedData.AddNewInvitedEvent(eventEntry.getKey());
 				}
-				Context context = getApplicationContext();
-				Notification newNotification = NotificationCreator.createNotification(eventEntry.getValue(), event, context, GetActiveUser(), GetFacebook());
-				if(newNotification != null)
+				
+				//The cut off time represents the time where we should no longer be told about the event
+				Calendar cutOffTime = Calendar.getInstance();
+				cutOffTime.setTime(new Date(event.GetStartTime().getTimeInMillis() + AssociatedPendingIntents.deleteAfterEventTime)); //It is the event time + delete time (ie the time when we delete the event)
+				if(Calendar.getInstance().before(cutOffTime)) //Providing we are before this cut off time we should notify
 				{
-					notifications.add(newNotification);
-					notificationIds.add(event.GetEventId());
+					Context context = getApplicationContext();
+					Notification newNotification = NotificationCreator.createNotification(eventEntry.getValue(), event, context, GetActiveUser(), GetFacebook());
+					if(newNotification != null)
+					{
+						notifications.add(newNotification);
+						notificationIds.add(event.GetEventId());
+					}
 				}
 			}			
 			
