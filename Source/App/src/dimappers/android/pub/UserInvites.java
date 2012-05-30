@@ -91,7 +91,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     	((Button)findViewById(R.id.going)).setTypeface(font);
     	
     	
-    	String firstString = "Going";
+    	String firstString = "Up for it!";
     	String secondString = "\nhold for options";
     	
     	SpannableStringBuilder stringBuilder = new SpannableStringBuilder(firstString + secondString);
