@@ -41,7 +41,11 @@ public class PersonRanker {
 	
 	boolean gotPosts = false;
 	boolean gotPhotos = false;
-	boolean gotLocations = false; //true once all of the facebook friends have attempted to be geocoded
+	
+	//I HAVE SET THIS PERMENANTLY TO TRUE - IF WE CHANGE BACK FINDING FRIENDS IT NEEDS CHANGING TO FALSE AGAIN
+	boolean gotLocations = true; //true once all of the facebook friends have attempted to be geocoded
+	
+	
 	int gotLocationsOfSomeForm = 0; //stores the number of friends who have either been geocoded or don't have a location to geocode
 	
 	// Constants for ranking people
@@ -153,7 +157,7 @@ public class PersonRanker {
 			}
 		});
 		
-		for(final AppUser friend : getFacebookFriends())
+		/*for(final AppUser friend : getFacebookFriends())
 		{
 			if(cancelled) {break;}
 			if(friend.getLocationName() != null)
@@ -216,7 +220,7 @@ public class PersonRanker {
 			{
 				++gotLocationsOfSomeForm; //we can't get a location
 			}
-		}
+		}*/
 		
 		t = new Timer();
 		t.schedule(new TimerTask() {

@@ -2,6 +2,7 @@ package dimappers.android.pub;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.JSONArray;
@@ -64,6 +65,7 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 				Long id = Long.parseLong(jason.getString("id"));
 				friends[i] = new AppUser(id, jason.getString("name"));
 				
+				/*
 				//Getting location
 				if(jason.has("location"))
 				{
@@ -96,14 +98,91 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 					catch(IllegalStateException e)
 					{
 						Log.d(Constants.MsgWarning, "Data Request Queue is full.");
-					}*/
-				}
+					}
+				}*/
 			}
 			AppUserArray friendsArray = new AppUserArray(friends);
-			storedData.put(0L, friendsArray);
 			Log.d(Constants.MsgInfo, "Friends fetched from Facebook");
-			listener.onRequestComplete(friendsArray);
+			
+			//only update new friends
+			if(storedData.size()==0)
+				//if we have never got friends before, just use the retrieved list as the new list
+			{
+				Log.d(Constants.MsgInfo, "New list of friends");
+				storedData.put(0L, friendsArray);
+				listener.onRequestComplete(friendsArray);
+			}
+			else
+				//otherwise update the list we have previously got with the new information
+			{
+				Log.d(Constants.MsgInfo, "Old list of friends - updating this list");
+				AppUserArray oldFriends = storedData.get(0L);
+				int offset = 0;
+				
+				//remove friends who you're no longer friends with
+				for(int i = 0; i<oldFriends.getArray().length; i++)
+				{
+					AppUser currentOldFriend = oldFriends.getArray()[i];
+					boolean found = false;
+					for(int j = 0; j<friendsArray.getArray().length; j++)
+					{
+						if(currentOldFriend.equals(friendsArray.getArray()[j])) {found = true;}
+					}
+					if(!found)
+					{
+						oldFriends.getArray()[i]=null;
+						offset -= 1;
+					}
+				}
+				Log.d(Constants.MsgInfo, "Removed " + offset + " friends.");
+				
+				//store friends you're newly friends with
+				ArrayList<AppUser> newFriends = new ArrayList<AppUser>();
+				for(int i = 0; i<friendsArray.getArray().length; i++)
+				{
+					AppUser currentNewFriend = friendsArray.getArray()[i];
+					boolean found = false;
+					for(int j = 0; j<oldFriends.getArray().length; j++)
+					{
+						if(currentNewFriend.equals(oldFriends.getArray()[j])) {found = true;}
+					}
+					if(!found)
+					{
+						newFriends.add(currentNewFriend);
+						offset += 1;
+					}
+				}
+				
+				//combine these lists
+				AppUser[] allCurrentFriends = new AppUser[oldFriends.getArray().length + offset];
+				int currentPos = 0;
+				for(int i = 0; i<oldFriends.getArray().length; i++)
+				{
+					if(oldFriends.getArray()[i]!=null)
+					{
+						allCurrentFriends[currentPos] = oldFriends.getArray()[i];
+						currentPos++;
+					}
+				}
+				for(AppUser user : newFriends)
+				{
+					allCurrentFriends[currentPos] = user;
+					currentPos++;
+				}
+				
+				AppUserArray newListOfFriends = new AppUserArray(allCurrentFriends);
+				
+				if(currentPos < oldFriends.getArray().length + offset - 1)
+				{
+					Log.d(Constants.MsgError, "Something has gone horribly wrong :( You're going to end up with a null pointer somewhere.");
+				}
+				
+				storedData.put(0L, newListOfFriends);
+				listener.onRequestComplete(newListOfFriends);
+			}
+			
 			return;
+			
 		} catch (JSONException e) {
 			listener.onRequestFail(e);
 			return;

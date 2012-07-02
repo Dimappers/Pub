@@ -52,6 +52,22 @@ public class AppUser extends User implements IXmlable
 			longitude = location[1];
 		}
 	}
+	
+	public void updateLocation(double[] location)
+	{
+		if(latitude==1000.0||longitude==1000.0)
+		{
+			setLocation(location);
+		}
+		else
+		{
+			latitude += location[0];
+			latitude /= 2;
+			longitude += location[1];
+			longitude /= 2;
+		}
+	}
+	
 	public String getLocationName() {return locationName;}
 	public void setLocationName(String loc) {locationName = loc;}
 

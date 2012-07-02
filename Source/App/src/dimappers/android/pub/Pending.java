@@ -35,11 +35,15 @@ public class Pending extends Activity implements OnClickListener {
 	private LocationManager locationManager;
 	IPubService service;
 	PersonRanker personRanker;
+	
+	long timestarted = 0;
 
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pending_guests);
+		
+		timestarted = System.currentTimeMillis();
 		
 		//Bind to service
     	bindService(new Intent(this, PubService.class), connection, 0);
@@ -148,6 +152,8 @@ public class Pending extends Activity implements OnClickListener {
 		if(locationManager!=null&&locationListener!=null) {locationManager.removeUpdates(locationListener);}
 		unbindService(connection);
 		if(personRanker!=null&&personRanker.t!=null){personRanker.t.cancel();}
+		
+		Log.d(Constants.MsgInfo, "Time taken getting through pending is: " + (System.currentTimeMillis() - timestarted) +".");
 	}
 
 	private Bundle fillBundle(PubEvent createdEvent) {

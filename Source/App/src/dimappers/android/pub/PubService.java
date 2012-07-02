@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import org.json.JSONException;
+
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
@@ -27,6 +29,7 @@ import dimappers.android.PubData.EventStatus;
 import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.UpdateType;
+import dimappers.android.PubData.User;
 
 public class PubService extends IntentService
 {
@@ -74,6 +77,20 @@ public class PubService extends IntentService
 						listener.onRequestFail(e);
 					}
 				});
+			
+			double[] location = new double[2];
+			location[0] = event.GetPubLocation().latitudeCoordinate;
+			location[1] = event.GetPubLocation().longitudeCoordinate;
+			for(User guest : event.GetUsers())
+			{
+				AppUser g2;
+				try {
+					g2 = AppUser.AppUserFromUser(guest, GetFacebook());
+					g2.updateLocation(location);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
 		}
 
 		
