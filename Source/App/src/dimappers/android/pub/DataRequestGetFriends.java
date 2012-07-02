@@ -22,14 +22,16 @@ import dimappers.android.PubData.User;
 public class DataRequestGetFriends extends Activity implements IDataRequest<Long, AppUserArray> {
 
 	IPubService service;
-	Context context;
 	
 	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
 	}
 	
-	public DataRequestGetFriends(Context context) {this.context = context;}
+	public DataRequestGetFriends() 
+	{
+		
+	}
 	
 	
 	public void performRequest(IRequestListener<AppUserArray> listener,
@@ -70,34 +72,6 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 				if(jason.has("location"))
 				{
 					friends[i].setLocationName(jason.getJSONObject("location").getString("name"));
-					/*JSONObject location = jason.getJSONObject("location");
-					final String name = location.getString("name");
-					final AppUser friend = friends[i];
-					try{
-						service.addDataRequest(new DataRequestReverseGeocoder(context, name), new IRequestListener<XmlableDoubleArray>() {
-
-							public void onRequestComplete(XmlableDoubleArray data) {
-								double[] loc = data.array;
-								if(loc.length==2)
-								{
-									friend.setLocation(loc);
-									//Log.d(Constants.MsgInfo, friend.toString() + " is at " + name + " (" + loc[0] + "," + loc[1]);
-								}
-							}
-
-							public void onRequestFail(Exception e) {
-								try {
-									Log.d(Constants.MsgWarning, "Geocoding " + jason.getString("name") + "'s location has failed.");
-								} catch (JSONException e1) {
-									Log.d(Constants.MsgWarning, "Geocoding <unknown person>'s location has failed.");
-									e1.printStackTrace();
-								}
-							}
-						});
-					}
-					catch(IllegalStateException e)
-					{
-						Log.d(Constants.MsgWarning, "Data Request Queue is full.");
 					}
 				}*/
 			}

@@ -3,7 +3,9 @@ package dimappers.android.pub;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -212,12 +214,19 @@ public class PubService extends IntentService
 				{
 					storedData.AddNewInvitedEvent(eventEntry.getKey());
 				}
-				Context context = getApplicationContext();
-				Notification newNotification = NotificationCreator.createNotification(eventEntry.getValue(), event, context, GetActiveUser(), GetFacebook());
-				if(newNotification != null)
+				
+				//The cut off time represents the time where we should no longer be told about the event
+				Calendar cutOffTime = Calendar.getInstance();
+				cutOffTime.setTime(new Date(event.GetStartTime().getTimeInMillis() + AssociatedPendingIntents.deleteAfterEventTime)); //It is the event time + delete time (ie the time when we delete the event)
+				if(Calendar.getInstance().before(cutOffTime)) //Providing we are before this cut off time we should notify
 				{
-					notifications.add(newNotification);
-					notificationIds.add(event.GetEventId());
+					Context context = getApplicationContext();
+					Notification newNotification = NotificationCreator.createNotification(eventEntry.getValue(), event, context, GetActiveUser(), GetFacebook());
+					if(newNotification != null)
+					{
+						notifications.add(newNotification);
+						notificationIds.add(event.GetEventId());
+					}
 				}
 			}			
 			
@@ -277,7 +286,10 @@ public class PubService extends IntentService
 		
 		public void DeleteSentEvent(PubEvent event)
 		{
-			storedData.DeleteSentEvent(event.GetEventId());
+			if(event != null)
+			{
+				storedData.DeleteSentEvent(event.GetEventId());
+			}
 		}
 	}
 
@@ -321,7 +333,14 @@ public class PubService extends IntentService
 				//e.commit();
 			}			
 			AppUser user = binder.GetActiveUser();
-			storedData.GetGenericStore("AppUser").put(user.getUserId(), user);
+			if(user != null)
+			{
+				storedData.GetGenericStore("AppUser").put(user.getUserId(), user);
+			}
+			else
+			{
+				Log.d(Constants.MsgError, "Could not find user");
+			}
 			
 			sender = new DataSender();
 			receiver = new DataReceiver(binder);
@@ -334,7 +353,7 @@ public class PubService extends IntentService
 			hasStarted = true;
 			
 			// Begin retrieving friends
-			DataRequestGetFriends getFriends = new DataRequestGetFriends(getApplicationContext());
+			DataRequestGetFriends getFriends = new DataRequestGetFriends();
 			addDataRequest(getFriends, new IRequestListener<AppUserArray>() {
 
 				

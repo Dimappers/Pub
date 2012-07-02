@@ -31,12 +31,6 @@ public class ServerUser extends dimappers.android.PubData.User
 		}
 	}
 	
-	public void setEvent(int eventId, UpdateType update) {
-		if (!events.containsKey(eventId)) {
-			events.put(eventId, update);
-		}
-	}
-	
 	public Set<Integer> getOutOfDateEvents() {
 		// Iterates through each event, checking if it needs refreshing
 		Set<Integer> outOfDateEvents = new HashSet<Integer>();
@@ -52,8 +46,8 @@ public class ServerUser extends dimappers.android.PubData.User
 		return outOfDateEvents;
 	}
 	
-	public HashMap<Integer, UpdateType> getAllEvents() {
-		return events;
+	public Set<Integer> getAllEvents() {
+		return events.keySet();
 	}
 	
 	/*public void setUpdate(int eventId, boolean update) throws ServerException {
@@ -168,12 +162,11 @@ public class ServerUser extends dimappers.android.PubData.User
 		/* A toString method to aid debugging */
 		String str = "Id: " + super.getUserId() + " hasApp: " + hasApp + "\n";
 		str += "Events: \n";
-		/*
 		for(Integer event : this.getAllEvents())
 		{
 			str += event;
 		}
-		str += "\n";*/
+		str += "\n";
 		
 		return str;
 	}

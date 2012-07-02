@@ -399,6 +399,12 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 			service = (IPubService)serviceBinder;
 			int eventId = getIntent().getExtras().getInt(Constants.CurrentWorkingEvent);
 			event = service.getEvent(eventId);
+			if(event == null)
+			{
+				Toast.makeText(getApplicationContext(), "Could not find event", 2000).show();
+				finish();
+				return; 
+			}
 			facebookUser = service.GetActiveUser();
 			
 			UpdateDataFromEvent();

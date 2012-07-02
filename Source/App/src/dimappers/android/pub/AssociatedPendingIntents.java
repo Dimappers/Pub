@@ -1,5 +1,6 @@
 package dimappers.android.pub;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import dimappers.android.PubData.Constants;
@@ -20,8 +21,8 @@ public class AssociatedPendingIntents {
 	PubEvent event;
 	boolean isHost;
 	
-	final long deleteAfterEventTime = 6 * 60 * 60 * 1000; //currently set to 6 hours
-	final long hostReminderTime = 2 * 60 * 60 * 1000;//7200000 * 2; //currently set to milliseconds in 2 hours
+	public static final long deleteAfterEventTime = 6 * 60 * 60 * 1000; //currently set to 6 hours
+	public static final long hostReminderTime = 2 * 60 * 60 * 1000;//7200000 * 2; //currently set to milliseconds in 2 hours
 	
 	final AlarmManager alarmManager;
 	
@@ -31,38 +32,58 @@ public class AssociatedPendingIntents {
 		
 		this.event = event;
 		this.isHost = isHost;
-		
-		//Create delete intent
 		{
+			Calendar deleteTime = Calendar.getInstance(); 
+			deleteTime.setTime(new Date(event.GetStartTime().getTimeInMillis() + deleteAfterEventTime));
+			
 			Intent delIntent = new Intent(context, DeleteOldEventActivity.class);
 			Bundle delBundle = new Bundle();
-			delBundle.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
+			delBundle.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 			delIntent.putExtras(delBundle);
-			deleteIntent = PendingIntent.getActivity(context, 0, delIntent, 0);
 			
+			deleteIntent = PendingIntent.getActivity(context, event.GetEventId(), delIntent, 0);	
 			alarmManager.set(AlarmManager.RTC, event.GetStartTime().getTimeInMillis() + deleteAfterEventTime, deleteIntent);
+			
+			/* In the future we should swap to Broadcast receiver and delete events instantly 
+			if(Calendar.getInstance().before(deleteTime)) //If the delete time is before the current time, we set an alarm to delete the event
+			{
+				deleteIntent = PendingIntent.getActivity(context, event.GetEventId(), delIntent, 0);	
+				alarmManager.set(AlarmManager.RTC, event.GetStartTime().getTimeInMillis() + deleteAfterEventTime, deleteIntent);
+			}
+			else //otherwise we are already past the delete time so we should just delete it
+			{
+				context.startActivity(delIntent);
+			} */
 		}
 		
 		//Create the start time reminder
+		if(event.GetStartTime().after(Calendar.getInstance()))
 		{
 			Intent notificationAlarmIntent = new Intent(context, NotificationTimerEventStarting.class);
 			Bundle remindBundle = new Bundle();
-			remindBundle.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
+			remindBundle.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 			notificationAlarmIntent.putExtras(remindBundle);
-			remindHappening  = PendingIntent.getActivity(context, 0, notificationAlarmIntent, PendingIntent.FLAG_ONE_SHOT);
-			
+			remindHappening  = PendingIntent.getActivity(context, event.GetEventId(), notificationAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		
 			alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis(), remindHappening);
 		}
+		
 		if(isHost)
 		{
-			//Create the confirm reminder
-			Intent notificationConfirmAlarmIntent = new Intent(context, NotificationTimerConfirmEventReminder.class);
-			Bundle b = new Bundle();
-			b.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
-			notificationConfirmAlarmIntent.putExtras(b);
-			remindConfirm = PendingIntent.getActivity(context, 0, notificationConfirmAlarmIntent, PendingIntent.FLAG_ONE_SHOT);
-			
-			alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis() - hostReminderTime, remindConfirm);
+			if(event.GetStartTime().after(Calendar.getInstance()))
+			{
+				if(event.getCurrentStatus() == EventStatus.unknown)
+				{
+					//Create the confirm reminder
+					Intent notificationConfirmAlarmIntent = new Intent(context, NotificationTimerConfirmEventReminder.class);
+					Bundle b = new Bundle();
+					b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
+					notificationConfirmAlarmIntent.putExtras(b);
+					remindConfirm = PendingIntent.getActivity(context, event.GetEventId(), notificationConfirmAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+					
+					alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis() - hostReminderTime, remindConfirm);
+				}
+			}
 		}
 	}
 	
@@ -73,9 +94,12 @@ public class AssociatedPendingIntents {
 		alarmManager.set(AlarmManager.RTC, event.GetStartTime().getTimeInMillis() + deleteAfterEventTime, deleteIntent);
 		
 		alarmManager.cancel(remindHappening);
-		if(event.getCurrentStatus() != EventStatus.itsOff)
+		if(event.GetStartTime().after(Calendar.getInstance()))
 		{
-			alarmManager.set(AlarmManager.RTC, event.GetStartTime().getTimeInMillis(), remindHappening);
+			if(event.getCurrentStatus() != EventStatus.itsOff)
+			{
+				alarmManager.set(AlarmManager.RTC, event.GetStartTime().getTimeInMillis(), remindHappening);
+			}
 		}
 		
 		if(isHost)
@@ -83,7 +107,13 @@ public class AssociatedPendingIntents {
 			alarmManager.cancel(remindConfirm);
 			if(event.getCurrentStatus() == EventStatus.unknown)
 			{
-				alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis() - hostReminderTime, remindConfirm);
+				if(event.GetStartTime().after(Calendar.getInstance()))
+				{
+					if(event.getCurrentStatus() == EventStatus.unknown)
+					{
+						alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis() - hostReminderTime, remindConfirm);
+					}
+				}
 			}
 		}
 	}

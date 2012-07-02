@@ -183,8 +183,15 @@ public class StoredData implements Serializable
 			}
 			else
 			{
-				return (PubEvent)dataStores.get(sentEventsStore).get(eventId);
+				if(((Hashtable<String, HashMap<?, ? extends IXmlable>>) dataStores).containsKey(sentEventsStore))
+				{
+					if(dataStores.get(sentEventsStore).containsKey(eventId))
+					{
+						return (PubEvent)dataStores.get(sentEventsStore).get(eventId);
+					}
+				}
 			}
+			return null;
 		}
 		else
 		{
@@ -229,7 +236,7 @@ public class StoredData implements Serializable
 		{
 			invitedEvents.remove(eventId);
 		}
-		else
+		else if(dataStores.get(sentEventsStore).containsKey(eventId))
 		{
 			dataStores.get(sentEventsStore).remove(eventId);
 		}

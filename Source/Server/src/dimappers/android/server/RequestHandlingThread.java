@@ -13,7 +13,6 @@ import java.io.StreamCorruptedException;
 import java.io.StringBufferInputStream;
 import java.io.StringReader;
 import java.net.Socket;
-import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -49,15 +48,10 @@ public class RequestHandlingThread extends Thread{
 	RequestHandlingThread(Socket clientSocket) {
 		super();
 		System.out.println("Thread ID: " + this.getId());
-		try {
-			handleRequest(clientSocket);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		handleRequest(clientSocket);
 	}
 
-	public void handleRequest(Socket clientSocket) throws SQLException {
+	public void handleRequest(Socket clientSocket) {
 		//Deserialise data in to classes - in reality we will have to send some messages before explaining what is coming 
 		
 		Document doc = null;
@@ -170,7 +164,7 @@ public class RequestHandlingThread extends Thread{
 	}
 
 	//Message handling functions
-	private static void NewEventMessageReceived(Document doc, Socket clientSocket) throws ServerException, SQLException
+	private static void NewEventMessageReceived(Document doc, Socket clientSocket) throws ServerException
 	{
 		if(IsDebug)
 		{
@@ -240,7 +234,7 @@ public class RequestHandlingThread extends Thread{
 		}
 	}
 
-	private static void RefreshMessageReceived(Document doc, Socket clientSocket) throws ServerException, SQLException
+	private static void RefreshMessageReceived(Document doc, Socket clientSocket) throws ServerException
 	{
 		RefreshData refresh;
 		refresh = new RefreshData(doc.getRootElement().getChild(RefreshData.class.getSimpleName()));
@@ -277,7 +271,7 @@ public class RequestHandlingThread extends Thread{
 		}
 	}
 	
-	private static void RefreshEventMessageReceived(Document doc, Socket clientSocket) throws ServerException, SQLException
+	private static void RefreshEventMessageReceived(Document doc, Socket clientSocket) throws ServerException
 	{
 		RefreshEventMessage refreshEventMessage;
 		refreshEventMessage = new RefreshEventMessage(doc.getRootElement().getChild(RefreshEventMessage.class.getSimpleName()));
@@ -308,7 +302,7 @@ public class RequestHandlingThread extends Thread{
 		UserManager.markAsUpToDate(refreshEventMessage.getUser(), refreshEventMessage.getEventId());
 	}
 
-	private static void RespondMessageReceived(Document doc, Socket clientSocket) throws ServerException, SQLException
+	private static void RespondMessageReceived(Document doc, Socket clientSocket) throws ServerException
 	{
 		ResponseData response;
 		response = new ResponseData(doc.getRootElement().getChild(ResponseData.class.getSimpleName()));
@@ -352,7 +346,7 @@ public class RequestHandlingThread extends Thread{
 		UserManager.markAsUpToDate(response.GetUser(), event.GetEventId());		
 	}
 
-	private static void UpdateMessageReceived(Document doc, Socket clientSocket) throws ServerException, SQLException
+	private static void UpdateMessageReceived(Document doc, Socket clientSocket) throws ServerException
 	{
 		// Gets the event given the update data
 		UpdateData update;
@@ -439,7 +433,7 @@ public class RequestHandlingThread extends Thread{
 		UserManager.markAsUpToDate(event.GetHost(), event.GetEventId());
 	}
 	
-	private static void ItsOnMessageReceived(Document doc, Socket clientSocket) throws ServerException, SQLException
+	private static void ItsOnMessageReceived(Document doc, Socket clientSocket) throws ServerException
 	{
 		ConfirmMessage message = new ConfirmMessage(doc.getRootElement().getChild(ConfirmMessage.class.getSimpleName()));
 		

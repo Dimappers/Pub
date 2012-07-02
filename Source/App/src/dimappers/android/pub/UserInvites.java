@@ -91,7 +91,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
     	((Button)findViewById(R.id.going)).setTypeface(font);
     	
     	
-    	String firstString = "Going";
+    	String firstString = "Up for it!";
     	String secondString = "\nhold for options";
     	
     	SpannableStringBuilder stringBuilder = new SpannableStringBuilder(firstString + secondString);
@@ -273,6 +273,13 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			service = (IPubService)serviceBinder;
 			
 			event = service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			
+			if(event == null)
+			{
+				Toast.makeText(getApplicationContext(), "Could not find event", 2000).show();
+				finish();
+				return;
+			}
 			
 			service.addDataRequest(new DataRequestGetLatestAboutPubEvent(event.GetEventId()), new IRequestListener<PubEvent>(){
 

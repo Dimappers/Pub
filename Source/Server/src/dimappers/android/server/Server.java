@@ -17,8 +17,7 @@ public class Server {
 	
 	private static boolean serverRunning = true;
 	
-	public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException, ServerException {
-		DatabaseManager.initFromScratch();
+	public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException {
 		EventManager.InitFromScratch(); 
 		System.out.println("Server running on port " + Constants.Port);
 		ServerSocket serverSocket = null;
@@ -35,7 +34,6 @@ public class Server {
 			System.out.println("Error listening to port: " + e.getMessage());
 		}
 		
-		new EventDeletionThread().start();
 		
 		while(serverRunning)
 		{
