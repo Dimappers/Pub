@@ -100,6 +100,11 @@ public class AppUser extends User implements IXmlable
 	}
 	
 	
+	public String getName()
+	{
+		return facebookName;
+	}
+	
 	public Element writeXml()
 	{	
 		Element userElement = new Element("AppUser");

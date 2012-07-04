@@ -19,9 +19,12 @@ import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.text.format.Time;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,6 +38,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.EventStatus;
 import dimappers.android.PubData.GoingStatus;
@@ -84,6 +88,8 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
     	
 		ListView list = (ListView) findViewById(R.id.listView1);
 
+		registerForContextMenu(list);
+				
 		sent = !getIntent().getExtras().getBoolean(Constants.IsSavedEventFlag); //if we have saved the event, it has not been sent
 		if(sent)
 		{
@@ -150,6 +156,34 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		
 	}
 	
+	public void onCreateContextMenu(ContextMenu menu, View v,
+            ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.invited_hold_menu, menu);
+		
+		int pos = ((AdapterContextMenuInfo)menuInfo).position;
+		
+		menu.setHeaderTitle("Respond for " + ((GuestList)gadapter.getItem(pos)).getGuest().getName());
+	}
+	
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+	    int itemPosition = ((AdapterContextMenuInfo)item.getMenuInfo()).position;
+	    
+	    GuestList person = (GuestList) gadapter.getItem(itemPosition);
+	    if(item.getItemId() == R.id.invited_menu_item_up)
+	    {
+	    	event.GetGoingStatusMap().put(person.getGuest(), new UserStatus(GoingStatus.going, event.GetStartTime(), ""));
+	    }
+	    else
+	    {
+	    	event.GetGoingStatusMap().put(person.getGuest(), new UserStatus(GoingStatus.notGoing, event.GetStartTime(), ""));
+	    }
+		UpdateDataFromEvent();
+	    Toast.makeText(getApplicationContext(), "TODO: Not sending to server", 500).show();
+		return true;		
+	}
 	
 	public boolean onMenuItemClick(MenuItem item) {
 
@@ -467,7 +501,11 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		}
 
 
-		 
+		public void onItemLongClick()
+		{
+			
+		}
+		
 		public View getView(final int position, View convertView, ViewGroup parent) 
 		{
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
