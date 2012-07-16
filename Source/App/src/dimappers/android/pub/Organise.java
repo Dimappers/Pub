@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import net.awl.appgarden.sdk.AppGardenAgent;
+
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ComponentName;
@@ -81,6 +83,8 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.organise);
+		
+		AppGardenAgent.passExam("ORGANISE CREATED");
 
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		 PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "Organise");

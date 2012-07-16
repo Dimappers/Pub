@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.awl.appgarden.sdk.AppGardenAgent;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -42,6 +44,8 @@ public class Pending extends Activity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pending_guests);
+		
+		AppGardenAgent.passExam("PENDING ONCREATE CALLED");
 		
 		timestarted = System.currentTimeMillis();
 		

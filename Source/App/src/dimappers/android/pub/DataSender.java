@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import net.awl.appgarden.sdk.AppGardenAgent;
+
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -32,6 +34,9 @@ public class DataSender {
 		queue = new ArrayBlockingQueue<Request<?, ?>>(500);
 		senderThread = new SenderThread();
 		senderThread.execute(new Object[]{});
+
+		
+		AppGardenAgent.passExam("DATASENDER INITIALISED");
 	}
 	
 	public <K, T> void addRequest(IDataRequest<K, T> request, final IRequestListener<T> listener, HashMap<K, T> store)

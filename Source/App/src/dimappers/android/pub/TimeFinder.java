@@ -3,6 +3,8 @@ package dimappers.android.pub;
 import java.util.Calendar;
 import java.util.List;
 
+import net.awl.appgarden.sdk.AppGardenAgent;
+
 import dimappers.android.PubData.PubEvent;
 
 public class TimeFinder {
@@ -11,7 +13,11 @@ public class TimeFinder {
 	int hour = 0;
 	int minutes = 0;
 	
-	TimeFinder(HistoryStore historyStore) {this.historyStore = historyStore;}
+	TimeFinder(HistoryStore historyStore) {
+		
+		AppGardenAgent.passExam("TIMEFINDER INITIALISED");
+		this.historyStore = historyStore;
+	}
 	
 	public Calendar chooseTime() {
 		findHour();

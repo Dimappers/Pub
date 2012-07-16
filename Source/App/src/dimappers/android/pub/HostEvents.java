@@ -5,6 +5,10 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map.Entry;
 
+import net.awl.appgarden.sdk.AppGardenAgent;
+
+import org.jdom.Element;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -42,7 +46,9 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.EventStatus;
 import dimappers.android.PubData.GoingStatus;
+import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
 import dimappers.android.pub.UserInvites.GuestAdapter.UpdateList;
@@ -65,6 +71,8 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.host_events);
+		
+		AppGardenAgent.passExam("LOADED HOST EVENTS");
 		
 		bindService(new Intent(this, PubService.class), connection, 0);
 
@@ -159,20 +167,29 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	public void onCreateContextMenu(ContextMenu menu, View v,
             ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
+		if(event.GetEventId()>0)
+		{
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.invited_hold_menu, menu);
 		
 		int pos = ((AdapterContextMenuInfo)menuInfo).position;
 		
 		menu.setHeaderTitle("Respond for " + ((GuestList)gadapter.getItem(pos)).getGuest().getName());
+		}
 	}
 	
 	public boolean onContextItemSelected(MenuItem item) {
+		
+		final PubEvent backupEvent = new PubEvent(event.writeXml());
+		
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 	    int itemPosition = ((AdapterContextMenuInfo)item.getMenuInfo()).position;
 	    
 	    GuestList person = (GuestList) gadapter.getItem(itemPosition);
-	    if(item.getItemId() == R.id.invited_menu_item_up)
+	    
+	    boolean isGoing = (item.getItemId() == R.id.invited_menu_item_up);
+	    
+	    if(isGoing)
 	    {
 	    	event.GetGoingStatusMap().put(person.getGuest(), new UserStatus(GoingStatus.going, event.GetStartTime(), ""));
 	    }
@@ -180,8 +197,28 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	    {
 	    	event.GetGoingStatusMap().put(person.getGuest(), new UserStatus(GoingStatus.notGoing, event.GetStartTime(), ""));
 	    }
-		UpdateDataFromEvent();
-	    Toast.makeText(getApplicationContext(), "TODO: Not sending to server", 500).show();
+
+		service.addDataRequest(new DataRequestSendResponse(new ResponseData(person.getGuest(), event.GetEventId(), isGoing)), new IRequestListener<PubEvent>() {
+
+			public void onRequestComplete(PubEvent data) {
+				event = data;
+				UpdateDataFromEvent();
+			}
+
+			public void onRequestFail(Exception e) {
+				Log.d(Constants.MsgError, e.getMessage());
+				
+				event = backupEvent;
+				
+				runOnUiThread(new Runnable() {
+					
+					public void run() {
+						Toast.makeText(HostEvents.this, "Error sending response.", Toast.LENGTH_LONG).show();
+					}
+				});
+			}
+		});
+	    
 		return true;		
 	}
 	
@@ -681,11 +718,15 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 
 	}
 
-	class GuestList
+	class GuestList implements IXmlable
 	{
 		private AppUser guest;
 		private String time;
 		private String message;
+		
+		private final String guestString = "GUEST";
+		private final String timeString = "TIME";
+		private final String messageString = "MSG";
 		
 		public GuestList(AppUser guest, String time, String message)
 		{
@@ -727,6 +768,20 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 		public String getMessage()
 		{
 			return message;
+		}
+
+		public Element writeXml() {
+			Element root = new Element(this.getClass().getSimpleName());
+			root.addContent(new Element(guestString).addContent(guest.writeXmlForTransmission()));
+			root.addContent(new Element(timeString).setText(time));
+			root.addContent(new Element(messageString).setText(message));
+			return root;
+		}
+
+		public void readXml(Element element) {
+			guest = new AppUser(element.getChild(guestString));
+			time = element.getChildText(timeString);
+			message = element.getChildText(messageString);
 		}
 
 	}
