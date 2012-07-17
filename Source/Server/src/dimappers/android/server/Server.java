@@ -32,6 +32,7 @@ public class Server {
 		catch (IOException e)
 		{
 			System.out.println("Error listening to port: " + e.getMessage());
+			throw e;
 		}
 		
 		
