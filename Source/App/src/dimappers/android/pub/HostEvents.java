@@ -199,7 +199,13 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	    }
 
 		service.addDataRequest(new DataRequestSendResponse(new ResponseData(person.getGuest(), event.GetEventId(), isGoing)), new IRequestListener<PubEvent>() {
-
+			
+			/*
+			 * FIXME: 
+			 * 		KB: on mine this always throws a Connection Reset By Peer by that may be the dodgy internet/server falling over - more testing is required.
+			 * 			It does update the server though & refreshing the event on the phone shows the update. No idea what is going on there... :S
+			 */
+			
 			public void onRequestComplete(PubEvent data) {
 				event = data;
 				UpdateDataFromEvent();
