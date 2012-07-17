@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.json.JSONException;
+
 import net.awl.appgarden.sdk.AppGardenAgent;
 
 import android.app.AlertDialog;
@@ -641,19 +643,24 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 						{
 							for(User guest : event.GetUsers())
 							{
-								if(guest.equals(event.GetHost())) {continue;}
-								if(guest instanceof AppUser)
+								if(guest.equals(event.GetHost())) {break;}
+								try
 								{
-									AppUser appGuest = (AppUser)guest;
+									AppUser appGuest = AppUser.AppUserFromUser(guest, Organise.this.service.GetFacebook());
 									if(appGuest.toString().equals(userName))
 									{
 										event.RemoveUser(guest);
 										break;
 									}
 								}
-								else
+								catch(IOException e)
 								{
-									Log.d(Constants.MsgWarning, "An \"else\" that should never happen, has happened :'(");
+									Log.d(Constants.MsgError, e.getMessage());
+									
+								}
+								catch(JSONException e)
+								{
+									Log.d(Constants.MsgError, e.getMessage());
 								}
 							}
 							posOfLastClicked=-1;

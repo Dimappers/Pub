@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import net.awl.appgarden.sdk.AppGardenAgent;
+
 import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -56,6 +58,8 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.current_events);
+		
+		AppGardenAgent.passExam("CURRENTEVENTS ONCREATE CALLED");
 
 		bindService(new Intent(this, PubService.class), connection, 0);
 

@@ -167,7 +167,7 @@ public class HostEvents extends Activity implements OnClickListener, OnMenuItemC
 	public void onCreateContextMenu(ContextMenu menu, View v,
             ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		if(event.GetEventId()>0)
+		if(event.GetEventId()>=0)
 		{
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.invited_hold_menu, menu);
