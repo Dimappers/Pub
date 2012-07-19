@@ -344,6 +344,12 @@ public class LaunchApplication extends Activity implements OnClickListener{
     
     public void onDestroy() {
     	super.onDestroy();
+    	
+    	if(service!=null)
+    	{
+    		unbindService(connection);
+    	}
+    	
         AppGardenAgent.summerBreak();
     }
     

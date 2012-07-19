@@ -2,6 +2,8 @@ package dimappers.android.pub;
 
 import java.util.HashMap;
 
+import net.awl.appgarden.sdk.AppGardenAgent;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import dimappers.android.PubData.ConfirmMessage;
@@ -19,6 +21,7 @@ public class DataRequestConfirmDeny implements IDataRequest<Integer, PubEvent> {
 	
 	public DataRequestConfirmDeny(PubEvent event)
 	{
+		AppGardenAgent.passExam("DATAREQUESTCONFIRMDENY INITIALISED");
 		this.event = event;
 	}
 	

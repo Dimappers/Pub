@@ -3,7 +3,7 @@ package dimappers.android.PubData;
 public final class Constants {
 	// Debugging mode for server
 	public static final boolean debug = true;
-	public static final boolean emulator = true;
+	public static final boolean emulator = false;
 	
 	//Common bundle tags
 	public static final String CurrentWorkingEvent = "event"; //IMPORTANT: This should just pass the event id1

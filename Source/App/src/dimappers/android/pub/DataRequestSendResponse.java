@@ -13,6 +13,7 @@ import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.RefreshEventResponseMessage;
 import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.UpdateType;
+import dimappers.android.PubData.User;
 
 public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 
@@ -21,6 +22,7 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 	private Calendar freeFromWhen;
 	private String msgToHost;
 	private int eventId;
+	private User user;
 	
 	public DataRequestSendResponse(boolean isGoing, int eventId, Calendar freeFromWhen, String msgToHost)
 	{
@@ -28,6 +30,7 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 		this.eventId = eventId;
 		this.freeFromWhen = freeFromWhen;
 		this.msgToHost = msgToHost;
+		this.user = service.GetActiveUser();
 	}
 	
 	public DataRequestSendResponse(boolean isGoing, int eventId)
@@ -35,6 +38,14 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 		this(isGoing, eventId, null, "");
 	}
 	
+	public DataRequestSendResponse(ResponseData rd)
+	{
+		isGoing = rd.GetIsGoing();
+		freeFromWhen = rd.GetFreeFromWhen();
+		msgToHost = rd.GetMsgToHost();
+		eventId = rd.GetEventId();
+		user = rd.GetUser();
+	}
 	
 	
 	public void giveConnection(IPubService connectionInterface) {
@@ -45,7 +56,7 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 	
 	public void performRequest(IRequestListener<PubEvent> listener,
 			HashMap<Long, PubEvent> storedData) {
-		ResponseData rData = new ResponseData(service.GetActiveUser(), eventId, isGoing, freeFromWhen, msgToHost);
+		ResponseData rData = new ResponseData(user, eventId, isGoing, freeFromWhen, msgToHost);
 		
 		Element root = new Element("Message");
 		Document xmlDoc = new Document();

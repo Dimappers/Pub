@@ -3,6 +3,7 @@ package dimappers.android.PubData;
 import java.io.Serializable;
 import java.util.Calendar;
 
+
 import org.jdom.Element;
 
 public class ResponseData implements Serializable, IXmlable

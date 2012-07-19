@@ -1,5 +1,6 @@
 package dimappers.android.pub;
 
+import net.awl.appgarden.sdk.AppGardenAgent;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.View;
@@ -9,6 +10,9 @@ import dimappers.android.PubData.PubLocation;
 public class LocationChanger {
 
 	public static void changeLocation(final LocationRequiringActivity a) {
+
+		AppGardenAgent.passExam("CHANGELOCATION IN LOCATIONCHANGER");
+		
 		final EditText loc = new EditText(a.getApplicationContext());
 		
 		AlertDialog.Builder builder;

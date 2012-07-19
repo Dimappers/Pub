@@ -1,5 +1,6 @@
 package dimappers.android.pub;
 
+import net.awl.appgarden.sdk.AppGardenAgent;
 import android.content.Context;
 
 public class PersonFinder {
@@ -8,6 +9,7 @@ public class PersonFinder {
 	PersonFinder(IPubService service)
 	{
 		this.service = service;
+		AppGardenAgent.passExam("CREATED A PERSONFINDER");
 	}
 	
 	public void getFriends(final IRequestListener<AppUserArray> listener)

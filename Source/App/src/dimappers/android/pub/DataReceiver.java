@@ -3,6 +3,8 @@ package dimappers.android.pub;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.awl.appgarden.sdk.AppGardenAgent;
+
 public class DataReceiver
 {
 	private IPubService service;
@@ -12,6 +14,7 @@ public class DataReceiver
 	
 	public DataReceiver(IPubService service)
 	{
+		AppGardenAgent.passExam("DATARECEIVER INITIALISED");
 		this.service = service;
 		Timer updateScheduler = new Timer();
 		refresher = new PerformRefresh();

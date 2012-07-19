@@ -2,6 +2,8 @@ package dimappers.android.pub;
 
 import java.util.ArrayList;
 
+import net.awl.appgarden.sdk.AppGardenAgent;
+
 import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -54,6 +56,8 @@ public class Guests extends ListActivity implements OnClickListener{
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.guests);
 		bindService(new Intent(this, PubService.class), connection, 0);
+		
+		AppGardenAgent.passExam("GUESTS ONCREATE CALLED");
     	
 		//until search is implemented
 		findViewById(R.id.search_friends).setVisibility(View.INVISIBLE);

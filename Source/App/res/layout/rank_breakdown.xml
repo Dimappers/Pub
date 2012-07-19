@@ -16,12 +16,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="PostsFromWho:" />
-
+
     <TextView
         android:id="@+id/postsFromWho"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="" />
+        android:text="TextView" />
 
     <TextView
         android:id="@+id/textView3"
@@ -167,7 +167,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Location"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
     
+    <TextView
+        android:id="@+id/locationUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No location available" />
+
     
         </LinearLayout>
 
