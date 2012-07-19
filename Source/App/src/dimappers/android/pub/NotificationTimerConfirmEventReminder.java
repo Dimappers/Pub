@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.EventStatus;
 import dimappers.android.PubData.GoingStatus;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
@@ -25,7 +26,6 @@ public class NotificationTimerConfirmEventReminder extends Activity {
 	int eventId;
 	PubEvent event;
 	Notification newNotification;
-	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -88,30 +88,33 @@ public class NotificationTimerConfirmEventReminder extends Activity {
 
 		private void hostClickItsOn()
 		{
-			newNotification = new Notification(
-					R.drawable.icon, 
-					"The pub trip to " + event.GetPubLocation().getName() + " needs confirming.", 
-					System.currentTimeMillis());
-
-			Intent notificationIntent = new Intent(getBaseContext(), HostEvents.class);
-			Bundle b = new Bundle();
-			b.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
-			notificationIntent.putExtras(b);
-
-			PendingIntent contentIntent = PendingIntent.getActivity(getBaseContext(), 0, notificationIntent, PendingIntent.FLAG_ONE_SHOT);
-
-			int confirmed = 0;
-			HashMap<User, UserStatus> goingStatuses = event.GetGoingStatusMap();
-			for(User user : goingStatuses.keySet())
+			if(event.getCurrentStatus() == EventStatus.unknown) //ensure we only prompt the user to confirm the event once
 			{
-				if(goingStatuses.get(user).equals(GoingStatus.going)) {++confirmed;}
+				newNotification = new Notification(
+						R.drawable.icon, 
+						"The pub trip to " + event.GetPubLocation().getName() + " needs confirming.", 
+						System.currentTimeMillis());
+	
+				Intent notificationIntent = new Intent(getBaseContext(), HostEvents.class);
+				Bundle b = new Bundle();
+				b.putSerializable(Constants.CurrentWorkingEvent, event.GetEventId());
+				notificationIntent.putExtras(b);
+	
+				PendingIntent contentIntent = PendingIntent.getActivity(getBaseContext(), 0, notificationIntent, PendingIntent.FLAG_ONE_SHOT);
+	
+				int confirmed = 0;
+				HashMap<User, UserStatus> goingStatuses = event.GetGoingStatusMap();
+				for(User user : goingStatuses.keySet())
+				{
+					if(goingStatuses.get(user).equals(GoingStatus.going)) {++confirmed;}
+				}
+	
+				newNotification.setLatestEventInfo(
+						getBaseContext(), 
+						"Please confirm trip to " + event.GetPubLocation().toString() + " starting " + event.GetFormattedStartTime(), 
+						"This event has " + confirmed + " confirmed guest(s).", 
+						contentIntent);
 			}
-
-			newNotification.setLatestEventInfo(
-					getBaseContext(), 
-					"Please confirm trip to " + event.GetPubLocation().toString() + " starting " + event.GetFormattedStartTime(), 
-					"This event has " + confirmed + " confirmed guest(s).", 
-					contentIntent);
 		}
 
 		public void onDestroy()
