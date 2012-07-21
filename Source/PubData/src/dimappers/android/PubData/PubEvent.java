@@ -17,7 +17,7 @@ import org.jdom.Element;
  * 
  * Author: TK
  */
-public class PubEvent implements Serializable, IXmlable
+public class PubEvent extends EventListItem implements Serializable, IXmlable
 {
 	private final String eventIdTag = "EventId";
 	private final String usersTag = "Users";

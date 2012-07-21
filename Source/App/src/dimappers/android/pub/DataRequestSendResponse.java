@@ -30,7 +30,6 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 		this.eventId = eventId;
 		this.freeFromWhen = freeFromWhen;
 		this.msgToHost = msgToHost;
-		this.user = service.GetActiveUser();
 	}
 	
 	public DataRequestSendResponse(boolean isGoing, int eventId)
@@ -50,6 +49,10 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
+		if(user==null)
+		{
+			user = service.GetActiveUser();
+		}
 	}
 
 	
