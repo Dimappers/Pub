@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
 	
 	<uses-library android:required="true" android:name="com.google.android.maps"/>
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="8"/>   
@@ -39,5 +41,12 @@
         <activity android:name="DeleteOldEventActivity"></activity>
         <activity android:name="NotificationTimerConfirmEventReminder"></activity>
         <activity android:name="NotificationTimerEventStarting"></activity>
+
+		<receiver android:name="StartServiceAtBootReceiver" >
+		  <intent-filter>
+		    <action android:name="android.intent.action.BOOT_COMPLETED"/>
+		   </intent-filter>
+		</receiver>
+            
     </application>
 </manifest>
