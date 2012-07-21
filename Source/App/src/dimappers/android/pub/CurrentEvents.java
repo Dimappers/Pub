@@ -461,7 +461,7 @@ public class CurrentEvents extends ListActivity {
 			}
 			
 			items.add(new ListHeader(waitingForResponseString));
-			posOfStartOfInvited = items.size() - posOfStartOfSent;
+			posOfStartOfInvited = items.size();
 			for(PubEvent event : waitingForResponses)
 			{
 				items.add(event);
@@ -469,14 +469,14 @@ public class CurrentEvents extends ListActivity {
 			
 			items.add(new ListHeader(respondedToString));
 
-			posOfStartOfResponded = items.size() - posOfStartOfInvited;
+			posOfStartOfResponded = items.size();
 			for(PubEvent event : respondedto)
 			{
 				items.add(event);
 			}
 
 			items.add(new ListHeader(hostingSavedString));
-			posOfStartOfSaved = items.size() - posOfStartOfResponded;
+			posOfStartOfSaved = items.size();
 			for (PubEvent savedEvent : serviceInterface.GetSavedEvents())
 			{
 				items.add(savedEvent);
@@ -501,9 +501,18 @@ public class CurrentEvents extends ListActivity {
 				{
 					convertView = (((LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_item, null));
 				}
-				
+
 				PubEvent specificEvent = (PubEvent) getItem(position);
-				((TextView)convertView.findViewById(R.id.list_item_title)).setText(specificEvent.toString());
+				
+				try
+				{
+					super.getView(position, convertView, parent);
+				}
+				catch(NullPointerException e)
+				{
+					Log.d(Constants.MsgError, "This shouldn't really happen: " + e.getMessage());
+					((TextView)convertView.findViewById(R.id.list_item_title)).setText(specificEvent.toString());
+				}
 				
 				if (specificEvent.getCurrentStatus() == EventStatus.itsOn) {
 					convertView.setBackgroundColor(Color.GREEN);
