@@ -20,14 +20,17 @@ public class AssociatedPendingIntents {
 	
 	PubEvent event;
 	boolean isHost;
+	boolean hasRemindedConfirm;
 	
 	public static final long deleteAfterEventTime = 6 * 60 * 60 * 1000; //currently set to 6 hours
-	public static final long hostReminderTime = 2 * 60 * 60 * 1000;//7200000 * 2; //currently set to milliseconds in 2 hours
+	public static final long hostReminderTime =2 * 60 * 60 * 1000;//7200000 * 2; //currently set to milliseconds in 2 hours
 	
 	final AlarmManager alarmManager;
 	
 	public AssociatedPendingIntents(PubEvent event, boolean isHost, Context context)
 	{
+		hasRemindedConfirm = false;
+		
 		alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 		
 		this.event = event;
@@ -109,9 +112,10 @@ public class AssociatedPendingIntents {
 			{
 				if(event.GetStartTime().after(Calendar.getInstance()))
 				{
-					if(event.getCurrentStatus() == EventStatus.unknown)
+					if(hasRemindedConfirm)
 					{
 						alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis() - hostReminderTime, remindConfirm);
+						hasRemindedConfirm = true;
 					}
 				}
 			}
