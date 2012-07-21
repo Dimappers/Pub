@@ -106,7 +106,7 @@ public class CurrentEvents extends ListActivity {
 	    super.onCreateContextMenu(menu, v, menuInfo);
 	    int pos = ((AdapterContextMenuInfo)menuInfo).position;
 	    
-	    if(adapter.getItem(pos) instanceof ListHeader) //if we have not selected a category header
+	    if(adapter.getItem(pos) instanceof PubEvent) //if we have not selected a category header
 	    {
 	    	PubEvent event = (PubEvent)adapter.getItem(pos);
 		    MenuInflater inflater = getMenuInflater();
