@@ -23,6 +23,7 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 
 	IPubService service;
 	
+	private final static String storeId = "AppUsers";
 	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
@@ -199,7 +200,7 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 
 	
 	public String getStoredDataId() {
-		return "AppUsers";
+		return storeId;
 	}
 	
 	public static void UpdateOrdering(User[] newOrdering, IPubService service)
@@ -229,7 +230,7 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 			}
 		}
 		
-		HashMap<Long, AppUserArray> store = service.GetGenericStore("AppUsers");
+		HashMap<Long, AppUserArray> store = service.GetGenericStore(storeId);
 		//store.put(0L, new AppUserArray(newOrdering));
 		store.get(0L).setArray(newArray);
 	} 

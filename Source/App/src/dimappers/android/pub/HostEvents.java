@@ -271,7 +271,7 @@ public class HostEvents extends EventScreen {
 		switch (v.getId()) {
 		case R.id.send_Invites : 
 		{
-			service.GiveNewSentEvent(event, new IRequestListener<PubEvent>() {
+			service.SendEvent(event, new IRequestListener<PubEvent>() {
 				
 				
 				public void onRequestFail(Exception e) {
@@ -373,7 +373,7 @@ public class HostEvents extends EventScreen {
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			 
 			public void onClick(DialogInterface dialog, int id) {
-				service.RemoveEventFromStoredDataAndCancelNotification(event);
+				service.DeleteEvent(event);
 				finish();
 
 			}
@@ -396,7 +396,20 @@ public class HostEvents extends EventScreen {
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			 
 			public void onClick(DialogInterface dialog, int id) {
-				service.CancelEvent(event);
+				service.CancelEvent(event, new IRequestListener<PubEvent>() {
+					
+					public void onRequestFail(Exception e)
+					{
+						// TODO Auto-generated method stub
+						
+					}
+					
+					public void onRequestComplete(PubEvent data)
+					{
+						// TODO Auto-generated method stub
+						
+					}
+				});
 				finish();
 			}
 		})

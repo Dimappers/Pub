@@ -161,7 +161,7 @@ public class Pending extends Activity implements OnClickListener {
 	}
 
 	private Bundle fillBundle(PubEvent createdEvent) {
-		service.GiveNewSavedEvent(createdEvent);
+		service.SaveEvent(createdEvent);
 		Bundle eventBundle = new Bundle();
 		eventBundle.putInt(Constants.CurrentWorkingEvent, createdEvent.GetEventId());
 		eventBundle.putBoolean(Constants.IsSavedEventFlag, false);

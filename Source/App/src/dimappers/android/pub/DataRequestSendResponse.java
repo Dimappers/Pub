@@ -89,7 +89,7 @@ public class DataRequestSendResponse implements IDataRequest<Long, PubEvent> {
 		
 		HashMap<PubEvent, UpdateType> update = new HashMap<PubEvent, UpdateType>();
 		update.put(event,  response.getUpdateType());
-		service.NewEventsRecieved(new PubEventArray(update));
+		service.ReceiveEvents(new PubEventArray(update));
 		
 		listener.onRequestComplete(event);
 		

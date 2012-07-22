@@ -84,7 +84,7 @@ public class DataRequestRefresh implements IDataRequest<Long, PubEventArray> {
 		
 		PubEventArray pubArray = new PubEventArray(events);
 		
-		service.NewEventsRecieved(pubArray);
+		service.ReceiveEvents(pubArray);
 		
 		listener.onRequestComplete(pubArray);
 	}
