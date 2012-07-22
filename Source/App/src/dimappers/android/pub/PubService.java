@@ -306,6 +306,18 @@ public class PubService extends IntentService
 			return storedData.getActiveUser();
 		}
 		
+		public void GetAppUserFromUser(User user, IRequestListener<AppUser> requestListener)
+		{
+			if(user instanceof AppUser)
+			{
+				requestListener.onRequestComplete((AppUser) user);
+			}
+			else
+			{
+				addDataRequest(new DataRequestGetFacebookUser(user.getUserId()), requestListener);
+			}
+		}
+		
 		public void Logout() throws MalformedURLException, IOException {
 			//TODO: Implement facebook logout
 			GetFacebook().logout(getApplicationContext());
@@ -332,15 +344,6 @@ public class PubService extends IntentService
 		public <K, V extends IXmlable> HashMap<K, V> GetGenericStore(String key) {
 			// TODO Auto-generated method stub
 			return storedData.GetGenericStore(key);
-		}
-
-
-		public void RemoveEventFromStoredDataAndCancelNotification(
-				PubEvent event)
-		{
-			// TODO Remove me
-			DeleteEvent(event);
-			
 		}
 	}
 

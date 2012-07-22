@@ -146,7 +146,7 @@ public class CurrentEvents extends ListActivity {
 		    	//Saved event - click delete
 		        case R.id.host_saved_menu_item_delete:
 		            Log.d(Constants.MsgInfo, "Delete event");
-		            service.RemoveEventFromStoredDataAndCancelNotification(selectedEvent);
+		            service.DeleteEvent(selectedEvent);
 		            refreshList();
 		            return true;
 		            
