@@ -269,7 +269,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 			}
 			case R.id.save_event : {
 				i = new Intent();
-				service.GiveNewSavedEvent(event);
+				//The event is already saved
 				b.putBoolean(Constants.IsSavedEventFlag, true);
 				i.putExtras(b);
 				setResult(RESULT_OK, i);
@@ -277,7 +277,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 				break;
 			}
 			case R.id.send_invites_event : {
-				service.GiveNewSentEvent(event, new IRequestListener<PubEvent>() {
+				service.SendEvent(event, new IRequestListener<PubEvent>() {
 					
 					
 					public void onRequestFail(Exception e) {
@@ -325,28 +325,24 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		        .setTitle("Save or discard?")
 		        .setMessage("Would you like to save before exiting")
 		        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-	
-		            
 					public void onClick(DialogInterface dialog, int which) {
-	
-		                service.GiveNewSavedEvent(event);
+						//The event is already saved so we do not need to do anything
 		                finish();    
 		            }
 	
 		        })
 		        .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
-					
-					
 					public void onClick(DialogInterface dialog, int which)
 					{
 						if(oldEvent == null) //then this is a fresh event
 						{
-							service.RemoveEventFromStoredDataAndCancelNotification(event);
+							//service.RemoveEventFromStoredDataAndCancelNotification(event);
+							service.DeleteEvent(event);
 						}
 						else //this is an event being edited, we should revert to last version
 						{
 							event = new PubEvent(oldEvent.writeXml());
-							service.GiveNewSavedEvent(event);
+							service.SaveEvent(event);
 							Intent i = new Intent();
 							Bundle b = new Bundle();
 							b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());

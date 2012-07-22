@@ -168,7 +168,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 		        //Saved event - click send
 		        case R.id.host_saved_menu_item_send:
 		        	Log.d(Constants.MsgInfo, "Send event");
-		        	service.GiveNewSentEvent(selectedEvent, new IRequestListener<PubEvent>() {
+		        	service.SendEvent(selectedEvent, new IRequestListener<PubEvent>() {
 						
 						
 						public void onRequestFail(Exception e) {
@@ -211,40 +211,41 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 		            
 		        //Sent event, confirming it is on
 		        case R.id.host_sent_menu_item_confirm:
-		        	selectedEvent.setCurrentStatus(EventStatus.itsOn);
-					DataRequestConfirmDeny request = new DataRequestConfirmDeny(selectedEvent);
-					service.addDataRequest(request, new IRequestListener<PubEvent>() {
-
+		        	service.ConfirmEvent(selectedEvent, new IRequestListener<PubEvent>() {
 						
-						public void onRequestComplete(PubEvent data) {
-							if(data != null)
-							{
-								CurrentEvents.this.runOnUiThread(new Runnable()
-								{
-									
-									public void run() {
-										refreshList();
-									}
-									
-								});
-							}
+						public void onRequestFail(Exception e)
+						{
+							// TODO Auto-generated method stub
 							
 						}
-
 						
-						public void onRequestFail(Exception e) {
-							Log.d(Constants.MsgError, e.getMessage());					
+						public void onRequestComplete(PubEvent data)
+						{
+							runOnUiThread(new RefreshListRunnable());							
 						}
 					});
 					refreshList();
 		        	return true;
 		        	
 		        case R.id.host_sent_menu_item_cancel:
-		        	service.CancelEvent(selectedEvent);
+		        	service.CancelEvent(selectedEvent, new IRequestListener<PubEvent>() {
+						
+						public void onRequestFail(Exception e)
+						{
+							// TODO Auto-generated method stub
+				        	
+						}
+						
+						public void onRequestComplete(PubEvent data)
+						{
+							runOnUiThread(new RefreshListRunnable());
+						}
+					});
 		        	refreshList();
 		        	return true;
 		        	
 		        case R.id.invited_menu_item_up:
+		        	
 		        	DataRequestSendResponse response = new DataRequestSendResponse(true, selectedEvent.GetEventId(), selectedEvent.GetStartTime(), "");
 		    		
 		    		//Work around: we should get updated event back from the server and refresh from that 
@@ -284,7 +285,7 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 										
 										public void run()
 										{
-											refreshList();
+											
 										}
 		    						});
 		    					}
@@ -303,6 +304,15 @@ public class CurrentEvents extends ListActivity implements OnItemClickListener {
 	    
 	}
 
+	class RefreshListRunnable implements Runnable
+	{
+
+		public void run()
+		{
+			refreshList();
+		}
+	}
+	
 	private void refreshList() {
 		// This is a bit hacky, recreate the entire list adapter just to update
 		// the data, however, calling notifyDatasetInvalid seems to break things

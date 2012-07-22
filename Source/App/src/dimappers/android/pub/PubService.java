@@ -54,48 +54,6 @@ public class PubService extends IntentService
         }
 
 		
-		public int GiveNewSavedEvent(PubEvent event) {
-			PubService.this.storedData.AddNewSavedEvent(event);
-			return event.GetEventId();
-		}
-
-		
-		public void GiveNewSentEvent(PubEvent event, final IRequestListener<PubEvent> listener) {
-			DataRequestNewEvent r = new DataRequestNewEvent(event);
-			final int savedEventId = event.GetEventId();
-			PubService.this.addDataRequest(r, new IRequestListener<PubEvent>() {
-
-					
-					public void onRequestComplete(PubEvent data) {
-						storedData.DeleteSavedEvent(savedEventId);
-						
-						eventIntentMap.put(data.GetEventId(), new AssociatedPendingIntents(data, true, getApplicationContext()));
-						
-						listener.onRequestComplete(data);
-					}
-
-					
-					public void onRequestFail(Exception e) {
-						listener.onRequestFail(e);
-					}
-				});
-			
-			double[] location = new double[2];
-			location[0] = event.GetPubLocation().latitudeCoordinate;
-			location[1] = event.GetPubLocation().longitudeCoordinate;
-			for(User guest : event.GetUsers())
-			{
-				AppUser g2;
-				try {
-					g2 = AppUser.AppUserFromUser(guest, GetFacebook());
-					g2.updateLocation(location);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-		}
-
-		
 		public Collection<PubEvent> GetSavedEvents() {
 			return PubService.this.storedData.GetSavedEvents();
 		}
@@ -128,13 +86,95 @@ public class PubService extends IntentService
 		}
 
 		
-		public void RemoveEventFromStoredDataAndCancelNotification(PubEvent event) {
-			PubService.this.storedData.DeleteSavedEvent(event.GetEventId());
-			/////////////////////////////////////////////////((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancel(event.GetEventId());
+		public void UpdatePubEvent(PubEvent newEvent)
+		{
+			if(newEvent.GetEventId() < 0)
+			{
+				SaveEvent(newEvent);
+			}
+			else
+			{
+				storedData.GetGenericStore(StoredData.sentEventsStore).put(newEvent.GetEventId(), newEvent);
+				
+				if(eventIntentMap.containsKey(newEvent.GetEventId()))
+				{
+					eventIntentMap.get(newEvent.GetEventId()).UpdateFromEvent(newEvent);
+				}
+				else
+				{
+					boolean isHost = newEvent.GetHost().equals(GetActiveUser());
+					eventIntentMap.put(newEvent.GetEventId(), new AssociatedPendingIntents(newEvent, isHost, getApplicationContext()));
+				}
+			}
+		}
+
+		//Event management
+		public int SaveEvent(PubEvent event)
+		{
+			PubService.this.storedData.AddNewSavedEvent(event);
+			return event.GetEventId();
+		}
+
+
+		public void SendEvent(PubEvent event, final IRequestListener<PubEvent> listener)
+		{
+			//Send the event
+			DataRequestNewEvent r = new DataRequestNewEvent(event);
+			final int savedEventId = event.GetEventId();
+			PubService.this.addDataRequest(r, new IRequestListener<PubEvent>() {
+
+					
+					public void onRequestComplete(PubEvent data) {
+						storedData.DeleteSavedEvent(savedEventId);
+						
+						eventIntentMap.put(data.GetEventId(), new AssociatedPendingIntents(data, true, getApplicationContext()));
+						
+						listener.onRequestComplete(data);
+					}
+
+					
+					public void onRequestFail(Exception e) {
+						listener.onRequestFail(e);
+					}
+				});
+			
+			
+			//Assume people invited are probably near the pub
+			double[] location = new double[2];
+			location[0] = event.GetPubLocation().latitudeCoordinate;
+			location[1] = event.GetPubLocation().longitudeCoordinate;
+			for(User guest : event.GetUsers())
+			{
+				AppUser g2;
+				try {
+					g2 = AppUser.AppUserFromUser(guest, GetFacebook());
+					g2.updateLocation(location);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
 		}
 		
+		public PubEvent getEvent(int eventId) {
+			return storedData.getEvent(eventId);
+		} 
 		
-		public void CancelEvent(final PubEvent event)
+		public void ConfirmEvent(final PubEvent event, final IRequestListener<PubEvent> listener)
+		{
+			event.setCurrentStatus(EventStatus.itsOn);
+			DataRequestConfirmDeny request = new DataRequestConfirmDeny(event);
+			addDataRequest(request, new IRequestListener<PubEvent>() {
+				public void onRequestComplete(PubEvent data) {
+					listener.onRequestComplete(data);
+				}
+				
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, e.getMessage());					
+				}
+			});
+		}
+		
+		public void CancelEvent(final PubEvent event, final IRequestListener<PubEvent> listener)
 		{
 			event.setCurrentStatus(EventStatus.itsOff);
 			
@@ -147,7 +187,20 @@ public class PubService extends IntentService
 					{
 						eventIntentMap.get(data.GetEventId()).UpdateFromEvent(data);
 					}
+					listener.onRequestComplete(data);
 				}
+				
+				public void onRequestFail(Exception e)
+				{
+					listener.onRequestFail(e);					
+				}
+				
+			});
+		}
+		
+		public void DeleteEvent(PubEvent event)
+		{
+			CancelEvent(event, new IRequestListener<PubEvent>() {
 				
 				public void onRequestFail(Exception e)
 				{
@@ -155,46 +208,49 @@ public class PubService extends IntentService
 					
 				}
 				
+				public void onRequestComplete(PubEvent data)
+				{
+					if(data.GetEventId() < 0)
+					{
+						DeleteLocalEvent(data);
+					}
+					else
+					{
+						DeleteSentEvent(data);
+					}
+				}
 			});
 		}
 
+		private void DeleteLocalEvent(PubEvent event)
+		{
+			if(event!=null)
+			{
+				PubService.this.storedData.DeleteSavedEvent(event.GetEventId());
+			}
+		}
 		
+		private void DeleteSentEvent(PubEvent event)
+		{
+			if(event != null)
+			{
+				storedData.DeleteSentEvent(event.GetEventId());
+			}
+		}
+		
+		//Update the data
 		public void PerformUpdate(boolean fullUpdate) {
 			PubService.this.receiver.forceUpdate(fullUpdate);
 		}
 
-		
-		public Facebook GetFacebook() {
-			return PubService.this.authenticatedFacebook;
-		}
-
-		
-		public void Logout() throws MalformedURLException, IOException {
-			//TODO: Implement facebook logout
-			GetFacebook().logout(getApplicationContext());
-		}
-
-		
-		public <K, T extends IXmlable> void addDataRequest(IDataRequest<K, T> request,
-				IRequestListener<T> listener)
+		public void ReceiveEvents(PubEventArray events)
 		{
-			PubService.this.addDataRequest(request, listener);			
-		}
-
-		
-		public AppUser GetActiveUser() {
-			return storedData.getActiveUser();
-		}
-
-		
-		public void NewEventsRecieved(PubEventArray events) {
-			
 			ArrayList<Notification> notifications = new ArrayList<Notification>();
 			ArrayList<Integer> notificationIds = new ArrayList<Integer>();
 					
 			for(Entry<PubEvent, UpdateType> eventEntry : events.getEvents().entrySet())
 			{
-				boolean contains = eventIntentMap.containsKey(eventEntry.getKey().GetEventId());
+				//Create or update this events entry in the pending intents map (ie notifications that will be fired in the future)
 				if(eventIntentMap.containsKey(eventEntry.getKey().GetEventId()))
 				{
 					eventIntentMap.get(eventEntry.getKey().GetEventId()).UpdateFromEvent(eventEntry.getKey());
@@ -204,6 +260,7 @@ public class PubService extends IntentService
 					boolean isHost = eventEntry.getKey().GetHost().equals(GetActiveUser());
 					eventIntentMap.put(eventEntry.getKey().GetEventId(), new AssociatedPendingIntents(eventEntry.getKey(), isHost, getApplicationContext()));
 				}
+				
 				//If either the event hasn't been updated (ie this user has already got this data before and this is a full refresh caused by restarting the app
 				PubEvent event = eventEntry.getKey();
 				if(event.GetHost().equals(GetActiveUser()))
@@ -214,6 +271,8 @@ public class PubService extends IntentService
 				{
 					storedData.AddNewInvitedEvent(eventEntry.getKey());
 				}
+				
+				//Create notifications for imediate display (ie if the event has been updated)
 				
 				//The cut off time represents the time where we should no longer be told about the event
 				Calendar cutOffTime = Calendar.getInstance();
@@ -237,59 +296,51 @@ public class PubService extends IntentService
 				nManager.notify(notificationIds.get(i), notifications.get(i));
 			}
 		}
-
 		
+		//Facebook
+		public Facebook GetFacebook() {
+			return PubService.this.authenticatedFacebook;
+		}
+
+		public AppUser GetActiveUser() {
+			return storedData.getActiveUser();
+		}
+		
+		public void Logout() throws MalformedURLException, IOException {
+			//TODO: Implement facebook logout
+			GetFacebook().logout(getApplicationContext());
+		}
+		
+		//Add data request
+		public <K, T extends IXmlable> void addDataRequest(IDataRequest<K, T> request,
+				IRequestListener<T> listener)
+		{
+			PubService.this.addDataRequest(request, listener);			
+		}
+		
+		//History store
 		public HistoryStore getHistoryStore() {
 			return storedData.getHistoryStore();
 		}
-
-		
-		public PubEvent getEvent(int eventId) {
-			return storedData.getEvent(eventId);
-		} 
-
-		
-		public <K, V extends IXmlable> HashMap<K, V> GetGenericStore(String key) {
-			// TODO Auto-generated method stub
-			return storedData.GetGenericStore(key);
-		}
-
-		
-		public void UpdatePubEvent(PubEvent newEvent)
-		{
-			if(newEvent.GetEventId() < 0)
-			{
-				GiveNewSavedEvent(newEvent);
-			}
-			else
-			{
-				storedData.GetGenericStore(StoredData.sentEventsStore).put(newEvent.GetEventId(), newEvent);
-				
-				if(eventIntentMap.containsKey(newEvent.GetEventId()))
-				{
-					eventIntentMap.get(newEvent.GetEventId()).UpdateFromEvent(newEvent);
-				}
-				else
-				{
-					boolean isHost = newEvent.GetHost().equals(GetActiveUser());
-					eventIntentMap.put(newEvent.GetEventId(), new AssociatedPendingIntents(newEvent, isHost, getApplicationContext()));
-				}
-			}
-		}
-
 		
 		public void AddEventToHistory(PubEvent event) {
 			HistoryStore hStore = getHistoryStore();
 			hStore.addEvent(event);
 		}
-		
-		
-		public void DeleteSentEvent(PubEvent event)
+
+		//Get a specific generic store, DO NOT USE unless you have to
+		public <K, V extends IXmlable> HashMap<K, V> GetGenericStore(String key) {
+			// TODO Auto-generated method stub
+			return storedData.GetGenericStore(key);
+		}
+
+
+		public void RemoveEventFromStoredDataAndCancelNotification(
+				PubEvent event)
 		{
-			if(event != null)
-			{
-				storedData.DeleteSentEvent(event.GetEventId());
-			}
+			// TODO Remove me
+			DeleteEvent(event);
+			
 		}
 	}
 

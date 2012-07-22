@@ -29,7 +29,7 @@ public class DeleteOldEventActivity extends Activity {
 		public void onServiceConnected(ComponentName arg0, IBinder binder) {
 			service = (IPubService)binder;
 			
-			service.DeleteSentEvent(service.getEvent(eventId));
+			service.DeleteEvent(service.getEvent(eventId));
 			
 			finish();
 		}
