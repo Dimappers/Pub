@@ -7,7 +7,7 @@
     android:weightSum="2" >
     
         <TextView
-            android:id="@+id/hostEventsPubName"
+            android:id="@+id/PubName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -19,7 +19,7 @@
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/hostEventsCurrentStartTime"
+            android:id="@+id/StartTime"
             android:layout_width="135dp"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -30,7 +30,7 @@
             android:textSize="20sp"  />
 
         <TextView
-            android:id="@+id/guests"
+            android:id="@+id/guestHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/guests"
@@ -55,19 +55,6 @@
         android:layout_marginRight="25dp"
         android:cacheColorHint="#00000000"
         android:scrollbars="vertical" />
-    
-     <TextView android:id="@+id/TRAIN_CELL"
-         android:layout_width="50dip"
-         android:layout_height="wrap_content"/>
- 
-     <TextView android:id="@+id/FROM_CELL"
-         android:layout_width="70dip"
-         android:layout_height="wrap_content" android:layout_weight="1"/>
- 
-     <TextView android:id="@+id/TO_CELL"
-         android:layout_width="60dip"
-         android:layout_height="wrap_content"  android:layout_weight="1"/>
-        
         
 	</LinearLayout>
 

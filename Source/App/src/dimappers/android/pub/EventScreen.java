@@ -10,18 +10,30 @@ import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
 import android.app.ListActivity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class EventScreen extends ListActivity {
+public abstract class EventScreen extends ListActivity {
 	
 	protected PubEvent event;
 	protected IPubService service;
 	
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		
+		bindService(new Intent(this, PubService.class), connection, 0);
+	}
 	
 	protected List<AppUser> createAppUserList()
 	{
@@ -39,7 +51,61 @@ public class EventScreen extends ListActivity {
 		return list;
 	}
 	
-	public class GeneralGuestListAdapter extends ArrayAdapter<AppUser> 
+	protected void updateScreen()
+	{
+		
+	}
+	
+	public void onDestroy()
+	{
+		super.onDestroy();
+		unbindService(connection);
+	}
+	
+	//NOTE: this is currently only acting as a placeholder
+	protected EventServiceConnection connection;
+	
+	protected abstract class EventServiceConnection implements ServiceConnection
+	{
+
+		public void onServiceConnected(ComponentName name, IBinder serviceBinder) {
+			
+			service = (IPubService)serviceBinder;
+			
+			event = service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
+			
+			if(event == null)
+			{
+				Toast.makeText(getApplicationContext(), "Could not find event", 2000).show();
+				finish();
+				return;
+			}
+			
+			service.addDataRequest(new DataRequestGetLatestAboutPubEvent(event.GetEventId()), new IRequestListener<PubEvent>(){
+
+				
+				public void onRequestFail(Exception e) {
+					e.printStackTrace();
+					Log.d(Constants.MsgError, "Error when refreshing event: " + e.getMessage());
+				}
+
+				
+				public void onRequestComplete(PubEvent data) {
+					event = data;
+					runOnUiThread(new Runnable(){
+
+						
+						public void run() {
+							updateScreen();
+						}});
+				}});
+		}
+
+		public void onServiceDisconnected(ComponentName name) {}
+		
+	}
+	
+ 	public class GeneralGuestListAdapter extends ArrayAdapter<AppUser> 
 	{
 
 		public GeneralGuestListAdapter(Context context, int resource, int textViewResourceId, AppUser[] objects)

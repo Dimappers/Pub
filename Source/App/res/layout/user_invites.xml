@@ -7,7 +7,7 @@
     android:weightSum="2">
 
         <TextView
-            android:id="@+id/userInvitesPubNameText"
+            android:id="@+id/PubName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -18,7 +18,7 @@
             android:textSize="20dp"  />
 
         <TextView
-            android:id="@+id/userInviteStartTimeText"
+            android:id="@+id/StartTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"

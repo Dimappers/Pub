@@ -28,17 +28,13 @@ import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.ResponseData;
 
 public class UserInvites extends EventScreen implements OnClickListener, OnLongClickListener, OnMenuItemClickListener 
-{
-	AppUser facebookUser;
-	
+{	
 	UserInvitesGuestListAdapter gAdapter;
 	
 	
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		
-		bindService(new Intent(this, PubService.class), connection, 0);
 		
 		setContentView(R.layout.user_invites);
 		Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
@@ -52,8 +48,8 @@ public class UserInvites extends EventScreen implements OnClickListener, OnLongC
     	Button button_decline = (Button) findViewById(R.id.decline);
     	button_decline.setOnClickListener(this);
     	
-    	((TextView)findViewById(R.id.userInvitesPubNameText)).setTypeface(font);
-    	((TextView)findViewById(R.id.userInviteStartTimeText)).setTypeface(font);
+    	((TextView)findViewById(R.id.PubName)).setTypeface(font);
+    	((TextView)findViewById(R.id.StartTime)).setTypeface(font);
     	((TextView)findViewById(R.id.userInviteHostNameText)).setTypeface(font);
     	((TextView)findViewById(R.id.guestHeader)).setTypeface(font);
     	((Button)findViewById(R.id.decline)).setTypeface(font);
@@ -234,55 +230,27 @@ public class UserInvites extends EventScreen implements OnClickListener, OnLongC
 		}
 	}
 	
-	private ServiceConnection connection = new ServiceConnection()
+	public UserInvites()
 	{
-		
-		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
+		super();
+		connection = new UserInvitesEventServiceConnection();
+	}
+	
+	private class UserInvitesEventServiceConnection extends EventServiceConnection
+	{
+		public void onServiceConnected(ComponentName name, IBinder serviceBinder)
 		{
-			service = (IPubService)serviceBinder;
-			
-			event = service.getEvent(getIntent().getExtras().getInt(Constants.CurrentWorkingEvent));
-			
-			if(event == null)
-			{
-				Toast.makeText(getApplicationContext(), "Could not find event", 2000).show();
-				finish();
-				return;
-			}
-			
-			service.addDataRequest(new DataRequestGetLatestAboutPubEvent(event.GetEventId()), new IRequestListener<PubEvent>(){
-
-				
-				public void onRequestFail(Exception e) {
-					Log.d(Constants.MsgError, "Error when refreshing event: " + e.getMessage());
-				}
-
-				
-				public void onRequestComplete(PubEvent data) {
-					event = data;
-					runOnUiThread(new Runnable(){
-
-						
-						public void run() {
-							updateScreen();
-						}});
-				}});
-					
-			facebookUser = service.GetActiveUser();
+			super.onServiceConnected(name, serviceBinder);
 			
 			gAdapter = new UserInvitesGuestListAdapter(createAppUserList()); 
 			setListAdapter(gAdapter);
 			
 			updateScreen();
 		}
-
-		
-		public void onServiceDisconnected(ComponentName arg0){}
-		
 	};
 	
 
-	private void updateScreen()
+	protected void updateScreen()
 	{
 		/*switch(event.GetUserGoingStatus(service.GetActiveUser()))
 		{
@@ -290,11 +258,11 @@ public class UserInvites extends EventScreen implements OnClickListener, OnLongC
 			case notGoing : {findViewById(R.id.decline).setBackgroundColor(Color.RED); break;}
 		}*/
 		
-		TextView pubNameText = (TextView) findViewById(R.id.userInvitesPubNameText);
+		TextView pubNameText = (TextView) findViewById(R.id.PubName);
     	//pubNameText.setText(event.GetPubLocation().toString());
     	pubNameText.setText(event.GetPubLocation().getName());
     	
-    	TextView startTime = (TextView) findViewById(R.id.userInviteStartTimeText);
+    	TextView startTime = (TextView) findViewById(R.id.StartTime);
     	startTime.setText(event.GetFormattedStartTime());
     	
     	try {
@@ -383,9 +351,5 @@ public class UserInvites extends EventScreen implements OnClickListener, OnLongC
 	}
 	
 	
-	public void onDestroy()
-	{
-		super.onDestroy();
-		unbindService(connection);
-	}
+
 }

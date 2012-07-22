@@ -51,8 +51,6 @@ public class HostEvents extends EventScreen implements OnClickListener, OnMenuIt
 		setContentView(R.layout.host_events);
 		
 		AppGardenAgent.passExam("LOADED HOST EVENTS");
-		
-		bindService(new Intent(this, PubService.class), connection, 0);
 
 		Button button_send_invites = (Button)findViewById(R.id.send_Invites);
 		button_send_invites.setOnClickListener(this);
@@ -64,9 +62,9 @@ public class HostEvents extends EventScreen implements OnClickListener, OnMenuIt
 		button_itson.setOnClickListener(this);
 		
 		Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
-		((TextView)findViewById(R.id.hostEventsPubName)).setTypeface(font);
-    	((TextView)findViewById(R.id.hostEventsCurrentStartTime)).setTypeface(font);
-    	((TextView)findViewById(R.id.guests)).setTypeface(font);
+		((TextView)findViewById(R.id.PubName)).setTypeface(font);
+    	((TextView)findViewById(R.id.StartTime)).setTypeface(font);
+    	((TextView)findViewById(R.id.guestHeader)).setTypeface(font);
     	((Button)findViewById(R.id.edit_button)).setTypeface(font);
     	((Button)findViewById(R.id.send_Invites)).setTypeface(font);
     	((Button)findViewById(R.id.it_is_on)).setTypeface(font);
@@ -183,7 +181,7 @@ public class HostEvents extends EventScreen implements OnClickListener, OnMenuIt
 			
 			public void onRequestComplete(PubEvent data) {
 				event = data;
-				UpdateDataFromEvent();
+				updateScreen();
 			}
 
 			public void onRequestFail(Exception e) {
@@ -245,7 +243,7 @@ public class HostEvents extends EventScreen implements OnClickListener, OnMenuIt
 
 						
 						public void run() {
-							UpdateDataFromEvent();			
+							updateScreen();			
 						}
 				
 					});					
@@ -297,7 +295,7 @@ public class HostEvents extends EventScreen implements OnClickListener, OnMenuIt
 							findViewById(R.id.send_Invites).setVisibility(View.GONE);
 							findViewById(R.id.edit_button).setVisibility(View.GONE);
 							findViewById(R.id.it_is_on).setVisibility(View.VISIBLE);
-							UpdateDataFromEvent();
+							updateScreen();
 						}
 						
 					});
@@ -331,7 +329,7 @@ public class HostEvents extends EventScreen implements OnClickListener, OnMenuIt
 						runOnUiThread(new Runnable(){
 							 
 							public void run() {
-								UpdateDataFromEvent();			
+								updateScreen();			
 							}
 						});	
 					}
@@ -364,17 +362,10 @@ public class HostEvents extends EventScreen implements OnClickListener, OnMenuIt
     			super.onActivityResult(requestCode, resultCode, data);
     		}
     	}
-    	UpdateDataFromEvent();
+    	updateScreen();
     }
-
-	 
-	public void onDestroy()
-	{
-		super.onDestroy();
-		unbindService(connection);
-	}
 	
-	public  void displayAlert()
+	private void displayAlert()
 	{
 		new AlertDialog.Builder(this).setMessage("Are you sure you want to delete this event?")  
 		.setTitle("Alert")  
@@ -397,7 +388,7 @@ public class HostEvents extends EventScreen implements OnClickListener, OnMenuIt
 
 	}
 
-	public  void displayCancelAlert()
+	private void displayCancelAlert()
 	{
 		new AlertDialog.Builder(this).setMessage("Are you sure you want to cancel this event? \nThis will send a notification to all guests invited to this event!")  
 		.setTitle("Alert")  
@@ -419,13 +410,13 @@ public class HostEvents extends EventScreen implements OnClickListener, OnMenuIt
 
 	}
 
-	private void UpdateDataFromEvent()
+	protected void updateScreen()
 	{
-		TextView pubNameText = (TextView)findViewById(R.id.hostEventsPubName);
+		TextView pubNameText = (TextView)findViewById(R.id.PubName);
 		pubNameText.setText(event.GetPubLocation().getName());
 
 
-		TextView startTimeText = (TextView)findViewById(R.id.hostEventsCurrentStartTime);
+		TextView startTimeText = (TextView)findViewById(R.id.StartTime);
 		startTimeText.setText(event.GetFormattedStartTime());    	
 
 		gadapter.updateList(event);
@@ -442,57 +433,23 @@ public class HostEvents extends EventScreen implements OnClickListener, OnMenuIt
 		}
 	}
 	
-	private ServiceConnection connection = new ServiceConnection()
+	public HostEvents()
+	{
+		super();
+		connection = new HostEventsEventServiceConnection();
+	}
+	
+	private class HostEventsEventServiceConnection extends EventServiceConnection
 	{
 		 
-		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder)
+		public void onServiceConnected(ComponentName name, IBinder serviceBinder)
 		{
-			service = (IPubService)serviceBinder;
-			int eventId = getIntent().getExtras().getInt(Constants.CurrentWorkingEvent);
-			event = service.getEvent(eventId);
-			if(event == null)
-			{
-				Toast.makeText(getApplicationContext(), "Could not find event", 2000).show();
-				finish();
-				return; 
-			}
-			service.GetActiveUser();
+			super.onServiceConnected(name, serviceBinder);
 			
 			gadapter = new HostEventsGuestListAdapter(createAppUserList());
 			setListAdapter(gadapter);
 			
-			UpdateDataFromEvent();
-			
-			DataRequestGetLatestAboutPubEvent refresher = new DataRequestGetLatestAboutPubEvent(event.GetEventId());
-			service.addDataRequest(refresher, new IRequestListener<PubEvent>(){
-
-				 
-				public void onRequestComplete(PubEvent data) {
-					
-					event = data;
-					runOnUiThread(new Runnable(){
-
-						 
-						public void run() {
-							UpdateDataFromEvent();			
-						}
-				
-					});					
-					
-				}
-
-				 
-				public void onRequestFail(Exception e) {
-					// TODO Auto-generated method stub
-					e.printStackTrace();
-				}
-				
-			});
-		}
-
-		 
-		public void onServiceDisconnected(ComponentName arg0)
-		{			
+			updateScreen();
 		}
 		
 	};
