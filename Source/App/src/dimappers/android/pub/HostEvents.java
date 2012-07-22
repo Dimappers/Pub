@@ -1,23 +1,12 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
-
-import org.json.JSONException;
-
 import net.awl.appgarden.sdk.AppGardenAgent;
-
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -27,7 +16,6 @@ import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,7 +25,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -55,11 +42,8 @@ import dimappers.android.PubData.UserStatus;
 
 public class HostEvents extends EventScreen implements OnClickListener, OnMenuItemClickListener{
 
-	private PubEvent event;
 	private HostEventsGuestListAdapter gadapter;
 	public static boolean sent;
-
-	IPubService service;
 	 
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -474,18 +458,7 @@ public class HostEvents extends EventScreen implements OnClickListener, OnMenuIt
 			}
 			service.GetActiveUser();
 			
-			User[] array = event.GetUserArray();
-			List<AppUser> list = new ArrayList<AppUser>(array.length);
-			for(int i=0; i < array.length; i++)
-			{
-				try {
-					list.add(AppUser.AppUserFromUser(array[i], service.GetFacebook()));
-				} catch (Exception e1) {
-					e1.printStackTrace();
-					Log.d(Constants.MsgError, "Error creating AppUser for User " + array[i].getUserId());
-				}
-			}
-			gadapter = new HostEventsGuestListAdapter(list);
+			gadapter = new HostEventsGuestListAdapter(createAppUserList());
 			setListAdapter(gadapter);
 			
 			UpdateDataFromEvent();
@@ -525,40 +498,25 @@ public class HostEvents extends EventScreen implements OnClickListener, OnMenuIt
 	};
 	class HostEventsGuestListAdapter extends GeneralGuestListAdapter 
 	{
+		private final List<AppUser> mData;	
+		
 		public HostEventsGuestListAdapter(List<AppUser> objects) 
 		{
 			super(HostEvents.this, R.layout.hosted_row, R.id.guest, objects);
 			mData = objects;
 		}
 		
-		private final List<AppUser> mData;	
-		
 		public View getView(final int position, View convertView, ViewGroup parent) 
 		{
 			convertView = super.getView(position, convertView, parent);
 			
 			ImageView comment = (ImageView) convertView.findViewById(R.id.envelope);
-			//TextView guest = (TextView)convertView.findViewById(R.id.guest);
-			TextView time = (TextView)convertView.findViewById(R.id.time);
 
 			AppUser appUser = getItem(position);
 			UserStatus uStatus = event.GetGoingStatusMap().get(appUser);
-		
-			//guest.setText(appUser.toString());
+
 			if(uStatus.goingStatus == GoingStatus.going)
-			{
-				if(
-						uStatus.freeFrom !=null
-						&& uStatus.freeFrom.getTimeInMillis() != event.GetStartTime().getTimeInMillis()
-						&& uStatus.freeFrom.after(event.GetStartTime()))
-				{
-					time.setText(PubEvent.GetFormattedDate(uStatus.freeFrom));
-				}
-				else
-				{
-					time.setText("Up for it!");
-				}
-				
+			{	
 				if(uStatus.messageToHost != null && uStatus.messageToHost == null)
 				{
 					comment.setVisibility(View.VISIBLE);
@@ -582,13 +540,8 @@ public class HostEvents extends EventScreen implements OnClickListener, OnMenuIt
 					});
 				}
 			}
-			else if(uStatus.goingStatus == GoingStatus.notGoing)
-			{
-				time.setText("Nah");
-			}
 			else
 			{
-				time.setText("");
 				comment.setVisibility(View.INVISIBLE);
 			}
 			

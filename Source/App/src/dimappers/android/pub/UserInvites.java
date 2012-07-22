@@ -1,15 +1,10 @@
 package dimappers.android.pub;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import android.app.Activity;
+import java.util.List;
 import android.app.Dialog;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Typeface;
@@ -19,34 +14,24 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.TextAppearanceSpan;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.ResponseData;
-import dimappers.android.PubData.User;
-import dimappers.android.PubData.UserStatus;
 
 public class UserInvites extends EventScreen implements OnClickListener, OnLongClickListener, OnMenuItemClickListener 
 {
-
-	PubEvent event;
 	AppUser facebookUser;
 	
-	IPubService service;
-	
-	GuestAdapter gAdapter;
+	UserInvitesGuestListAdapter gAdapter;
 	
 	
 	public void onCreate(Bundle savedInstanceState) 
@@ -285,7 +270,7 @@ public class UserInvites extends EventScreen implements OnClickListener, OnLongC
 					
 			facebookUser = service.GetActiveUser();
 			
-			gAdapter = new GuestAdapter(event, service); 
+			gAdapter = new UserInvitesGuestListAdapter(createAppUserList()); 
 			setListAdapter(gAdapter);
 			
 			updateScreen();
@@ -379,130 +364,20 @@ public class UserInvites extends EventScreen implements OnClickListener, OnLongC
 				});
 	}
 	
-	class GuestAdapter extends BaseAdapter
+	class UserInvitesGuestListAdapter extends GeneralGuestListAdapter
 	{
-		final ArrayList<UserUserStatus> mylist;
-		final PubEvent event;
+		List<AppUser> mylist;
 		
-		public GuestAdapter(final PubEvent event, IPubService service)
+		public UserInvitesGuestListAdapter(List<AppUser> users)
 		{
-			this.event = event;
-			mylist = new ArrayList<UserUserStatus>();
-			
-			Set<Entry<User, UserStatus>> asd = event.GetGoingStatusMap().entrySet();
-			for(final Entry<User, UserStatus> userResponse : asd)
-	    	{	    
-	    		if(userResponse.getKey() instanceof AppUser)
-	    		{
-	    			mylist.add(new UserUserStatus((AppUser) userResponse.getKey(), userResponse.getValue()));
-	    		}
-	    		else
-	    		{
-	    			DataRequestGetFacebookUser getUser = new DataRequestGetFacebookUser(userResponse.getKey().getUserId());
-	    			service.addDataRequest(getUser, new IRequestListener<AppUser>() {
-
-						
-						public void onRequestComplete(AppUser data) {
-							UpdateList updater = new UpdateList(new UserUserStatus(data, userResponse.getValue()));
-							UserInvites.this.runOnUiThread(updater);
-						}
-
-						
-						public void onRequestFail(Exception e) {
-							// TODO Auto-generated method stub
-							
-						}
-	    				
-	    			});
-	    		}
-	    	}
-		}
-		
-		
-		public int getCount() {
-			return mylist.size();
-		}
-
-		
-		public Object getItem(int position) {
-			return mylist.get(position);
-		}
-
-		
-		public long getItemId(int position) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View v = convertView;
-			ViewGroup p = parent;            
-			if (v == null) {
-				LayoutInflater vi = (LayoutInflater)getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				v = vi.inflate(R.layout.user_row, p, false);
-			}
-
-			
-			TextView userName = (TextView) v.findViewById(R.id.user_guest);
-			userName.setText(mylist.get(position).user.toString());
-			
-			TextView freeFromText = (TextView) v.findViewById(R.id.user_time);
-			UserStatus userStatus =  mylist.get(position).status;
-			switch(userStatus.goingStatus)
-			{
-			case notGoing :
-			{
-				freeFromText.setText("Nah");
-				break;
-			}
-			case going :
-			{
-				if(userStatus.freeFrom.equals(event.GetStartTime()) || userStatus.freeFrom.before(event.GetStartTime()))
-				{
-					//The user has either said this time or an earlier time and hence is free
-					freeFromText.setText("Up for it");
-				}
-				else
-				{
-					freeFromText.setText(PubEvent.GetFormattedDate(userStatus.freeFrom));
-				}
-				break;
-			}
-			case maybeGoing : {
-				freeFromText.setText("");
-				break;
-			}
-			}
-			return v;
+			super(UserInvites.this, R.layout.user_row, R.id.guest, users);
+			mylist = users;
 		}
 		
 		class UpdateList implements Runnable
 		{
-			private UserUserStatus data;
-			public UpdateList(UserUserStatus data)
-			{
-				this.data = data;
-			}
-			
-			
 			public void run() {
-				// TODO Auto-generated method stub
-				mylist.add(data);
-				GuestAdapter.this.notifyDataSetChanged();
-			}
-			
-		}
-		
-		class UserUserStatus
-		{
-			public AppUser user;
-			public UserStatus status;
-			
-			public UserUserStatus(AppUser user, UserStatus status)
-			{
-				this.user = user;
-				this.status = status;
+				UserInvitesGuestListAdapter.this.notifyDataSetChanged();
 			}
 		}
 	}
