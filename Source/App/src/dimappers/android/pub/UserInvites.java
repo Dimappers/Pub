@@ -1,28 +1,17 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.json.JSONException;
-
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.database.DataSetObserver;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -40,21 +29,16 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import dimappers.android.PubData.Constants;
-import dimappers.android.PubData.GoingStatus;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.ResponseData;
-import dimappers.android.PubData.UpdateData;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
 
-public class UserInvites extends Activity implements OnClickListener, OnLongClickListener, OnMenuItemClickListener 
+public class UserInvites extends EventScreen implements OnClickListener, OnLongClickListener, OnMenuItemClickListener 
 {
 
 	PubEvent event;
@@ -301,9 +285,8 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 					
 			facebookUser = service.GetActiveUser();
 			
-			ListView list = (ListView) findViewById(R.id.listView2);
 			gAdapter = new GuestAdapter(event, service); 
-			list.setAdapter(gAdapter);
+			setListAdapter(gAdapter);
 			
 			updateScreen();
 		}
@@ -339,9 +322,7 @@ public class UserInvites extends Activity implements OnClickListener, OnLongClic
 			e.printStackTrace();
 		}
     	
-		ListView list = (ListView) findViewById(R.id.listView2);
-		gAdapter = new GuestAdapter(event, service); 
-		list.setAdapter(gAdapter);
+		gAdapter.notifyDataSetChanged();
 	}
 	
 	private void sendResponse(boolean going, Calendar freeFromWhen, final String msgToHost)

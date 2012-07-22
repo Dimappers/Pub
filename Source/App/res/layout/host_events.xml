@@ -47,7 +47,7 @@
          android:paddingTop="4dip" >
 
     <ListView
-        android:id="@+id/listView1"
+        android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="294dp"
         android:layout_marginBottom="22dp"
