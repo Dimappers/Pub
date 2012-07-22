@@ -19,11 +19,14 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public abstract class EventScreen extends ListActivity {
+public abstract class EventScreen extends ListActivity implements OnClickListener,  OnMenuItemClickListener
+{
 	
 	protected PubEvent event;
 	protected IPubService service;

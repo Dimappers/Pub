@@ -40,7 +40,7 @@ import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
 
 
-public class HostEvents extends EventScreen implements OnClickListener, OnMenuItemClickListener{
+public class HostEvents extends EventScreen {
 
 	private HostEventsGuestListAdapter gadapter;
 	public static boolean sent;

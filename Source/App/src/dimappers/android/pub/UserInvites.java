@@ -27,7 +27,7 @@ import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.ResponseData;
 
-public class UserInvites extends EventScreen implements OnClickListener, OnLongClickListener, OnMenuItemClickListener 
+public class UserInvites extends EventScreen implements OnLongClickListener 
 {	
 	UserInvitesGuestListAdapter gAdapter;
 	
