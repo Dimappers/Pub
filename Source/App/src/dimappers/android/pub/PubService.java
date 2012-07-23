@@ -9,18 +9,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import org.json.JSONException;
-
-import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -403,6 +399,9 @@ public class PubService extends IntentService
 			else
 			{
 				Log.d(Constants.MsgError, "Could not find user");
+				
+				//To prevent crashes from not having a user, stop the service
+				stopSelf();
 			}
 			
 			sender = new DataSender();
@@ -501,8 +500,6 @@ public class PubService extends IntentService
 			Log.d(Constants.MsgError, "Service already started...");
 		}
 		hasStarted = true;
-	}
-	
-	
+	} 
 	
 }

@@ -62,12 +62,22 @@ public class AssociatedPendingIntents {
 		//Create the start time reminder
 		if(event.GetStartTime().after(Calendar.getInstance()))
 		{
-			Intent notificationAlarmIntent = new Intent(context, NotificationTimerEventStarting.class);
+			/*Intent notificationAlarmIntent = new Intent(context, NotificationTimerEventStarting.class);
 			Bundle remindBundle = new Bundle();
 			remindBundle.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 			notificationAlarmIntent.putExtras(remindBundle);
 			remindHappening  = PendingIntent.getActivity(context, event.GetEventId(), notificationAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		
+			alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis(), remindHappening);*/
+			
+			//USING BROADCAST
+			Intent intent = new Intent();
+			intent.setAction("eventReminder");
+			intent.putExtra(Constants.CurrentWorkingEvent, event.GetEventId());
+			intent.putExtra(Constants.CurrentFacebookUser, isHost);
+			
+			remindHappening = PendingIntent.getBroadcast(context, event.GetEventId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			
 			alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis(), remindHappening);
 		}
 		
@@ -78,11 +88,22 @@ public class AssociatedPendingIntents {
 				if(event.getCurrentStatus() == EventStatus.unknown)
 				{
 					//Create the confirm reminder
-					Intent notificationConfirmAlarmIntent = new Intent(context, NotificationTimerConfirmEventReminder.class);
+					
+					//USING ACTIVITY
+					/*Intent notificationConfirmAlarmIntent = new Intent(context, NotificationTimerConfirmEventReminder.class);
 					Bundle b = new Bundle();
 					b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 					notificationConfirmAlarmIntent.putExtras(b);
 					remindConfirm = PendingIntent.getActivity(context, event.GetEventId(), notificationConfirmAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+					
+					alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis() - hostReminderTime, remindConfirm);*/
+					
+					//USING BROADCAST
+					Intent intent = new Intent();
+					intent.setAction("confirmEventReminder");
+					intent.putExtra(Constants.CurrentWorkingEvent, event.GetEventId());
+					
+					remindConfirm = PendingIntent.getBroadcast(context, event.GetEventId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 					
 					alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis() - hostReminderTime, remindConfirm);
 				}

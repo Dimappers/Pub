@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -21,80 +22,78 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
-public class NotificationTimerEventStarting extends Activity{
+public class NotificationTimerEventStarting extends BroadcastReceiver {
+	
+	PubEvent event;
+	Context context;
+	boolean isHost;
 	IPubService service;
-	int eventId;
 	/*PubEvent event;
 	Notification newNotification;*/
-	
-	
-	
-	public void onCreate(Bundle savedInstanceState)
+
+	private Notification eventAboutToStart()
 	{
-		super.onCreate(savedInstanceState);
-		Log.d(Constants.MsgWarning, "NotificationAlarmManager has been fired");
-
-		eventId = getIntent().getExtras().getInt(Constants.CurrentWorkingEvent);
-
-		bindService(new Intent(this, PubService.class), connection, 0);
+		Notification newNotification = new Notification(
+				R.drawable.icon, 
+				"The pub trip to " + event.GetPubLocation().getName() + " is starting now.", 
+				event.GetStartTime().getTimeInMillis());
+		Intent notificationIntent;
+		if(isHost)
+		{
+			notificationIntent = new Intent(context, HostEvents.class);
+		}
+		else
+		{
+			notificationIntent = new Intent(context, UserInvites.class);
+		}
+		Bundle b = new Bundle();
+		b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
+		notificationIntent.putExtras(b);
+		PendingIntent contentIntent = PendingIntent.getActivity(context, event.GetEventId(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		newNotification.setLatestEventInfo(
+				context, 
+				"Pub event at " + event.GetPubLocation().getName(), 
+				"This event is now starting.", 
+				contentIntent);
+		
+		//service.EventHasHappenened(event);
+		
+		return newNotification;
 	}
 
-	ServiceConnection connection = new ServiceConnection(){
 
+
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		this.context = context;
+		Log.d(Constants.MsgWarning, "NotificationAlarmManager has been fired");
+
+		service = (IPubService) peekService(context, new Intent(context, PubService.class));
 		
-		public void onServiceConnected(ComponentName arg0, IBinder serviceBinder) {
+		event = service.getEvent(intent.getIntExtra(Constants.CurrentWorkingEvent,Integer.MIN_VALUE));
+		isHost = intent.getBooleanExtra(Constants.CurrentFacebookUser, false);
+		
+		if(event!=null)
+		{
+			NotificationManager nManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-			service = (IPubService) serviceBinder;
-			PubEvent event = service.getEvent(eventId);
-			if(event!=null)
+			Notification newNotification = eventAboutToStart();
+
+			if(newNotification!=null)
 			{
-				NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+				newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+				newNotification.defaults |= Notification.DEFAULT_VIBRATE;
 
-				Notification newNotification = eventAboutToStart(event);
-
-				if(newNotification!=null)
-				{
-					newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
-					newNotification.defaults |= Notification.DEFAULT_VIBRATE;
-
-					nManager.notify(event.GetEventId(), newNotification);
-				}
-				
-				service.AddEventToHistory(event);
+				nManager.notify(event.GetEventId(), newNotification);
 			}
-			finish();
-		}
-
-		
-		public void onServiceDisconnected(ComponentName name) {}};
-
-		private Notification eventAboutToStart(PubEvent event)
-		{
-			Notification newNotification = new Notification(
-					R.drawable.icon, 
-					"The pub trip to " + event.GetPubLocation().getName() + " is starting now.", 
-					event.GetStartTime().getTimeInMillis());
-			Intent notificationIntent;
-			if(event.GetHost().equals(service.GetActiveUser())) {notificationIntent = new Intent(getBaseContext(), HostEvents.class);}
-			else {notificationIntent = new Intent(getBaseContext(), UserInvites.class);}
-			Bundle b = new Bundle();
-			b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
-			notificationIntent.putExtras(b);
-			PendingIntent contentIntent = PendingIntent.getActivity(getBaseContext(), event.GetEventId(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-			newNotification.setLatestEventInfo(
-					getBaseContext(), 
-					"Pub event at " + event.GetPubLocation().getName(), 
-					"This event is now starting.", 
-					contentIntent);
-			//service.EventHasHappenened(event);
 			
-			return newNotification;
+			sendAddEventToHistory();
 		}
 
-		
-		public void onDestroy()
-		{
-			super.onDestroy();
-			unbindService(connection);
-		}
+	}
+
+	private void sendAddEventToHistory() 
+	{
+		service.AddEventToHistory(event);
+	}
 }
