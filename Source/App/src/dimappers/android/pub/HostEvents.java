@@ -41,8 +41,7 @@ import dimappers.android.PubData.UserStatus;
 
 
 public class HostEvents extends EventScreen {
-
-	private HostEventsGuestListAdapter gadapter;
+	
 	public static boolean sent;
 	 
 	public void onCreate(Bundle savedInstanceState) 
@@ -147,7 +146,7 @@ public class HostEvents extends EventScreen {
 		
 		int pos = ((AdapterContextMenuInfo)menuInfo).position;
 		
-		menu.setHeaderTitle("Respond for " + ((AppUser)gadapter.getItem(pos)));
+		menu.setHeaderTitle("Respond for " + ((AppUser)gAdapter.getItem(pos)));
 		}
 	}
 	
@@ -158,7 +157,7 @@ public class HostEvents extends EventScreen {
 		item.getMenuInfo();
 	    int itemPosition = ((AdapterContextMenuInfo)item.getMenuInfo()).position;
 	    
-	    AppUser person = (AppUser) gadapter.getItem(itemPosition);
+	    AppUser person = (AppUser) gAdapter.getItem(itemPosition);
 	    
 	    boolean isGoing = (item.getItemId() == R.id.invited_menu_item_up);
 	    
@@ -221,7 +220,7 @@ public class HostEvents extends EventScreen {
 		}
 		case(R.id.delete_event):
 		{
-			displayAlert();
+			displayDeleteAlert();
 			break; 
 		}
 		case(R.id.cancel):
@@ -365,7 +364,7 @@ public class HostEvents extends EventScreen {
     	updateScreen();
     }
 	
-	private void displayAlert()
+	private void displayDeleteAlert()
 	{
 		new AlertDialog.Builder(this).setMessage("Are you sure you want to delete this event?")  
 		.setTitle("Alert")  
@@ -425,14 +424,7 @@ public class HostEvents extends EventScreen {
 
 	protected void updateScreen()
 	{
-		TextView pubNameText = (TextView)findViewById(R.id.PubName);
-		pubNameText.setText(event.GetPubLocation().getName());
-
-
-		TextView startTimeText = (TextView)findViewById(R.id.StartTime);
-		startTimeText.setText(event.GetFormattedStartTime());    	
-
-		gadapter.updateList(event);
+		super.updateScreen();
 		
 		if(event.getCurrentStatus() == EventStatus.itsOn)
 		{
@@ -459,8 +451,8 @@ public class HostEvents extends EventScreen {
 		{
 			super.onServiceConnected(name, serviceBinder);
 			
-			gadapter = new HostEventsGuestListAdapter(createAppUserList());
-			setListAdapter(gadapter);
+			gAdapter = new HostEventsGuestListAdapter(createAppUserList());
+			setListAdapter(gAdapter);
 			
 			updateScreen();
 		}
@@ -538,8 +530,8 @@ public class HostEvents extends EventScreen {
 			commentDialog.show();
 		}
 		
-		public void updateList(PubEvent event)
-		{
+		/*public void updateList(PubEvent event)
+		{	
 			mData.clear();
 			notifyDataSetChanged();
 
@@ -570,7 +562,7 @@ public class HostEvents extends EventScreen {
 			}
 			
 			notifyDataSetChanged();
-		}
+		}*/
 
 	}
 

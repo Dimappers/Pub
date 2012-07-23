@@ -9,6 +9,7 @@ import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
+import dimappers.android.pub.HostEvents.HostEventsGuestListAdapter;
 import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -27,7 +28,7 @@ import android.widget.Toast;
 
 public abstract class EventScreen extends ListActivity implements OnClickListener,  OnMenuItemClickListener
 {
-	
+	protected GeneralGuestListAdapter gAdapter;
 	protected PubEvent event;
 	protected IPubService service;
 	
@@ -64,7 +65,12 @@ public abstract class EventScreen extends ListActivity implements OnClickListene
 	
 	protected void updateScreen()
 	{
-		
+		TextView pubNameText = (TextView)findViewById(R.id.PubName);
+		pubNameText.setText(event.GetPubLocation().getName());
+		TextView startTime = (TextView) findViewById(R.id.StartTime);
+    	startTime.setText(event.GetFormattedStartTime());
+    	
+    	gAdapter.notifyDataSetChanged();
 	}
 	
 	public void onDestroy()

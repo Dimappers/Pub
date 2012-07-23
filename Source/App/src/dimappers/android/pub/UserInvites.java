@@ -29,9 +29,7 @@ import dimappers.android.PubData.ResponseData;
 
 public class UserInvites extends EventScreen implements OnLongClickListener 
 {	
-	UserInvitesGuestListAdapter gAdapter;
-	
-	
+
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
@@ -137,7 +135,7 @@ public class UserInvites extends EventScreen implements OnLongClickListener
 		switch (v.getId()) {
 		case R.id.going :
 		{
-			showAddDialog();
+			showCommentDialog();
 			return true;
 		}
 		}
@@ -146,7 +144,7 @@ public class UserInvites extends EventScreen implements OnLongClickListener
 	
 	TextView timeText;
 	
-	private void showAddDialog() 
+	private void showCommentDialog() 
 	{
 		 final Dialog commentDialog = new Dialog(UserInvites.this);
          commentDialog.setContentView(R.layout.making_comment);
@@ -218,15 +216,18 @@ public class UserInvites extends EventScreen implements OnLongClickListener
 		super.onActivityResult(requestCode, resultCode, data);
 		if(resultCode==RESULT_OK)
 		{
-			timeSet = data.getExtras().getLong(Constants.ChosenTime);
-			Date date = new Date(timeSet);
-			int hour = date.getHours();
-			String ampm;
-			if(hour>12) {hour -= 12; ampm = "PM";}
-			else {ampm = "AM";}
-			String minutes = Integer.toString(date.getMinutes());
-			if(date.getMinutes()==0) {minutes = "00";}
-			timeText.setText(hour + ":" + minutes + " " + ampm);
+			if(requestCode==Constants.MessageTimeSetter)
+			{
+				timeSet = data.getExtras().getLong(Constants.ChosenTime);
+				Date date = new Date(timeSet);
+				int hour = date.getHours();
+				String ampm;
+				if(hour>12) {hour -= 12; ampm = "PM";}
+				else {ampm = "AM";}
+				String minutes = Integer.toString(date.getMinutes());
+				if(date.getMinutes()==0) {minutes = "00";}
+				timeText.setText(hour + ":" + minutes + " " + ampm);
+			}
 		}
 	}
 	
@@ -252,23 +253,15 @@ public class UserInvites extends EventScreen implements OnLongClickListener
 
 	protected void updateScreen()
 	{
-		/*switch(event.GetUserGoingStatus(service.GetActiveUser()))
-		{
-			case going : {findViewById(R.id.going).setBackgroundColor(Color.GREEN); break;}
-			case notGoing : {findViewById(R.id.decline).setBackgroundColor(Color.RED); break;}
-		}*/
-		
-		TextView pubNameText = (TextView) findViewById(R.id.PubName);
-    	//pubNameText.setText(event.GetPubLocation().toString());
-    	pubNameText.setText(event.GetPubLocation().getName());
-    	
-    	TextView startTime = (TextView) findViewById(R.id.StartTime);
-    	startTime.setText(event.GetFormattedStartTime());
-    	
+		super.updateScreen();
+
     	service.GetAppUserFromUser(event.GetHost(), new IRequestListener<AppUser>() {
 			
 			public void onRequestFail(Exception e) {
-				((TextView)findViewById(R.id.userInviteHostNameText)).setText(getString(R.string.host_name)+" unknown");
+				((TextView)findViewById(R.id.userInviteHostNameText)).setText(
+																					getString(R.string.host_name)
+																					+ " " +
+																					"unknown");
 				e.printStackTrace();
 			}
 			
@@ -277,15 +270,13 @@ public class UserInvites extends EventScreen implements OnLongClickListener
 					
 					public void run() {
 						((TextView)findViewById(R.id.userInviteHostNameText)).setText(
-								getString(R.string.host_name)
-								+ " " +
-								data.toString());
+																						getString(R.string.host_name)
+																						+ " " +
+																						data.toString());
 					}
 				});
 			}
 		});
-    	
-		gAdapter.notifyDataSetChanged();
 	}
 	
 	private void sendResponse(boolean going, Calendar freeFromWhen, final String msgToHost)
