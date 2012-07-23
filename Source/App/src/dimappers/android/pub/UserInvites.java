@@ -265,15 +265,25 @@ public class UserInvites extends EventScreen implements OnLongClickListener
     	TextView startTime = (TextView) findViewById(R.id.StartTime);
     	startTime.setText(event.GetFormattedStartTime());
     	
-    	try {
-			((TextView)findViewById(R.id.userInviteHostNameText)).setText(
-					getString(R.string.host_name)
-					+ " " +
-					AppUser.AppUserFromUser(event.GetHost(), service.GetFacebook()).toString());
-		} catch (Exception e) {
-			((TextView)findViewById(R.id.userInviteHostNameText)).setText(getString(R.string.host_name)+" unknown");
-			e.printStackTrace();
-		}
+    	service.GetAppUserFromUser(event.GetHost(), new IRequestListener<AppUser>() {
+			
+			public void onRequestFail(Exception e) {
+				((TextView)findViewById(R.id.userInviteHostNameText)).setText(getString(R.string.host_name)+" unknown");
+				e.printStackTrace();
+			}
+			
+			public void onRequestComplete(final AppUser data) {
+				runOnUiThread(new Runnable() {
+					
+					public void run() {
+						((TextView)findViewById(R.id.userInviteHostNameText)).setText(
+								getString(R.string.host_name)
+								+ " " +
+								data.toString());
+					}
+				});
+			}
+		});
     	
 		gAdapter.notifyDataSetChanged();
 	}
@@ -297,20 +307,25 @@ public class UserInvites extends EventScreen implements OnLongClickListener
 								public void run() {
 									updateScreen();
 						    		if(msgToHost!=null&&!msgToHost.equals(""))
-						    		{
-						    			try {
-											Toast.makeText(
-													getBaseContext(), 
-													"Sent message \"" + msgToHost + "\" to " + AppUser.AppUserFromUser(event.GetHost(), service.GetFacebook()).toString() + ".", 
-													Toast.LENGTH_LONG
-													).show();
-										} catch (Exception e) {
-											Toast.makeText(
-													getBaseContext(), 
-													"Sent message \"" + msgToHost + "\" to host.", 
-													Toast.LENGTH_LONG
-													).show();
-										}
+						    		{	
+						    			service.GetAppUserFromUser(event.GetHost(), new IRequestListener<AppUser>() {
+											
+											public void onRequestFail(Exception e) {
+												Toast.makeText(
+														getBaseContext(), 
+														"Sent message \"" + msgToHost + "\" to host.", 
+														Toast.LENGTH_LONG
+														).show();
+											}
+											
+											public void onRequestComplete(AppUser data) {
+												Toast.makeText(
+														getBaseContext(), 
+														"Sent message \"" + msgToHost + "\" to " + data.toString() + ".", 
+														Toast.LENGTH_LONG
+														).show();
+											}
+										});
 						    		} 
 								}
 								

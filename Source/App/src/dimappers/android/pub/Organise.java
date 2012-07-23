@@ -639,22 +639,17 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 						{
 							for(User guest : event.GetUsers())
 							{
-								if(guest.equals(event.GetHost())) {break;}
+								if(guest.equals(event.GetHost())) {continue;}
 								try
 								{
-									AppUser appGuest = AppUser.AppUserFromUser(guest, Organise.this.service.GetFacebook());
-									if(appGuest.toString().equals(userName))
+									AppUser g2 = AppUser.AppUserFromUser(guest, Organise.this.service.GetFacebook()); 
+									if(g2.toString().equals(userName))
 									{
 										event.RemoveUser(guest);
 										break;
 									}
 								}
-								catch(IOException e)
-								{
-									Log.d(Constants.MsgError, e.getMessage());
-									
-								}
-								catch(JSONException e)
+								catch(Exception e) 
 								{
 									Log.d(Constants.MsgError, e.getMessage());
 								}

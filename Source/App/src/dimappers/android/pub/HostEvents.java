@@ -541,18 +541,32 @@ public class HostEvents extends EventScreen {
 		public void updateList(PubEvent event)
 		{
 			mData.clear();
+			notifyDataSetChanged();
 
 			Set<User> users = event.GetUsers();
-			for(User user : users)
+			for(final User user : users)
 			{
-				AppUser a;
-				try {
-					a = AppUser.AppUserFromUser(user, service.GetFacebook());
-					mData.add(a);
-				} catch (Exception e) {
-					e.printStackTrace();
-					Log.d(Constants.MsgError, "ERROR creating AppUser for User " + user.getUserId());
-				}
+				service.GetAppUserFromUser(user, new IRequestListener<AppUser>() {
+
+					public void onRequestComplete(AppUser data) {
+						if(!mData.contains(data))
+						{
+							mData.add(data);
+						}
+						runOnUiThread(new Runnable() {
+							
+							public void run() {
+								notifyDataSetChanged();
+							}
+						});
+					}
+
+					public void onRequestFail(Exception e) {
+
+						e.printStackTrace();
+						Log.d(Constants.MsgError, "ERROR creating AppUser for User " + user.getUserId());
+					}
+				});
 			}
 			
 			notifyDataSetChanged();

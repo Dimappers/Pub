@@ -145,13 +145,22 @@ public class PubService extends IntentService
 			location[1] = event.GetPubLocation().longitudeCoordinate;
 			for(User guest : event.GetUsers())
 			{
-				AppUser g2;
-				try {
-					g2 = AppUser.AppUserFromUser(guest, GetFacebook());
-					g2.updateLocation(location);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
+				GetAppUserFromUser(guest, new LocationUpdater(location));
+			}
+		}
+		private class LocationUpdater implements IRequestListener<AppUser>
+		{
+			double[] loc;
+			LocationUpdater(double[] loc)
+			{
+				this.loc = loc;
+			}
+			public void onRequestFail(Exception e) {
+				e.printStackTrace();
+			}
+			
+			public void onRequestComplete(AppUser data) {
+				data.updateLocation(loc);
 			}
 		}
 		

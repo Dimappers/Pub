@@ -4,15 +4,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Calendar;
 import java.util.Date;
-
 import org.jdom.Element;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 import com.facebook.android.Facebook;
 
+import android.util.Log;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.User;

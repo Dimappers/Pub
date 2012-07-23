@@ -41,14 +41,22 @@ public abstract class EventScreen extends ListActivity implements OnClickListene
 	protected List<AppUser> createAppUserList()
 	{
 		User[] array = event.GetUserArray();
-		List<AppUser> list = new ArrayList<AppUser>(array.length);
+		final List<AppUser> list = new ArrayList<AppUser>(array.length);
 		for(int i=0; i < array.length; i++)
 		{
 			try {
-				list.add(AppUser.AppUserFromUser(array[i], service.GetFacebook()));
+				service.GetAppUserFromUser(array[i], new IRequestListener<AppUser>() {
+					
+					public void onRequestFail(Exception e) {
+						e.printStackTrace();
+						Log.d(Constants.MsgError, "Error creating AppUser for user");
+					}
+					
+					public void onRequestComplete(AppUser data) {
+						list.add(data);
+					}
+				});
 			} catch (Exception e1) {
-				e1.printStackTrace();
-				Log.d(Constants.MsgError, "Error creating AppUser for User " + array[i].getUserId());
 			}
 		}
 		return list;
