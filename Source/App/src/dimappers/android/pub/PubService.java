@@ -181,26 +181,29 @@ public class PubService extends IntentService
 		
 		public void CancelEvent(final PubEvent event, final IRequestListener<PubEvent> listener)
 		{
-			event.setCurrentStatus(EventStatus.itsOff);
-			
-			DataRequestConfirmDeny cancel = new DataRequestConfirmDeny(event);
-			addDataRequest(cancel, new IRequestListener<PubEvent>(){
+			if(event!=null)
+			{
+				event.setCurrentStatus(EventStatus.itsOff);
 				
-				public void onRequestComplete(PubEvent data)
-				{
-					if(eventIntentMap.containsKey(data.GetEventId()))
+				DataRequestConfirmDeny cancel = new DataRequestConfirmDeny(event);
+				addDataRequest(cancel, new IRequestListener<PubEvent>(){
+					
+					public void onRequestComplete(PubEvent data)
 					{
-						eventIntentMap.get(data.GetEventId()).UpdateFromEvent(data);
+						if(eventIntentMap.containsKey(data.GetEventId()))
+						{
+							eventIntentMap.get(data.GetEventId()).UpdateFromEvent(data);
+						}
+						listener.onRequestComplete(data);
 					}
-					listener.onRequestComplete(data);
-				}
-				
-				public void onRequestFail(Exception e)
-				{
-					listener.onRequestFail(e);					
-				}
-				
-			});
+					
+					public void onRequestFail(Exception e)
+					{
+						listener.onRequestFail(e);					
+					}
+					
+				});
+			}
 		}
 		
 		public void DeleteEvent(PubEvent event)
@@ -209,8 +212,8 @@ public class PubService extends IntentService
 				
 				public void onRequestFail(Exception e)
 				{
-					// TODO Auto-generated method stub
-					
+					e.printStackTrace();
+					Log.d(Constants.MsgError, e.getMessage());
 				}
 				
 				public void onRequestComplete(PubEvent data)

@@ -147,4 +147,15 @@ public class AssociatedPendingIntents {
 			}
 		}
 	}
+	
+	public static void rescheduleBroadcast(Context context, Intent intent)
+	{
+		long timeInHalfHour = 1000 * 60 * 30;
+		
+		int eventid = intent.getIntExtra(Constants.CurrentFacebookUser, Integer.MIN_VALUE);
+		
+		PendingIntent newIntent = PendingIntent.getBroadcast(context, eventid, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		
+		((AlarmManager)context.getSystemService(Context.ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + timeInHalfHour, newIntent);
+	}
 }

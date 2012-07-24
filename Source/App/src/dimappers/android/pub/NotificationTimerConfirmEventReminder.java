@@ -90,22 +90,30 @@ public class NotificationTimerConfirmEventReminder extends BroadcastReceiver {
 			Log.d(Constants.MsgWarning, "NotificationTimerConfirmEventReminder has been fired");
 
 			service = (IPubService) peekService(context, new Intent(context, PubService.class));
-			event = service.getEvent(arg1.getIntExtra(Constants.CurrentWorkingEvent, Integer.MIN_VALUE));
 			
-			if(event!=null)
+			if(service!=null)
 			{
-
-				NotificationManager nManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-	
-				hostClickItsOn();
-	
-				if(newNotification!=null)
+				event = service.getEvent(arg1.getIntExtra(Constants.CurrentWorkingEvent, Integer.MIN_VALUE));
+				
+				if(event!=null)
 				{
-					newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
-					newNotification.defaults |= Notification.DEFAULT_VIBRATE;
+	
+					NotificationManager nManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		
-					nManager.notify(event.GetEventId(), newNotification);
+					hostClickItsOn();
+		
+					if(newNotification!=null)
+					{
+						newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+						newNotification.defaults |= Notification.DEFAULT_VIBRATE;
+			
+						nManager.notify(event.GetEventId(), newNotification);
+					}
 				}
+			}
+			else
+			{
+				AssociatedPendingIntents.rescheduleBroadcast(context, arg1);
 			}
 		}
 }

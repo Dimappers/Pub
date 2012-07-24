@@ -70,24 +70,32 @@ public class NotificationTimerEventStarting extends BroadcastReceiver {
 
 		service = (IPubService) peekService(context, new Intent(context, PubService.class));
 		
-		event = service.getEvent(intent.getIntExtra(Constants.CurrentWorkingEvent,Integer.MIN_VALUE));
-		isHost = intent.getBooleanExtra(Constants.CurrentFacebookUser, false);
-		
-		if(event!=null)
+		if(service!=null)
 		{
-			NotificationManager nManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-			Notification newNotification = eventAboutToStart();
-
-			if(newNotification!=null)
-			{
-				newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
-				newNotification.defaults |= Notification.DEFAULT_VIBRATE;
-
-				nManager.notify(event.GetEventId(), newNotification);
-			}
+			event = service.getEvent(intent.getIntExtra(Constants.CurrentWorkingEvent,Integer.MIN_VALUE));
+				
+			isHost = intent.getBooleanExtra(Constants.CurrentFacebookUser, false);
 			
-			sendAddEventToHistory();
+			if(event!=null)
+			{
+				NotificationManager nManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+	
+				Notification newNotification = eventAboutToStart();
+	
+				if(newNotification!=null)
+				{
+					newNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+					newNotification.defaults |= Notification.DEFAULT_VIBRATE;
+	
+					nManager.notify(event.GetEventId(), newNotification);
+				}
+				
+				sendAddEventToHistory();
+			}
+		}
+		else
+		{
+			AssociatedPendingIntents.rescheduleBroadcast(context, intent);
 		}
 
 	}

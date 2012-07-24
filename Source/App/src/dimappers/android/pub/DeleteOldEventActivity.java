@@ -1,6 +1,7 @@
 package dimappers.android.pub;
 
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.PubEvent;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -17,9 +18,19 @@ public class DeleteOldEventActivity extends BroadcastReceiver {
 		
 		IPubService service = (IPubService) peekService(context, new Intent(context, PubService.class));
 		
-		int eventId = intent.getIntExtra(Constants.CurrentWorkingEvent, Integer.MIN_VALUE);
-		
-		service.DeleteEvent(service.getEvent(eventId));
+		if(service!=null)
+		{
+			int eventId = intent.getIntExtra(Constants.CurrentWorkingEvent, Integer.MIN_VALUE);
+			PubEvent pub = service.getEvent(eventId);
+			if(pub!=null)
+			{
+				service.DeleteEvent(pub);
+			}
+		}
+		else
+		{
+			AssociatedPendingIntents.rescheduleBroadcast(context, intent);
+		}
 	}
 
 }
