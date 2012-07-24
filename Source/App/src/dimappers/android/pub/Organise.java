@@ -152,22 +152,18 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		
 		public View getView(int position, View convertView, ViewGroup parent)
 		{
-			if(convertView==null)
-			{
-				convertView = ((LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE)).inflate(R.layout.delete_guest, null);
-			}
+			convertView = super.getView(position, convertView, parent);
 			if(position==posOfLastClicked)
 			{
 				convertView.findViewById(R.id.deleteicon).setVisibility(View.VISIBLE);
-				((TextView)convertView.findViewById(R.id.guestName)).setText(listItems.get(position).toString());
-				return convertView;
+				//((TextView)convertView.findViewById(R.id.guestName)).setText(listItems.get(position).toString());
 			}
 			else
 			{
 				convertView.findViewById(R.id.deleteicon).setVisibility(View.INVISIBLE);
-				((TextView)convertView.findViewById(R.id.guestName)).setText(listItems.get(position).toString());
-				return convertView;
+				//((TextView)convertView.findViewById(R.id.guestName)).setText(listItems.get(position).toString());
 			}
+			return convertView;
 		}
 	}
 	
@@ -633,26 +629,12 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 					}
 					else
 					{
-						//---------------------------------------FIXME: make this more efficient
-						String userName = adapter.getItem(position).toString();
 						if(posOfLastClicked==position)
 						{
-							for(User guest : event.GetUsers())
+							User clickedUser = (User) adapter.getItem(position);
+							if(!clickedUser.equals(event.GetHost()))
 							{
-								if(guest.equals(event.GetHost())) {continue;}
-								try
-								{
-									AppUser g2 = AppUser.AppUserFromUser(guest, Organise.this.service.GetFacebook()); 
-									if(g2.toString().equals(userName))
-									{
-										event.RemoveUser(guest);
-										break;
-									}
-								}
-								catch(Exception e) 
-								{
-									Log.d(Constants.MsgError, e.getMessage());
-								}
+								event.RemoveUser(clickedUser);
 							}
 							posOfLastClicked=-1;
 						}
