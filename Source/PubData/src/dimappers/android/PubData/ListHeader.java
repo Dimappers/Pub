@@ -1,6 +1,6 @@
 package dimappers.android.PubData;
 
-public class ListHeader extends EventListItem {
+public class ListHeader implements EventListItem {
 	
 	private String header;
 	

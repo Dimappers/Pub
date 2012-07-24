@@ -63,11 +63,10 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 	public ProgressBar progbar;
 	MenuItem edit;
 	
-	private ArrayList<String> listItems=new ArrayList<String>();
+	private ArrayList<OrganiseListItem> listItems=new ArrayList<OrganiseListItem>();
 	private GuestListAdapter adapter;
 	private ListView guest_list;
 	
-	private String add_guest = "+ ADD GUEST";
 	private int posOfLastClicked = -1;
 
 	private boolean locSet = false;
@@ -144,8 +143,8 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		 wl.release();
 	}
 	
-	class GuestListAdapter extends ArrayAdapter<String> {
-		public GuestListAdapter(Context context, int layout, int id,  ArrayList<String> list)
+	class GuestListAdapter extends ArrayAdapter<OrganiseListItem> {
+		public GuestListAdapter(Context context, int layout, int id,  ArrayList<OrganiseListItem> list)
 		{
 			super(context, layout, id, list);
 		}
@@ -160,13 +159,13 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 			if(position==posOfLastClicked)
 			{
 				convertView.findViewById(R.id.deleteicon).setVisibility(View.VISIBLE);
-				((TextView)convertView.findViewById(R.id.guestName)).setText(listItems.get(position));
+				((TextView)convertView.findViewById(R.id.guestName)).setText(listItems.get(position).toString());
 				return convertView;
 			}
 			else
 			{
 				convertView.findViewById(R.id.deleteicon).setVisibility(View.INVISIBLE);
-				((TextView)convertView.findViewById(R.id.guestName)).setText(listItems.get(position));
+				((TextView)convertView.findViewById(R.id.guestName)).setText(listItems.get(position).toString());
 				return convertView;
 			}
 		}
@@ -495,13 +494,13 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		cur_time.setText(event.GetFormattedStartTime());
 
 		listItems.clear();
-		listItems.add(add_guest);
+		listItems.add(new AddGuestHeader());
 		adapter.notifyDataSetChanged();
 		for(User user : event.GetUsers()) 
 		{
 			if(user instanceof AppUser)
 			{
-				listItems.add(user.toString());
+				listItems.add((AppUser)user);
 				adapter.notifyDataSetChanged();
 			}
 			else
@@ -517,7 +516,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 							
 							public void run() 
 							{
-								listItems.add(data.toString());
+								listItems.add(data);
 								adapter.notifyDataSetChanged();					
 							}
 						});
@@ -634,7 +633,8 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 					}
 					else
 					{
-						String userName = adapter.getItem(position);
+						//---------------------------------------FIXME: make this more efficient
+						String userName = adapter.getItem(position).toString();
 						if(posOfLastClicked==position)
 						{
 							for(User guest : event.GetUsers())

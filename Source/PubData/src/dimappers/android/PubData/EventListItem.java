@@ -1,5 +1,5 @@
 package dimappers.android.PubData;
 
-public class EventListItem {
+public interface EventListItem {
 
 }

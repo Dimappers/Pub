@@ -15,7 +15,7 @@ import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.User;
 
-public class AppUser extends User implements IXmlable
+public class AppUser extends User implements IXmlable, OrganiseListItem
 {
 	private final String usernameTag = "UserName";
 	final static String outOfDateTag = "outOfDate";
