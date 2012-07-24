@@ -39,24 +39,29 @@ public class AssociatedPendingIntents {
 			Calendar deleteTime = Calendar.getInstance(); 
 			deleteTime.setTime(new Date(event.GetStartTime().getTimeInMillis() + deleteAfterEventTime));
 			
-			Intent delIntent = new Intent(context, DeleteOldEventActivity.class);
+			//USING ACTIVITY
+			/*Intent delIntent = new Intent(context, DeleteOldEventActivity.class);
 			Bundle delBundle = new Bundle();
 			delBundle.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 			delIntent.putExtras(delBundle);
 			
 			deleteIntent = PendingIntent.getActivity(context, event.GetEventId(), delIntent, 0);	
-			alarmManager.set(AlarmManager.RTC, event.GetStartTime().getTimeInMillis() + deleteAfterEventTime, deleteIntent);
+			alarmManager.set(AlarmManager.RTC, event.GetStartTime().getTimeInMillis() + deleteAfterEventTime, deleteIntent);*/
 			
-			/* In the future we should swap to Broadcast receiver and delete events instantly 
+			//USING BROADCAST
+			Intent delIntent = new Intent();
+			delIntent.setAction("deleteEvent");
+			delIntent.putExtra(Constants.CurrentWorkingEvent, event.GetEventId());
+			
 			if(Calendar.getInstance().before(deleteTime)) //If the delete time is before the current time, we set an alarm to delete the event
 			{
 				deleteIntent = PendingIntent.getActivity(context, event.GetEventId(), delIntent, 0);	
-				alarmManager.set(AlarmManager.RTC, event.GetStartTime().getTimeInMillis() + deleteAfterEventTime, deleteIntent);
+				alarmManager.set(AlarmManager.RTC, deleteTime.getTimeInMillis(), deleteIntent);
 			}
 			else //otherwise we are already past the delete time so we should just delete it
 			{
-				context.startActivity(delIntent);
-			} */
+				context.sendBroadcast(delIntent);
+			} 
 		}
 		
 		//Create the start time reminder

@@ -40,7 +40,9 @@
         <activity android:name="CurrentEvents" android:label="@string/app_name" android:screenOrientation="portrait"></activity>
         <activity android:name="RankBreakDown" android:label="@string/app_name" android:screenOrientation="portrait"/>
         <activity android:name="NotificationAlarmManager"/>
-        <activity android:name="DeleteOldEventActivity"></activity>
+        <receiver android:name="DeleteOldEventActivity">
+            <intent-filter><action android:name="deleteEvent"/></intent-filter>
+        </receiver>
         
         <receiver android:name="NotificationTimerEventStarting">
             <intent-filter><action android:name="eventReminder"/></intent-filter>
