@@ -2,6 +2,7 @@ package dimappers.android.pub;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
@@ -21,8 +22,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -52,7 +51,6 @@ public class LaunchApplication extends Activity implements OnClickListener{
 	Facebook facebook = new Facebook(Constants.FacebookAppId);
 	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
 	String FILENAME = "AndroidSSO_data";
-	private SharedPreferences mPrefs;
 	
 	IPubService service;
 	
@@ -167,10 +165,21 @@ public class LaunchApplication extends Activity implements OnClickListener{
     private void authoriseFacebook()
     {
 		/* Get existing access_token if any */
-		mPrefs = getPreferences(MODE_PRIVATE);
+    	//USING SHAREDPREFERENCES
+		/*mPrefs = getPreferences(MODE_PRIVATE);
 		String access_token = mPrefs.getString("access_token", null);
-		long expires = mPrefs.getLong("access_expires", 0);
-		if(access_token != null) {
+		long expires = mPrefs.getLong("access_expires", 0);*/
+    	//USING INTERNAL STORAGE
+    	String access_token = StoredData.readFile(this, "access_token");
+    	String expiresString = StoredData.readFile(this, "access_expires");
+    	long expires = 0;
+    	
+    	if(expiresString!="")
+    	{
+    		expires = Long.parseLong(expiresString);
+    	}
+    	
+		if(access_token != "") {
 			Log.d(Constants.MsgInfo, "Facebook token found: " + access_token);
 			facebook.setAccessToken(access_token);
 		}
@@ -184,11 +193,16 @@ public class LaunchApplication extends Activity implements OnClickListener{
 			facebook.authorize(this, new String[] { "email", "user_location", "friends_location", "user_photos", "read_stream" }, Constants.FromFacebookLogin, new DialogListener() {
 				
 				public void onComplete(Bundle values) {
+					/* USING SHARED PREFERENCE
 					SharedPreferences.Editor editor = mPrefs.edit();
 					editor.putString("access_token", facebook.getAccessToken());
 					editor.putLong("access_expires", facebook.getAccessExpires());
-					editor.commit();
+					editor.commit();*/
 					//Should getPerson() be called here?
+					
+					StoredData.writeFile(LaunchApplication.this, "access_token", facebook.getAccessToken());
+					StoredData.writeFile(LaunchApplication.this, "access_expires", ""+facebook.getAccessExpires());
+					
 					runOnUiThread(new ShowButtonsHideProgBar());
 				}
 

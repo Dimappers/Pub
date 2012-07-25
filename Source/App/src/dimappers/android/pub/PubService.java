@@ -1,5 +1,8 @@
 package dimappers.android.pub;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -15,7 +18,6 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences.Editor;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -379,8 +381,10 @@ public class PubService extends IntentService
 			eventIntentMap = new HashMap<Integer, AssociatedPendingIntents>();
 			
 			//Load previously stored data
-			
-			String storedDataString = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).getString(Constants.SaveDataName, "");
+			//USING SHARED PREFERENCES
+			//String storedDataString = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).getString(Constants.SaveDataName, "");
+			//USING INTERNAL STORAGE
+			String storedDataString = StoredData.readFile(this, Constants.SaveDataName);
 			if(storedDataString != "")
 			{
 				Log.d(Constants.MsgInfo, "Loading data for store: " + storedDataString);
@@ -456,11 +460,8 @@ public class PubService extends IntentService
 	public boolean onUnbind(Intent intent)
 	{
 		super.onUnbind(intent);
-		String xmlString = storedData.save();
-		Editor editor = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).edit();
-		editor.putString(Constants.SaveDataName, xmlString);
-		Log.d(Constants.MsgInfo, "Saving: " + xmlString);
-		editor.commit();
+		
+		saveData();
 		
 		return false;
 	}
@@ -469,13 +470,24 @@ public class PubService extends IntentService
 	public void onDestroy()
 	{
 		Log.d(Constants.MsgError, "onDestroy() in PubService called");
-		String xmlString = storedData.save();
-		Editor editor = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).edit();
-		editor.putString(Constants.SaveDataName, xmlString);
-		Log.d(Constants.MsgInfo, "Saving: " + xmlString);
-		editor.commit();
+
+		saveData();
 		
 		super.onDestroy();
+	}
+	
+	private void saveData()
+	{
+		String xmlString = storedData.save();
+		
+		//USING SHARED PREFERENCES
+		/*Editor editor = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).edit();
+		editor.putString(Constants.SaveDataName, xmlString);
+		Log.d(Constants.MsgInfo, "Saving: " + xmlString);
+		editor.commit();*/
+		
+		//USING INTERNAL STORAGE
+		StoredData.writeFile(this, Constants.SaveDataName, xmlString);
 	}
 	
 	public StoredData getDataStore()
