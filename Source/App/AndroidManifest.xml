@@ -41,16 +41,16 @@
         <activity android:name="RankBreakDown" android:label="@string/app_name" android:screenOrientation="portrait"/>
         <activity android:name="NotificationAlarmManager"/>
         <receiver android:name="DeleteOldEventActivity">
-            <intent-filter><action android:name="deleteEvent"/></intent-filter>
+            <intent-filter><action android:name="dimappers.android.pub.deleteEvent"/></intent-filter>
         </receiver>
         
         <receiver android:name="NotificationTimerEventStarting">
-            <intent-filter><action android:name="eventReminder"/></intent-filter>
+            <intent-filter><action android:name="dimappers.android.pub.eventReminder"/></intent-filter>
         </receiver>
 
         <receiver android:name="NotificationTimerConfirmEventReminder">
             <intent-filter>
-                <action android:name="confirmEventReminder"/>
+                <action android:name="dimappers.android.pub.confirmEventReminder"/>
             </intent-filter>
         </receiver>
             

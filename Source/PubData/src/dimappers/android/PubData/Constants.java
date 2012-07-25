@@ -80,5 +80,10 @@ public final class Constants {
 	public static final int MessageTimeSetter = 400;
 	public static final String HostOrNot = "host?";
 	public static final String ChosenTime = "timechosenbyguest";
+	
+	//Broadcast names - NOTE: if changed, should also update the names in AndroidManifest	
+	public static final String broadcastDeleteString = "dimappers.android.pub.deleteEvent";
+	public static final String broadcastReminderString = "dimappers.android.pub.eventReminder";
+	public static final String broadcastConfirmReminderString = "dimappers.android.pub.confirmEventReminder";
 
 }

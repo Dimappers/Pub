@@ -206,7 +206,7 @@ public class PubService extends IntentService
 			}
 		}
 		
-		public void DeleteEvent(PubEvent event)
+		public void DeleteEvent(final PubEvent event)
 		{
 			CancelEvent(event, new IRequestListener<PubEvent>() {
 				
@@ -214,6 +214,8 @@ public class PubService extends IntentService
 				{
 					e.printStackTrace();
 					Log.d(Constants.MsgError, e.getMessage());
+					
+					AssociatedPendingIntents.rescheduleBroadcast(PubService.this, new Intent().setAction(Constants.broadcastDeleteString).putExtra(Constants.CurrentWorkingEvent, event.GetEventId()));
 				}
 				
 				public void onRequestComplete(PubEvent data)

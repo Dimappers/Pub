@@ -50,12 +50,12 @@ public class AssociatedPendingIntents {
 			
 			//USING BROADCAST
 			Intent delIntent = new Intent();
-			delIntent.setAction("deleteEvent");
+			delIntent.setAction(Constants.broadcastDeleteString);
 			delIntent.putExtra(Constants.CurrentWorkingEvent, event.GetEventId());
 			
 			if(Calendar.getInstance().before(deleteTime)) //If the delete time is before the current time, we set an alarm to delete the event
 			{
-				deleteIntent = PendingIntent.getActivity(context, event.GetEventId(), delIntent, 0);	
+				deleteIntent = PendingIntent.getBroadcast(context, event.GetEventId(), delIntent, 0);	
 				alarmManager.set(AlarmManager.RTC, deleteTime.getTimeInMillis(), deleteIntent);
 			}
 			else //otherwise we are already past the delete time so we should just delete it
@@ -77,7 +77,7 @@ public class AssociatedPendingIntents {
 			
 			//USING BROADCAST
 			Intent intent = new Intent();
-			intent.setAction("eventReminder");
+			intent.setAction(Constants.broadcastReminderString);
 			intent.putExtra(Constants.CurrentWorkingEvent, event.GetEventId());
 			intent.putExtra(Constants.CurrentFacebookUser, isHost);
 			
@@ -105,7 +105,7 @@ public class AssociatedPendingIntents {
 					
 					//USING BROADCAST
 					Intent intent = new Intent();
-					intent.setAction("confirmEventReminder");
+					intent.setAction(Constants.broadcastConfirmReminderString);
 					intent.putExtra(Constants.CurrentWorkingEvent, event.GetEventId());
 					
 					remindConfirm = PendingIntent.getBroadcast(context, event.GetEventId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
