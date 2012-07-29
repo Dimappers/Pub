@@ -1,5 +1,8 @@
 package dimappers.android.pub;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringReader;
@@ -16,6 +19,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
+import android.content.Context;
 import android.util.Log;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.IXmlable;
@@ -415,5 +419,66 @@ public class StoredData implements Serializable
 		{
 			historyStore = new HistoryStore();
 		}
+	}
+	
+	public static void writeFile(Context context, String fileName, String dataToBeSaved)
+	{
+		FileOutputStream fos = null;
+		try {
+			fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+			fos.write(dataToBeSaved.getBytes());
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally
+		{
+			if(fos!=null)
+			{
+				try {
+					fos.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public static String readFile(Context context, String fileName)
+	{
+		String storedDataString = "";
+		FileInputStream file = null;
+		try
+		{
+			file = context.openFileInput (fileName);
+			int character = file.read();
+			while(character!=-1)
+			{
+				storedDataString += (char)character;
+				character = file.read();
+			}
+
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try {
+				if(file!=null)
+				{
+					file.close();
+				}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		return storedDataString;
 	}
  }

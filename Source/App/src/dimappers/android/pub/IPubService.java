@@ -9,40 +9,38 @@ import com.facebook.android.Facebook;
 
 import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.PubEvent;
+import dimappers.android.PubData.User;
 import android.os.IBinder;
 
 public interface IPubService extends IBinder {
-
-	int 									GiveNewSavedEvent(PubEvent event);
-	void 									GiveNewSentEvent(PubEvent event, final IRequestListener<PubEvent> listener);
-	
-	void 									NewEventsRecieved(PubEventArray events);
 		
-	Collection<PubEvent> 					GetSavedEvents();
+	Collection<PubEvent> 					GetSavedEvents(); //TODO: Need to combine/more consistent system
 	Collection<PubEvent> 					GetSentEvents();
 	Collection<PubEvent> 					GetInvitedEvents();
 	PubEvent 								GetNextEvent();
 	
-	void 									UpdatePubEvent(PubEvent newEvent);
+	void 									UpdatePubEvent(PubEvent newEvent); //TODO: Shouldn't need this one
 	
-	void									RemoveEventFromStoredDataAndCancelNotification(PubEvent event);
-	void 									CancelEvent(final PubEvent event);
+	//New IPubService
+	int										SaveEvent(PubEvent event); //Store an event locally (done at generation of event) returns saved id (< 0)
+	void									SendEvent(PubEvent event, final IRequestListener<PubEvent> listener); //Send an event to the server, listener
+	PubEvent								getEvent(int eventId);
+	void									ConfirmEvent(final PubEvent event, final IRequestListener<PubEvent> listener);
+	void									CancelEvent(final PubEvent event, final IRequestListener<PubEvent> listener); //
+	void									DeleteEvent(final PubEvent event);
 	
 	void									PerformUpdate(boolean fullUpdate);
+	void									ReceiveEvents(PubEventArray events);
 	
 	Facebook 								GetFacebook();
+	AppUser 								GetActiveUser();
+	void									GetAppUserFromUser(User user, IRequestListener<AppUser> requestListener);
 	void									Logout() throws MalformedURLException, IOException;
 	
-	AppUser									GetActiveUser();
-	
-	<K, T extends IXmlable> void 			addDataRequest(IDataRequest<K, T> request, final IRequestListener<T> listener);	
+	<K, T extends IXmlable> void 			addDataRequest(IDataRequest<K, T> request, final IRequestListener<T> listener);
 	
 	HistoryStore							getHistoryStore();
-	
-	PubEvent								getEvent(int eventId);
-	
 	void 									AddEventToHistory(PubEvent event);
-	void									DeleteSentEvent(PubEvent event);
 	
-	<K, V  extends IXmlable> HashMap<K, V> 	GetGenericStore(String key);
+	<K, V  extends IXmlable> HashMap<K, V> 	GetGenericStore(String key); //Don't like this, want to remove but seems to be vital
 }

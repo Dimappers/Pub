@@ -23,6 +23,7 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 
 	IPubService service;
 	
+	private final static String storeId = "AppUsers";
 	
 	public void giveConnection(IPubService connectionInterface) {
 		service = connectionInterface;
@@ -199,39 +200,56 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 
 	
 	public String getStoredDataId() {
-		return "AppUsers";
+		return storeId;
 	}
 	
 	public static void UpdateOrdering(User[] newOrdering, IPubService service)
 	{
-		AppUser[] newArray = new AppUser[newOrdering.length];
+		final AppUser[] newArray = new AppUser[newOrdering.length];
 		for(int i = 0; i<newOrdering.length; i++)
 		{
-			User user = newOrdering[i];
+			final User user = newOrdering[i];
 			if(user instanceof AppUser)
 			{
 				newArray[i] = (AppUser) user;
 			}
 			else
 			{
-				try {
-					newArray[i] = AppUser.AppUserFromUser(user, service.GetFacebook());
-				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				IRequestListener<AppUser> listener = new AppUserListener(i, user, newArray);
+				
+				
+				
+				service.GetAppUserFromUser(user, listener);
 			}
 		}
 		
-		HashMap<Long, AppUserArray> store = service.GetGenericStore("AppUsers");
+		HashMap<Long, AppUserArray> store = service.GetGenericStore(storeId);
 		//store.put(0L, new AppUserArray(newOrdering));
 		store.get(0L).setArray(newArray);
 	} 
+	
+	private static class AppUserListener implements IRequestListener<AppUser>
+	{
+		
+		int which;
+		User user;
+		AppUser[] newArray;
+		
+		public AppUserListener(int which, User user, AppUser[] newArray)
+		{
+			this.which = which;
+			this.user = user;
+			this.newArray = newArray;
+		}
+		
+		public void onRequestFail(Exception e) {
+			e.printStackTrace();
+			newArray[which] = new AppUser(user.getUserId());
+		}
+		
+		public void onRequestComplete(AppUser data) {
+			newArray[which] = data;
+		}
+	}
 
 }

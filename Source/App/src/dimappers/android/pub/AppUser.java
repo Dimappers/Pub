@@ -4,20 +4,18 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Calendar;
 import java.util.Date;
-
 import org.jdom.Element;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 import com.facebook.android.Facebook;
 
+import android.util.Log;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.User;
 
-public class AppUser extends User implements IXmlable
+public class AppUser extends User implements IXmlable, OrganiseListItem
 {
 	private final String usernameTag = "UserName";
 	final static String outOfDateTag = "outOfDate";

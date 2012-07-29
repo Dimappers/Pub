@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
 	
 	<uses-library android:required="true" android:name="com.google.android.maps"/>
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="8"/>   
@@ -31,13 +33,32 @@
         <activity android:name="Making_Comment" android:label="@string/app_name" android:screenOrientation="portrait"/>
         <activity android:name="HostEvents" android:label="@string/app_name" android:screenOrientation="portrait"/>
         <activity android:name="UserInvites" android:label="@string/app_name" android:screenOrientation="portrait"/>
-        <service android:name="PubService" android:label="PubUpdateChecker"/>
+        
+        <service android:name="PubService" android:label="PubUpdateChecker"></service>
+        
         <activity android:name="NoInternet" android:label="@string/app_name" android:screenOrientation="portrait"/>
         <activity android:name="CurrentEvents" android:label="@string/app_name" android:screenOrientation="portrait"></activity>
         <activity android:name="RankBreakDown" android:label="@string/app_name" android:screenOrientation="portrait"/>
         <activity android:name="NotificationAlarmManager"/>
-        <activity android:name="DeleteOldEventActivity"></activity>
-        <activity android:name="NotificationTimerConfirmEventReminder"></activity>
-        <activity android:name="NotificationTimerEventStarting"></activity>
+        <receiver android:name="DeleteOldEventActivity">
+            <intent-filter><action android:name="dimappers.android.pub.deleteEvent"/></intent-filter>
+        </receiver>
+        
+        <receiver android:name="NotificationTimerEventStarting">
+            <intent-filter><action android:name="dimappers.android.pub.eventReminder"/></intent-filter>
+        </receiver>
+
+        <receiver android:name="NotificationTimerConfirmEventReminder">
+            <intent-filter>
+                <action android:name="dimappers.android.pub.confirmEventReminder"/>
+            </intent-filter>
+        </receiver>
+            
+		<receiver android:name="StartServiceAtBootReceiver" >
+		  <intent-filter>
+		    <action android:name="android.intent.action.BOOT_COMPLETED"/>
+		   </intent-filter>
+		</receiver>
+            
     </application>
 </manifest>

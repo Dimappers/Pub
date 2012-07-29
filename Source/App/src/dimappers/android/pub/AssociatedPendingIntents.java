@@ -39,35 +39,50 @@ public class AssociatedPendingIntents {
 			Calendar deleteTime = Calendar.getInstance(); 
 			deleteTime.setTime(new Date(event.GetStartTime().getTimeInMillis() + deleteAfterEventTime));
 			
-			Intent delIntent = new Intent(context, DeleteOldEventActivity.class);
+			//USING ACTIVITY
+			/*Intent delIntent = new Intent(context, DeleteOldEventActivity.class);
 			Bundle delBundle = new Bundle();
 			delBundle.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 			delIntent.putExtras(delBundle);
 			
 			deleteIntent = PendingIntent.getActivity(context, event.GetEventId(), delIntent, 0);	
-			alarmManager.set(AlarmManager.RTC, event.GetStartTime().getTimeInMillis() + deleteAfterEventTime, deleteIntent);
+			alarmManager.set(AlarmManager.RTC, event.GetStartTime().getTimeInMillis() + deleteAfterEventTime, deleteIntent);*/
 			
-			/* In the future we should swap to Broadcast receiver and delete events instantly 
+			//USING BROADCAST
+			Intent delIntent = new Intent();
+			delIntent.setAction(Constants.broadcastDeleteString);
+			delIntent.putExtra(Constants.CurrentWorkingEvent, event.GetEventId());
+			
 			if(Calendar.getInstance().before(deleteTime)) //If the delete time is before the current time, we set an alarm to delete the event
 			{
-				deleteIntent = PendingIntent.getActivity(context, event.GetEventId(), delIntent, 0);	
-				alarmManager.set(AlarmManager.RTC, event.GetStartTime().getTimeInMillis() + deleteAfterEventTime, deleteIntent);
+				deleteIntent = PendingIntent.getBroadcast(context, event.GetEventId(), delIntent, 0);	
+				alarmManager.set(AlarmManager.RTC, deleteTime.getTimeInMillis(), deleteIntent);
 			}
 			else //otherwise we are already past the delete time so we should just delete it
 			{
-				context.startActivity(delIntent);
-			} */
+				context.sendBroadcast(delIntent);
+			} 
 		}
 		
 		//Create the start time reminder
 		if(event.GetStartTime().after(Calendar.getInstance()))
 		{
-			Intent notificationAlarmIntent = new Intent(context, NotificationTimerEventStarting.class);
+			/*Intent notificationAlarmIntent = new Intent(context, NotificationTimerEventStarting.class);
 			Bundle remindBundle = new Bundle();
 			remindBundle.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 			notificationAlarmIntent.putExtras(remindBundle);
 			remindHappening  = PendingIntent.getActivity(context, event.GetEventId(), notificationAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		
+			alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis(), remindHappening);*/
+			
+			//USING BROADCAST
+			Intent intent = new Intent();
+			intent.setAction(Constants.broadcastReminderString);
+			intent.putExtra(Constants.CurrentWorkingEvent, event.GetEventId());
+			intent.putExtra(Constants.CurrentFacebookUser, isHost);
+			
+			remindHappening = PendingIntent.getBroadcast(context, event.GetEventId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			
 			alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis(), remindHappening);
 		}
 		
@@ -78,11 +93,22 @@ public class AssociatedPendingIntents {
 				if(event.getCurrentStatus() == EventStatus.unknown)
 				{
 					//Create the confirm reminder
-					Intent notificationConfirmAlarmIntent = new Intent(context, NotificationTimerConfirmEventReminder.class);
+					
+					//USING ACTIVITY
+					/*Intent notificationConfirmAlarmIntent = new Intent(context, NotificationTimerConfirmEventReminder.class);
 					Bundle b = new Bundle();
 					b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
 					notificationConfirmAlarmIntent.putExtras(b);
 					remindConfirm = PendingIntent.getActivity(context, event.GetEventId(), notificationConfirmAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+					
+					alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis() - hostReminderTime, remindConfirm);*/
+					
+					//USING BROADCAST
+					Intent intent = new Intent();
+					intent.setAction(Constants.broadcastConfirmReminderString);
+					intent.putExtra(Constants.CurrentWorkingEvent, event.GetEventId());
+					
+					remindConfirm = PendingIntent.getBroadcast(context, event.GetEventId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 					
 					alarmManager.set(AlarmManager.RTC_WAKEUP, event.GetStartTime().getTimeInMillis() - hostReminderTime, remindConfirm);
 				}
@@ -120,5 +146,16 @@ public class AssociatedPendingIntents {
 				}
 			}
 		}
+	}
+	
+	public static void rescheduleBroadcast(Context context, Intent intent)
+	{
+		long timeInHalfHour = 1000 * 60 * 30;
+		
+		int eventid = intent.getIntExtra(Constants.CurrentFacebookUser, Integer.MIN_VALUE);
+		
+		PendingIntent newIntent = PendingIntent.getBroadcast(context, eventid, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		
+		((AlarmManager)context.getSystemService(Context.ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + timeInHalfHour, newIntent);
 	}
 }

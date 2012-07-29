@@ -61,7 +61,7 @@ public class DataRequestConfirmDeny implements IDataRequest<Integer, PubEvent> {
 		
 		HashMap<PubEvent, UpdateType> update = new HashMap<PubEvent, UpdateType>();
 		update.put(event,  returnMessage.getUpdateType());
-		service.NewEventsRecieved(new PubEventArray(update));
+		service.ReceiveEvents(new PubEventArray(update));
 		
 		listener.onRequestComplete(event);	
 	}

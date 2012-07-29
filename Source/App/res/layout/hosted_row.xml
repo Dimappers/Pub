@@ -15,7 +15,8 @@
         android:background="#80000000"
         android:padding="2dip"
         android:scaleType="fitCenter"
-        android:src="@drawable/email_open" />
+        android:src="@drawable/email_open" 
+        android:visibility="invisible"/>
  
      <TextView
          android:id="@+id/guest"

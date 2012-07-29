@@ -1,52 +1,36 @@
 package dimappers.android.pub;
 
 import dimappers.android.PubData.Constants;
+import dimappers.android.PubData.PubEvent;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 
-public class DeleteOldEventActivity extends Activity {
-	
-	private int eventId; //event to delete
-	IPubService service;	
-	
-	
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		eventId = getIntent().getExtras().getInt(Constants.CurrentWorkingEvent);
-		
-		bindService(new Intent(getApplicationContext(), PubService.class), connection, 0);
-	}
+public class DeleteOldEventActivity extends BroadcastReceiver {
 
-	
-	ServiceConnection connection = new ServiceConnection()
-	{
+	@Override
+	public void onReceive(Context context, Intent intent) {
 		
-		public void onServiceConnected(ComponentName arg0, IBinder binder) {
-			service = (IPubService)binder;
-			
-			service.DeleteSentEvent(service.getEvent(eventId));
-			
-			finish();
+		IPubService service = (IPubService) peekService(context, new Intent(context, PubService.class));
+		
+		if(service!=null)
+		{
+			int eventId = intent.getIntExtra(Constants.CurrentWorkingEvent, Integer.MIN_VALUE);
+			PubEvent pub = service.getEvent(eventId);
+			if(pub!=null)
+			{
+				service.DeleteEvent(pub);
+			}
 		}
-		
-		
-		public void onServiceDisconnected(ComponentName arg0) {
-			// TODO Auto-generated method stub
-			
+		else
+		{
+			AssociatedPendingIntents.rescheduleBroadcast(context, intent);
 		}
-		
-	};
-	
-	
-	public void onDestroy()
-	{
-		super.onDestroy();
-		unbindService(connection);
 	}
 
 }

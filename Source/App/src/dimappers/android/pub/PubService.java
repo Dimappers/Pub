@@ -1,5 +1,8 @@
 package dimappers.android.pub;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -9,18 +12,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import org.json.JSONException;
-
-import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences.Editor;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -52,48 +50,6 @@ public class PubService extends IntentService
             // Return this instance of LocalService so clients can call public methods
             return PubService.this;
         }
-
-		
-		public int GiveNewSavedEvent(PubEvent event) {
-			PubService.this.storedData.AddNewSavedEvent(event);
-			return event.GetEventId();
-		}
-
-		
-		public void GiveNewSentEvent(PubEvent event, final IRequestListener<PubEvent> listener) {
-			DataRequestNewEvent r = new DataRequestNewEvent(event);
-			final int savedEventId = event.GetEventId();
-			PubService.this.addDataRequest(r, new IRequestListener<PubEvent>() {
-
-					
-					public void onRequestComplete(PubEvent data) {
-						storedData.DeleteSavedEvent(savedEventId);
-						
-						eventIntentMap.put(data.GetEventId(), new AssociatedPendingIntents(data, true, getApplicationContext()));
-						
-						listener.onRequestComplete(data);
-					}
-
-					
-					public void onRequestFail(Exception e) {
-						listener.onRequestFail(e);
-					}
-				});
-			
-			double[] location = new double[2];
-			location[0] = event.GetPubLocation().latitudeCoordinate;
-			location[1] = event.GetPubLocation().longitudeCoordinate;
-			for(User guest : event.GetUsers())
-			{
-				AppUser g2;
-				try {
-					g2 = AppUser.AppUserFromUser(guest, GetFacebook());
-					g2.updateLocation(location);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-		}
 
 		
 		public Collection<PubEvent> GetSavedEvents() {
@@ -128,73 +84,185 @@ public class PubService extends IntentService
 		}
 
 		
-		public void RemoveEventFromStoredDataAndCancelNotification(PubEvent event) {
-			PubService.this.storedData.DeleteSavedEvent(event.GetEventId());
-			/////////////////////////////////////////////////((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancel(event.GetEventId());
+		public void UpdatePubEvent(PubEvent newEvent)
+		{
+			if(newEvent.GetEventId() < 0)
+			{
+				SaveEvent(newEvent);
+			}
+			else
+			{
+				storedData.GetGenericStore(StoredData.sentEventsStore).put(newEvent.GetEventId(), newEvent);
+				
+				if(eventIntentMap.containsKey(newEvent.GetEventId()))
+				{
+					eventIntentMap.get(newEvent.GetEventId()).UpdateFromEvent(newEvent);
+				}
+				else
+				{
+					boolean isHost = newEvent.GetHost().equals(GetActiveUser());
+					eventIntentMap.put(newEvent.GetEventId(), new AssociatedPendingIntents(newEvent, isHost, getApplicationContext()));
+				}
+			}
+		}
+
+		//Event management
+		public int SaveEvent(PubEvent event)
+		{
+			PubService.this.storedData.AddNewSavedEvent(event);
+			return event.GetEventId();
+		}
+
+
+		public void SendEvent(PubEvent event, final IRequestListener<PubEvent> listener)
+		{
+			//Send the event
+			DataRequestNewEvent r = new DataRequestNewEvent(event);
+			final int savedEventId = event.GetEventId();
+			PubService.this.addDataRequest(r, new IRequestListener<PubEvent>() {
+
+					
+					public void onRequestComplete(PubEvent data) {
+						storedData.DeleteSavedEvent(savedEventId);
+						
+						eventIntentMap.put(data.GetEventId(), new AssociatedPendingIntents(data, true, getApplicationContext()));
+						
+						listener.onRequestComplete(data);
+					}
+
+					
+					public void onRequestFail(Exception e) {
+						listener.onRequestFail(e);
+					}
+				});
+			
+			
+			//Assume people invited are probably near the pub
+			double[] location = new double[2];
+			location[0] = event.GetPubLocation().latitudeCoordinate;
+			location[1] = event.GetPubLocation().longitudeCoordinate;
+			for(User guest : event.GetUsers())
+			{
+				GetAppUserFromUser(guest, new LocationUpdater(location));
+			}
+		}
+		private class LocationUpdater implements IRequestListener<AppUser>
+		{
+			double[] loc;
+			LocationUpdater(double[] loc)
+			{
+				this.loc = loc;
+			}
+			public void onRequestFail(Exception e) {
+				e.printStackTrace();
+			}
+			
+			public void onRequestComplete(AppUser data) {
+				data.updateLocation(loc);
+			}
 		}
 		
+		public PubEvent getEvent(int eventId) {
+			return storedData.getEvent(eventId);
+		} 
 		
-		public void CancelEvent(final PubEvent event)
+		public void ConfirmEvent(final PubEvent event, final IRequestListener<PubEvent> listener)
 		{
-			event.setCurrentStatus(EventStatus.itsOff);
-			
-			DataRequestConfirmDeny cancel = new DataRequestConfirmDeny(event);
-			addDataRequest(cancel, new IRequestListener<PubEvent>(){
-				
-				public void onRequestComplete(PubEvent data)
-				{
-					if(eventIntentMap.containsKey(data.GetEventId()))
-					{
-						eventIntentMap.get(data.GetEventId()).UpdateFromEvent(data);
-					}
+			event.setCurrentStatus(EventStatus.itsOn);
+			DataRequestConfirmDeny request = new DataRequestConfirmDeny(event);
+			addDataRequest(request, new IRequestListener<PubEvent>() {
+				public void onRequestComplete(PubEvent data) {
+					listener.onRequestComplete(data);
 				}
+				
+				public void onRequestFail(Exception e) {
+					Log.d(Constants.MsgError, e.getMessage());					
+				}
+			});
+		}
+		
+		public void CancelEvent(final PubEvent event, final IRequestListener<PubEvent> listener)
+		{
+			if(event!=null)
+			{
+				event.setCurrentStatus(EventStatus.itsOff);
+				
+				DataRequestConfirmDeny cancel = new DataRequestConfirmDeny(event);
+				addDataRequest(cancel, new IRequestListener<PubEvent>(){
+					
+					public void onRequestComplete(PubEvent data)
+					{
+						if(eventIntentMap.containsKey(data.GetEventId()))
+						{
+							eventIntentMap.get(data.GetEventId()).UpdateFromEvent(data);
+						}
+						listener.onRequestComplete(data);
+					}
+					
+					public void onRequestFail(Exception e)
+					{
+						listener.onRequestFail(e);					
+					}
+					
+				});
+			}
+		}
+		
+		public void DeleteEvent(final PubEvent event)
+		{
+			CancelEvent(event, new IRequestListener<PubEvent>() {
 				
 				public void onRequestFail(Exception e)
 				{
-					// TODO Auto-generated method stub
+					e.printStackTrace();
+					Log.d(Constants.MsgError, e.getMessage());
 					
+					AssociatedPendingIntents.rescheduleBroadcast(PubService.this, new Intent().setAction(Constants.broadcastDeleteString).putExtra(Constants.CurrentWorkingEvent, event.GetEventId()));
 				}
 				
+				public void onRequestComplete(PubEvent data)
+				{
+					if(data.GetEventId() < 0)
+					{
+						DeleteLocalEvent(data);
+					}
+					else
+					{
+						DeleteSentEvent(data);
+					}
+				}
 			});
 		}
 
+		private void DeleteLocalEvent(PubEvent event)
+		{
+			if(event!=null)
+			{
+				PubService.this.storedData.DeleteSavedEvent(event.GetEventId());
+			}
+		}
 		
+		private void DeleteSentEvent(PubEvent event)
+		{
+			if(event != null)
+			{
+				storedData.DeleteSentEvent(event.GetEventId());
+			}
+		}
+		
+		//Update the data
 		public void PerformUpdate(boolean fullUpdate) {
 			PubService.this.receiver.forceUpdate(fullUpdate);
 		}
 
-		
-		public Facebook GetFacebook() {
-			return PubService.this.authenticatedFacebook;
-		}
-
-		
-		public void Logout() throws MalformedURLException, IOException {
-			//TODO: Implement facebook logout
-			GetFacebook().logout(getApplicationContext());
-		}
-
-		
-		public <K, T extends IXmlable> void addDataRequest(IDataRequest<K, T> request,
-				IRequestListener<T> listener)
+		public void ReceiveEvents(PubEventArray events)
 		{
-			PubService.this.addDataRequest(request, listener);			
-		}
-
-		
-		public AppUser GetActiveUser() {
-			return storedData.getActiveUser();
-		}
-
-		
-		public void NewEventsRecieved(PubEventArray events) {
-			
 			ArrayList<Notification> notifications = new ArrayList<Notification>();
 			ArrayList<Integer> notificationIds = new ArrayList<Integer>();
 					
 			for(Entry<PubEvent, UpdateType> eventEntry : events.getEvents().entrySet())
 			{
-				boolean contains = eventIntentMap.containsKey(eventEntry.getKey().GetEventId());
+				//Create or update this events entry in the pending intents map (ie notifications that will be fired in the future)
 				if(eventIntentMap.containsKey(eventEntry.getKey().GetEventId()))
 				{
 					eventIntentMap.get(eventEntry.getKey().GetEventId()).UpdateFromEvent(eventEntry.getKey());
@@ -204,6 +272,7 @@ public class PubService extends IntentService
 					boolean isHost = eventEntry.getKey().GetHost().equals(GetActiveUser());
 					eventIntentMap.put(eventEntry.getKey().GetEventId(), new AssociatedPendingIntents(eventEntry.getKey(), isHost, getApplicationContext()));
 				}
+				
 				//If either the event hasn't been updated (ie this user has already got this data before and this is a full refresh caused by restarting the app
 				PubEvent event = eventEntry.getKey();
 				if(event.GetHost().equals(GetActiveUser()))
@@ -214,6 +283,8 @@ public class PubService extends IntentService
 				{
 					storedData.AddNewInvitedEvent(eventEntry.getKey());
 				}
+				
+				//Create notifications for imediate display (ie if the event has been updated)
 				
 				//The cut off time represents the time where we should no longer be told about the event
 				Calendar cutOffTime = Calendar.getInstance();
@@ -237,59 +308,54 @@ public class PubService extends IntentService
 				nManager.notify(notificationIds.get(i), notifications.get(i));
 			}
 		}
-
 		
-		public HistoryStore getHistoryStore() {
-			return storedData.getHistoryStore();
+		//Facebook
+		public Facebook GetFacebook() {
+			return PubService.this.authenticatedFacebook;
 		}
 
-		
-		public PubEvent getEvent(int eventId) {
-			return storedData.getEvent(eventId);
-		} 
-
-		
-		public <K, V extends IXmlable> HashMap<K, V> GetGenericStore(String key) {
-			// TODO Auto-generated method stub
-			return storedData.GetGenericStore(key);
+		public AppUser GetActiveUser() {
+			return storedData.getActiveUser();
 		}
-
 		
-		public void UpdatePubEvent(PubEvent newEvent)
+		public void GetAppUserFromUser(User user, IRequestListener<AppUser> requestListener)
 		{
-			if(newEvent.GetEventId() < 0)
+			if(user instanceof AppUser)
 			{
-				GiveNewSavedEvent(newEvent);
+				requestListener.onRequestComplete((AppUser) user);
 			}
 			else
 			{
-				storedData.GetGenericStore(StoredData.sentEventsStore).put(newEvent.GetEventId(), newEvent);
-				
-				if(eventIntentMap.containsKey(newEvent.GetEventId()))
-				{
-					eventIntentMap.get(newEvent.GetEventId()).UpdateFromEvent(newEvent);
-				}
-				else
-				{
-					boolean isHost = newEvent.GetHost().equals(GetActiveUser());
-					eventIntentMap.put(newEvent.GetEventId(), new AssociatedPendingIntents(newEvent, isHost, getApplicationContext()));
-				}
+				addDataRequest(new DataRequestGetFacebookUser(user.getUserId()), requestListener);
 			}
 		}
-
+		
+		public void Logout() throws MalformedURLException, IOException {
+			//TODO: Implement facebook logout
+			GetFacebook().logout(getApplicationContext());
+		}
+		
+		//Add data request
+		public <K, T extends IXmlable> void addDataRequest(IDataRequest<K, T> request,
+				IRequestListener<T> listener)
+		{
+			PubService.this.addDataRequest(request, listener);			
+		}
+		
+		//History store
+		public HistoryStore getHistoryStore() {
+			return storedData.getHistoryStore();
+		}
 		
 		public void AddEventToHistory(PubEvent event) {
 			HistoryStore hStore = getHistoryStore();
 			hStore.addEvent(event);
 		}
-		
-		
-		public void DeleteSentEvent(PubEvent event)
-		{
-			if(event != null)
-			{
-				storedData.DeleteSentEvent(event.GetEventId());
-			}
+
+		//Get a specific generic store, DO NOT USE unless you have to
+		public <K, V extends IXmlable> HashMap<K, V> GetGenericStore(String key) {
+			// TODO Auto-generated method stub
+			return storedData.GetGenericStore(key);
 		}
 	}
 
@@ -315,8 +381,10 @@ public class PubService extends IntentService
 			eventIntentMap = new HashMap<Integer, AssociatedPendingIntents>();
 			
 			//Load previously stored data
-			
-			String storedDataString = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).getString(Constants.SaveDataName, "");
+			//USING SHARED PREFERENCES
+			//String storedDataString = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).getString(Constants.SaveDataName, "");
+			//USING INTERNAL STORAGE
+			String storedDataString = StoredData.readFile(this, Constants.SaveDataName);
 			if(storedDataString != "")
 			{
 				Log.d(Constants.MsgInfo, "Loading data for store: " + storedDataString);
@@ -340,6 +408,9 @@ public class PubService extends IntentService
 			else
 			{
 				Log.d(Constants.MsgError, "Could not find user");
+				
+				//To prevent crashes from not having a user, stop the service
+				stopSelf();
 			}
 			
 			sender = new DataSender();
@@ -389,11 +460,8 @@ public class PubService extends IntentService
 	public boolean onUnbind(Intent intent)
 	{
 		super.onUnbind(intent);
-		String xmlString = storedData.save();
-		Editor editor = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).edit();
-		editor.putString(Constants.SaveDataName, xmlString);
-		Log.d(Constants.MsgInfo, "Saving: " + xmlString);
-		editor.commit();
+		
+		saveData();
 		
 		return false;
 	}
@@ -402,13 +470,24 @@ public class PubService extends IntentService
 	public void onDestroy()
 	{
 		Log.d(Constants.MsgError, "onDestroy() in PubService called");
-		String xmlString = storedData.save();
-		Editor editor = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).edit();
-		editor.putString(Constants.SaveDataName, xmlString);
-		Log.d(Constants.MsgInfo, "Saving: " + xmlString);
-		editor.commit();
+
+		saveData();
 		
 		super.onDestroy();
+	}
+	
+	private void saveData()
+	{
+		String xmlString = storedData.save();
+		
+		//USING SHARED PREFERENCES
+		/*Editor editor = getSharedPreferences(Constants.SaveDataName, MODE_PRIVATE).edit();
+		editor.putString(Constants.SaveDataName, xmlString);
+		Log.d(Constants.MsgInfo, "Saving: " + xmlString);
+		editor.commit();*/
+		
+		//USING INTERNAL STORAGE
+		StoredData.writeFile(this, Constants.SaveDataName, xmlString);
 	}
 	
 	public StoredData getDataStore()
@@ -438,8 +517,6 @@ public class PubService extends IntentService
 			Log.d(Constants.MsgError, "Service already started...");
 		}
 		hasStarted = true;
-	}
-	
-	
+	} 
 	
 }

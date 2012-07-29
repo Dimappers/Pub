@@ -1,26 +1,15 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
-import org.json.JSONException;
-
 import net.awl.appgarden.sdk.AppGardenAgent;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -28,7 +17,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -38,20 +26,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.android.Facebook;
-
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.PubLocation;
-import dimappers.android.PubData.ResponseData;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
 
@@ -63,11 +45,10 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 	public ProgressBar progbar;
 	MenuItem edit;
 	
-	private ArrayList<String> listItems=new ArrayList<String>();
+	private ArrayList<OrganiseListItem> listItems=new ArrayList<OrganiseListItem>();
 	private GuestListAdapter adapter;
 	private ListView guest_list;
 	
-	private String add_guest = "+ ADD GUEST";
 	private int posOfLastClicked = -1;
 
 	private boolean locSet = false;
@@ -144,8 +125,8 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		 wl.release();
 	}
 	
-	class GuestListAdapter extends ArrayAdapter<String> {
-		public GuestListAdapter(Context context, int layout, int id,  ArrayList<String> list)
+	class GuestListAdapter extends ArrayAdapter<OrganiseListItem> {
+		public GuestListAdapter(Context context, int layout, int id,  ArrayList<OrganiseListItem> list)
 		{
 			super(context, layout, id, list);
 		}
@@ -153,22 +134,18 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		
 		public View getView(int position, View convertView, ViewGroup parent)
 		{
-			if(convertView==null)
-			{
-				convertView = ((LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE)).inflate(R.layout.delete_guest, null);
-			}
+			convertView = super.getView(position, convertView, parent);
 			if(position==posOfLastClicked)
 			{
 				convertView.findViewById(R.id.deleteicon).setVisibility(View.VISIBLE);
-				((TextView)convertView.findViewById(R.id.guestName)).setText(listItems.get(position));
-				return convertView;
+				//((TextView)convertView.findViewById(R.id.guestName)).setText(listItems.get(position).toString());
 			}
 			else
 			{
 				convertView.findViewById(R.id.deleteicon).setVisibility(View.INVISIBLE);
-				((TextView)convertView.findViewById(R.id.guestName)).setText(listItems.get(position));
-				return convertView;
+				//((TextView)convertView.findViewById(R.id.guestName)).setText(listItems.get(position).toString());
 			}
+			return convertView;
 		}
 	}
 	
@@ -269,7 +246,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 			}
 			case R.id.save_event : {
 				i = new Intent();
-				service.GiveNewSavedEvent(event);
+				//The event is already saved
 				b.putBoolean(Constants.IsSavedEventFlag, true);
 				i.putExtras(b);
 				setResult(RESULT_OK, i);
@@ -277,7 +254,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 				break;
 			}
 			case R.id.send_invites_event : {
-				service.GiveNewSentEvent(event, new IRequestListener<PubEvent>() {
+				service.SendEvent(event, new IRequestListener<PubEvent>() {
 					
 					
 					public void onRequestFail(Exception e) {
@@ -325,28 +302,24 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		        .setTitle("Save or discard?")
 		        .setMessage("Would you like to save before exiting")
 		        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-	
-		            
 					public void onClick(DialogInterface dialog, int which) {
-	
-		                service.GiveNewSavedEvent(event);
+						//The event is already saved so we do not need to do anything
 		                finish();    
 		            }
 	
 		        })
 		        .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
-					
-					
 					public void onClick(DialogInterface dialog, int which)
 					{
 						if(oldEvent == null) //then this is a fresh event
 						{
-							service.RemoveEventFromStoredDataAndCancelNotification(event);
+							//service.RemoveEventFromStoredDataAndCancelNotification(event);
+							service.DeleteEvent(event);
 						}
 						else //this is an event being edited, we should revert to last version
 						{
 							event = new PubEvent(oldEvent.writeXml());
-							service.GiveNewSavedEvent(event);
+							service.SaveEvent(event);
 							Intent i = new Intent();
 							Bundle b = new Bundle();
 							b.putInt(Constants.CurrentWorkingEvent, event.GetEventId());
@@ -499,13 +472,13 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 		cur_time.setText(event.GetFormattedStartTime());
 
 		listItems.clear();
-		listItems.add(add_guest);
+		listItems.add(new AddGuestHeader());
 		adapter.notifyDataSetChanged();
 		for(User user : event.GetUsers()) 
 		{
 			if(user instanceof AppUser)
 			{
-				listItems.add(user.toString());
+				listItems.add((AppUser)user);
 				adapter.notifyDataSetChanged();
 			}
 			else
@@ -521,7 +494,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 							
 							public void run() 
 							{
-								listItems.add(data.toString());
+								listItems.add(data);
 								adapter.notifyDataSetChanged();					
 							}
 						});
@@ -638,30 +611,12 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 					}
 					else
 					{
-						String userName = adapter.getItem(position);
 						if(posOfLastClicked==position)
 						{
-							for(User guest : event.GetUsers())
+							User clickedUser = (User) adapter.getItem(position);
+							if(!clickedUser.equals(event.GetHost()))
 							{
-								if(guest.equals(event.GetHost())) {break;}
-								try
-								{
-									AppUser appGuest = AppUser.AppUserFromUser(guest, Organise.this.service.GetFacebook());
-									if(appGuest.toString().equals(userName))
-									{
-										event.RemoveUser(guest);
-										break;
-									}
-								}
-								catch(IOException e)
-								{
-									Log.d(Constants.MsgError, e.getMessage());
-									
-								}
-								catch(JSONException e)
-								{
-									Log.d(Constants.MsgError, e.getMessage());
-								}
+								event.RemoveUser(clickedUser);
 							}
 							posOfLastClicked=-1;
 						}

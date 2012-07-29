@@ -1,0 +1,3959 @@
+commit e0e84c66240e45ff78f34e34d27bb92842c568f0
+Merge: 96dc091 31644b5
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Jul 2 17:12:52 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/DataRequestGetFriends.java
+
+commit 96dc0917fb678b352606f2c98b0feafc989306eb
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Jul 2 17:08:43 2012 +0100
+
+    Changing how locations are got
+    
+    Now doesn't take as long to get through Pending (20-30 seconds uncached, 7-10ish when all data has been cached)
+    Required the users to be updated when retrieved instead of overwritten - this bit hasn't been tested.
+
+commit 31644b589915b776814b09bbc4bfd02661b54e2d
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 30 17:15:47 2012 +0100
+
+    Got in to a fight with Git - we should now have a small selection of screenshots, Tom's doc & a copy of the presentation so if we want to see what we had at submission we can
+
+commit 7915f760401cf9c2bdb9ac6c1818012d28037867
+Merge: 7244f91 bbe6712
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 30 17:09:52 2012 +0100
+
+    ARGGH - Should be right as rain now
+
+commit 7244f914f2a421bb2143b4135e96e464a27d2012
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 30 16:48:29 2012 +0100
+
+    No idea what is going on - just want NO SCREENSHOTS
+
+commit c9eceabed9e446df13f9a042974a6e4449d4aa39
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 30 16:46:03 2012 +0100
+
+    Revert "Screenshots"
+    
+    This reverts commit c5bcce788763bb79a8b3242b3991a9ca6dea8ded.
+    
+    Conflicts:
+    
+    	Presentation/Screenshots/Final/choose_time_1.png
+    	Presentation/Screenshots/Final/choose_time_2.png
+    	Presentation/Screenshots/Final/currentevents1.png
+    	Presentation/Screenshots/Final/currentevents2.png
+    	Presentation/Screenshots/Final/currentevents3.png
+    	Presentation/Screenshots/Final/currentevents4.png
+    	Presentation/Screenshots/Final/findfriendssearch.png
+    	Presentation/Screenshots/Final/findfriendssearch2.png
+    	Presentation/Screenshots/Final/findfriendssearch3.png
+    	Presentation/Screenshots/Final/findfriendssearch4.png
+    	Presentation/Screenshots/Final/hosteventscreen2.png
+    	Presentation/Screenshots/Final/hosteventscreen3.png
+    	Presentation/Screenshots/Final/hosteventscreen4.png
+    	Presentation/Screenshots/Final/hosteventscreen5.png
+    	Presentation/Screenshots/Final/launch_application.png
+    	Presentation/Screenshots/Final/organise_1.png
+    	Presentation/Screenshots/Final/organise_2.png
+    	Presentation/Screenshots/Final/organise_3.png
+    	Presentation/Screenshots/Final/organise_4.png
+    	Presentation/Screenshots/Final/organise_5.png
+    	Presentation/Screenshots/Final/organise_6.png
+    	Presentation/Screenshots/Final/organise_7.png
+    	Presentation/Screenshots/Final/organise_8.png
+    	Presentation/Screenshots/Final/organise_9.png
+    	Presentation/Screenshots/Final/pub_choose.png
+    	Presentation/Screenshots/Final/pub_choose2.png
+    	Presentation/Screenshots/Receiving Invite/event_1.png
+    	Presentation/Screenshots/Receiving Invite/event_2.png
+    	Presentation/Screenshots/Receiving Invite/event_3.png
+    	Presentation/Screenshots/Receiving Invite/event_4.png
+    	Presentation/Screenshots/Receiving Invite/event_5.png
+    	Presentation/Screenshots/Receiving Invite/event_5a.png
+    	Presentation/Screenshots/Receiving Invite/event_6.png
+    	Presentation/Screenshots/Receiving Invite/event_7.png
+    	Presentation/Screenshots/Receiving Invite/event_8.png
+    	Presentation/Screenshots/Receiving Invite/notification.png
+    	Presentation/Screenshots/Receiving Invite/notification_it's_on.png
+    	Presentation/Screenshots/loading screen.png
+
+commit d550a5c7d20d09f054c04f89ed013442ed1496fb
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 30 16:43:12 2012 +0100
+
+    Removed screenshots from repository to stop it slowing down
+    
+    Added builds for posterity
+
+commit bbe6712f4ce4f2f431685cbcbf1bf0d326a80be1
+Merge: c5bcce7 2035039
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 30 16:35:43 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit c5bcce788763bb79a8b3242b3991a9ca6dea8ded
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 30 15:41:51 2012 +0100
+
+    Screenshots
+    
+    All the screen shots used
+
+commit 20350399b14a0dcb782432b7a2bc07db673b2d1e
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Wed May 23 11:55:01 2012 +0100
+
+    Button text change from 'Going' to 'Up for it!' on user_invites.xml
+
+commit ee99c7e321705c56ec1b370d6ec812201214a7e9
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat May 19 00:52:39 2012 +0100
+
+    Don't notify people about new events if they happened more than 6 hours ago
+
+commit d657fe08121b76a4b4019b71560f9b337bce50fc
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon May 14 15:27:55 2012 +0100
+
+    Use event id as the id for pending intents and notifications so that they don't override each other
+    
+    Return after finish calls so doesn't crash
+    Remove unneeded context references
+
+commit b6711235d3a3b67fc4c5461eb4a32eec36175369
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat May 12 01:35:41 2012 +0100
+
+    Bug fixes: don't remind people event starting if after event start time
+    
+    Don't notify host to confirm is event has already started or already been confirmed (before would only do it is not been cancelled)
+    Removed Context reference from GetFriends to get rid of BadTokenException
+    If you go in to host events or use invites after event deleted cancels the operation
+    If user doesn't log in doesn't crash service
+    Stored data doesn't delete an event if it isn't there
+    Doesn't try to get things out of hash maps before they exist
+
+commit 80167367bfbc2249061aab75a5be69cc322e7dbc
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu May 10 05:30:50 2012 +0100
+
+    Instructional Document added
+
+commit c789da805ad1bc4fa26360e5c17a9d936a2d5198
+Merge: 7f257bd d2ea38e
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu May 10 04:36:45 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit d2ea38e58684f211a49299e5b43fbb3b81735168
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu May 10 04:23:47 2012 +0100
+
+    last of receiving screen shots
+
+commit 7f257bd7390c9fc9bb7033d64991fe0bed1efd33
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu May 10 04:21:19 2012 +0100
+
+    3rd batch of screen shots
+
+commit c162e0ba5a9c4ba1e10025745b9b9967addea82a
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu May 10 04:13:20 2012 +0100
+
+    Revert "Implemented SQL into the Server. Still yet to be tested."
+    
+    This reverts commit fc1ef9783844b9d54ec2b059e1d19b794b47e306.
+
+commit f4302a8d8ff02c54ff5dabe3f1db060125f49e23
+Merge: 0299a66 0e923e3
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu May 10 04:10:08 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 0299a6658ec4df584438e6542b1a77170ecc9c03
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu May 10 04:09:42 2012 +0100
+
+    screen shots
+
+commit 0e923e383366cae0c1de3c8ddf68b0c6fef5f76b
+Merge: 7f14a80 817970d
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu May 10 03:45:07 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 7f14a80288e0f4267685d958e0979c3ee556171e
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu May 10 03:44:10 2012 +0100
+
+    2nd batch of screen shots
+
+commit 817970d3f69e95dd6c4f149cf80ff6140efd0f45
+Merge: dc4ca88 24528bf
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu May 10 03:36:42 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit dc4ca88db7ba7e418eab52c8c113ffff376982a7
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu May 10 03:36:24 2012 +0100
+
+    wakes up app when pending has finished
+
+commit 18b66016d7ac18e74f85ad84b615986b170f9465
+Merge: 6da3e7c 24528bf
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu May 10 03:22:22 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/NotificationTimerEventStarting.java
+     The mother of all merges (apart from Jasons)
+
+commit 6da3e7cb5fa78ef3e1a2c2a5c66386fcb7624a70
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu May 10 03:20:50 2012 +0100
+
+    Implemented confirm, happening notifications that get modified when the event is modified both for hosts and guests
+    
+    Delete event now happens for all events locally and moves to reflect new data
+    Events added to the history store
+
+commit 24528bfb053823a3817f55e6ad94540f55e1b68b
+Merge: b5cbbf2 68faa0f
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu May 10 03:14:39 2012 +0100
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit b5cbbf2c4101671ba52cd2aa9989e9c69fe583b9
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu May 10 03:14:23 2012 +0100
+
+    resizing change time
+
+commit 68faa0faa98e92cd98f13da3d6e890b12a4348cb
+Merge: fc1ef97 fd265a1
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Thu May 10 02:59:16 2012 +0100
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit fc1ef9783844b9d54ec2b059e1d19b794b47e306
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Thu May 10 02:57:33 2012 +0100
+
+    Implemented SQL into the Server. Still yet to be tested.
+
+commit fd265a18a6b98ad0f39335bfb26503298819c1d4
+Merge: 7ccadbd 8535bcf
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu May 10 02:35:09 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 7ccadbd92ec0671637d4c1528d8189dce008a1fc
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu May 10 02:34:55 2012 +0100
+
+    UI update
+
+commit 8535bcf45a84347b9301a948caa5f5b7aae161a3
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu May 10 02:07:39 2012 +0100
+
+    deleting @Overrides
+
+commit dd1ee8d49c898201a8e1f074d77d4739a3ebc589
+Merge: cba49f2 54e7233
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu May 10 01:58:18 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 54e7233db8064f95b9276dfc07ff33cd2856ba07
+Merge: 0d923fd fcf7bdf
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu May 10 01:57:02 2012 +0100
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit 0d923fd1b94353a344ee4183c81ff621f9b50ee2
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu May 10 01:56:27 2012 +0100
+
+    Changed going button
+
+commit cba49f22014a1b4228d8b6602ec8e62feec507e5
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu May 10 01:56:06 2012 +0100
+
+    guest list now looks editable & double clicking on people removes them from the list
+
+commit fcf7bdfd41b675ffe2e93eebafd022cf8ac8d4fa
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu May 10 01:53:05 2012 +0100
+
+    UI update
+
+commit 955f673a81f41af976c37e474ff334471886a6a7
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu May 10 01:17:46 2012 +0100
+
+    UI Buttons finished
+
+commit 6493bd3de88cf686eb1d90e0cd39522dc708bb6f
+Merge: eaf603a 5f330f6
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu May 10 00:49:31 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit eaf603af570e2fea0e3220335fbe78272bb166c9
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu May 10 00:49:16 2012 +0100
+
+    UI - Removed progress bar from startup screen
+
+commit 5f330f6a503ae40dc51e17f1fe43131afa82d296
+Merge: b2a132f 6ae3a5d
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu May 10 00:45:52 2012 +0100
+
+    merge conflict resolved
+
+commit b2a132fa63ae0ac016a2e91db47a8ebf9a3fb8be
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu May 10 00:43:39 2012 +0100
+
+    sizing changes again
+
+commit 6ae3a5da645e6438283d3a6167134e02176f8942
+Merge: f532ea4 28241e7
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu May 10 00:42:36 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit f532ea41fef1444c155c2a4f0112f06bb311b7b1
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu May 10 00:42:20 2012 +0100
+
+    UI Buttons for all screens
+
+commit 28241e79814d4200f61e2221aa771e38f7772665
+Merge: e0c4546 a1f3e28
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu May 10 00:36:38 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit e0c45468f8c4e69d1fa602f576d1fdb2056fb4be
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu May 10 00:36:08 2012 +0100
+
+    Screenshots
+
+commit a1f3e28418382400c2fe91b45f62f51e9471d77f
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu May 10 00:06:34 2012 +0100
+
+    added position in list for adding new guests
+
+commit a81cedbc6ee05df3026ac8727928c0a421db3619
+Merge: dba4b8a 08ca6a0
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Wed May 9 23:24:58 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit dba4b8af0d09c34d29b50c93eab85d67e07ef6a7
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Wed May 9 23:24:44 2012 +0100
+
+    UI - Buttons and edit chalk added to Organise
+
+commit 08ca6a0728cd1772b75b524faad9ef321e087204
+Merge: 1702a93 7dab265
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Wed May 9 23:19:31 2012 +0100
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit 1702a933214381a9a9dca77c3b917a27e60fa43c
+Merge: cd5a698 c200a36
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Wed May 9 23:18:44 2012 +0100
+
+    merge conflict resolved
+
+commit 7dab26528213ffcc7f22e2a097f895da984833b8
+Merge: 303ad1c c200a36
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 9 23:16:42 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 303ad1c0d398ea664b90f6bb8185e0045b231a76
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 9 23:16:24 2012 +0100
+
+    Began work on a logout button but isn't working properly so I commented it out!
+    
+    Events that have been created delete themselves after 6 hours - not others, working on it!!
+
+commit cd5a698abc63c93423b8c79100ae99e58155c5e3
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Wed May 9 23:08:02 2012 +0100
+
+    Changed xml stuff
+
+commit c200a36b1f4117cc61df60475cb6f9a5d669a441
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed May 9 23:03:29 2012 +0100
+
+    unified hostevents/userinvites (bit dodgy); mended bug with displaying time in choosetime; fixed nullpointer if facebook refuses authentication; tidied up facebook error dialog
+
+commit 7fcf43084fbc07d2318306efbf8a589d5b89f7b0
+Merge: 0e69776 9b0114d
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Wed May 9 21:20:08 2012 +0100
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit 0e697768abe186a1c8ccb2cf6846b45a4a3dd2a7
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Wed May 9 21:19:54 2012 +0100
+
+    resizing done
+
+commit 9b0114d069a37e15e7c55af553d98e0739391b12
+Merge: b3ec56d c4be80b
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 9 19:33:11 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit b3ec56d299c00ce9d97dcdfc29d338b691bc22eb
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 9 19:18:52 2012 +0100
+
+    Made notifications not display longitude and latitude!
+
+commit b598c4f75ac7ecbe8756a999baf614f522da7f66
+Merge: af592c2 c4be80b
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Wed May 9 18:31:24 2012 +0100
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit c4be80b8e46c53cb6fada5b94ab8bfa00bff0a7d
+Merge: ee3b4a8 4ba6546
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed May 9 18:29:23 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit ee3b4a8067fc7081879e538f6782150c2de07e21
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed May 9 18:29:02 2012 +0100
+
+    added time-out on getting data with warning if not all data has been retrieved in the time; replaced "unexpected error" dialog with toast
+
+commit 5ead7f230f1bc4e23199418197342eb84fe56d57
+Merge: f537298 4ba6546
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Wed May 9 18:26:58 2012 +0100
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit f53729866c600b05e37964eb3facab035625b93c
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Wed May 9 18:26:44 2012 +0100
+
+    making organise screen fit on any screen...
+
+commit 4ba65469a741ef38a6b71418d96a76da67850b85
+Merge: 3db4264 977e04f
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Wed May 9 17:32:08 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 3db4264e90c9b280bce734b8052bb539eb1871f0
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Wed May 9 17:31:51 2012 +0100
+
+    UI Changes:
+    
+    	Title added to main
+    	Font and background added to 'No Internet'
+    	User Invites button now 'Going - Hold for options' and Long/Lat removed from pub name
+
+commit 977e04fcee8884aaf97c38b949e121a447af2b5d
+Merge: a4a5351 3a989a3
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed May 9 16:56:25 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit a4a53517555a49f40a8918c9a64fc375bd2aaa3c
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed May 9 16:56:10 2012 +0100
+
+    mended key creation for geocoder; commented out the error dialog that was causing badtokenexceptions
+
+commit 3a989a359538c000502b1cdd88edaee4672df7bc
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 9 16:16:11 2012 +0100
+
+    Reduced font and button sizes on organise
+
+commit b6ee288ca7cfb5196fd5bcd3a3dec3409e8345a7
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed May 9 16:05:38 2012 +0100
+
+    hopefully mended nullpointer when exiting pending too soon
+
+commit 13e1ea468a4ad2c026cb13c55b46eebb62103fde
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 9 16:03:37 2012 +0100
+
+    Added edit buttons on the organise screen
+
+commit 33578f6c923dbca145db71d0667b0e7b03876a20
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed May 9 16:03:05 2012 +0100
+
+    mended clicking location opening change pub screen
+
+commit 9ec5eb2702b1d91aa5e3e5a8407487b65581f8fa
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed May 9 14:04:04 2012 +0100
+
+    improved message sent Toast
+
+commit 04c16d6438d6ebc3bd3fd35a87a22b7c62c47c99
+Merge: 4e73ac7 faeb194
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Tue May 8 23:23:19 2012 +0100
+
+    Merge conflict resolved
+
+commit 4e73ac72ed74172ab047c73676b53b433f397314
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Tue May 8 23:21:29 2012 +0100
+
+    Resized envelope back to what it was and made row show message when clicked on instead
+
+commit faeb19476b5206e07c29b201aa914554124d71c7
+Merge: 37f8304 697b9b3
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Tue May 8 22:57:32 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 37f8304432ba3b1625ca0eeac7aa08d584370a25
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Tue May 8 22:57:15 2012 +0100
+
+    UI - Custom Font on all screens
+    
+        - ListView scrolling black fixed
+        - Some layout/sizing changes
+
+commit 697b9b3deeac3398e5dc56aeb8313b739cc25e87
+Merge: 8db0275 fb779f2
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue May 8 22:50:15 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit fb779f2d2f1d55c7d63d99ccaf3a29abc48d9a4f
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue May 8 22:49:29 2012 +0100
+
+    Bug fix: Can edit events to add users
+    
+    Bug fix: UpdateEventMessage was not updating the correct event - server now starting on 1 to making spotting simmilar problems easier
+
+commit 8db0275a36098bea4f06c27db9bab48b3de655bf
+Merge: 1e5a8f6 0fe96b4
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue May 8 22:22:57 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/PersonRanker.java
+
+commit 1e5a8f69f964343ff80ab522b7f6c7e70fa47717
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue May 8 22:12:00 2012 +0100
+
+    hopefully mended BadTokenException; added logs to find bug in removeTooFarAwayFriends()
+
+commit 0fe96b42c5e9f3226aefb89a95a55c9ebe0d5e54
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon May 7 16:01:04 2012 +0100
+
+    If the app doesn't find a location, will ask the user to provide one
+
+commit 1862f65969ec7be3c6f18283bfb05949b20a87de
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon May 7 15:21:57 2012 +0100
+
+    Fixed bug in ranking of friends
+
+commit 06fcea0cfca233c650098dd3c2abdb69f97d56e3
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun May 6 21:59:26 2012 +0100
+
+    location in ranking working
+
+commit af592c23bb5321234380463d3635acacb9672fd8
+Merge: b8b4fec a3ec844
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Sun May 6 21:51:21 2012 +0100
+
+    Merge branch 'master' of https://krithel@github.com/Dimappers/Pub.git
+
+commit a3ec84432573a2c2a9acbb2044c321402d477415
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun May 6 21:50:55 2012 +0100
+
+    mended
+
+commit b8b4feca29aa640ad64330e4cda804ff1ef4e7bc
+Merge: 472d986 df92132
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Sun May 6 21:12:14 2012 +0100
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit 472d986d9c6daa2c32923c486fb52089e69c3e53
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Sun May 6 21:11:51 2012 +0100
+
+    No idea what this change is
+
+commit df92132b4f2a2a9c1cc7a013cc23db3409daeeee
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun May 6 20:58:39 2012 +0100
+
+    changing location from being stored in User to being stored in AppUser
+
+commit 941ea9f5fdd81e9747f507feedd8c9115247ee97
+Merge: 0341f70 4bd5000
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun May 6 20:34:54 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 4bd500039205fb8cff43ab7ff2f6ac39021aed52
+Merge: 97a80e8 a18d051
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Sun May 6 19:47:17 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 97a80e8a8950624c1d75cf869b040ef949ff34df
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Sun May 6 19:46:36 2012 +0100
+
+    UI Fix - Text too high and list black when scrolled in Organise
+    
+    	Redesigned events colouring
+
+commit 0341f70242a8c10507ef8487fba86422c3112a78
+Merge: 0984bad a18d051
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun May 6 18:08:10 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit a18d05135051f99a34462d623f20aa66f4dbd7e6
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun May 6 18:01:08 2012 +0100
+
+    Added refresh button on the options menu for host events and user invites
+
+commit 0984bade4745b05b37da938e54f4105083147edd
+Merge: 1fe961d 5277f82
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun May 6 17:26:19 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 322ddee5cb63bc977cf131b2976baefaaa913124
+Merge: f4633c0 5277f82
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun May 6 17:12:39 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit f4633c0785fd48dda3bd2ee49ed17d45e63d86a1
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun May 6 17:12:23 2012 +0100
+
+    Fixed  bugs coming from updating the event on the new return messages
+    
+    HostEvents & UserInvites update with new data
+
+commit a5aaadd32e76e102d5e18184c8a0d143d6e38dd4
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun May 6 01:26:26 2012 +0100
+
+    All messages that didn't return anything now return latest info about that event
+
+commit 1fe961db273c1fe0db39a9e1f2c80134b0389ddb
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun May 6 01:24:52 2012 +0100
+
+    hooking up historystore
+
+commit 5277f82544d39666daa44cf04a46bf46a466b9ac
+Merge: 70c549e 22a62d2
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sun May 6 01:09:19 2012 +0100
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit 70c549e7cb35243f12acbce072c54236029d9962
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sun May 6 01:09:05 2012 +0100
+
+    Dialog box in host events changed to look nicer
+
+commit 8b0ce4cc19309c5ca4647a6df50b58e8d4d0a3cc
+Merge: 71470d0 22a62d2
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun May 6 01:08:12 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 71470d0d74de860e8175fab271a409c1f14cf37c
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun May 6 01:08:00 2012 +0100
+
+    mended time-delayed notifications
+
+commit 22a62d29dccefe19baaec1aeac1523945aaf53ca
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun May 6 00:08:58 2012 +0100
+
+    Delete the event after adding it to the history store
+
+commit 0d98bb946e67abcefe6e25b0a472615d58e686bc
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat May 5 23:56:51 2012 +0100
+
+    Wrote method to add an event to the history store when it has happened
+
+commit 32c1035f661272da0df7d4ad79603e03ce64411c
+Merge: 9761a9d 7a5d891
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat May 5 23:26:34 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 9761a9da923e95907d2e52dd7e21a9d068c4e1e1
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat May 5 23:25:53 2012 +0100
+
+    Can no longer long press on categories
+    
+    Server won't notify you when you confirm your own event
+
+commit 7a5d891ca78028bc2b61726de92262b2a718e4c2
+Merge: edb8f3f a8cc517
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sat May 5 22:58:49 2012 +0100
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit edb8f3f331b3671179100fde13ec022e4cfc69a8
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sat May 5 22:58:34 2012 +0100
+
+    Messaging is complete. Can now send and receive messages, dialog box still being upgraded
+
+commit a8cc5177fd0925797a48605c501bac1a2191698c
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat May 5 17:05:09 2012 +0100
+
+    Implemented hold menus for Current Events
+
+commit 8c1c67326875301de64455bce230c20cd7bc1b9d
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri May 4 15:47:07 2012 +0100
+
+    Fixed bug where replies to an event notification took host to wrong screen
+    
+    Organise asks to confirm if you back out before saving or sending
+    Organise asks to confirm after editing an event (if you make changes), if you abandon changes, reverts to last version
+    Organise asks to confirm after editing a sent event (if you make changes) if you abandon, it reverts to last, if you keep it sends them to the server
+
+commit 02bee5633f5b6d194c654f3caafcb0aaf92f32b8
+Merge: fc5c661 8e9a949
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Fri May 4 15:13:36 2012 +0100
+
+    Merge conflict resolved
+
+commit fc5c6613cdd5babecf70bc6a2e55ab6514784a71
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Fri May 4 15:03:53 2012 +0100
+
+    Working on the messaging
+
+commit 8e9a949ccb7ea7091efaf1e96fb2a7566bbfafea
+Merge: 0650f1f ef9a3eb
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri May 4 00:07:49 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 0650f1f0024671469927d3abba94b3f6258295e7
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri May 4 00:06:31 2012 +0100
+
+    Fixed bug where invited events would be added to sent events
+    
+    Calendar time only shows up if later than the start time
+    When host updates an event, updates their free from time to match
+    Currently commented Kim's location stuff out due to bug in MergeSort
+
+commit ef9a3eb42efb0822013de12e967b0541b4b58349
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu May 3 18:59:06 2012 +0100
+
+    catching problems caused by Exception if unable to connect to Facebook (e.g. for OAuth Errors)
+
+commit 6ae0d089764816c6fe4d74566164206291d5489d
+Merge: a9136d1 b1c35bf
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu May 3 16:49:28 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit a9136d1144277cd3cd410e2a40bc82e32b1ddc0a
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu May 3 16:49:04 2012 +0100
+
+    uses facebook locations in ranking algorithm!!
+
+commit b1c35bf95fbc555e3b906bf3c3982fb19943a6a9
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu May 3 13:39:02 2012 +0100
+
+    Individual requests now find out what has changed
+    
+    Notifications for different things implemented
+
+commit 57b5bc3e3675ef738eebaeec2262df55768cc77b
+Merge: e37bf7a af967a1
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 2 22:09:44 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit e37bf7a9b1383d418bc7d7c110de3a92c5dca0d6
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 2 22:09:12 2012 +0100
+
+    Began work on new notifications
+
+commit af967a12a46f7d3cd613fcf257374ea2bca9bdc1
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed May 2 22:02:40 2012 +0100
+
+    mended key for pub locations & implemented change location dialog when no locations are returned from Google
+
+commit d3fea5228339faa32548f8519d8a64304ba92635
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed May 2 17:57:13 2012 +0100
+
+    CurrentEvents now updates when it's opened
+
+commit f803d102ce7925851db56d9b0afc44d13deb43d7
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed May 2 17:37:07 2012 +0100
+
+    cancel/delete menu buttons update when an event is sent
+
+commit 1050c738c8a8f0a8b48cebf8b33dec0ddf12224c
+Merge: 21ea435 d3d4b1a
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed May 2 17:04:50 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 21ea4353bf1dfe8f532083864174d5cc365c7912
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed May 2 17:03:35 2012 +0100
+
+    implemented data request for updates about a single pub event
+
+commit d3d4b1a80b5af62f66e1ce471d0c341f42853ce7
+Merge: 999d289 4ae94ff
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 2 14:40:58 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 999d2894179784a03e53062cf5ba1b6576c1a30c
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed May 2 14:40:04 2012 +0100
+
+    Can now cancel events - they show up as red in CurrentEvents (we may want to remove them, but this will involve being clever)
+    
+    Changed to constant string for the generic dictionary that contains sent pub events
+
+commit 4ae94ffabbda8a6b147d7d69cc00b6e9d8ac211c
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed May 2 13:40:42 2012 +0100
+
+    updates HostEvents when send is clicked
+
+commit 49a73ff13f9503db92ceea3b0112d664f947e04f
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue May 1 20:49:25 2012 +0100
+
+    implemented get individual update message, made delete/cancel button appear on HostEvents correctly & made HostEvents update after an event has been editted.
+
+commit 555da89982dbfd3f5ba0aa7239eff5119e727e6d
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue May 1 19:11:29 2012 +0100
+
+    timey messagey stuff
+
+commit bdf26a3c05485cbc68aead4c3561827b840de3a1
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Apr 29 19:11:31 2012 +0100
+
+    Guests now get put to the top when ticked but only on entry to the screen
+
+commit 75483542749b4d39477d25ef67d3adac02148008
+Merge: da5a390 6803e0a
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Apr 20 01:59:58 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit da5a390cd27835d30adaa23d049bf34b5d336422
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Apr 20 01:59:41 2012 +0100
+
+    update on enter userinvites event; changed how button sizes are worked out
+
+commit 6803e0a6cf3d3cd57280a0b11fbbed302d270dca
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Apr 20 01:51:55 2012 +0100
+
+    Fixed bug where confirm deny does not actually send anything
+    
+    When you call refresh automatically adds them to the service
+    HostEvents refresh when you go in to it
+    Hosted events aren't added to invited events list
+
+commit 3d8f9393e016853a6d082c127ed8cc035e87a273
+Merge: 07c413f 1ae2300
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Apr 20 01:10:58 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 07c413f1dbc36ab463e6d4d47619be5b137e5ed4
+Merge: 7999586 53fc892
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Apr 20 01:10:38 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/HostEvents.java
+
+commit 1ae230089e1c715df12aaee2e02c38f769187a7c
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Apr 20 00:58:20 2012 +0100
+
+    sends responsemessage when buttons are clicked & also sends time when it has been changed
+
+commit 7999586314b248e2beadf4b192f1885234348096
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Apr 20 00:49:57 2012 +0100
+
+    Now says "up for it" once a person replies positively, nah if negative, time if selected different time
+
+commit 53fc8929a56bc7a2bef4f82cfcef9f41516c5e7c
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu Apr 19 23:59:44 2012 +0100
+
+    Comments made to host now can be seen but not finished article
+
+commit 520f6fd56d11093cc11fd36d186dfbb2b349aa26
+Merge: 2758542 373b8a0
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu Apr 19 20:06:20 2012 +0100
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit 2758542c6f70bb4011575a000c1e9d1a5772dc46
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu Apr 19 20:06:11 2012 +0100
+
+    Implementing seeing message sent to host
+
+commit 373b8a075bf4de9ffedc16b6218a2602c62f5af3
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Apr 19 19:54:28 2012 +0100
+
+    mended changing time in organise & not unbinding in notificationalarmmanager
+
+commit 3af802a53dca90ab73ea45083c1f2b757a93a528
+Merge: 4f55ddb 7c57915
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Apr 19 18:52:22 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 4f55ddbd5c2adaff763c83a81ade3b014620773b
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Apr 19 18:51:21 2012 +0100
+
+    Made it's on and count down timer appear in correct position on host_events
+
+commit 7c57915061b4496e22369b55605e942b3c923644
+Merge: 4332edd 969b6ac
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Apr 19 18:24:34 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 4332edda9e34c41b5b0ff43a12f35ac04d75c12f
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Apr 19 18:24:21 2012 +0100
+
+    time picker implemented for guests' response
+
+commit 969b6ac50ccbda93a018844f7d125b9afa2af80b
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Apr 19 17:34:55 2012 +0100
+
+    AuthKey and Expiry date now stored in the DataStore so service shouldn't crash if restarted!
+
+commit 1a0ead0286d32de37fb6694b668174570feba601
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu Apr 19 15:53:39 2012 +0100
+
+    When you write a comment as a user, the server shall receive
+
+commit 92462a396f34268c642452f82ba2b0007f52ee89
+Merge: 56ee1a3 d7b7abe
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu Apr 19 15:01:07 2012 +0100
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit d7b7abeacb45401185e90adcb219c87e636eaf90
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Apr 19 14:59:51 2012 +0100
+
+    Fixed bug where new invited event were added to the wrong list
+
+commit e4596169ba33c2f42ee4eeb8af7ee83127e99a17
+Merge: 66c2a85 8447924
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Apr 19 14:59:22 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/Guests.java
+
+commit 66c2a85f0f680a5c72003032bf49a77a79d9b4ef
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Apr 19 14:04:33 2012 +0100
+
+    Screen shots from the app
+
+commit 56ee1a3feb07f84b29fd5c7dfc4969ce562c651a
+Merge: b182ac3 8447924
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu Apr 19 13:47:19 2012 +0100
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit 84479244f8872d3263c329f0375e8bdb4c8189df
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Apr 19 11:41:57 2012 +0100
+
+    mended Tom randomly breaking things again :P should now work when not plugged into a computer
+
+commit abacf6f567734d0e5d752b1c5ff4db0a99d6ed86
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Apr 16 22:46:43 2012 +0100
+
+    can no longer remove a guest from a sent event
+
+commit 1484660ecd992e30778214e1a336f87fadb0c692
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat Apr 14 13:12:57 2012 +0100
+
+    Reorder the list when people select guests - the ordering is lost when you go back in as resorted each time
+
+commit f096c47f2759bb931ddb18bef6bc96dd319eb210
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Apr 13 22:56:30 2012 +0100
+
+    implemented reminder to click "it's on"
+
+commit 920ed8151e8237abe8da30eb7879b285d11283e6
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Apr 13 15:11:38 2012 +0100
+
+    fix
+
+commit 13a23c9cbfbbe23a8d6dfb08daa67fee76291cfa
+Merge: 562b77b b9d2ed5
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Apr 13 00:20:15 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 562b77b095d5b959ec089029305b38126fdd820b
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Apr 13 00:13:00 2012 +0100
+
+    Error shows when you click send from a saved event
+    
+    Logged in user stored in StoredData which is saved and loaded so in theory if service restarted will load the user back in
+
+commit b9d2ed5a200c36040d5b6c24afaa7815bffc283b
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Apr 12 23:41:30 2012 +0100
+
+    added prog bar to ChoosePub; mended a few NullPointers when entering screens from unusual places (e.g. from a notification)
+
+commit 16df467026a2f3338bb6aab36de2a00b4ce04844
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu Apr 12 10:29:27 2012 +0100
+
+    More of the GUI added
+
+commit 8b20c17eaa7b65aba3f786431f78262062a2c4de
+Merge: 9932b94 a0b8f87
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu Apr 12 09:32:35 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/Organise.java
+
+commit 9932b94a5d3a43161d40c1495621e89d93e7cdd6
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu Apr 12 09:29:05 2012 +0100
+
+    Some GUI updates
+
+commit a0b8f871ff42fa6464e300ba6d31b8f44a3b311c
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Apr 6 21:19:55 2012 +0100
+
+    dealing with ZERO_RESULTS; NotificationAlarmManager generalisation
+    
+    dealt with getting zero_results for pubs from Google in Pending & Organise (after manually setting location)
+    NotificationAlarmManager can now provide different notifications
+    properly written user xml (read & write) for when we use the location (needs commenting out when we start using it)
+
+commit 1efea33b38e0918ce99be8b7b37b0af3c25fc06d
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Apr 6 20:04:58 2012 +0100
+
+    fix to PubEvent xml writer
+
+commit b182ac3fa112714cd612eec8f57c6a7226172674
+Merge: 37f9085 a129e1e
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu Apr 5 16:36:53 2012 +0100
+
+    Merge conflict resolved
+
+commit 37f9085e08c90ebee87104fd957c4c0ffadb53bd
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu Apr 5 16:25:34 2012 +0100
+
+    Send a comment and time suggested from a guest to server
+
+commit 752289aea5257f24e0d405f2b96e54440dffa163
+Merge: a53e8bb a129e1e
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sat Mar 31 17:46:52 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/Organise.java
+    	Source/App/src/dimappers/android/pub/PubService.java
+
+commit a53e8bb8f4cc1cbceab098568738411d7e398dac
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sat Mar 31 17:43:21 2012 +0100
+
+    started work on time-delayed notifications
+
+commit f365e9111a6485271a92677de0fed5f6bec9da5a
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sat Mar 31 17:26:11 2012 +0100
+
+    mended call-log ranking in PersonRanker so friends appear in correct order in Guests
+
+commit a129e1e7e778a821e82b69eab31ace13ad84a94a
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat Mar 31 16:14:40 2012 +0100
+
+    Changed the server response to a refresh to now include the kind of update the PubEvent has undergone (see PubData/UpdateType for details of types)
+
+commit 64aeb6ac7b835c2fa1ecdfa8130120a99bfd2b09
+Merge: db773fa 75bfaca
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Mar 30 00:58:02 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit db773facbd40a2131d2284e0d9b8de5078f36541
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Mar 30 00:55:12 2012 +0100
+
+    Implemented a DataRequest for saying an event is on
+    
+    Server handling for new its on message
+    Tidied up existing data requests
+    Implemented a count down clock once you click its on!
+
+commit 75bfacae47dbc70d6fc9bb06005108110b40bdf0
+Merge: bc62053 487b4cd
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 29 12:47:55 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit bc62053aa6a4642f440920c39248e76fea4d21f0
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 29 12:44:51 2012 +0100
+
+    implemented update button
+
+commit 487b4cde36c5eb2c2b553db83e868bed969c7c1f
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 29 12:09:00 2012 +0100
+
+    Can now back out of guests
+
+commit 8c955a79b9cf75403963ddb3da1556a695e4557a
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu Mar 29 10:52:17 2012 +0100
+
+    Added custom font
+    
+    Organise has GUI (minus save etc buttons)
+
+commit 71b414548830a6e6f192f75b048c505cb1b19ee9
+Merge: deb0a1c 4823bf7
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 29 01:01:40 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit deb0a1c357b23067eb5ae6c7f8afc74867949912
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 29 01:00:32 2012 +0100
+
+    added "it's on!" button; mended time finder; sorted out outofdates so they now work :); mended choosepub so it now contains a pub list again (TODO: optimise sorting of this)
+
+commit 4823bf77fe86a990d246a4d0d7432ab9abde0d0b
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 29 00:49:47 2012 +0100
+
+    Wrote (but not used anywhere) messages for saying its on or not
+
+commit 91ee50fcb4aee95b505e57e85413c2dbe82e8ef4
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 29 00:21:28 2012 +0100
+
+    Implemented average pub event
+
+commit 17e8aa74f458e81f75512b1364d1708c7b8d5dc0
+Merge: 68f78c0 1c299d4
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 29 00:13:13 2012 +0100
+
+    Merge remote branch 'origin/HEAD'
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/Organise.java
+
+commit 68f78c075383f6bd8d48236a3a04f63a7d0f845b
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 29 00:05:56 2012 +0100
+
+    Ooops missed a bracket :S
+
+commit 1c299d4d08f3ae3cedae3d9a9448a4f535ac650d
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 29 00:05:56 2012 +0100
+
+    Now long hold on guests to get to rank break down
+
+commit bd1db0f33a00889b9e1f671ad750f183d1696653
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 29 00:03:08 2012 +0100
+
+    Implemented search of friends
+
+commit e6089ed394652b1b94534617b6dc3fd59b785276
+Merge: 6885aab d7478fe
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed Mar 28 23:26:56 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 6885aab00da7dff0812f7ae0c5f0e5b5f7a93743
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed Mar 28 23:26:41 2012 +0100
+
+    mending User saving
+
+commit d7478fe140c9658187154757c1c453934cd2f40f
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed Mar 28 23:20:41 2012 +0100
+
+    When an event is sent is deleted from saved
+
+commit e465ec630eeaf0d05a8b1a0eb9e27486493372b9
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed Mar 28 22:57:52 2012 +0100
+
+    added host to userinvites screen; made user write/read it's location to xml; tidied up some layouts
+
+commit 1e6dd09ee52ec914c2a45f22a3be4c57ee184b65
+Merge: 75cf2de 4a962ac
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed Mar 28 00:13:05 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 75cf2de0830c2ca04fa544150e0d79cd51db42ce
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed Mar 28 00:12:48 2012 +0100
+
+    optimising call-log ranking (inc all 3 versions)
+
+commit 4a962ac865f0173fe180979720ae1fb92617b526
+Merge: 83fba56 359f2b8
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Mar 27 20:59:09 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 83fba566406c5871cacdb9b92e3f95f3dad184c6
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Mar 27 20:58:49 2012 +0100
+
+    Fixed bug where if you start up app and get some event you host won't notify and will categorise it correctly
+
+commit 359f2b8fd219705d9d50e1e1f722fc2a5fa03763
+Merge: cabdcbe 795d39f
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Mar 27 20:51:52 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit cabdcbe808af426a1ad5eb043d1a14406d6e6157
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Mar 27 20:51:29 2012 +0100
+
+    using call logs in ranking algorithm
+
+commit 795d39f3ad889c0c276b83fc8ce5ea2e72ed4b07
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Mar 27 20:19:48 2012 +0100
+
+    In theory HostEvents can now handle when users in an event aren't AppUsers but have not tested
+    
+    This required moving all classes in to the HostEvents class hence the large quantity of apparent changes
+
+commit 6e68c5acdf1bcadfbbeaa2ec2776329383c80b3a
+Merge: 794ab92 7d4ffb3
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Mar 27 19:53:25 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 794ab92822155f33e305f85b38ac1ef70c546709
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Mar 27 19:53:09 2012 +0100
+
+    Make the send button work after you have hit save
+
+commit 7d4ffb36e2dcfa32548681a953fa2199ce83cdfa
+Merge: 9effe62 5224293
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Mar 27 19:11:28 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 9effe62355bf0c4260658c2166f127cb2162d245
+Merge: 31c1171 639525c
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Mar 27 17:12:56 2012 +0100
+
+    Merge remote-tracking branch 'origin/master'
+
+commit 31c1171ee0054ee8275243114964ee9f31ea4da5
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Mar 27 17:11:38 2012 +0100
+
+    manual location setting works with data requests
+    
+    BUG: pub list doesn't appear in ChoosePubs when a manual location is used
+
+commit 5224293295bf9345cb6f4f7ef18977dbbc4578a5
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Mar 27 16:37:31 2012 +0100
+
+    Fixed bug where couldn't go through pending if had already got pub list
+
+commit 639525c5fcab0746bd38ba7314c10f41dc1d07f0
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Mar 27 15:22:03 2012 +0100
+
+    Can manually refresh & app does full refresh on start
+    
+    Fixed bug where event was being passed rather than event id which was stopping names appearing
+
+commit fab57b1e24b51efda2ef3c4129d7344ce0279fae
+Merge: 33f695e 5b92433
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Mar 27 14:58:20 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 5b924337896aead33dde991d6ea1de44fa06d3f8
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Mar 27 14:25:12 2012 +0100
+
+    Fixed bug in PersonRanker on photos with comments
+
+commit 33f695e22ccd2e7a1d23421768722574e085ee15
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Mar 27 14:01:09 2012 +0100
+
+    finds current location when editing from a saved event, also saves current location in user
+
+commit b5f3e9d3b9b338b29db4a1a9eb89ff82e6c7c10b
+Merge: 302846a a1c6b32
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Mar 27 13:37:10 2012 +0100
+
+    Merge remote branch 'origin/HEAD'
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/DataRequestPubFinder.java
+
+commit 302846a14f601dcd0843f6fa79b610088741ec1c
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Mar 27 13:33:40 2012 +0100
+
+    Implemented messaging to the sever (not fully tested)
+
+commit a1c6b32799fc42d9678874304d9e08fa29032b4a
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Mar 27 01:57:13 2012 +0100
+
+    some location bug fixing
+
+commit 9d897836cffe7d5c159532bfa8d8b5c9eb171a77
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Mar 25 23:14:37 2012 +0100
+
+    micro-optimisation (when you are the facebook id found in a post)
+
+commit 44f9060c2c3cb5e5a8eba47ac389ff7cf88db1af
+Merge: f8a49cc d036d4d
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Mar 25 23:07:21 2012 +0100
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit f8a49cc9ee501157d9cf20c0ae05a583060de6bd
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Mar 25 23:07:07 2012 +0100
+
+    mended my copy-and-paste errors
+
+commit d036d4d4e76b6ca73619cb29b92bf9c9f80c8181
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Mar 25 22:43:52 2012 +0100
+
+    Server stuff minor modifications
+
+commit 53f0e38093d9f55b6297a13d6e2f355899c5c1a8
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Mar 25 21:59:16 2012 +0100
+
+    mended location bug
+    
+    added some more finding out what information's out of date
+    started investigating breakdown of chosen friends (if need to get to choosing guests list, change the if(false) bit to true in Organise)
+
+commit 6fa5f7b5d70d694e955de64b668de81c7bde36a6
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 22 15:15:15 2012 +0000
+
+    added error dialog when getting facebook posts/photos, removed horizontal orientation
+
+commit 4027f78aff9b2d98c9de37a94233a326dbcda1bf
+Merge: 9689fb7 3a31543
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 22 14:47:38 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 9689fb76466c46d55ded10a3eedd26582de80d7a
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 22 14:47:15 2012 +0000
+
+    made data be able to go out of date
+
+commit 3a31543a3246f5fb2fa4bb8ac822233f2ffcfd48
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 22 14:25:24 2012 +0000
+
+    Server picks up on end of message
+
+commit f013c8c6afa9a90841372e24ff9e8e1060e9355a
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 22 12:03:00 2012 +0000
+
+    Test code for new Event being received
+
+commit e5be8ba31d75cbfc805663ecabf9620255ec813f
+Merge: e203e08 3a5548b
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu Mar 22 11:42:03 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/res/layout/main_hor.xml
+
+commit e203e08d9a8dce6ac363dee953c5831efcee8677
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu Mar 22 11:24:54 2012 +0000
+
+    GUI for main and main_hor
+
+commit 3a5548bd461855ad4d5fba01f7af985936ce1dbf
+Merge: b6b025c f3301fd
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed Mar 21 21:03:00 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit b6b025c8694ca7420dddcf4a136ff06c8b141ab2
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed Mar 21 21:02:34 2012 +0000
+
+    added loading bar to main screen for when authenticating with facebook
+
+commit f3301fdf7266d576db832bbe16416d4465306eba
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Wed Mar 21 19:38:36 2012 +0000
+
+    (Half) Implemented the XML reciever in the server and the tests update to send XML.
+
+commit a22608da3a34adc497bd16fc11110762a18bb30c
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed Mar 21 13:45:00 2012 +0000
+
+    Fixed bug wherer clicking save the HostEvents screen would now show you send edit buttons
+
+commit d21594e5c18816a71238b85797714f3e9704c7b8
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Wed Mar 21 12:06:19 2012 +0000
+
+    fixed ticked boxes in guests class
+
+commit 294fde03e29e693b192a77acbd5f531c24e059f3
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Mar 20 13:57:06 2012 +0000
+
+    Fixed build for emulator - still run in emulator mode if you are on the emulator (emulators don't have locations) but facebook will now work
+
+commit fd963b47b9baeff1260ac3aa58730925587551f5
+Merge: 05678d7 1b94e7f
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Mar 19 23:29:38 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 05678d7917fa38bf371d7fae7e2bcdd3363f758c
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Mar 19 23:29:25 2012 +0000
+
+    fixed bug caused by removing empty bundle
+
+commit 1b94e7f2424ddb591d66981b00052c66fc2967f6
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Mar 19 23:28:13 2012 +0000
+
+    Fixed bug in tag searching
+
+commit 0c86235d7c56483bb00864a965e5354e1983a9ad
+Merge: 2c9a173 4d1f5a1
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Mar 19 23:20:20 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/Pending.java
+
+commit 2c9a173c6d7291f1b3afaeb74ad06d3c391451f2
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Mar 19 23:17:53 2012 +0000
+
+    made getting your facebook information into an async task so it doesn't freeze up the ui
+
+commit 4d1f5a1e990461575d2cca7341349437de14fc44
+Merge: 6753369 145bf82
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Mar 19 23:05:25 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 6753369992b5ab90935642a54910e0f9fb3af0e7
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Mar 19 23:05:11 2012 +0000
+
+    Instead of serialising the whole event now just pass round event id
+
+commit 145bf82ad8e77ee5c2f6395a8ddffbbbfc208e85
+Merge: b5ceb0b e2258e1
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Mar 19 22:03:11 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit b5ceb0b85cd4dd04dbf9d275cf5601a2019a9540
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Mar 19 22:02:52 2012 +0000
+
+    Place (etc.) & XmlableString are now actually xmlable
+
+commit e2258e108a3321063dd41019e2a1f33911510550
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Mar 19 21:43:50 2012 +0000
+
+    Made notifications buzz
+
+commit cd8da511ae73c28b913799004ecdc4b5581dd728
+Merge: 87850a8 490ea40
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Mar 19 18:48:22 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 87850a85ec4a4da5778271a9f10db02142a9a019
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Mar 19 18:48:02 2012 +0000
+
+    mended bug with not saving average number of people in HistoryStore
+
+commit 490ea40bdd5d9bb0d54935be970e7df9520a2262
+Merge: e393c2e e54d371
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Mar 19 18:34:27 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit e393c2e9f0167c34faf0ddaf54a56262eea5e64d
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Mar 19 18:34:17 2012 +0000
+
+    Fixed bug in DataRequestGetFacebook where it would onComplete twice
+    
+    Created adapter for UserInvites so can get facebook names in a data request, will also allow us to hide display message icon if there is a message etc
+
+commit e54d3719848a7a0909f0a1d8aa05c581fb87448d
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Mar 19 17:53:20 2012 +0000
+
+    finding name of current location as a data request
+
+commit 8638c9b3e137196a9b6d95b4714436571df20017
+Merge: 4259951 5d3d79d
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Mar 19 16:35:49 2012 +0000
+
+    Merge remote branch 'origin/HEAD'
+
+commit 4259951e1b6e1cd21c90d44b8c8c8fb2bdbcd076
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Mar 19 16:35:42 2012 +0000
+
+    Test code for new event (commented out)
+
+commit beb9acec18d22f669e093ad0d56f73fa4ef05cd4
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Mar 19 16:25:19 2012 +0000
+
+    Fixed bug where would attempt to send refresh message before DataSender was running
+
+commit 5d3d79dbefe860a8e362db5ad78a309940e07946
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Mar 18 23:12:15 2012 +0000
+
+    stopped throwing exceptions when getting information from facebook posts JSONObject
+
+commit 33412a7b0bad8bd2508c65ad940946791b27ba21
+Merge: 291452a 440fe65
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Mar 18 21:39:04 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 440fe655a612a466d5d1f6f538473126cccae9b4
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Mar 18 21:38:48 2012 +0000
+
+    Check have made an average event before adding to the list
+
+commit 291452a4b3ab2a9b671a46037a7c6f6fc97821ec
+Merge: 403524f 133ac30
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Mar 18 21:32:21 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 133ac308a5b3c69bcf4afbb51bfc207ad41e60a7
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Mar 18 21:31:55 2012 +0000
+
+    Fixed bug relating to loading after saving pre history store
+
+commit 403524ff65c36a08d3a67a126abe4151c75b816b
+Merge: 9ff9475 939e6cb
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Mar 18 21:29:06 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 939e6cb30a8d3078047e09b819a221b4943b080f
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Mar 18 21:28:38 2012 +0000
+
+    Fixed bug in HistoryStore
+    
+    Clicking on notifications sets up correct stack
+
+commit 9ff9475c5b5a360ff3676028401b64c5a10eecf2
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Mar 18 21:28:35 2012 +0000
+
+    hours working for timepicker
+
+commit 3cfb12c68e2962eac879467912331a43b4a4b394
+Merge: 0b76fe2 043d2a2
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Mar 18 18:40:46 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/Pending.java
+
+commit 0b76fe2e798df05991a5328bc7b7e97e75b82d8f
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Mar 18 18:39:18 2012 +0000
+
+    implementing custom timepicker in ChooseTime - note: hour buttons don't work
+
+commit 043d2a26f805df68f503c8268e2113c83fd3d5e9
+Merge: ecbfb9a 8b72691
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Mar 18 16:11:30 2012 +0000
+
+    Merge remote branch 'origin/master'
+
+commit ecbfb9a109ceb5cd5defa40602e28512e4391bf6
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Mar 18 15:46:40 2012 +0000
+
+    Missed file from last commit
+
+commit 8b7269113ef34f89b4776b0ab0a2835413e96ed4
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Mar 18 15:46:40 2012 +0000
+
+    Implemented basic functionality of HistoryStore
+
+commit 00dd6ec8d9d239ea3649331db5fa0535c49ea5a8
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Mar 18 14:25:50 2012 +0000
+
+    Implemented DataRequestUpdateEvent - still needs checking
+
+commit 582ea0df46b223ab7ec2c441d6a4bd54f77f09ce
+Merge: aff71f8 152696d
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat Mar 17 22:59:56 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit aff71f84c33b89fdb80b87f84bf1c96179d29177
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat Mar 17 22:58:36 2012 +0000
+
+    Implemented DataRequestSendResponse
+
+commit 152696d057b698d7628e11b438431ecae9f64236
+Merge: 1c4c8c3 aea8635
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sat Mar 17 22:39:47 2012 +0000
+
+    Merge remote-tracking branch 'origin/master'
+
+commit 1c4c8c3cd6f5e98e0ddd88ea985a20fe43909d96
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sat Mar 17 22:38:42 2012 +0000
+
+    mended error with getting posts from facebook
+    
+    implemented TimeFinder
+    changed AppGarden key
+
+commit aea8635aeca22a7ae8c6c99e0902c5e838104072
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat Mar 17 18:31:05 2012 +0000
+
+    MARK READ THIS: Update MessageType comment to reflect new classes we should actually be sending & receiving
+
+commit c6c47d4b16080d3490c9e7c2a3dd0d38a1b7a9cc
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat Mar 17 18:29:04 2012 +0000
+
+    Commented out bit that reads from the server so doesn't crash :P
+
+commit b5318499321078c4a3d47e3a662677fefd98d6d2
+Merge: ccab189 cbb0cfe
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat Mar 17 18:08:21 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit ccab1894a8f016359d54e0d8bb3919e7c17fdd14
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat Mar 17 18:07:44 2012 +0000
+
+    Periodically calls DataRequestRefresh and notifies if if new events
+
+commit cbb0cfe0b3182bdc60d4e1e296f9395fa0231fe7
+Merge: 9dc713d 3ea10f9
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sat Mar 17 16:24:22 2012 +0000
+
+    Merge remote-tracking branch 'origin/master'
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/DataRequestGetFacebookPosts.java
+
+commit 3ea10f94685ba675a9e61430346ce2b2caa894a9
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Mar 16 19:20:19 2012 +0000
+
+    Fixed bug https://github.com/Dimappers/Pub/issues/95 where changes to an even wouldn't be reflected in CurrentEvents till you left & reentered the screen. Is a bit hacky...
+
+commit bb958629c75038a96ffc8d8cdec7cca8a75bb396
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Mar 16 18:27:22 2012 +0000
+
+    Post data times out after a week
+
+commit e55763d59bb7210215454958805e156c4998b99f
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Mar 16 18:02:16 2012 +0000
+
+    Fixed bug when cliking organise for the second time
+
+commit 9dc713d946aff2ec33ceab4fd360424d01425c2f
+Merge: c3d8485 34b3e71
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 15 15:30:50 2012 +0000
+
+    Merge remote-tracking branch 'origin/master'
+
+commit c3d8485d35831df852f9ff4d11f60393f26017a9
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 15 15:29:25 2012 +0000
+
+    sorted out sorting
+
+commit 34b3e71f4b40d187755ba17e572ecafb21f0ee18
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 15 15:06:23 2012 +0000
+
+    Removed a lot of the bundle stuff
+
+commit f4bf0b1951810c5e95f8c3b2b3a46e3b995e046e
+Merge: d331cd4 7171d65
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 15 13:38:34 2012 +0000
+
+    Merge branch 'TkTemp' of github.com:Dimappers/Pub
+
+commit d331cd416051caabb8992c1124ea43a2a195c0a6
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 15 13:38:01 2012 +0000
+
+    ChoosePub now uses data requests & the data request actually works
+
+commit 7171d655964c812af27530d0104d9f91783a140d
+Merge: 9c3118b 57734cf
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 15 13:19:24 2012 +0000
+
+    Merge branch 'TkTemp' of github.com:Dimappers/Pub into TkTemp
+
+commit 9c3118b973be242a259af941a0a53e403f5520dc
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 15 13:19:06 2012 +0000
+
+    Made updating list view on the ui thread in Guests
+
+commit 57734cf22ef6f9b426949687ac7972d4261bb956
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 15 12:46:29 2012 +0000
+
+    hooked up pub ranker
+
+commit d9a52ad48374e23fa2429cd9d71011994ba50a65
+Merge: c1f97be 151ae16
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 15 11:06:38 2012 +0000
+
+    Merge branch 'TkTemp' of github.com:Dimappers/Pub
+
+commit c1f97bee05b680ce0c44f3236dcc2a0d41f37d12
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 15 11:06:25 2012 +0000
+
+    mending errors with doing ui-y things not on ui-y thread
+
+commit 151ae166510877b03f8705b7eebce4d6750d5265
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 15 11:02:15 2012 +0000
+
+    Refactoring of pending
+
+commit 720c989307953a27408ffdfae98714190109f808
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 15 10:35:32 2012 +0000
+
+    Fixed final problem
+
+commit d521ffe065355e095eef986ce7b68edb69d039ec
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 15 10:23:37 2012 +0000
+
+    broken stuff
+
+commit 180fc07443ce402c56141dea788aebaa1aef2655
+Merge: 0d983dc a7e9cd2
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Mar 12 23:52:27 2012 +0000
+
+    Merge branch 'TkTemp' of github.com:Dimappers/Pub
+
+commit a7e9cd245d31397611e1b3736ebab266d701a246
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Mar 12 13:59:57 2012 +0000
+
+    Moved request complete out of try catch
+    
+    Added missing permissions for getting feed from facebook
+    Continued tidying up Pending
+    IRequestListener used in PersonRanker
+
+commit 0d983dce8beac8788b04f6df25bb36c402d481ed
+Merge: edf0cf6 4c76556
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Mar 9 17:00:00 2012 +0000
+
+    Merge remote-tracking branch 'origin/master'
+
+commit edf0cf62f7e20eea5cd0a3380b31c6ddd3214b7c
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 8 18:32:13 2012 +0000
+
+    place request data request created (not using it yet)
+
+commit a7a77c5a17adff1d166db851f4e293a64dd69fb4
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 8 18:30:26 2012 +0000
+
+    Began work on tidying up Pending and making all requests DataRequests
+
+commit 4c76556293a556da4415f6a0c0f2f6177b38698e
+Merge: 2ebd469 9eaca11
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 8 15:08:46 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/XmlJasonObject.java
+
+commit 2ebd469866e4c33897ca7021d9dc529a84093ccc
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 8 15:07:34 2012 +0000
+
+    Implemented expiry date for JasonObjects
+
+commit 9eaca1125f200a52bedd82f07ed8c7c7741c16d5
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 8 15:07:30 2012 +0000
+
+    data request stuff (untested)
+
+commit 577396caf9aba573b04cf6e9e6019ef96f1a38d4
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 8 14:49:00 2012 +0000
+
+    Implemented DataRequestGetPhotos
+
+commit 9027e34062f906cd0dc891ec25a145fe5036c197
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 8 14:35:56 2012 +0000
+
+    Implemented wrapper class for Jason
+
+commit db723381c3c7ed241c6e2b76a458b51d3e817d10
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 8 13:20:26 2012 +0000
+
+    using service to get friends
+
+commit 3a9a7c06e0923bf9c3e48a44e4c4268fb470fd99
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 8 12:11:01 2012 +0000
+
+    fixes
+
+commit f2cdc44d642bc661abaf3f3eb2f75e428a34dac7
+Merge: 12e00a1 c6346e8
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 8 11:53:53 2012 +0000
+
+    Merge remote-tracking branch 'origin/master' into KimTemp
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/Guests.java
+    	Source/App/src/dimappers/android/pub/LaunchApplication.java
+    	Source/App/src/dimappers/android/pub/Organise.java
+    	Source/App/src/dimappers/android/pub/PubService.java
+
+commit c6346e8d21bb76655028bf53eea78137e128dbe4
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 8 11:46:27 2012 +0000
+
+    Fixed bug with service being disconnect too early in Organise
+
+commit 12e00a1ed004a035ef4964fcd9ca80e44b0bd1ce
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 8 11:40:11 2012 +0000
+
+    facebook posts broken
+
+commit 3b4f766fa97b08b1aadcec982aca09df2ea24aab
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 8 11:25:53 2012 +0000
+
+    Service now saves if it is destroyed unexpectedly and when unbind doesn't work
+
+commit c925f3c9d672b80434992c00eaed2fd605aabd9c
+Merge: 48dadce ff861a5
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 8 11:03:47 2012 +0000
+
+    Merge branch 'TkTemp'
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/AppUser.java
+    	Source/App/src/dimappers/android/pub/Organise.java
+    	Source/PubData/src/dimappers/android/PubData/User.java
+
+commit 641775e825d5baf6bd5ca6e2fb65274d290a9a9d
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 8 11:10:42 2012 +0000
+
+    actually set location when we find one & made ranker easier to change
+
+commit ff861a5edabf85067494801f4ee22609659c50d7
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 8 10:54:10 2012 +0000
+
+    Implemented DataRequestGetFriends to background queue getting facebook friends
+    
+    Did some basic saving for generic stores but doesn't work
+    Implemented IXmlable to indicate a object that can be written to xml
+    Automated saving and loading so handled by the service at relevant times
+    Added some unbinds to the service
+    Tidied up some logs
+
+commit 667e3b511c7398c37feff9dd834b3621d541c2b7
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 8 10:10:28 2012 +0000
+
+    added comments
+
+commit d58ffd8249f58902c76d8e8d2ddec37a848de09f
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sat Mar 3 19:37:09 2012 +0000
+
+    made PersonRanker work (very very inefficiently - needs moving to service!)
+    
+    made organise scrollable
+    deleting ChooseGuest
+
+commit e1df9a46a7f30be752465b1dcf48cd3b7a3c8ed8
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sat Mar 3 01:33:22 2012 +0000
+
+    fix for PersonRanker & getting/analysing Facebook posts and photos
+
+commit 48dadceab9969808516ebaf30ebd431d55129a56
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Mar 2 22:37:02 2012 +0000
+
+    made app work on emulator again
+    
+    changed so screens don't change when the phone is tilted (i.e. disabled horizontal mode)
+    hopefully made it so any number of guests can be added to Organise & still able to click the save button
+    added host to the guest list on Organise screen
+
+commit 58a4aebbdbe5f95115c503c306b37a81eaa491be
+Merge: 68ccd5d 6a169ce
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Mar 2 20:27:48 2012 +0000
+
+    Merge remote-tracking branch 'origin/master' into KimTemp
+
+commit 68ccd5d56f6b16023d8d011b1c05f8abccecbae0
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Mar 2 20:26:42 2012 +0000
+
+    app working with *Ranker, but they currently don't do anything
+
+commit 88b49fce31b4aac8dc8069494f8ee1f816b62f18
+Merge: dca35f1 3f46cc2
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Mar 2 20:10:19 2012 +0000
+
+    Merge branch 'KimTemp' of github.com:Dimappers/Pub into KimTemp
+
+commit 7975dab531d19ffb60dcd128d510430fb2711cad
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Mar 1 14:17:13 2012 +0000
+
+    Renamed requests
+
+commit dca35f19e1288bdf0e571ed48a523a4f70306456
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Feb 27 21:05:23 2012 +0000
+
+    started work on rankers (very crash-y & incomplete)
+
+commit 8ce4b1de1722ea2b44e888da1ae288a35dbff9a0
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Mar 1 10:21:30 2012 +0000
+
+    changed to User to AppUser
+
+commit c478493d37f0ce4e7034c16649fee2b5a83307a3
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed Feb 29 17:31:03 2012 +0000
+
+    Implemented some more data requests
+
+commit 6a169cedb09331bba1e70ed2ca1e54d7fdb87e5d
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed Feb 29 14:29:07 2012 +0000
+
+    Made build work on the emulator again (remember to set emulator to true in constants if you are using the emulator)
+
+commit 50d20ea15bccfefb00fd82e928a541de9063514d
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed Feb 29 00:44:57 2012 +0000
+
+    NewPubEvent stuff
+
+commit 0d1c3cff03c6464fcea471e404266b9c366a75a8
+Merge: 9e0775b c0d9001
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Feb 28 21:23:02 2012 +0000
+
+    Merge branch 'KimTest'
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/LaunchApplication.java
+
+commit 9e0775bf9045f737297129e78f025330b9d48f4b
+Merge: a03e6d6 41d2f23
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Feb 28 21:19:36 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 370954fae4c6eff34ef0c84193f34d01b48c4379
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Feb 28 14:59:04 2012 +0000
+
+    DataRequest don't have to specify a store
+
+commit fd68db992ee1601776d86f0ebbc6a3460cc39636
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Feb 28 14:27:45 2012 +0000
+
+    DataSender now executes generic data requests in a queue
+
+commit 49fa218d50ef7811cc51bfa06e247f0f31f988ce
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Feb 28 00:00:11 2012 +0000
+
+    Basic data queuing implemented
+
+commit 41d2f23f541f838037f7bbf22748e39c4e81e5e8
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 27 23:20:31 2012 +0000
+
+    Fixed bug with facebook being called before being retrieved from the service
+    
+    Urgent todo: make the app do something if in emulator mode
+
+commit c0d90019cda95594e4d86d6a8f5e33827f3fd6a1
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Feb 27 22:25:55 2012 +0000
+
+    fixed time & bug
+
+commit 2f94c1ce4c1b98aa353a50c4be2a9978c3900e49
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Feb 27 22:23:04 2012 +0000
+
+    fix
+
+commit a03e6d6b198552b927110025c84d075966e9b9d0
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Feb 27 22:15:18 2012 +0000
+
+    mended adding 1 to time
+
+commit 3f46cc2c11296111c413771a32bb7d25920a4774
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Feb 27 21:05:23 2012 +0000
+
+    started work on rankers (very crash-y & incomplete)
+
+commit 832df963b21ed04a7ea1db761e9464543fa68317
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 27 13:59:18 2012 +0000
+
+    Began work on generic data sender
+
+commit d4b4c4494bbf9cc2d21b6e33dc03ccf310ac52bb
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Feb 21 15:01:58 2012 +0000
+
+    Working on data receiver issuing notifications
+
+commit 2f543f859b01db90021227b8ed92672cfb1dd917
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 27 12:58:28 2012 +0000
+
+    Removed Facebook ID text box from front screen
+    
+    Store instance of facebook in the service
+
+commit 01b5b608c3df2fb60ef152ab935686bba9e9fdf2
+Merge: be612cc 60a7846
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Feb 24 17:28:19 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit be612cc13b01ef75b23a75e6c31eb4aff847ca28
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Feb 24 17:27:47 2012 +0000
+
+    changed buttons on host_events screen
+
+commit 60a7846216c854d370c7e3670c202300fa14cdc6
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Feb 24 17:26:38 2012 +0000
+
+    Switched to using AppUser on the app side so that names (rather than arbitary numbers) appear - not fully tested
+
+commit dae9da282613eee4d4d923cc7dfa0435414991ac
+Merge: e891003 7c511e9
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Feb 24 17:10:20 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit e89100368530c1d1ddd5c2b7826ba0a8f0b06aea
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Feb 24 17:08:10 2012 +0000
+
+    fixed bug with getting a location
+
+commit 7c511e91085eac05aec32139d73f0cd14b228699
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Feb 24 16:21:08 2012 +0000
+
+    Disables facebook if using emulator but still works as a skeleton app
+
+commit e83bd4c40ebf1a783afd9bafaed613f2acef8549
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Thu Feb 23 21:39:32 2012 +0000
+
+    Handled the changeover of the UserId from an Integer to a Long on the
+    server-side.
+
+commit 2bb0fed20c0c77f40579d37115dede4611269d08
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 23 17:52:18 2012 +0000
+
+    Went through TODOs and either made GitHub tasks or where they had already been done/weren't relevant deleted them
+
+commit b3c8197aef88b34063b7ddf4ff6af11ef8831a79
+Merge: 1e317f9 340425b
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 23 17:02:07 2012 +0000
+
+    Merge remote branch 'origin/master'
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/LaunchApplication.java
+
+commit 1e317f95cd258b7de5c3d43d77c61a84d2c37836
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 23 16:57:54 2012 +0000
+
+    Get person method to do facebook stuff when required
+
+commit 340425b7cc04ddb7ecfc4ae6cab1817a108a8d67
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 23 15:19:36 2012 +0000
+
+    Fixed bug where sending multiple events would override old ones as they have the same ID
+
+commit 0c5c3edb9d07dbc5209e8d2b3f49d099a4ded132
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 23 13:50:12 2012 +0000
+
+    Fixed couple of small bugs with sending
+    
+    Removed AppUser
+
+commit 274a75263ff6dda658e131a9fa60942710a02334
+Merge: 8c36b93 1e25cee
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 23 02:51:25 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/CurrentEvents.java
+
+commit 8c36b93214cf44e12ffccad7a2f7bb218989c590
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 23 02:45:47 2012 +0000
+
+    Major refactoring of CurrentEvents
+    
+    Put a queue into DataSender (still not sending stuff to server)
+
+commit 1e25ceee21f88b6f3f45b9babc6923501f1dee86
+Merge: 196cd59 2858fea
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 23 02:15:54 2012 +0000
+
+    Merge remote branch 'origin/master'
+
+commit 196cd597576aa7ecfe0715c9e6a94914599248bb
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 23 02:14:26 2012 +0000
+
+    moved send to server into service & tidied up UI for organise
+
+commit 2858fea6aa686bc108f699ce2303ff97bfcd075c
+Merge: a0f8ec8 496c5ba
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu Feb 23 01:00:33 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/Events.java
+
+commit a0f8ec8ad44ced66b2240c05d41c6d747951c94d
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Thu Feb 23 00:58:13 2012 +0000
+
+    Implementing facebook
+
+commit 496c5bad4135dda970d58820bc4c59413c7b7d1a
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Wed Feb 22 15:40:08 2012 +0000
+
+    Events class and xml deleted and currentEvents can now click on events without any errors appearing anywhere
+
+commit 03660268bcf8f3edae7f341350bcde6382187452
+Merge: ea34825 d102f2f
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Feb 21 19:59:13 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/CurrentEvents.java
+
+commit d102f2f0d2c946d043c5f1d4fe55aa2a539f5056
+Merge: 33247f7 68f22cf
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Feb 21 15:00:46 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 33247f7d27ff0c347b854ca4b4f7f122f996467d
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Feb 21 15:00:26 2012 +0000
+
+    And added crucial file for last commit
+
+commit 68f22cfdd20f28451233b2b099eeb4be29b03f1e
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Feb 21 14:43:47 2012 +0000
+
+    Refactored current events
+
+commit ea3482537121a148df8c4f11658635ad0974e5fa
+Merge: 03c82da b5208ca
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Feb 20 16:11:26 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/CurrentEvents.java
+
+commit 03c82da844237c2d4239aff7a889dc373610e794
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Feb 20 16:10:04 2012 +0000
+
+    merge fix
+
+commit b5208ca9095319e8612653b4ccfb46b09100e119
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 20 15:02:52 2012 +0000
+
+    Saves and loads using xml - needs tidying up
+
+commit 54a8485c08838d29de2d7cc7c1a7c69bb10dd47e
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 20 13:09:21 2012 +0000
+
+    Saved events (and hopefully all events) now show up in the list view
+    
+    Fixed bug with unbinding to the service
+    Removed all events from manifest - caused a crash
+    TODO: Tidy up CurrentEvents
+
+commit e81a69c38f09e39791c1c8b479dba2a19398b5fd
+Merge: 503a29a ad1acb9
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 20 12:00:26 2012 +0000
+
+    Merge branch 'TKTemp'
+
+commit ad1acb91c451e6a4c5a4e571627469a25fc0a8af
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 20 11:58:50 2012 +0000
+
+    Finished DataReceiver though currently using System.out and System.in as streams
+
+commit e37d37266e0d1c3e1c93503022768b625e631aef
+Merge: f0b32ed 503a29a
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Feb 20 00:35:14 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit f0b32eda084b1972da9fc27cb959386acc395486
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Feb 20 00:34:54 2012 +0000
+
+    created DataSender
+
+commit bfe3f03b4b072a61e210faf5afadbae8fddf7aff
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 20 00:13:33 2012 +0000
+
+    Continued working on DataReceiver
+
+commit b3d113e6f99fcf4aa83dd8ffffb0cf2e7e7b2486
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 20 00:11:49 2012 +0000
+
+    Started working on the DataReceiver
+
+commit 503a29a2ae0fd6741ba09caabc378b424204a002
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Mon Feb 20 00:08:28 2012 +0000
+
+    Right Okay. Everything working now, was an error, it just deleted my activity but all good and working. DONEgitgit
+
+commit bbaa3c654a56c45d34205faa72194bc424d63fc6
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Mon Feb 20 00:02:39 2012 +0000
+
+    Hopefully everything resolved
+
+commit 8bdb74cc92b484e6f7204311d017d0889563de32
+Merge: 92d7faa 6127e43
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sun Feb 19 23:56:14 2012 +0000
+
+    MCR
+
+commit 92d7faa6275d86ecb9c7de1d3535bc53e96eaf52
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sun Feb 19 23:55:15 2012 +0000
+
+    merge conflicts resolved
+
+commit 888e0f163f3fb0221fdcd2032a822816fa3efda8
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sun Feb 19 23:49:06 2012 +0000
+
+    merged changes
+
+commit 6127e43addc1582957edf3e3a97c3efb3bc6166d
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Feb 19 23:39:19 2012 +0000
+
+    created PubRanker & using it (but it effectively does nothing)
+
+commit f15a0a65e6b26f5b8d0d919f7e832384fe53f673
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sun Feb 19 23:37:53 2012 +0000
+
+    Merge conflicts
+
+commit ff7d7f81eed4a447a6fd4f9e892dd5b4f9049938
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sun Feb 19 23:27:57 2012 +0000
+
+    Commit changes
+
+commit c15f32c783f299064d8dcfd0f6e590be99ac59b4
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sun Feb 19 23:20:06 2012 +0000
+
+    commit
+
+commit 324aaf13bee04deba7574891d00b1019d451be0f
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sun Feb 19 23:19:00 2012 +0000
+
+    Commiting changes
+
+commit e798fc0d197d3baf311834445e08d7e5577ad34f
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sun Feb 19 23:10:42 2012 +0000
+
+    commiting
+
+commit 285ffae13f75020fbf5fac692aed6426171dbf8b
+Merge: 39a00c9 f5ef3b4
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Feb 19 21:29:01 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 37a67c6484abce3c4af409882757909ca66831fe
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sun Feb 19 21:28:31 2012 +0000
+
+    MCR
+
+commit e11963a91999cf6e96d710adc86dc3d884b7119e
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sun Feb 19 21:28:05 2012 +0000
+
+    MCR
+
+commit 39a00c9b5eb76edb4079340fa61372c04453016a
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Feb 19 21:25:47 2012 +0000
+
+    created some dialogs to tell user about errors
+
+commit 612c7db00305c59d265f555cf5991724927634be
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sun Feb 19 21:25:39 2012 +0000
+
+    Merge conflicts resolved
+
+commit 78845e90992e0c08dce27c3d1e8e6499a2218747
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sun Feb 19 21:23:49 2012 +0000
+
+    Merge conflicts resolved and updated CurrentEvents to be as similar to events as possible.
+
+commit 3a0c7c5ee038b72448af7b4f3423cdbd7bb31d32
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Sun Feb 19 17:54:14 2012 +0000
+
+    CurrentEvents finally completed, which is the list with headers. Note in launch application, the viewInvites should now go to CurrentEvents instead of Events. Events should no longer be used.
+
+commit f5ef3b47c647c0f28a10e3cf3d5fd131186e7cbb
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Feb 19 16:52:17 2012 +0000
+
+    Implemented all seriasable classes to now be able to export themselves as xml and load themselves from XML
+
+commit dd00394f24b6e5254839cd4500c8fcaef95ffd62
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Feb 19 12:28:35 2012 +0000
+
+    XML import/export for Acknoledgement, User, PubLocation
+    
+    Test for above
+
+commit bb8c58e4432b8ad093547c5c6d862ad191450cd9
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Feb 19 12:27:56 2012 +0000
+
+    Fixed class path for server, missed it last time :)
+
+commit 61b0fb714b85ec660c75fd09cdeb4320aef3479f
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Feb 19 11:40:19 2012 +0000
+
+    Fixed class paths using XML in other projects
+
+commit 9ba50c144c6d7800d5b1314c32cbc985d831a493
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat Feb 18 15:26:47 2012 +0000
+
+    Added Xml libs
+    
+    Basic xml writer for User (others to come)
+
+commit 7d2099d98eb527154239ee67df4d458f7f45e2fe
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat Feb 18 14:17:12 2012 +0000
+
+    Fixed bug in server when message type was not recognised
+
+commit 1af23f1aa3cacf0136335f8cd6f1100ea4b0c7e7
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat Feb 18 14:09:01 2012 +0000
+
+    Can now also delete events from the service
+
+commit 2381b994605c6e6599892230720d8d7985e3d67f
+Merge: 9190724 51d9e1a
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat Feb 18 14:01:23 2012 +0000
+
+    Merge branch 'TkTest'
+
+commit 51d9e1abe58f269b9ccea174966da296dabc95d3
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat Feb 18 14:00:40 2012 +0000
+
+    Can now interface with service
+    
+    -Can save events in to it
+    -Can read saved events out of it
+
+commit 91907241d5887ec0dda044b634bd11ed58a9798e
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 16 19:02:51 2012 +0000
+
+    created horizontal orientation screen for LaunchApplication
+
+commit 38b2ba80dd3ad55e259f9878d91ef6dbee0381ec
+Merge: 8f57226 5aa05fe
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 16 17:31:53 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 8f572266e3699e2581e2b0718ca89483a2532f4c
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 16 17:31:24 2012 +0000
+
+    Implemented basic functionality for the service to replace the data store
+
+commit 5aa05fef3e42518d4219c8a329f076509cdd4024
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 16 16:52:56 2012 +0000
+
+    tidying up
+
+commit c3dc6da0a5c3afb5c62141ca23d4f9a02ce94c4f
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 16 16:44:31 2012 +0000
+
+    split Pending screen up into smaller classes
+    
+    changed (our) Location class's name to LocationGoogle
+
+commit cbcd71ebe210f662bf952b20a8cc51f4aa32f2dc
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 16 13:04:22 2012 +0000
+
+    mended merge
+
+commit b8ba62db2d9afc2553b1056232d986ccb0eb5be5
+Merge: b30d8b8 3dc853f
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 16 12:59:15 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/LocationFinder.java
+
+commit b30d8b8a5f897a32b79c1002447e78af8cf5b898
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 16 12:57:38 2012 +0000
+
+    changed how location is returned from LocationFinder
+
+commit 3dc853fcb72da3d0219b428a1dfda164a1c6a1cd
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 16 12:35:56 2012 +0000
+
+    If we are using the emultator give dummy location
+
+commit b740cbc6f7a97d0df30c8a859f5ad7e5de69e3a2
+Merge: b94b3c7 c1a95de
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 16 12:31:45 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit c1a95de573b749497e6e17aa54412a791e6399e3
+Merge: 6bf736c 2abe991
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 16 12:30:42 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit b94b3c7e72fa2085c7248031942a71ab0e4937f7
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 16 12:30:26 2012 +0000
+
+    Added constant to indicate whether running emulator (and possibly break/fix class path)
+
+commit 6bf736c10a9ac5a6a3dd72a1e4615e8d86b6abe2
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 16 12:29:37 2012 +0000
+
+    moved location finding stuff from Pending to LocationFinder
+
+commit 2abe99107338a1b1f9576a99d1642cb8707c4642
+Merge: 4a3b39c 36a9b44
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 16 11:39:52 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/PubData/src/dimappers/android/PubData/Constants.java
+
+commit 36a9b44fcd750f5c44ae4f8c3fdf6cb47677bf21
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 16 11:35:23 2012 +0000
+
+    adding appGarden stuff & tidying up internet stuff (a bit)
+
+commit 4a3b39cbc174344d15a10813764af5fbc3aa59f9
+Merge: 2c63818 64e41f1
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 13 11:52:33 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/Organise.java
+
+commit 2c638184440f55388771ed9a7e9dad0da73ec9f5
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 13 11:51:05 2012 +0000
+
+    Getting the HostEvents screen to reflect data as passed in
+
+commit 64e41f10789e7d7f27fff9555de4a8ad8071d9b6
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Fri Feb 10 10:48:51 2012 +0000
+
+    Started sending data across from the app to the server.
+
+commit d35ff257bc6594e662fe4d5750e10ee058e3cb64
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Thu Feb 9 21:41:55 2012 +0000
+
+    Merging Stuff.
+
+commit c53d2fa2689cbf550278716731e5921822ed2154
+Merge: badf677 23c968d
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Thu Feb 9 21:40:10 2012 +0000
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit badf677a60e3ea36b1e00f401f9dd209bf177736
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Thu Feb 9 21:38:23 2012 +0000
+
+    Fully Working DatabaseManager, not yet implemented into Server. Added a
+    debug constant to the Constants file.
+
+commit 23c968d04e0b74bcdd1117970aa28e90b2ed2b0f
+Merge: 011acce 6527e97
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 9 17:29:55 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/AndroidManifest.xml
+
+commit 011accead1d59e35075f581d5d0d4b3716d301f0
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 9 17:28:40 2012 +0000
+
+    no internet screen added
+    
+    also restricted dates for timepicker
+
+commit 6527e973813ac8ef846d827d5ae38e484026c5bb
+Merge: 24f6fc1 fdebc0e
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 9 15:45:43 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Fixed bug in lat commit
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/UserInvites.java
+
+commit 24f6fc17e1f25147b52d8eb835fd757a2ca1e493
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 9 15:42:08 2012 +0000
+
+    Can now modify and delete events from the saved data
+    
+    Made list adapter get data straight from the store
+
+commit fdebc0e361ecc899eb5cf69d4b24fa0362246cff
+Merge: dd41a4f 61cc193
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu Feb 9 14:23:54 2012 +0000
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit dd41a4f78c7b3e398691ccd43b744f32a1ea5e1f
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu Feb 9 14:23:44 2012 +0000
+
+    The commit that never happened
+
+commit 61cc193c6e15a2505a43b011562973bb8a1a1d64
+Merge: dffb282 5aafd5d
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 9 14:03:19 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit dffb282b8caf70f07cd5ac4b66c64ce9499a95a2
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 9 14:02:56 2012 +0000
+
+    deals with unusual time requests, changed text displayed when can't find place name, finds a pub on the Pending screen based on location
+
+commit 5aafd5d75f831baf724e3e64c35524cf33aa9565
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu Feb 9 13:45:23 2012 +0000
+
+    One more Test Commit
+
+commit 19e24ea07a2aa8e5eab7e8aa054c386de2dfafef
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu Feb 9 13:21:12 2012 +0000
+
+    Test Commit 2
+
+commit 5eb90112061993ad6f5d318bb6e1246b35f000ea
+Author: Jason Karp <J.Karp@Warwick.ac.uk>
+Date:   Thu Feb 9 13:16:56 2012 +0000
+
+    Test Commit
+
+commit 1890a60e258048a65897ed7450fbdf897b7b540a
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 9 00:02:37 2012 +0000
+
+    finds pub from typed in location (n.b. made current location clickable, but it isn't made obvious that it is)
+    
+    mended the searching for pubs issue (i think)
+
+commit c139ea0a853db7a6cc9e5fdcfc17fbbc7dedafe0
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed Feb 8 00:36:24 2012 +0000
+
+    Created a basic background service we should use to check for updates from the server
+
+commit a878c97180d4faf0cd9914938713186a9d77ddf6
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Feb 7 18:09:21 2012 +0000
+
+    Moved location finding to the pending screen so can use to base PubEvent stuff on location
+    
+    Fixed bug with saving: not getting editor if loaded data
+
+commit c3cf322828ca5fe805920e58bba7ec22d4d9f5d2
+Merge: 6542997 b45f61b
+Author: Kim Barrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Feb 7 17:00:20 2012 +0000
+
+    Merge github.com:Dimappers/Pub
+
+commit 6542997ba280453c2b1485c676113313686dde3e
+Author: Kim Barrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Feb 7 16:59:20 2012 +0000
+
+    added documentation
+
+commit b45f61b44f247df6bb88b4e359686cfe0fc06e9d
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Feb 7 16:57:24 2012 +0000
+
+    Organised imports for projects
+
+commit 9aa4dc8dec1f1212d90e38a1176d7e605f29d474
+Merge: 75c5f06 081cb73
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Feb 7 16:44:00 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub into TKTemp
+
+commit 75c5f069e26b3ecb878c4ddde0a21c64de33f153
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Feb 7 16:42:12 2012 +0000
+
+    Can now save events and have them reload on reopening the application
+    
+    This should work for all event types and for our algorithm history
+
+commit d88992b58d9d6f1104fe974fce9fb74c65f30c5e
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Feb 7 10:34:51 2012 +0000
+
+    Began work on offline storage
+
+commit 081cb738ec58eb8955d0a449b32bc19823dfb920
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Feb 7 01:30:55 2012 +0000
+
+    Getting more information from locations returned from Google
+    
+    Creating location from long/lat of Google locations
+
+commit f7ae7e1bc30e4f25f0c46178584141bfb95b1c88
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 6 14:45:36 2012 +0000
+
+    Fixed merging
+
+commit 86e25a063123a711dd61e906d6fa911d3ddbdbbc
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 6 14:11:18 2012 +0000
+
+    Fixed merge issues
+
+commit 74244bd170b5ba9c637163293af582fa23e2518e
+Merge: 48f6cde 6b00343
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 6 14:11:12 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 6b00343ee8683aa4c1eca8f763c6bc2384b5c3e3
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Feb 6 14:10:36 2012 +0000
+
+    mend
+
+commit 48f6cdeff2a4cdaaa323b0fc33a9f0c33478e9d0
+Merge: 88eef40 f89df73
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 6 14:07:06 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit f89df738a95e7d0b623d2e3276dd80da3aedd88e
+Merge: 2df59fb 8b5308e
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Feb 6 14:02:43 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/.classpath
+    	Source/App/res/layout/pub_choose.xml
+    	Source/App/src/dimappers/android/pub/LaunchApplication.java
+
+commit 88eef405cb25cd440cd86eb61be1d65114901abd
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 6 13:54:33 2012 +0000
+
+    Modifed user interface for pub event screens to not have the Pub Location: just the location and start time
+    
+    Can now identify if given an event what type it is
+    HostEvents now shows the event is is passed and passes this event on if it is is edited
+    Key feature: Implemented nice time printing!!!! Use PubEvent.GetFormattedStartTime to get a nice String of the start time
+
+commit 2df59fb2edb8fa00bea2a8f1f4034bb022c31114
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Feb 6 13:53:44 2012 +0000
+
+    Finding pubs from Google based on lat,long found by phone
+
+commit 8b5308edb2b63d157ed3fd5fe34cc10321144146
+Merge: 787f929 3b7e0ed
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 6 01:15:37 2012 +0000
+
+    Merge remote branch 'origin/master'
+    
+    Fixed issues resulting from merge
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/HostEvents.java
+
+commit 787f929550ee7943c46cc84bb6ffc8318cc5aac3
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Feb 6 01:04:15 2012 +0000
+
+    PubEvents now being passed in to the list view and then on to UserInvites (host invites still to come)
+
+commit 3b7e0edfbd6145f4fd76d1432fec2a86485f819a
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Sun Feb 5 23:03:35 2012 +0000
+
+    HostEvents mostly completed. List of guests more or less completed which changes depending on whether the event has been saved or sent
+
+commit c25c334858b071a1696ca07ae4aea3279112f380
+Merge: 72ee7fb e34cf31
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Feb 5 21:53:03 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub - potentially me and Jason doing same thing, needs further examination
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/Events.java
+    	Source/App/src/dimappers/android/pub/Organise.java
+
+commit 72ee7fbea808e0b4795627aa2451eb3c9518380b
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Feb 5 21:35:47 2012 +0000
+
+    Continue working on passing data in the back end
+
+commit e34cf318ea4fae25df78a213bbc511227db32ff9
+Merge: 0aa80d1 f67b006
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Sun Feb 5 15:54:59 2012 +0000
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit 0aa80d15dd319e06467eb1a72ad83246cdc0c90f
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Sun Feb 5 15:54:47 2012 +0000
+
+    Data passing from events to host_events screen
+
+commit 26072ba388f595ac63c31f3fdfe7fc6703df2688
+Author: Kim Barrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Fri Feb 3 15:53:29 2012 +0000
+
+    Added manual location set dialog (not tested)
+
+commit 84cb0a014b1b1c8703882a0ab046ee72d5ae46f1
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 2 16:59:33 2012 +0000
+
+    Working on getting PubData being passed around for respond
+
+commit 2c8f6709fcc40ecd3b2fbc4cfdbfd62d7574c640
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 2 15:58:08 2012 +0000
+
+    Working on getting PubData being passed around for respond
+
+commit f67b006a5f43296068f853c165617dacbb373594
+Author: Krithel <tractor.unit@gmail.com>
+Date:   Thu Feb 2 15:58:05 2012 +0000
+
+    Started sending the event to the server when sendEvent has occured.
+
+commit e222b2528c33f59ca336c2cd5c45100f7c9f71a3
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 2 15:43:30 2012 +0000
+
+    Added constants properly
+
+commit 2b0d5563b0a385db92d5d12e4c775c3e6d86aa52
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 2 15:40:32 2012 +0000
+
+    Added constants file - most not used yet
+
+commit 5f1a2b287ad24038a36be3a9c3cdc38e9561386c
+Merge: a4c9c56 077b202
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Thu Feb 2 14:43:19 2012 +0000
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit a4c9c56c822cc2fc73ddaa50c8ff3556f5f4d89d
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Thu Feb 2 14:43:14 2012 +0000
+
+    pointless commit
+
+commit 077b2029dc6ce51835357058d364b2953b12ed19
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 2 14:41:46 2012 +0000
+
+    Fixed Kim's classpath
+
+commit 4e1ec7c85adc48213ebba7c61b42ff1530064b22
+Merge: d76a6d8 4d92674
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 2 14:36:10 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 4d92674748719068ea4c6963497142cd615a5902
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 2 14:34:44 2012 +0000
+
+    mend
+
+commit d76a6d815c7b75575185109e9471cb5a206ecaa2
+Merge: 4738bbb b1d0d32
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 2 14:33:54 2012 +0000
+
+    Merge branch 'TKTemp' - can now choose guests
+
+commit 4738bbb644b3f67348ad62d16dc482a5b9bb159e
+Merge: a047da1 d1bbf07
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 2 14:29:40 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/src/dimappers/android/pub/HostEvents.java
+    	Source/App/src/dimappers/android/pub/SendInvites.java
+
+commit a047da12e85eb430c3fd6daf68837c86604bfec2
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Feb 2 14:28:20 2012 +0000
+
+    data passing
+
+commit d1bbf0740f985461989f74e579d6164effd276d9
+Merge: 5d2845a 9f7e7cc
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Thu Feb 2 14:27:20 2012 +0000
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit 5d2845a13ff39ba087d6f39a33468e432de41fe7
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Thu Feb 2 14:26:55 2012 +0000
+
+    Creating option menu and editing list on user_invites
+
+commit b1d0d32eca91804dac0cefc84a3328642f1095eb
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Feb 2 14:25:14 2012 +0000
+
+    Can now add and remove guests
+    
+    Fixed hash map of guests to work properly
+
+commit c3d6d3009c8b7770c5e548b1153ee9a08e6d45ea
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed Feb 1 16:57:00 2012 +0000
+
+    Working on getting users returning for User screen
+
+commit 9f7e7cc8ca53792d6c323114373bbac877cfec06
+Merge: e818851 9c9a85e
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed Feb 1 10:05:17 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit e818851dea48f6feb57213bc2c1c6bb42e6cc2e7
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed Feb 1 10:04:20 2012 +0000
+
+    icon change
+
+commit 9c9a85ed410d7ca22863b0ee78c86d18a6376c30
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Tue Jan 31 21:10:32 2012 +0000
+
+    changed to two screens for events and list of guests partially completed in host_events
+
+commit e90236b4ae47ecbe299ad8e8fe7c0f146ca044e9
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Jan 31 18:49:37 2012 +0000
+
+    Can now change time
+    
+    Swapped pub event to use the calendar class (sorry Mark ;))
+    With Kim
+
+commit cc715a6d9dcf55bdc69b8e2beb8e578c69e54418
+Merge: cf793ce be36941
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Jan 31 01:16:01 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/.classpath
+    	Source/PubData/.classpath
+
+commit cf793ce1738b7e08a2892e9bb083009bbd7b105a
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Jan 31 01:11:29 2012 +0000
+
+    UI redesign for organise screen
+
+commit be369411baf9a09ea3e61b144a3f6834da034287
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Sun Jan 29 17:49:16 2012 +0000
+
+    Mended classpath issue
+
+commit 9a5546a2809ef9fddb0381582328a6ab21f14397
+Merge: 9f74a00 6db26a9
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Sun Jan 29 17:31:05 2012 +0000
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit 9f74a008156038bca083b0aa99864dde1cc6d0c4
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Sun Jan 29 17:25:05 2012 +0000
+
+    merge complete - hopefully won't screw me up again
+
+commit 095142750a7dc5f5219a020cb3c0330305753a0e
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Sun Jan 29 17:20:50 2012 +0000
+
+    changed toSend slightly to look cooler
+
+commit 6db26a91fe0346b8a4db44a27fd3223bf784471c
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Jan 29 17:14:34 2012 +0000
+
+    deleting temp version of PubData so can merge to master
+
+commit 1f7e330db0d97a640f32a22c1e346744f6f5d219
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Jan 29 17:11:17 2012 +0000
+
+    event sent from events.java to organise.java
+
+commit 2c8b718d85e4fed1124d08e3b2d5bc345d5e47d1
+Merge: 9d71bc1 73aab38
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Jan 29 16:38:35 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub into KimTemp
+    
+    Conflicts:
+    	Source/App/AndroidManifest.xml
+
+commit 73aab38d936d77c8900b713204837b7eaf2914c0
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Sun Jan 29 16:35:28 2012 +0000
+
+    edit button passing event
+
+commit 9d71bc17f2593a9e236aec78ae6f2e05ceca4039
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Jan 29 16:33:55 2012 +0000
+
+    editing an event after save
+
+commit afe3030bee06e15f337af3a9e6355a467c779039
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Sat Jan 28 22:46:31 2012 +0000
+
+    Comment dialog boxes created
+
+commit 8d6cfcc601ac90cbb75d42dbe0c6114112944832
+Merge: 4da2c57 9e5ba89
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sat Jan 28 17:04:49 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub into KimTemp
+    
+    Conflicts:
+    	Source/App/.classpath
+    	Source/App/AndroidManifest.xml
+    	Source/App/res/layout/organise.xml
+    	Source/App/src/dimappers/android/pub/AppUser.java
+    	Source/App/src/dimappers/android/pub/ChooseTime.java
+    	Source/App/src/dimappers/android/pub/LaunchApplication.java
+    	Source/App/src/dimappers/android/pub/Organise.java
+    	Source/PubData/.classpath
+
+commit 4da2c57a1760bf8e1bf7b91f016b4e70913e3cb4
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sat Jan 28 17:00:47 2012 +0000
+
+    worked on passing data between choose_start screen to update PubEvent
+    
+    copied PubData into app as a temporary way to make it run
+
+commit 9e5ba89ee124a6a390a84b85bea2c8cb39950216
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Sat Jan 28 14:42:13 2012 +0000
+
+    Dialog box for deleting events created
+
+commit bca11ea4f1f8b9000680f8a2257a01ab2283629a
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Thu Jan 26 21:18:17 2012 +0000
+
+    Finally everything back to normal plus the stuff that I've done so far such as events screen which links to the four other screens
+
+commit df2e050dbe5923f59c760cfe269273ac0bebb4b8
+Merge: 869a02e 8e27716
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Jan 26 15:06:02 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub into KimTemp
+
+commit 869a02eb210a242f6e1813154cb42fd7032b9cdd
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Jan 26 15:05:30 2012 +0000
+
+    broken again
+
+commit a074464eb4248195927194f77a9c456affdef0ba
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Jan 26 12:56:47 2012 +0000
+
+    broken stuff
+
+commit 8e27716619aa3e76156b0d9172ef6a7461e420a8
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed Jan 25 22:10:30 2012 +0000
+
+    Made classpath releative
+    
+    Proper exception handling
+
+commit ffc01814887f7ed5c004c3e78b3d0714a849a394
+Merge: 44d8ba9 ca77ec5
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed Jan 25 14:33:46 2012 +0000
+
+    Merge branch 'TkTest' of github.com:Dimappers/Pub into TkTest
+
+commit 44d8ba9c45b67c5789fd17b1b8775a2cf9f855fb
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Tue Jan 24 22:08:59 2012 +0000
+
+    Added DatabaseManager and Tests
+
+commit d6c85b8ccef0f1b2b2551be942cedd212f8d66b6
+Merge: 626846b 6fc2620
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Tue Jan 24 22:04:47 2012 +0000
+
+    Merge branch 'master' of https://github.com/Dimappers/Pub
+
+commit 626846b831b15251346b69fb5ded03e721059dfd
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Tue Jan 24 22:03:45 2012 +0000
+
+    Started the DatabaseManager, implemented the AddUser and GetUser methods.
+    Incomplete.
+
+commit 6fc262090dec8e95c5e8656bab1af3f19dd2490e
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Jan 24 21:39:28 2012 +0000
+
+    Guest list can now be changed by Guests.java
+
+commit e80b908ef4316228a6b8ff48f7cd2d0b664a17bc
+Merge: 9e008f6 2ea56f7
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Jan 24 20:13:09 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 9e008f6854deed9dc668430afd189d16d07ed6d2
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Jan 24 20:12:34 2012 +0000
+
+    Finding location working!
+
+commit ca77ec5dc6366a5a074d461ce2c5373b8aff6c3c
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Jan 24 15:00:59 2012 +0000
+
+    Added unsaved files
+
+commit 88781de10eda97a43ab2c61760221a8cb8e70071
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Jan 24 14:50:25 2012 +0000
+
+    Working on error handling on the server
+    Fixing bug in ServerTest - UpdateMessage does not pass correct ID but test still passes
+
+commit 2ea56f74b371a49d488e9467d58c214e5079005e
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Jan 23 17:57:56 2012 +0000
+
+    Fixed bug in test rig
+
+commit a8c3c2d23e7fb468d150bbf8f9cee7881fd995f7
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Jan 23 16:00:03 2012 +0000
+
+    Renamed AppGuest to AppUser
+    
+    Updated AppUser to now use number instead of facebook name
+    See commit: https://github.com/Dimappers/Pub/commit/1231d0a37df3b089eadce79e89cde03f0c91dc05
+
+commit 3e17b986e3229d701c1449ec1a9add08b46912ce
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Jan 23 13:57:23 2012 +0000
+
+    Implemented automatic testing validation - see wiki for details on tests
+    https://github.com/Dimappers/Pub/wiki/ServerTests
+
+commit 1231d0a37df3b089eadce79e89cde03f0c91dc05
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Jan 23 11:37:42 2012 +0000
+
+    Changed user id to be the number since Jason doesn't have a user name
+
+commit 6dc8713aeb613045c52e803039cd7341c3d496a5
+Merge: a226b9a e8875eb
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Jan 22 22:58:42 2012 +0000
+
+    Tried to find phone's location - VERY UNFINISHED
+
+commit a226b9a7aaca97d3d1e2e4543ba1c4d2456ec3b4
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Jan 22 22:57:57 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Adding some location finding stuff
+
+commit e8875eb1aab379ddae935d035087e851e50cdbe7
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Jan 22 18:20:41 2012 +0000
+
+    Light refactoring - namely changing all references of Guests to Users for consistency
+
+commit 8b65c40ad15046e22cd4db568b5c23acdb45ee16
+Merge: 633820f 40ccca0
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Jan 22 18:10:57 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/ServerTest/src/dimappers/android/servertest/RunServerTest.java
+
+commit 633820f57dc6e6c4d6fd3a18d420d4d7c696b44d
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Jan 22 18:07:04 2012 +0000
+
+    Implemented proper testing for servers
+    
+    Events now store their id on the server so that when the guest gets back an array of them in can use them
+
+commit 40ccca09d21e6e06b4de487c44021801925c9a64
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Sun Jan 22 17:41:43 2012 +0000
+
+    Added Threading to the server to accomodate mutliple requests simultaneously.
+
+commit 4ce5d4d17b2a066011e3b2a6ec0ef87d245d5647
+Merge: 13086fa 2041b98
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Jan 22 17:39:27 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 13086fadc10fad0a820056b6b8b78c0fabea93c1
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Jan 22 17:39:08 2012 +0000
+
+    getting text from EditText-boxes
+    
+    trying to find current location
+
+commit 2041b98dac1f4f3fefe7dde81bf1609559c79d51
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Jan 22 17:15:13 2012 +0000
+
+    Reverted back to LinkedList for update message
+
+commit b438bb89ed14d4a0fdd7d46ab16e5d2aed9d716d
+Merge: 592059f 8bf49b5
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sun Jan 22 16:46:15 2012 +0000
+
+    Merge branch 'TKTemp' of github.com:Dimappers/Pub
+
+commit 592059fd1decae32e170490c25f35ff1164255d0
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sat Jan 21 15:38:31 2012 +0000
+
+    all buttons on organise side working
+
+commit f966ea53fcbede70950b004527f2328e670c48e8
+Author: Kim Barrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sat Jan 21 14:14:24 2012 +0000
+
+    test commit from netbook
+
+commit b5e035046322ae48415ba943fd2367a0a0ff3445
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sat Jan 21 01:31:39 2012 +0000
+
+    some more buttons working
+
+commit 8bf49b58d589ebf5a3b85d3413bd976b290ee1a0
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Jan 20 21:28:03 2012 +0000
+
+    Some changes to how Update messages are handled - UNFINISHED
+
+commit eb1de863fcc10384fd28fa439ddef3d03f75fa01
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Jan 20 17:16:39 2012 +0000
+
+    Created test for retrieve events
+    Refactored UserManaged in case we need to send authentication data
+
+commit 9d30aafc0f88e0c1e1ae554ad42569c4f98eae57
+Merge: b9b12f3 84abbe0
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Jan 20 16:38:18 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit b9b12f3dcfecfc09823eefb5fd4334d6c580a4b9
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Jan 20 16:37:54 2012 +0000
+
+    Created test for creating a new PubEvent
+
+commit 84abbe0e5bf69acbf09207c73f8c480475e5c7c8
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Jan 20 04:51:25 2012 +0000
+
+    Added UserManager code to my events
+
+commit 5e4069393b0e7a47dfcc092921950583bf768664
+Merge: 4816665 3028b6b
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Jan 19 20:03:38 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/AndroidManifest.xml
+    	Source/App/src/dimappers/android/pub/LaunchApplication.java
+
+commit 4816665b9f5d89c2c0299c9727872ea38a4b584a
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Thu Jan 19 19:57:33 2012 +0000
+
+    linking some screens with buttons
+    
+    getting pending screen working
+
+commit 3028b6b79e6cf250dd7c261cd238c4d34d6b0fac
+Merge: e63193d 9d0c503
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Thu Jan 19 17:34:29 2012 +0000
+
+    Merge branch 'master' of https://krithel@github.com/Dimappers/Pub.git
+    
+    Conflicts:
+    	Source/Server/src/dimappers/android/server/Server.java
+
+commit e63193d3ebd22787dd005282d635103bdad9fac2
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Thu Jan 19 17:24:33 2012 +0000
+
+    Addded the Handlers for a Refresh command and an Update command to the Server.
+
+commit 9d0c503e43c11da40b77825ecc5262eefca0fbe3
+Merge: 72328e6 d88bdb3
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Jan 19 15:56:32 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 72328e6fdb4ace337bcb36f560ac16a2190f8ec8
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Jan 19 15:56:01 2012 +0000
+
+    Fixed merge issues between files
+
+commit d88bdb3438e88bfcc394397d624641fbf818ace2
+Merge: 7aa2649 9f429bd
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Jan 19 15:54:55 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 7aa2649c9ea24eea36f0b6524d082b547c47c7e3
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Jan 19 15:54:18 2012 +0000
+
+    Starting to develop events screen
+
+commit 9f429bdbc597c515d220f5d4a75e05916e5ccf57
+Merge: d9a09cc 8a1d058
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Jan 19 15:45:07 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/Server/src/dimappers/android/server/ServerUser.java
+
+commit d9a09ccd32c54be10755dca36ccf8a168c2fd45a
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Jan 19 15:39:09 2012 +0000
+
+    Not sure
+
+commit 8a1d05840b9e5f467c02214baf3223b415785203
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Thu Jan 19 15:34:39 2012 +0000
+
+    Fully Implemented ServerUser and UserManager
+
+commit 6fe12739468baf0d22ae74b8842ff07621fb5430
+Merge: f6a3a03 5015ef7
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Jan 19 12:09:23 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit f6a3a03a8dec3d64b4009ab10683abbc2c605036
+Author: Thomas Kiley <csukbm@dcslab-22.(none)>
+Date:   Thu Jan 19 12:07:51 2012 +0000
+
+    Began handling incoming messages for the server
+
+commit 5015ef72dd66df944d274e8361b39c3396eae611
+Author: = <=>
+Date:   Thu Jan 19 10:38:54 2012 +0000
+
+    Updated UserData and added jobs to Server.
+
+commit 5f5354c2f4703b97b0ba7bd7376b3edb08ba7963
+Author: = <=>
+Date:   Thu Jan 19 10:14:27 2012 +0000
+
+    Yet Another Test Commit (This time from DCS!)
+
+commit 8326f7de089ff3d084909527d95e639c51704694
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Thu Jan 19 07:51:59 2012 +0000
+
+    Unfinished start on the User Manager
+
+commit c733088ceeb45a1e8eab38be74dabcbcce8d4ff2
+Merge: 23ca9a9 720e415
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Wed Jan 18 01:09:33 2012 +0000
+
+    Merge branch 'master' of https://krithel@github.com/Dimappers/Pub.git
+
+commit 23ca9a9cbf224d84dbbb3f9fd8c1fe47038f4f96
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Wed Jan 18 01:09:02 2012 +0000
+
+    Added new Data Storage classes
+    RefreshData: Sent when a client requests a refresh
+    UpdateData: Sent when a client updates the event
+
+commit 720e415d4196529fe40343a5131d803f9dec3201
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed Jan 18 00:37:34 2012 +0000
+
+    Swapped Guest for User to use new class
+
+commit a9b02e8d4b1f7d13f8409dc8d21656f505d93422
+Merge: 23bdc55 c3e9405
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed Jan 18 00:12:52 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit c3e9405dbc6eba7ff7417c10228d4acda54ee60f
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Wed Jan 18 00:07:05 2012 +0000
+
+    Test commit
+
+commit 23bdc559c858fde3649bbc9c9a81321ac4807b9d
+Merge: 3179499 d1034de
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Jan 17 23:43:58 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 317949916162f7075d656f05b2225f0fa8f5d741
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Jan 17 23:43:45 2012 +0000
+
+    Modifed Guest to fit with new system:
+    
+    	In the server we will store id's of events this person is invited to
+    	On the App since only one guest who you need to know about (you) can store events seperately
+    
+    PubEvent must now have a host
+    Created class for when a user wants to respond to an invite (see MessageTypes for a more info on messages)
+
+commit 9201995fb2068a89a09b224e6290908ef84c7688
+Author: Mark Fearnley <M.Fearnley@warwick.ac.uk>
+Date:   Tue Jan 17 23:28:10 2012 +0000
+
+    Created User class to be extended by the App and Server, Guest class is
+    now Defunct.
+
+commit d1034de009a5a4f9be449b6d59df2d6b2e56ae29
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Jan 17 23:22:34 2012 +0000
+
+    added new screens for organising side of app - but buttons don't do anything
+
+commit 9961fc17022eb57a537be11fb1083d49d6e5a377
+Merge: 4a13387 55ed9ba
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Jan 17 22:49:47 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 55ed9ba8fedbeb2aa12d882caa04311b29563f92
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Tue Jan 17 22:26:02 2012 +0000
+
+    Modifed message data and server to reflect new message structure
+    
+    Removed old server code (this may still be useful, see history on github if needed)
+
+commit 4a133874759ec03b5c470bfa84a3eb14f9af0e8e
+Merge: 29845fd 71f25a0
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Jan 17 01:50:15 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 29845fd72ac27630848dcf98eb07c624603c1dd9
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Tue Jan 17 01:49:17 2012 +0000
+
+    added new guest screen
+    
+    removed unnecessary button on organise screen
+
+commit 71f25a057019998d12021cce28809e31cf43db9f
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Jan 16 23:30:11 2012 +0000
+
+    Fixed derived AppGuest to work with other changes in when sending data to server
+
+commit da1ba931eee7e1d0d7ef2098a7c4e31dc97e6b1a
+Merge: 9141fcc ebf3bd4
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Jan 16 23:06:28 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+
+commit 9141fcc61fbde7d71802cf15c0bd69ac8a87abf5
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Jan 16 23:06:14 2012 +0000
+
+    Implemented basic app side guest (does nothing...)
+
+commit ebf3bd4b8d685733af4d07159ec73806aeed5746
+Merge: bad4790 d1a4d3a
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Jan 16 21:29:50 2012 +0000
+
+    Merge branch 'master' of github.com:Dimappers/Pub
+    
+    Conflicts:
+    	Source/App/.classpath
+
+commit bad479055c61f97726a1a0cee9ca7e2ffe89af81
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Mon Jan 16 21:26:53 2012 +0000
+
+    some additions to screens
+    
+    organise button linking to new screen
+
+commit d1a4d3aa300814ae4567cd3d5e196fe36bb8dce4
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Mon Jan 16 18:47:18 2012 +0000
+
+    Server now stores multiple pub events
+    
+    Test data can now retrieve pub event based on facebook user name
+    Test data can now update whether going to an event
+
+commit b4533521aaeea1bf3e58c4f5240e33c56b31d397
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Sun Jan 15 20:40:42 2012 +0000
+
+    some additions to screens
+
+commit 2798b9d1b1bf186132ffaa62ed8e0afae43ed020
+Author: Jason Karp <karpy11@hotmail.co.uk>
+Date:   Fri Jan 13 15:36:43 2012 +0000
+
+    test 3
+
+commit b7ca053f2959c2d91db8254c17a2e4c452c0b779
+Author: tomcynicholls <tom.cy.nicholls@gmail.com>
+Date:   Fri Jan 13 15:33:00 2012 +0000
+
+    edited by tom
+
+commit 3da8897ea2d365bd7410d860299196630ee56730
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Fri Jan 6 01:58:18 2012 +0000
+
+    Data can now be serialised for transmission
+    
+    Test program to transmit some dummy data to the server.
+    To run, run the server first (all set up in eclipse hopefully... otherwise will need to ref PubData source files) then run Server test, should see the data appear at the server end
+
+commit 57b4321f320098c5858ae01ba673834b322018a8
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Jan 5 23:48:10 2012 +0000
+
+    Implemented some basic data structure for storing a pub trip
+    
+    Guest - stores a single guest - this should be overriden in both the app & the server
+    PubLocation - simply the pub location as a longitude/latitude point & its name
+    PubEvent - The whole event, this is what is sent between server and the clients
+
+commit a79ffaf892b875df15fc23cc97ac9398c0edc3d2
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Jan 5 22:27:09 2012 +0000
+
+    Added a library project to contain data that both the server and the app are going to need
+    
+    The project and class path files detail how Eclipse should build stuff, specifically now to include the source files of PubData
+
+commit c69cb4831da1c2c8c268b06ab0858aeac4b233d9
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Thu Jan 5 16:25:20 2012 +0000
+
+    Added Facebook for Android API to source, note at the moment using FbDialog, I suspect we want to write our own dialog
+
+commit f2c7e41b0a1625c9c5e3293bdefcf245dbaa8612
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Wed Dec 21 00:59:44 2011 +0000
+
+    Test for pulling
+
+commit fdc09269bd11148992484efa460f23e251779ec9
+Author: kbarrett <x_kimmi_13_x@hotmail.co.uk>
+Date:   Wed Dec 21 00:30:30 2011 +0000
+
+    test 2
+
+commit d371786bf2a0716031e139cac15f83ef44dce304
+Author: unknown <Kim@Kim-PC.(none)>
+Date:   Wed Dec 21 00:25:39 2011 +0000
+
+    test
+
+commit b4b6151b31dada192c811ae65f532950bb66b7d5
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat Dec 17 19:50:08 2011 +0000
+
+    Added readme file
+
+commit da705e82b35815ec50d980c8c38b7348a458997c
+Author: thk123 <thekileyenator@gmail.com>
+Date:   Sat Dec 17 16:27:10 2011 +0000
+
+    Inital commit
