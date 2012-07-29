@@ -41,6 +41,7 @@ import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.User;
 
 import com.facebook.android.*;
+import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.Facebook.*;
 import com.facebook.android.AsyncFacebookRunner.*;
 
@@ -181,7 +182,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 		/* Only call authorise if the access_token has expired */
 		if(!facebook.isSessionValid()) {
 			Log.d(Constants.MsgInfo, "No valid token found - authorising with Facebook");
-			facebook.authorize(this, new String[] { "email", "user_location", "friends_location", "user_photos", "read_stream" }, Constants.FromFacebookLogin, new DialogListener() {
+			facebook.authorize(this, new String[] { "email", "user_location", "friends_location", "user_photos", "read_stream", "publish_stream" }, Constants.FromFacebookLogin, new DialogListener() {
 				
 				public void onComplete(Bundle values) {
 					SharedPreferences.Editor editor = mPrefs.edit();
@@ -268,6 +269,24 @@ public class LaunchApplication extends Activity implements OnClickListener{
     }
     
     
+    //also test code:
+    /*public void postOnWall() {
+        try{
+            Bundle parameters = new Bundle();
+            parameters.putString("message", "I've invited you to a trip to the Pub! Download this great app to respond.");
+            parameters.putString("name", "Pub?");
+            parameters.putString("picture", "http://images4.wikia.nocookie.net/__cb20070121222860/uncyclopedia/images/a/a3/F-spot-question-mark.png");
+            parameters.putString("link", "http://www.dimapper.co.uk");
+            parameters.putString("caption", "Caption");
+            parameters.putString("description", "Respond to an invite by downloading this free app!!!");
+
+            String  response = facebook.request("730415672/feed",parameters,"POST");
+            Log.v("response", response);
+        }
+        catch(Exception e){}
+    }*/
+    //end test code
+    
 	public void onClick(View v)
     {
     	Intent i;
@@ -282,6 +301,11 @@ public class LaunchApplication extends Activity implements OnClickListener{
     		}
     		case R.id.invites_button : {
 
+    			//putting test code to send message to friends wall here
+    			 //postOnWall();
+    			 
+    			 
+    			
     			i = new Intent(this, CurrentEvents.class);
     			startActivity(i);
     			break;
