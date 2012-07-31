@@ -41,7 +41,6 @@ public class Place implements IXmlable {
  
  public Place() {}
 
-
  public String toString() {
   return name;
  }

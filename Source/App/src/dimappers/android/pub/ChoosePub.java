@@ -12,6 +12,8 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,7 +22,7 @@ import android.widget.Toast;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubLocation;
 
-public class ChoosePub extends LocationRequiringActivity implements OnClickListener {
+public class ChoosePub extends LocationRequiringActivity implements OnClickListener, OnItemLongClickListener {
 		
 		EditText pub_input;
 		ListView pub_list;
@@ -44,6 +46,8 @@ public class ChoosePub extends LocationRequiringActivity implements OnClickListe
 		    	Typeface font = Typeface.createFromAsset(getAssets(), "SkratchedUpOne.ttf");
 		    	((Button)findViewById(R.id.use_pub_button)).setTypeface(font);
 		    	pub_list = (ListView)findViewById(android.R.id.list);
+		    	pub_list.setOnItemLongClickListener(this);
+		    	
 				adapter = new ArrayAdapter<Place>(this, android.R.layout.simple_list_item_1, listItems);
 				setListAdapter(adapter);
 
@@ -86,7 +90,16 @@ public class ChoosePub extends LocationRequiringActivity implements OnClickListe
 			 this.setResult(RESULT_OK,i);
 			 finish();
 		 }
-		 
+		
+		@Override
+		public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long arg3)
+		{
+			Place place = (Place)arg0.getItemAtPosition(position);
+			Intent i = new Intent(getBaseContext(), PubMap.class);
+			i.putExtra("place", place.writeXml());
+			startActivity(i);
+			return false;
+		}
 		
 		public void onDestroy()
 		{

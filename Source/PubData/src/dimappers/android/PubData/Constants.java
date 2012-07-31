@@ -68,6 +68,9 @@ public final class Constants {
 	public final static String PLACES_DETAILS_URL = "https://maps.googleapis.com/maps/api/place/details/json?";
 	public static final String PLACES_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/json?";
 	
+	//Google Maps API details
+	public final static String GOOGLEMAPSAPIKEY = "0BDhW-Na1U2-kslKc3DUNwCGuCDoTtvq_Kn6r3g"; //NOTE: this only works with TK's debug keystore
+	
 	public static final String NoDictionaryForGenericDataStore = "NoDictionary";
 	
 	//Amount of time until each element goes out of date
