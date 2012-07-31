@@ -70,7 +70,7 @@ public class AppUserArray implements IXmlable {
 		List<Element> friendsElements = element.getChild(friendsTag).getChildren(AppUser.class.getSimpleName());
 		
 		internalArray = new AppUser[friendsElements.size()];
-		for(int i = 0; i<=friendsElements.size(); i++)
+		for(int i = 0; i<friendsElements.size(); i++)
 		{
 			AppUser friend = new AppUser(friendsElements.get(i));
 			internalArray[i] = friend;

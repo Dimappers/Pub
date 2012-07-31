@@ -455,6 +455,25 @@ public class StoredData implements Serializable
 	{
 		String storedDataString = "";
 		FileInputStream file = null;
+
+		//check file exists
+		String[] files = context.fileList();
+		boolean found = false;
+		for(int i = 0; i<files.length; i++)
+		{
+			if(files[i].equals(fileName))
+			{
+				found = true;
+				break;
+			}
+		}
+		if(!found)
+			//if the file has not been found (prevents an exception being thrown by openFileInput(..)
+		{
+			Log.d(Constants.MsgWarning, "The file " + fileName + " has not been found.");
+			return "";
+		}
+		
 		try
 		{
 			file = context.openFileInput (fileName);

@@ -497,7 +497,6 @@ public class CurrentEvents extends ListActivity {
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			Log.d(Constants.MsgInfo, "current postion:" + position);
 			if(getItem(position) instanceof ListHeader)
 			{
 				View layout = (((LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE)).inflate(R.layout.header, null));
