@@ -25,6 +25,7 @@ import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.PubEvent;
 
+@SuppressWarnings("serial")
 public class StoredData implements Serializable
 {	
 	//Names of hash maps
@@ -48,7 +49,7 @@ public class StoredData implements Serializable
 	
 	//private int nextHistorySlot;
 	private int nextSavedEventId;
-	private boolean needsSaving;
+	//private boolean needsSaving;
 	
 	private Dictionary<String, HashMap<?,? extends IXmlable>> dataStores;
 	private HistoryStore historyStore;
@@ -67,7 +68,7 @@ public class StoredData implements Serializable
 		
 		nextSavedEventId = -2;
 		
-		needsSaving = false;
+		//needsSaving = false;
 		
 		dataStores = new Hashtable<String, HashMap<?,? extends IXmlable>>();
 		historyStore = new HistoryStore();
@@ -113,6 +114,7 @@ public class StoredData implements Serializable
 	
 	public <K, V extends IXmlable> HashMap<K, V> GetGenericStore(String storeId)
 	{
+		@SuppressWarnings("unchecked")
 		HashMap<K, V> genericStore = (HashMap<K, V>)dataStores.get(storeId);
 		if(genericStore == null)
 		{
@@ -369,6 +371,7 @@ public class StoredData implements Serializable
 		expiryDate = Long.parseLong(root.getChildText(fbExpiryTag));
 		
 		Element hostSavedElement = root.getChild(hostSavedTag);
+		@SuppressWarnings("unchecked")
 		List<Element> elements = hostSavedElement.getChildren(PubEvent.class.getSimpleName());
 		for(Element savedEventElement : elements)
 		{

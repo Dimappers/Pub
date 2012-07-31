@@ -1,7 +1,5 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -10,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -164,7 +161,7 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 		}
 	}
 	
-	private AppUser[] MergeSort(AppUser[] list)
+	/*private AppUser[] MergeSort(AppUser[] list)
 	{
 		if (list.length<=1) return list;
 		AppUser[] lista = new AppUser[list.length/2];
@@ -196,7 +193,7 @@ public class DataRequestGetFriends extends Activity implements IDataRequest<Long
 			c++;
 		}
 		return temp;
-	}
+	}*/
 
 	
 	public String getStoredDataId() {

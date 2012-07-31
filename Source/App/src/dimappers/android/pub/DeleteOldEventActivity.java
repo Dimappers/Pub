@@ -2,14 +2,9 @@ package dimappers.android.pub;
 
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.Bundle;
-import android.os.IBinder;
 
 public class DeleteOldEventActivity extends BroadcastReceiver {
 

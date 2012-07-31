@@ -135,7 +135,7 @@ public class CurrentEvents extends ListActivity {
 	
 	
 	public boolean onContextItemSelected(MenuItem item) {
-	    AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+	    //AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 	    int itemPosition = ((AdapterContextMenuInfo)item.getMenuInfo()).position;
 	    Object pubEventO = adapter.getItem(itemPosition);
 	    if(pubEventO != null && pubEventO instanceof PubEvent)

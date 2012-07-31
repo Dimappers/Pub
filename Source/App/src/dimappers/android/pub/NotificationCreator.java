@@ -2,12 +2,9 @@ package dimappers.android.pub;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import org.json.JSONException;
-
-import com.facebook.android.Facebook;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -15,6 +12,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.facebook.android.Facebook;
+
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.EventStatus;
 import dimappers.android.PubData.GoingStatus;

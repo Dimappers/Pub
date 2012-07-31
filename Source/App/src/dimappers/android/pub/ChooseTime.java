@@ -17,7 +17,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 
@@ -314,14 +313,14 @@ public class ChooseTime extends Activity implements OnClickListener{
 		}
 	};
 	
-	private TimePicker.OnTimeChangedListener onTimeChangedListener = new TimePicker.OnTimeChangedListener() {
+	/*private TimePicker.OnTimeChangedListener onTimeChangedListener = new TimePicker.OnTimeChangedListener() {
     	
 		public void onTimeChanged(TimePicker view, int newHour, int newMinute) {   		
     		Calendar currentDate = event.GetStartTime();
     		currentDate.set(Calendar.HOUR_OF_DAY, newHour);
     		currentDate.set(Calendar.MINUTE, newMinute);
     	}
-    };
+    };*/
     
     private ServiceConnection connection = new ServiceConnection()
 	{

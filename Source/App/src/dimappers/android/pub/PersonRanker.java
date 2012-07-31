@@ -1,6 +1,5 @@
 package dimappers.android.pub;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -372,6 +371,7 @@ public class PersonRanker {
 		}*/
 	}
 
+	@SuppressWarnings("unchecked")
 	private void rankFromPosts() {
 		if (myPosts!=null&&myPosts.has("data")) {
 			try {

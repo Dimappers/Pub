@@ -17,6 +17,7 @@ public class GetPerson extends AsyncTask<Object, Void, AppUser> {
 	IRequestListener<AppUser> listener;
 	
 	
+	@SuppressWarnings("unchecked")
 	protected AppUser doInBackground(Object... bundle) {
 		listener = (IRequestListener<AppUser>) bundle[0];
 		Facebook facebook = (Facebook) bundle[1];

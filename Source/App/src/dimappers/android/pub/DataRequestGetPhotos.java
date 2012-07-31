@@ -19,7 +19,7 @@ public class DataRequestGetPhotos implements IDataRequest<String, XmlJasonObject
 	public void performRequest(IRequestListener<XmlJasonObject> listener,
 			HashMap<String, XmlJasonObject> storedData) {
 			
-		long userId = service.GetActiveUser().getUserId();
+		//long userId = service.GetActiveUser().getUserId();
 		if(storedData.containsKey("Photos"))
 		{
 			Log.d(Constants.MsgInfo, "Already have photos stored.");

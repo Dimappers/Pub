@@ -5,7 +5,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import net.awl.appgarden.sdk.AppGardenAgent;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -19,7 +18,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
@@ -29,7 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.PubLocation;
 
 public class Pending extends Activity implements OnClickListener {
 

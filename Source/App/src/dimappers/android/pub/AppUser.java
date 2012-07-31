@@ -15,6 +15,7 @@ import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.IXmlable;
 import dimappers.android.PubData.User;
 
+@SuppressWarnings("serial")
 public class AppUser extends User implements IXmlable, OrganiseListItem
 {
 	private final String usernameTag = "UserName";

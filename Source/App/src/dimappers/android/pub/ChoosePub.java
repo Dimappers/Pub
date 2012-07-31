@@ -1,12 +1,8 @@
 package dimappers.android.pub;
 
-import java.net.URISyntaxException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -22,7 +18,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 import dimappers.android.PubData.Constants;
-import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 
 public class ChoosePub extends LocationRequiringActivity implements OnClickListener {

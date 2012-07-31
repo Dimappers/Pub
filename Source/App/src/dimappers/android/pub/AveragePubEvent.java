@@ -11,6 +11,7 @@ import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.PubLocation;
 import dimappers.android.PubData.User;
 
+@SuppressWarnings("serial")
 public class AveragePubEvent extends PubEvent {
 
 	private final String historyElementTag = "History";
@@ -84,6 +85,7 @@ public class AveragePubEvent extends PubEvent {
 	public void readXml(Element element)
 	{
 		//super.readXml(element);
+		@SuppressWarnings("unchecked")
 		List<Element> childElements = element.getChild(historyElementTag).getChildren();
 		for(Element locationTallyElement : childElements)
 		{

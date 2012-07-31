@@ -56,6 +56,7 @@ public Element writeXml() {
 public void readXml(Element element) {
 	status = element.getChildText(statuskey);
 	
+	@SuppressWarnings("unchecked")
 	List<Element> resultElements = element.getChildren(resultskey);
 	results = new ArrayList<Place>();
 	for(Element resultElement : resultElements)

@@ -95,6 +95,7 @@ public class HistoryStore implements IXmlable {
 	
 	public void readXml(Element element) {
 		Element oldEventsElement = element.getChild(oldEventsTag);
+		@SuppressWarnings("unchecked")
 		List<Element> oldEventsElements = oldEventsElement.getChildren(PubEvent.class.getSimpleName());
 		
 		averagePeople = Integer.parseInt(element.getChild(averagePeopleTag).getText());

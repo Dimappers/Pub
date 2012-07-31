@@ -17,7 +17,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -25,14 +24,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import com.facebook.android.Facebook;
 
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
-import dimappers.android.PubData.User;
 
 public class Guests extends ListActivity implements OnClickListener{
 	ArrayList<AppUser> listItems=new ArrayList<AppUser>();

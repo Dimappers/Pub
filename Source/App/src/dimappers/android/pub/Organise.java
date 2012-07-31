@@ -56,7 +56,7 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 	private double latSet;
 	private double lngSet;
 
-	private AppUser[] facebookFriends;
+	//private AppUser[] facebookFriends;
 	//private Calendar originalTime;
 	boolean changed;
 	PubEvent oldEvent = null;
@@ -665,19 +665,19 @@ public class Organise extends LocationRequiringActivity implements OnClickListen
 				geocode(location[0], location[1]);
 			}
 						
-			//get list of facebook friends
+			/*//get list of facebook friends
 			Organise.this.service.addDataRequest(new DataRequestGetFriends(), new IRequestListener<AppUserArray>(){
 
 				
 				public void onRequestComplete(AppUserArray data) {
-					facebookFriends = data.getArray();
+					//facebookFriends = data.getArray();
 				}
 
 				
 				public void onRequestFail(Exception e) {
 					Log.d(Constants.MsgError, "FAIL");
 				}});
-			
+			*/
 
 			//update text on save/send buttons depending on whether the event is sent or not
 			Button button_save_event = (Button)findViewById(R.id.save_event);

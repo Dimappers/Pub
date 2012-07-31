@@ -1,7 +1,6 @@
 package dimappers.android.pub;
 
 import net.awl.appgarden.sdk.AppGardenAgent;
-import android.content.Context;
 
 public class PersonFinder {
 	IPubService service;

@@ -66,11 +66,14 @@ public class AppUserArray implements IXmlable {
 		lastUpdated = Calendar.getInstance();
 		lastUpdated.setTimeInMillis(Long.parseLong(element.getChildText(lastUpdateTag)));
 		
+		@SuppressWarnings("unchecked")
 		List<Element> friendsElements = element.getChild(friendsTag).getChildren(AppUser.class.getSimpleName());
 		
-		for(Element friendElement : friendsElements)
+		internalArray = new AppUser[friendsElements.size()];
+		for(int i = 0; i<=friendsElements.size(); i++)
 		{
-			AppUser friend = new AppUser(friendElement);
+			AppUser friend = new AppUser(friendsElements.get(i));
+			internalArray[i] = friend;
 		}
 	}
 

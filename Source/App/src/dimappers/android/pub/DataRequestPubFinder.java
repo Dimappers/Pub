@@ -1,6 +1,5 @@
 package dimappers.android.pub;
 
-import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import android.util.Log;
@@ -113,10 +112,10 @@ public class DataRequestPubFinder implements IDataRequest<Integer, PlacesList> {
 		return "PubLists";
 	}
 	
-	private static double get2DP(double value) {
+	/*private static double get2DP(double value) {
 		DecimalFormat twoDForm = new DecimalFormat("#.##");
 		return Double.valueOf(twoDForm.format(value));
-	}
+	}*/
 	public static Integer getKey(double latitude, double longitude, String keyword) {
 		int lat = (int)(1000*latitude);
 		int lng = (int)(1000*longitude);

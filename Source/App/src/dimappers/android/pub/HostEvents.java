@@ -2,14 +2,12 @@ package dimappers.android.pub;
 
 import java.util.Calendar;
 import java.util.List;
-import java.util.Set;
 import net.awl.appgarden.sdk.AppGardenAgent;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -20,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -36,7 +33,6 @@ import dimappers.android.PubData.EventStatus;
 import dimappers.android.PubData.GoingStatus;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.ResponseData;
-import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
 
 
@@ -460,12 +456,12 @@ public class HostEvents extends EventScreen {
 	};
 	class HostEventsGuestListAdapter extends GeneralGuestListAdapter 
 	{
-		private final List<AppUser> mData;	
+		//private final List<AppUser> mData;	
 		
 		public HostEventsGuestListAdapter(List<AppUser> objects) 
 		{
 			super(HostEvents.this, R.layout.hosted_row, R.id.guest, objects);
-			mData = objects;
+			//mData = objects;
 		}
 		
 		public View getView(final int position, View convertView, ViewGroup parent) 

@@ -2,14 +2,10 @@ package dimappers.android.pub;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.jdom.Element;
-
 import dimappers.android.PubData.Constants;
 import dimappers.android.PubData.PubEvent;
 import dimappers.android.PubData.User;
 import dimappers.android.PubData.UserStatus;
-import dimappers.android.pub.HostEvents.HostEventsGuestListAdapter;
 import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Context;

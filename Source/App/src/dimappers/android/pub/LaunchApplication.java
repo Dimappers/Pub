@@ -1,22 +1,12 @@
 package dimappers.android.pub;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.StreamCorruptedException;
 import java.net.MalformedURLException;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 
 import net.awl.appgarden.sdk.AppGardenAgent;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,22 +16,15 @@ import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.Surface;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 import dimappers.android.PubData.Constants;
-import dimappers.android.PubData.User;
-
 import com.facebook.android.*;
 import com.facebook.android.Facebook.DialogListener;
-import com.facebook.android.Facebook.*;
 import com.facebook.android.AsyncFacebookRunner.*;
 
 
@@ -304,7 +287,7 @@ public class LaunchApplication extends Activity implements OnClickListener{
 	public void onClick(View v)
     {
     	Intent i;
-    	Bundle b = new Bundle();
+    	//Bundle b = new Bundle();
     	switch (v.getId()) {
     		case R.id.organise_button : 
     		{
